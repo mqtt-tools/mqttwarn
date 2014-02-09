@@ -14,9 +14,11 @@ def on_message(mosq, userdata, msg):
     topic = msg.topic
     payload = str(msg.payload)
 
-    for t in userdata['topicmap'].keys():
-        if paho.topic_matches_sub(t, topic):
-            appkey = userdata['topicmap'][t]
+    # Find the appkey for the particular topic of the message we just received
+
+    for sub in userdata['topicmap'].keys():
+        if paho.topic_matches_sub(sub, topic):
+            appkey = userdata['topicmap'][sub]
             try:
                 pushover(message=payload,
                     user=userdata['userkey'], token=appkey)
@@ -26,7 +28,7 @@ def on_message(mosq, userdata, msg):
 
 
 def on_disconnect(mosq, userdata, rc):
-    print "OOOOPS! disconnect"
+    print "OOOOPS! disconnected"
 
 cf = {}
 
