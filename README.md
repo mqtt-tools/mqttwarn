@@ -7,9 +7,9 @@ You associate topic branches to application keys (pushover terminology) in the c
 ```python
 # Map MQTT topics (wildcards allowed!) to Pushover.net app keys
 topicmap = {
-    'home/events/owntracks/+/+' : 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', # owntracks
-    'home/t1'                   : 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz', # icinga
-    'oh/#'                      : 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm', # openhab
+    'home/events/owntracks/jpm/+' : 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', # owntracks
+    'home/monitoring/#'           : 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz', # icinga
+    'oh/#'                        : 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm', # openhab
 }
 ```
 
