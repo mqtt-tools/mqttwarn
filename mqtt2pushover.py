@@ -28,7 +28,6 @@ def on_message(mosq, userdata, msg):
 def on_disconnect(mosq, userdata, rc):
     print "OOOOPS! disconnect"
 
-
 cf = {}
 
 try:
