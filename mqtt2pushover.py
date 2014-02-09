@@ -38,7 +38,7 @@ except Exception, e:
 
 userdata = {
     'userkey' : cf['userkey'],
-    'topicmap' : cf['topic_map'],
+    'topicmap' : cf['topicmap'],
 }
 
 mqttc = paho.Client('mqtt2pushover', clean_session=False, userdata=userdata)
@@ -50,7 +50,7 @@ if cf['username'] is not None:
 
 mqttc.connect(cf['broker'], int(cf['port']), 60)
 
-for topic in cf['topic_map'].keys():
+for topic in cf['topicmap'].keys():
     mqttc.subscribe(topic, 0)
 
 try:
