@@ -41,7 +41,7 @@ userdata = {
     'topicmap' : cf['topic_map'],
 }
 
-mqttc = paho.Client('mqtt2pushover', clean_session=True, userdata=userdata)
+mqttc = paho.Client('mqtt2pushover', clean_session=False, userdata=userdata)
 mqttc.on_message = on_message
 mqttc.on_disconnect = on_disconnect
 
