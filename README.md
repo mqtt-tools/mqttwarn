@@ -27,4 +27,4 @@ update-rc.d mqtt2pushover defaults
 cp /usr/local/mqtt2pushover/mqtt2pushover.default /etc/default/mqtt2pushover
 
 * Edit /etc/default/mqtt2pushover and /etc/mqtt2pushover/mqtt2pushover.conf to suit
-/etc/init.d/mqtt2pushover start
+* /etc/init.d/mqtt2pushover start
