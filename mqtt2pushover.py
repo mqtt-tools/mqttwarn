@@ -19,10 +19,17 @@ def on_message(mosq, userdata, msg):
 
     for sub in userdata['topicmap'].keys():
         if paho.topic_matches_sub(sub, topic):
-            appkey = userdata['topicmap'][sub]
+            rhs = userdata['topicmap'][sub]
+            if type(rhs) is str:
+                userkey = userdata['userkey']
+                appkey = rhs
+            else:
+                userkey = rhs['userkey']
+                appkey = rhs['appkey']
+
+            # logging.debug("Using userkey=%s, appkey=%s" % (userkey, appkey))
             try:
-                pushover(message=payload,
-                    user=userdata['userkey'], token=appkey)
+                pushover(message=payload, user=userkey, token=appkey)
                 logging.info("Posted [%s] to pushover from topic %s" % (str(payload), str(topic)))
             except Exception, e:
                 logging.info("Cannot post to pushover: %s" % str(e))
