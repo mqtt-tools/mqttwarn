@@ -1,3 +1,8 @@
+# Logging
+logfile  = 'mqtt2pushover.log'
+loglevel = 'DEBUG'
+logformat = '%(asctime)-15s %(message)s'
+
 # MQTT Broker
 broker = 'localhost'
 port = 1883
@@ -5,29 +10,27 @@ username = None
 password = None
 lwt = 'lwt/mqtt2pushover'
 
-logfile  = 'mqtt2pushover.log'
-loglevel = 'DEBUG'
-
 # Pushover.net user/app keys
-pushoverkey = {
+pushoveruser = {
     'user1'   : ['www', 'xxx'],
     'user2'   : ['yyy', 'zzz']
 }
 
-# Map MQTT topics (wildcards allowed!) to Pushover.net app keys
-# (also called API Token/Key)
-topickey = {
+# MQTT topic -> Pushover.net user
+topicuser = {
     'notification/info'   : ['user1'],
     'notification/warn'   : ['user2'],
     'notification/error'  : ['user1', 'user2']
 }
 
+# MQTT topic -> notification title
 topictitle = {
     'notification/info'   : 'Info',
     'notification/warn'   : 'Warning',
     'notification/error'  : 'Error'
 }
 
+# MQTT topic -> notification priority
 topicpriority = {
     'notification/info'   : -1,
     'notification/warn'   : 0,

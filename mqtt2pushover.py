@@ -1,112 +1,124 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from pushover import pushover # https://github.com/pix0r/pushover
-
+from pushover import pushover     # https://github.com/pix0r/pushover
 import paho.mqtt.client as paho   # pip install paho-mqtt
 import logging
-import sys, time
+import signal
+import sys
+import time
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
-def on_connect(mosq, userdata, rc):
-    logging = userdata['logging']
-    logging.debug("Connected to MQTT broker")
-    for topic in userdata['topickey'].keys():
+# load configuration
+conf = {}
+try:
+    execfile('mqtt2pushover.conf', conf)
+except Exception, e:
+    print "Cannot load mqtt2pushover.conf: %s" % str(e)
+    sys.exit(2)
+
+LOGFILE = conf['logfile']
+LOGLEVEL = conf['loglevel']
+LOGFORMAT = conf['logformat']
+
+MQTT_HOST = conf['broker']
+MQTT_PORT = int(conf['port'])
+MQTT_LWT = conf['lwt']
+
+# initialise logging    
+logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
+logging.info("Starting mqtt2pushover")
+logging.info("INFO MODE")
+logging.debug("DEBUG MODE")
+
+# initialise MQTT broker connection
+mqttc = paho.Client('mqtt2pushover', clean_session=False)
+
+# check for authentication
+if conf['username'] is not None:
+    mqttc.username_pw_set(conf['username'], conf['password'])
+
+# configure the last-will-and-testament
+mqttc.will_set(MQTT_LWT, payload="mqtt2pushover", qos=0, retain=False)
+
+def connect():
+    """
+    Connect to the broker
+    """
+    logging.debug("Attempting connection to MQTT broker %s:%d..." % (MQTT_HOST, MQTT_PORT))
+    mqttc.on_connect = on_connect
+    mqttc.on_message = on_message
+    mqttc.on_disconnect = on_disconnect
+
+    result = mqttc.connect(MQTT_HOST, MQTT_PORT, 60)
+    if result == 0:
+        mqttc.loop_forever()
+    else:
+        logging.info("Connection failed with error code %s. Retrying in 10s...", result)
+        time.sleep(10)
+        connect()
+         
+def disconnect(signum, frame):
+    """
+    Signal handler to ensure we disconnect cleanly 
+    in the event of a SIGTERM or SIGINT.
+    """
+    logging.debug("Disconnecting from MQTT broker...")
+    mqttc.loop_stop()
+    mqttc.disconnect()
+    logging.debug("Exiting on signal %d", signum)
+    sys.exit(signum)
+
+def on_connect(mosq, userdata, result_code):
+    logging.debug("Connected to MQTT broker, subscribing to topics...")
+    for topic in conf['topicuser'].keys():
+        logging.debug("Subscribing to %s" % topic)
         mqttc.subscribe(topic, 0)
 
 def on_message(mosq, userdata, msg):
+    """
+    Message received from the broker
+    """
     topic = msg.topic
     payload = str(msg.payload)
-
-    logging = userdata['logging']
     logging.debug("Message received on %s: %s" % (topic, payload))
 
-    recipients = userdata['topickey'][topic]
-    title = userdata['topictitle'][topic]
-    priority = userdata['topicpriority'][topic]
+    users = conf['topicuser'][topic]
+    title = conf['topictitle'][topic]
+    priority = conf['topicpriority'][topic]
 
-    for recipient in recipients:
-        userkey = userdata['pushoverkey'][recipient][0]
-        appkey = userdata['pushoverkey'][recipient][1]
-
-        logging.debug("Sending notification to %s..." % recipient)
+    for user in users:
+        logging.debug("Sending notification to %s..." % user)
+        userkey = conf['pushoveruser'][user][0]
+        appkey = conf['pushoveruser'][user][1]
         try:
-            pushover(message=payload,
-                user=userkey, token=appkey,
+            pushover(
+                message=payload, 
+                user=userkey, token=appkey, 
                 title=title, priority=priority,
                 retry=60, expire=3600)
             logging.debug("Successfully sent notification")
         except Exception, e:
             logging.warn("Notification failed: %s" % str(e))
 
-def on_disconnect(mosq, userdata, rc):
-    logging = userdata['logging']
-    logging.debug("Connection to MQTT broker lost")
-    time.sleep(10)
+def on_disconnect(mosq, userdata, result_code):
+    """
+    Handle disconnections from the broker
+    """
+    if result_code == 0:
+        logging.info("Clean disconnection")
+    else:
+        logging.info("Unexpected disconnection! Reconnecting in 5 seconds...")
+        logging.debug("Result code: %s", result_code)
+        time.sleep(5)
+        connect()
 
-if __name__ == '__main__':
-
-    # load configuration
-    conf = {}
-    try:
-        execfile('mqtt2pushover.conf', conf)
-    except Exception, e:
-        print "Cannot load mqtt2pushover.conf: %s" % str(e)
-        sys.exit(2)
-
-    # initialise logging    
-    logfile = conf['logfile']
-    loglevel = conf['loglevel']
-    logformat = '%(asctime)-15s %(message)s'
-
-    logging.basicConfig(filename=logfile, level=loglevel, format=logformat)
-    logging.info("mqtt2pushover started")
-    logging.debug("DEBUG MODE")
-
-    # create the user data to pass through to our MQTT listeneres
-    userdata = {
-        'logging'       : logging,
-        'pushoverkey'   : conf['pushoverkey'],
-        'topickey'      : conf['topickey'],
-        'topictitle'    : conf['topictitle'],
-        'topicpriority' : conf['topicpriority'],
-    }
-
-    # initialise the MQTT broker connection
-    mqttc = paho.Client('mqtt2pushover', clean_session=False, userdata=userdata)
-    mqttc.on_connect = on_connect
-    mqttc.on_message = on_message
-    mqttc.on_disconnect = on_disconnect
-
-    # check for authentication
-    username = conf['username']
-    if username is not None:
-        password = conf['password']
-        mqttc.username_pw_set(username, password)
-
-    # configure the last-will-and-testament
-    lwt = conf['lwt']
-    mqttc.will_set(lwt, payload="mqtt2pushover", qos=0, retain=False)
-
-    # attempt to connect to the MQTT broker
-    broker = conf['broker']
-    port = int(conf['port'])
-    try:
-        mqttc.connect(broker, port, 60)
-    except Exception, e:
-        logging.error("Failed to connect to MQTT broker on %s:%d: %s" % (broker, port, str(e)))
-        sys.exit(2)
-
-    # start listening...
-    try:
-        mqttc.loop_forever()
-    except KeyboardInterrupt:
-        mqttc.loop_stop()
-        mqttc.disconnect()
-        sys.exit(0)
-    except Exception, e:
-        logging.error("Error on MQTT broker connection: %s" % str(e))
-        sys.exit(2)
+# use the signal module to handle signals
+signal.signal(signal.SIGTERM, disconnect)
+signal.signal(signal.SIGINT, disconnect)
+        
+# connect to broker and start listening
+connect()
