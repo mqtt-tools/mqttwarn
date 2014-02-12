@@ -4,6 +4,8 @@ port = 1883
 username = None
 password = None
 
+logfile = 'logfile'
+
 # Pushover.net User Key (on top right of their control panel)
 userkey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
