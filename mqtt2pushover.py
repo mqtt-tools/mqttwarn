@@ -83,6 +83,8 @@ for topic in cf['topicmap'].keys():
 try:
     mqttc.loop_forever()
 except KeyboardInterrupt:
+    mqttc.loop_stop()
+    mqttc.disconnect()
     sys.exit(0)
 except:
     raise
