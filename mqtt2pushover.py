@@ -22,13 +22,13 @@ except Exception, e:
     print "Cannot load %s: %s" % (configfile, str(e))
     sys.exit(2)
 
-LOGFILE = conf['logfile']
-LOGLEVEL = conf['loglevel']
-LOGFORMAT = conf['logformat']
+LOGFILE = conf.get('logfile', 'logfile')
+LOGLEVEL = conf.get('loglevel', 'DEBUG')
+LOGFORMAT = conf.get('logformat', '%(asctime)-15s %(message)s')
 
-MQTT_HOST = conf['broker']
-MQTT_PORT = int(conf['port'])
-MQTT_LWT = conf['lwt']
+MQTT_HOST = conf.get('broker', 'localhost')
+MQTT_PORT = int(conf.get('port', 1883))
+MQTT_LWT = conf.get('lwt', None)
 
 # initialise logging    
 logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
@@ -43,8 +43,9 @@ mqttc = paho.Client('mqtt2pushover', clean_session=False)
 if conf['username'] is not None:
     mqttc.username_pw_set(conf['username'], conf['password'])
 
-# configure the last-will-and-testament
-mqttc.will_set(MQTT_LWT, payload="mqtt2pushover", qos=0, retain=False)
+if MQTT_LWT is not None:
+    # configure the last-will-and-testament
+    mqttc.will_set(MQTT_LWT, payload="mqtt2pushover", qos=0, retain=False)
 
 def connect():
     """
