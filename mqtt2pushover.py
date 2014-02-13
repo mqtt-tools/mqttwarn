@@ -92,13 +92,28 @@ def on_message(mosq, userdata, msg):
     title = "Info"
     priority = "-1"
 
+    params = {
+            'retry' : 60,
+            'expire' : 3600,
+        }
+
     # Try to find matching settings for this topic
     for sub in conf['topicuser']:
         if paho.topic_matches_sub(sub, topic):
             try:
                 users = conf['topicuser'][sub]
+            except:
+                logging.info("Cannot find userkeys for topic %s" % topic)
+                return
+            # Set title and priority if configured; else pushover.net defaults
+            try:
                 title = conf['topictitle'][sub]
+                params['title'] = title
+            except:
+                pass
+            try:
                 priority = conf['topicpriority'][sub]
+                params['priority'] = priority
             except:
                 pass
             break
@@ -111,8 +126,7 @@ def on_message(mosq, userdata, msg):
             pushover(
                 message=payload, 
                 user=userkey, token=appkey, 
-                title=title, priority=priority,
-                retry=60, expire=3600)
+                **params)
             logging.debug("Successfully sent notification")
         except Exception, e:
             logging.warn("Notification failed: %s" % str(e))

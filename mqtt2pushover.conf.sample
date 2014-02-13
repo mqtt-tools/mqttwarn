@@ -25,7 +25,8 @@ topicuser = {
     'owntracks/jpm/+'       : ['tracking', 'extraphone']
 }
 
-# MQTT topic -> notification title (default: "Info" if not configured here)
+# MQTT topic -> notification title (default: None if not configured, meaning
+# the title is whatever is specified on the application page)
 topictitle = {
     'monitoring/icinga/#'   : 'Info',
     'owntracks/jpm/#'       : 'Info',
