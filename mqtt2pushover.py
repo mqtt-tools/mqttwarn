@@ -16,6 +16,8 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 conf = {}
 try:
     execfile('/etc/mqtt2pushover/mqtt2pushover.conf', conf)
+except IOError:
+    execfile('mqtt2pushover.conf', conf)
 except Exception, e:
     print "Cannot load /etc/mqtt2pushover/mqtt2pushover.conf: %s" % str(e)
     sys.exit(2)
@@ -85,13 +87,24 @@ def on_message(mosq, userdata, msg):
     topic = msg.topic
     payload = str(msg.payload)
     logging.debug("Message received on %s: %s" % (topic, payload))
+    
+    users = None
+    title = None
+    priority = "-1"
 
-    users = conf['topicuser'][topic]
-    title = conf['topictitle'][topic]
-    priority = conf['topicpriority'][topic]
+    # Try to find matching settings for this topic
+    for sub in conf['topicuser']:
+        if paho.topic_matches_sub(sub, topic):
+            try:
+                users = conf['topicuser'][sub]
+                title = conf['topictitle'][sub]
+                priority = conf['topicpriority'][sub]
+            except:
+                pass
+            break
 
     for user in users:
-        logging.debug("Sending notification to %s..." % user)
+        logging.debug("Sending pushover notification to %s [%s, %s]..." % (user, title, priority))
         userkey = conf['pushoveruser'][user][0]
         appkey = conf['pushoveruser'][user][1]
         try:
