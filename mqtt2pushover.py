@@ -208,8 +208,12 @@ def on_message(mosq, userdata, msg):
             logging.debug("Topic [%s] going to '%s'" % (topic, targetlist))
 
             for t in targetlist:
-                # each target is "service:user"
-                service, target = t.split(':', 2)
+                # Each target is "service:user"
+                try:
+                    service, target = t.split(':', 2)
+                except:
+                    logging.info("Target %s is incorrectly configured" % t)
+                    continue
 
                 if service == 'pushover':
                     notify_pushover(topic, payload, target)
