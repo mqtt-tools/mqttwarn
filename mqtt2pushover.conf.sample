@@ -1,6 +1,7 @@
 # Logging
+import logging
 logfile  = 'mqtt2pushover.log'
-loglevel = 'DEBUG'
+loglevel = logging.DEBUG
 logformat = '%(asctime)-15s %(message)s'
 
 # MQTT Broker
