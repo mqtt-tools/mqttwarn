@@ -201,30 +201,20 @@ def on_message(mosq, userdata, msg):
     targetlist = None               # targets
 
     # Try to find matching settings for this topic
-    for sub in conf['topicmap']:
+    for sub in conf['topicmap'].keys():
         if paho.topic_matches_sub(sub, topic):
-            try:
-                targetlist = conf['topicmap'][sub]
-            except:
-                raise
-                logging.info("Cannot find notification type/target for topic %s" % topic)
-                return
-            break
+            targetlist = conf['topicmap'][sub]
 
-    if targetlist is None:
-        logging.info("Cannot find notification type/target for topic %s" % topic)
-        return
+            logging.debug("Topic [%s] going to '%s'" % (topic, targetlist))
 
-    logging.debug("Topic [%s] going to '%s'" % (topic, targetlist))
+            for t in targetlist:
+                # each target is "service:user"
+                service, target = t.split(':', 2)
 
-    for t in targetlist:
-        # each target is "service:user"
-        service, target = t.split(':', 2)
-
-        if service == 'pushover':
-            notify_pushover(topic, payload, target)
-        elif service == 'smtp':
-            notify_smtp(topic, payload, target)
+                if service == 'pushover':
+                    notify_pushover(topic, payload, target)
+                elif service == 'smtp':
+                    notify_smtp(topic, payload, target)
 
     return
 
