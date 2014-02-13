@@ -19,13 +19,11 @@ See details in the config sample for how to configure this script.
 
 ## Installation
 
-mkdir /etc/mqtt2pushover/
-git clone git://github.com/sumnerboy12/mqtt2pushover.git /usr/local/mqtt2pushover/
-cp /usr/local/mqtt2pushover/mqtt2pushover.conf.sample /etc/mqtt2pushover/mqtt2pushover.conf
-cp /usr/local/mqtt2pushover/mqtt2pushover.init /etc/init.d/mqtt2pushover
-update-rc.d mqtt2pushover defaults
-cp /usr/local/mqtt2pushover/mqtt2pushover.default /etc/default/mqtt2pushover
-
+* `mkdir /etc/mqtt2pushover/`
+* `git clone git://github.com/sumnerboy12/mqtt2pushover.git /usr/local/mqtt2pushover/`
+* `cp /usr/local/mqtt2pushover/mqtt2pushover.conf.sample /etc/mqtt2pushover/mqtt2pushover.conf`
+* `cp /usr/local/mqtt2pushover/mqtt2pushover.init /etc/init.d/mqtt2pushover`
+* `update-rc.d mqtt2pushover defaults`
+* `cp /usr/local/mqtt2pushover/mqtt2pushover.default /etc/default/mqtt2pushover`
 * Edit /etc/default/mqtt2pushover and /etc/mqtt2pushover/mqtt2pushover.conf to suit
-
-/etc/init.d/mqtt2pushover start
+* `/etc/init.d/mqtt2pushover start`
