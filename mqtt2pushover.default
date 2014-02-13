@@ -1,0 +1,2 @@
+START_DAEMON=true
+VERBOSE=true

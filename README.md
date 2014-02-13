@@ -2,18 +2,9 @@
 
 This program subscribes to any number of MQTT topics (including wildcards) and publishes received payloads to [pushover.net](https://pushover.net).
 
-You associate topic branches to application keys (pushover terminology) in the configuration file (copy `sample-config.py` to `config.py` for use). For example:
+You associate topic branches to application keys (pushover terminology) in the configuration file (copy `mqtt2pushover.conf.sample` to `mqtt2pushover.conf` for use). 
 
-```python
-# Map MQTT topics (wildcards allowed!) to Pushover.net app keys
-topicmap = {
-    'home/events/owntracks/jpm/+' : 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', # owntracks
-    'home/monitoring/#'           : 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz', # icinga
-    'oh/#'                        : 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm', # openhab
-}
-```
-
-A message published to, say, `home/t1` will use the `zzzz` app key for the pushover message, while a message published to `oh/warning` will use the `mmmm` app key. This allows this program to notify your Android or iOS devices on different services.
+See details in the config sample for how to configure this script.
 
 ## Obligatory screenshot
 
@@ -25,3 +16,16 @@ A message published to, say, `home/t1` will use the `zzzz` app key for the pusho
 * A [pushover.net](https://pushover.net/) account
 * The Paho Python module: `pip install paho-mqtt`
 * `pushover.py` (included) from [https://github.com/pix0r/pushover](https://github.com/pix0r/pushover)
+
+## Installation
+
+* `mkdir /etc/mqtt2pushover/`
+* `git clone git://github.com/sumnerboy12/mqtt2pushover.git /usr/local/mqtt2pushover/`
+* `cp /usr/local/mqtt2pushover/mqtt2pushover.conf.sample /etc/mqtt2pushover/mqtt2pushover.conf`
+* `cp /usr/local/mqtt2pushover/mqtt2pushover.init /etc/init.d/mqtt2pushover`
+* `update-rc.d mqtt2pushover defaults`
+* `cp /usr/local/mqtt2pushover/mqtt2pushover.default /etc/default/mqtt2pushover`
+* Edit /etc/default/mqtt2pushover and /etc/mqtt2pushover/mqtt2pushover.conf to suit
+* `chmod a+x /usr/local/mqtt2pushover/mqtt2pushover.py`
+* `chmod a+x /etc/init.d/mqtt2pushover`
+* `/etc/init.d/mqtt2pushover start`
