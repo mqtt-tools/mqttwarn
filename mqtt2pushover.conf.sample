@@ -12,25 +12,28 @@ lwt = 'lwt/mqtt2pushover'
 
 # Pushover.net user/app keys
 pushoveruser = {
-    'user1'   : ['www', 'xxx'],
-    'user2'   : ['yyy', 'zzz']
+    'nagios'     : ['userkey1', 'appkey1'],
+    'alerts'     : ['userkey2', 'appkey2'],
+    'tracking'   : ['userkey1', 'appkey2'],
+    'extraphone' : ['userkey2', 'appkey3'],
 }
 
 # MQTT topic -> Pushover.net user
 topicuser = {
-    'notification/info'   : ['user1'],
-    'notification/warn'   : ['user2'],
-    'notification/error'  : ['user1', 'user2']
+    'monitoring/icinga/#'   : ['nagios'],
+    'notification/warn'     : ['alerts'],
+    'owntracks/jpm/+'       : ['tracking', 'extraphone']
 }
 
-# MQTT topic -> notification title
+# MQTT topic -> notification title (default: "Info" if not configured here)
 topictitle = {
-    'notification/info'   : 'Info',
-    'notification/warn'   : 'Warning',
-    'notification/error'  : 'Error'
+    'monitoring/icinga/#'   : 'Info',
+    'owntracks/jpm/#'       : 'Info',
+    'notification/warn'     : 'Warning',
+    'notification/error'    : 'Error'
 }
 
-# MQTT topic -> notification priority
+# MQTT topic -> notification priority (default: -1 if not configured here)
 topicpriority = {
     'notification/info'   : -1,
     'notification/warn'   : 0,

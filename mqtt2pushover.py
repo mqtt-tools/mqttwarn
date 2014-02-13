@@ -89,7 +89,7 @@ def on_message(mosq, userdata, msg):
     logging.debug("Message received on %s: %s" % (topic, payload))
     
     users = None
-    title = None
+    title = "Info"
     priority = "-1"
 
     # Try to find matching settings for this topic
