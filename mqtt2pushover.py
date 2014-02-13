@@ -56,13 +56,17 @@ def connect():
     mqttc.on_message = on_message
     mqttc.on_disconnect = on_disconnect
 
-    result = mqttc.connect(MQTT_HOST, MQTT_PORT, 60)
-    if result == 0:
-        mqttc.loop_forever()
-    else:
-        logging.info("Connection failed with error code %s. Retrying in 10s...", result)
-        time.sleep(10)
-        connect()
+    try:
+        result = mqttc.connect(MQTT_HOST, MQTT_PORT, 60)
+        if result == 0:
+            mqttc.loop_forever()
+        else:
+            logging.info("Connection failed with error code %s. Retrying in 10s...", result)
+            time.sleep(10)
+            connect()
+    except Exception, e:
+        logging.error("Cannot connect to MQTT broker at %s:%d: %s" % (MQTT_HOST, MQTT_PORT, str(e)))
+        sys.exit(2)
          
 def disconnect(signum, frame):
     """
@@ -106,12 +110,21 @@ def on_message(mosq, userdata, msg):
             except:
                 logging.info("Cannot find userkeys for topic %s" % topic)
                 return
-            # Set title and priority if configured; else pushover.net defaults
+            break
+
+    # Set title if configured; else pushover.net defaults
+    for sub in conf['topictitle']:
+        if paho.topic_matches_sub(sub, topic):
             try:
                 title = conf['topictitle'][sub]
                 params['title'] = title
             except:
                 pass
+            break
+
+    # Set priority if configured; else pushover.net defaults
+    for sub in conf['topicpriority']:
+        if paho.topic_matches_sub(sub, topic):
             try:
                 priority = conf['topicpriority'][sub]
                 params['priority'] = priority
@@ -120,7 +133,7 @@ def on_message(mosq, userdata, msg):
             break
 
     for user in users:
-        logging.debug("Sending pushover notification to %s [%s, %s]..." % (user, title, priority))
+        logging.debug("Sending pushover notification to %s [%s]..." % (user, params))
         userkey = conf['pushoveruser'][user][0]
         appkey = conf['pushoveruser'][user][1]
         try:
