@@ -5,6 +5,7 @@ This program subscribes to any number of MQTT topics (including wildcards) and p
 You associate topic branches to application keys (pushover terminology) in the configuration file (copy `mqtt2pushover.conf.sample` to `mqtt2pushover.conf` for use). 
 
 See details in the config sample for how to configure this script.
+The path to the configuration file (which must be valid Python) is obtained from the `MQTT2PUSHOVERCONF` environment variable which defaults to `/etc/mqtt2pushover/mqtt2pushover.conf`.
 
 ## Obligatory screenshot
 
