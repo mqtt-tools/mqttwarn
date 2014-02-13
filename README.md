@@ -26,4 +26,6 @@ See details in the config sample for how to configure this script.
 * `update-rc.d mqtt2pushover defaults`
 * `cp /usr/local/mqtt2pushover/mqtt2pushover.default /etc/default/mqtt2pushover`
 * Edit /etc/default/mqtt2pushover and /etc/mqtt2pushover/mqtt2pushover.conf to suit
+* `chmod a+x /usr/local/mqtt2pushover/mqtt2pushover.py`
+* `chmod a+x /etc/init.d/mqtt2pushover`
 * `/etc/init.d/mqtt2pushover start`
