@@ -7,19 +7,19 @@ import logging
 import signal
 import sys
 import time
+import os
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 # load configuration
+configfile = os.getenv("MQTT2PUSHOVERCONF", "/etc/mqtt2pushover/mqtt2pushover.conf")
 conf = {}
 try:
-    execfile('/etc/mqtt2pushover/mqtt2pushover.conf', conf)
-except IOError:
-    execfile('mqtt2pushover.conf', conf)
+    execfile(configfile, conf)
 except Exception, e:
-    print "Cannot load /etc/mqtt2pushover/mqtt2pushover.conf: %s" % str(e)
+    print "Cannot load %s: %s" % (configfile, str(e))
     sys.exit(2)
 
 LOGFILE = conf['logfile']
