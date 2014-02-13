@@ -1,6 +1,5 @@
 # Logging
 import logging
-logfile  = 'mqtt2pushover.log'
 loglevel = logging.DEBUG
 logformat = '%(asctime)-15s %(module)s %(message)s'
 

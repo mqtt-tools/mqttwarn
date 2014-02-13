@@ -13,17 +13,21 @@ __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmai
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
+# script name (without extension) used for config/logfile names
+SCRIPTNAME = os.path.splitext(os.path.basename(__file__))[0]
+
+CONFIGFILE = os.getenv(SCRIPTNAME.upper() + 'CONF', SCRIPTNAME + '.conf')
+LOGFILE    = os.getenv(SCRIPTNAME.upper() + 'LOG', SCRIPTNAME + '.log')
+
 # load configuration
-configfile = os.getenv("MQTT2PUSHOVERCONF", "/etc/mqtt2pushover/mqtt2pushover.conf")
 conf = {}
 try:
-    execfile(configfile, conf)
+    execfile(CONFIGFILE, conf)
 except Exception, e:
-    print "Cannot load %s: %s" % (configfile, str(e))
+    print "Cannot load %s: %s" % (CONFIGFILE, str(e))
     sys.exit(2)
 
-LOGFILE = conf.get('logfile', 'logfile')
-LOGLEVEL = conf.get('loglevel', 'DEBUG')
+LOGLEVEL = conf.get('loglevel', logging.DEBUG)
 LOGFORMAT = conf.get('logformat', '%(asctime)-15s %(message)s')
 
 MQTT_HOST = conf.get('broker', 'localhost')
@@ -32,7 +36,7 @@ MQTT_LWT = conf.get('lwt', None)
 
 # initialise logging    
 logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
-logging.info("Starting mqtt2pushover")
+logging.info("Starting %s" % SCRIPTNAME)
 logging.info("INFO MODE")
 logging.debug("DEBUG MODE")
 
