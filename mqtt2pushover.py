@@ -15,9 +15,9 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 # load configuration
 conf = {}
 try:
-    execfile('mqtt2pushover.conf', conf)
+    execfile('/etc/mqtt2pushover/mqtt2pushover.conf', conf)
 except Exception, e:
-    print "Cannot load mqtt2pushover.conf: %s" % str(e)
+    print "Cannot load /etc/mqtt2pushover/mqtt2pushover.conf: %s" % str(e)
     sys.exit(2)
 
 LOGFILE = conf['logfile']
