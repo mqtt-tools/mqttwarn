@@ -8,6 +8,8 @@ import signal
 import sys
 import time
 import os
+import smtplib
+from email.mime.text import MIMEText
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
@@ -51,6 +53,104 @@ if MQTT_LWT is not None:
     # configure the last-will-and-testament
     mqttc.will_set(MQTT_LWT, payload="mqtt2pushover", qos=0, retain=False)
 
+def get_title(topic):
+    ''' Find the "title" (for pushover) or "subject" (for smtp)
+        from the topic. '''
+
+    title = None
+    for sub in conf['titlemap']:
+        if paho.topic_matches_sub(sub, topic):
+            try:
+                title = conf['titlemap'][sub]
+            except:
+                pass
+            break
+    return title
+
+def notify_pushover(topic, payload, target):
+    logging.debug("PUSHOVER: %s" % (target))
+
+    params = {
+            'retry' : 60,
+            'expire' : 3600,
+        }
+    title = get_title(topic)
+    if title is not None:
+        params['title'] = title
+
+    # Set priority if configured; else pushover.net defaults
+    for sub in conf['prioritymap']:
+        if paho.topic_matches_sub(sub, topic):
+            try:
+                priority = conf['prioritymap'][sub]
+                params['priority'] = priority
+            except:
+                pass
+            break
+
+    try:
+        userkey = conf['pushover_targets'][target][0]
+        appkey = conf['pushover_targets'][target][1]
+    except:
+        logging.info("No pushover userkey/appkey configured for target `%s'" % target)
+
+    try:
+        logging.debug("Sending pushover notification to %s [%s]..." % (target, params))
+        pushover(
+                message=payload,
+                user=userkey, token=appkey,
+                **params)
+        logging.debug("Successfully sent notification")
+    except Exception, e:
+        logging.warn("Notification to pushover failed: %s" % str(e))
+
+def notify_smtp(topic, payload, target):
+    ''' Notify a recipient by SMTP
+        FIXME: I may need to queue this b/c of throughput '''
+
+    logging.debug("SMTP: %s" % (target))
+
+    try:
+        smtp_addresses = conf['smtp_targets'][target]
+    except:
+        logging.info("No SMTP addresses configured for target `%s'" % (target))
+        return
+
+    logging.debug("SMTP addresses: %s" % smtp_addresses)
+
+    subject = get_title(topic)
+    if subject is None:
+        subject = "%s notification" % (SCRIPTNAME)
+
+    server = conf['smtp_config']['server']
+    sender = conf['smtp_config']['sender']
+    starttls = conf['smtp_config']['starttls']
+    username = conf['smtp_config']['username']
+    password = conf['smtp_config']['password']
+
+    msg = MIMEText(payload)
+    msg['Subject']      = subject
+    msg['From']         = sender
+    msg['X-Mailer']     = SCRIPTNAME
+
+    # logging.debug(msg.as_string())
+
+    try:
+        server = smtplib.SMTP(server)
+        server.set_debuglevel(0)
+        server.ehlo()
+        if starttls:
+            server.starttls()
+        server.ehlo()
+        if username:
+            server.login(username, password)
+
+        server.sendmail(sender, smtp_addresses, msg.as_string())
+        server.quit()
+    except Exception, e:
+        logging.info("SMTP: %s" % (str(e)))
+
+
 def connect():
     """
     Connect to the broker
@@ -85,7 +185,7 @@ def disconnect(signum, frame):
 
 def on_connect(mosq, userdata, result_code):
     logging.debug("Connected to MQTT broker, subscribing to topics...")
-    for topic in conf['topicuser'].keys():
+    for topic in conf['topicmap'].keys():
         logging.debug("Subscribing to %s" % topic)
         mqttc.subscribe(topic, 0)
 
@@ -97,57 +197,37 @@ def on_message(mosq, userdata, msg):
     payload = str(msg.payload)
     logging.debug("Message received on %s: %s" % (topic, payload))
     
-    users = None
-    title = "Info"
-    priority = "-1"
-
-    params = {
-            'retry' : 60,
-            'expire' : 3600,
-        }
+    notification_type = None    # pushover, mail, etc.
+    targetlist = None               # targets
 
     # Try to find matching settings for this topic
-    for sub in conf['topicuser']:
+    for sub in conf['topicmap']:
         if paho.topic_matches_sub(sub, topic):
             try:
-                users = conf['topicuser'][sub]
+                targetlist = conf['topicmap'][sub]
             except:
-                logging.info("Cannot find userkeys for topic %s" % topic)
+                raise
+                logging.info("Cannot find notification type/target for topic %s" % topic)
                 return
             break
 
-    # Set title if configured; else pushover.net defaults
-    for sub in conf['topictitle']:
-        if paho.topic_matches_sub(sub, topic):
-            try:
-                title = conf['topictitle'][sub]
-                params['title'] = title
-            except:
-                pass
-            break
+    if targetlist is None:
+        logging.info("Cannot find notification type/target for topic %s" % topic)
+        return
 
-    # Set priority if configured; else pushover.net defaults
-    for sub in conf['topicpriority']:
-        if paho.topic_matches_sub(sub, topic):
-            try:
-                priority = conf['topicpriority'][sub]
-                params['priority'] = priority
-            except:
-                pass
-            break
+    logging.debug("Topic [%s] going to '%s'" % (topic, targetlist))
 
-    for user in users:
-        logging.debug("Sending pushover notification to %s [%s]..." % (user, params))
-        userkey = conf['pushoveruser'][user][0]
-        appkey = conf['pushoveruser'][user][1]
-        try:
-            pushover(
-                message=payload, 
-                user=userkey, token=appkey, 
-                **params)
-            logging.debug("Successfully sent notification")
-        except Exception, e:
-            logging.warn("Notification failed: %s" % str(e))
+    for t in targetlist:
+        # each target is "service:user"
+        service, target = t.split(':', 2)
+
+        if service == 'pushover':
+            notify_pushover(topic, payload, target)
+        elif service == 'smtp':
+            notify_smtp(topic, payload, target)
+
+    return
+
 
 def on_disconnect(mosq, userdata, result_code):
     """

@@ -13,30 +13,48 @@ lwt = 'lwt/mqtt2pushover'	# Where the MQTT LWT will be publied to. Ignore if Non
 # Pushover.net user/app keys. Each element defines an "application"
 # which is associated with one pushover.net userkey and one appkey.
 
-pushoveruser = {
+pushover_targets = {
     'nagios'     : ['userkey1', 'appkey1'],
     'alerts'     : ['userkey2', 'appkey2'],
     'tracking'   : ['userkey1', 'appkey2'],
     'extraphone' : ['userkey2', 'appkey3'],
 }
 
-# Maps MQTT topics to pushover 'applications'. For example, the `monitoring/icinga/#'
-# topic maps to the `nagios' application which in turn (see above), maps to
-# the `userkey1' and `appkey1' combinations. Any message published to 
-# `owntracks/jpm/xx' will be pushed to 'tracking' AND 'extraphone'
-# Topic wildcards (+ and #) are supported.
+smtp_config = {
+    'server'    : 'localhost:25',
+    'sender'    : "MQwhatsit <jpm@localhost>",
+    'username'  : None,
+    'password'  : None,
+    'starttls'  : False,
+}
 
-topicuser = {
-    'monitoring/icinga/#'   : ['nagios'],
-    'notification/warn'     : ['alerts'],
-    'owntracks/jpm/+'       : ['tracking', 'extraphone']
+# Mail (SMTP) recipients
+smtp_targets = {
+    'localj'    : [ 'jpm@localhost' ],
+    'special'   : [ 'ben@gmail', 'suzie@example.net' ],
+}
+
+# Maps MQTT topics to "targets" For example, the `monitoring/icinga/#'
+# topic maps to the `pushover:nagios' application which in turn (see above), maps to
+# the `userkey1' and `appkey1' combinations. Any message published to 
+# `owntracks/jpm/xx' will be pushed to 'pushover:tracking' AND 'smtp:localj'
+# Topic wildcards (+ and #) are supported.
+#
+# Used by: all services
+
+topicmap = {
+    'monitoring/icinga/#'   : ['pushover:nagios'],
+    'notification/warn'     : ['pushover:alerts'],
+    'owntracks/jpm/+'       : ['pushover:tracking', 'smtp:localj']
 }
 
 # MQTT topic -> notification title (default: None if not configured, meaning
-# the title is whatever is specified on the application page)
+# the title is whatever is specified for the appropriate service.
 # Topic wildcards (+ and #) are supported.
+#
+# Used by: pushover (title), smtp (subject)
 
-topictitle = {
+titlemap = {
     'monitoring/icinga/#'   : 'Info',
     'notification/warn'     : 'Warning',
     'notification/error'    : 'Error'
@@ -44,11 +62,13 @@ topictitle = {
 
 # MQTT topic -> notification priority (default: -1 if not configured here)
 # Topic wildcards (+ and #) are supported.
+#
+# Used by: pushover
 
-topicpriority = {
+prioritymap = {
     'notification/info'   : -1,
     'notification/warn'   : 0,
-    'notification/error'  : 1
+    'monitoring/icinga/#  : 1
 }
 
 
