@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from pushover import pushover     # https://github.com/pix0r/pushover
-
+import twitter                    # pip install python-twitter
 import urllib
 import urllib2
 
@@ -185,9 +185,35 @@ def notify_xbmc(topic, payload, target):
         response = urllib2.urlopen(req)
         logging.debug("Successfully sent XBMC notification")
     except urllib2.URLError, e:
-        logging.error("URLError sending %s to %s: %s" % (url, xbmchost, str(e)))
+        logging.error("URLError: %s" % (str(e)))
     except Exception, e:
-        logging.error("Error sending JSON request to %s: %s" % (xbmchost, str(e)))
+        logging.error("Error sending XBMC notification to %s: %s" % (xbmchost, str(e)))
+
+def notify_twitter(topic, payload, target):
+    ''' Send a tweet '''
+    logging.debug("TWITTER -> %s" % (target))
+
+    try:
+        twitter_keys = conf['twitter_targets'][target]
+    except:
+        logging.info("No Twitter keys configured for target `%s'" % (target))
+        return
+
+    twapi = twitter.Api(
+        consumer_key        = twitter_keys[0],
+        consumer_secret     = twitter_keys[1],
+        access_token_key    = twitter_keys[2],
+        access_token_secret = twitter_keys[3]
+    )
+
+    try:
+        logging.debug("Sending tweet to %s..." % (target))
+        res = twapi.PostUpdate(payload, trim_user=False)
+        logging.debug("Successfully sent tweet")
+    except twitter.TwitterError, e:
+        logging.error("TwitterError: %s" % (str(e)))
+    except Exception, e:
+        logging.error("Error sending tweet to %s: %s" % (target, str(e)))
 
 def connect():
     """
@@ -264,6 +290,11 @@ def on_message(mosq, userdata, msg):
                 elif service == 'smtp':
                     for sendto in get_targets(target, 'smtp_targets'):
                         notify_smtp(topic, payload, sendto)
+
+                # TWITTER
+                elif service == 'twitter':
+                    for sendto in get_targets(target, 'twitter_targets'):
+                        notify_twitter(topic, payload, sendto)
 
                 # XBMC
                 elif service == 'xbmc':
