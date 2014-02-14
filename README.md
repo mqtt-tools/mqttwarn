@@ -1,6 +1,25 @@
 # mqtt2pushover
 
-This program subscribes to any number of MQTT topics (including wildcards) and publishes received payloads to [pushover.net](https://pushover.net).
+mqttwarn
+mqttadvise
+mqttell
+
+
+This program subscribes to any number of MQTT topics (which may include wildcards) and publishes received payloads to one or more notification services, including support for notifying distinct services for the same message.
+
+For example, you may wish to notify via e-mail and to Pushover of an alarm published as text to the MQTT topic `home/monitoring/+`.
+
+Support for the following services is available:
+
+* Pushover.net
+* Twitter
+* SMTP (e-mail)
+* NMA
+* Prowl
+* XBMC
+* Mac OS X notification center
+
+Notifications are transmitted to the appropriate service via plugins which are easy to add.
 
 You associate topic branches to application keys (pushover terminology) in the configuration file (copy `mqtt2pushover.conf.sample` to `mqtt2pushover.conf` for use). 
 
@@ -13,10 +32,21 @@ The path to the configuration file (which must be valid Python) is obtained from
 
 ## Requirements
 
+You'll need at least the following components:
+
+* Python 2.x (tested with 2.6 and 2.7)
 * An MQTT broker (e.g. [Mosquitto](http://mosquitto.org))
-* A [pushover.net](https://pushover.net/) account
 * The Paho Python module: `pip install paho-mqtt`
-* `pushover.py` (included) from [https://github.com/pix0r/pushover](https://github.com/pix0r/pushover)
+
+Depending on the notification services you wish to use, you'll also require one
+or more of the following:
+
+* A [pushover.net](https://pushover.net/) account
+* A [Twitter](https://twitter.com) account with application keys
+* NMA FIXME
+* Prowl FIXME
+* XBMC FIXME
+* Mac OS X notification center: a Mac ;-) and code from FIXME
 
 ## Installation
 

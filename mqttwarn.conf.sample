@@ -10,8 +10,24 @@ username = None
 password = None
 lwt = 'lwt/mqtt2pushover'	# Where the MQTT LWT will be publied to. Ignore if None
 
+# List of services we will be using. Omit services you won't be using
+# This loads the respective service plugins from the services/ directory
+services = [ 'file', 'smtp', 'pushover' ]
+
+# Each service (for example, called SAMPLE) requires the definition of
+# two dicts:
+#	SAMPLE_config	contains configuration for the service
+#	SAMPLE_targets	defines the targets for each service
+
+file_config  = None	# This service requires no configuration
+file_targets = {
+    'f01'	: ['/tmp/f.01'],
+    'log-me'	: ['/tmp/log.me'],
+}
+
 # Pushover.net user/app keys. Each element defines an "application"
 # which is associated with one pushover.net userkey and one appkey.
+pushover_config  = None	# This service requires no configuration
 pushover_targets = {
     'nagios'     : ['userkey1', 'appkey1'],
     'alerts'     : ['userkey2', 'appkey2'],
@@ -20,25 +36,23 @@ pushover_targets = {
 }
 
 # Mail (SMTP) recipients
-smtp_targets = {
-    'localj'     : [ 'jpm@localhost' ],
-    'special'    : [ 'ben@gmail', 'suzie@example.net' ],
-}
-
-# XBMC hosts (<ipaddress>:<port>)
-xbmc_targets = {
-    'master'     : '192.168.1.40:8080',
-    'living'     : '192.168.1.41:80'
-}
-
-
-# SMTP specific config
 smtp_config = {
     'server'    : 'localhost:25',
     'sender'    : "MQwhatsit <jpm@localhost>",
     'username'  : None,
     'password'  : None,
     'starttls'  : False,
+}
+smtp_targets = {
+    'localj'     : [ 'jpm@localhost' ],
+    'special'    : [ 'ben@gmail', 'suzie@example.net' ],
+}
+
+# XBMC hosts (<ipaddress>:<port>)
+xmbc_config	= None
+xbmc_targets = {
+    'master'     : '192.168.1.40:8080',
+    'living'     : '192.168.1.41:80'
 }
 
 # Maps MQTT topics to "targets" For example, the `monitoring/icinga/#'
@@ -78,4 +92,17 @@ prioritymap = {
     'monitoring/icinga/#  : 1
 }
 
+# MQTT topic -> message formatting map. If a message for a particular
+# topic defined here is received, we use this format string to
+# transform the incoming payload into the outgoing "message". In addition,
+# we attempt to decode the incoming payload as JSON; if that is 
+# successful, the JSON keys are merged into other keys and may be used
+# for message formatting. ++NOTE++: if the message fmt string contains
+# formatting elements which aren't in the payload, formatting will fail
+# and the message is output as it arrived.
+# * all
+formatmap = {
+    'file/11' 			:  '-->{payload}<--\n',
+    'owntracks/jane/phone'	:  '{topic} == lat={lat}, lon={lon} desc={desc}\n',
+}
 

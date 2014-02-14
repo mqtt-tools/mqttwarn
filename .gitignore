@@ -1,5 +1,5 @@
 *.pyc
 .DS_Store
-mqtt2pushover.conf
+mqttwarn.conf
 *.log
 *.conf
