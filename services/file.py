@@ -12,16 +12,16 @@ def plugin(srv, item):
     priority = item.priority
     fmt      = item.fmt
     config   = item.config
+    message  = item.message     # possibly converted payload
 
     filename = addrs[0]
 
-    text = "%s\n" % payload
-    if fmt is not None:
-        try:
-            # text = fmt.format(**item).encode('utf-8')
-            text = fmt.format(**(item.enum()))
-        except:
-            text = "%s\n" % payload
+    text = message
+    if message is None:
+        text = payload
+
+    print "M=", message
+    print "P=", payload
 
     try:
         f = open(filename, "a")

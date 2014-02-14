@@ -62,6 +62,7 @@ class Service(object):
     def __init__(self, mqttc, logging):
         self.mqttc    = mqttc
         self.logging  = logging
+        self.SCRIPTNAME = SCRIPTNAME
 srv = Service(None, None)
 
 service_plugins = {}
@@ -72,6 +73,12 @@ class Struct:
         self.__dict__.update(entries)
     def __repr__(self):
         return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in self.__dict__.iteritems()))
+    def get(self, key, default=None):
+        if key in self.__dict__ and self.__dict__[key] is not None:
+            return self.__dict__[key]
+        else:
+            return default
+
     def enum(self):
         item = {}
         for (k, v) in self.__dict__.iteritems():
@@ -217,6 +224,7 @@ def processor():
             'targets'       : job.targets,
             'addrs'         : job.addresses,
             'fmt'           : get_messagefmt(job.topic),
+            'message'       : None,     # possibly transformed payload
         }
         item['title'] = get_title(job.topic)
         item['priority']    = get_priority(job.topic)
@@ -229,6 +237,18 @@ def processor():
             item = dict(data.items() + item.items())
         except:
             pass
+
+        # See if there is a formatter for this topic. If so, create an
+        # item containing the transformed payload. If that fails, use
+        # the original payload
+
+        text = "%s\n" % item.get('payload')
+        if item.get('fmt') is not None:
+            try:
+                text = item.get('fmt').format(**item).encode('utf-8')
+            except:
+                pass
+        item['message'] = text
 
         st = Struct(**item)
         try:
