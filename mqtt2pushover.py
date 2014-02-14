@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from pushover import pushover     # https://github.com/pix0r/pushover
+
+import urllib
+import urllib2
+
 import paho.mqtt.client as paho   # pip install paho-mqtt
 import logging
 import signal
@@ -157,6 +161,34 @@ def notify_smtp(topic, payload, target):
         logging.warn("Error sending notification to SMTP recipient %s [%s]: %s" % (target, smtp_addresses, str(e)))
         return
 
+def notify_xbmc(topic, payload, target):
+    ''' Notify an XBMC host '''
+    logging.debug("XBMC -> %s" % (target))
+
+    try:
+        xbmchost = conf['xbmc_targets'][target]
+    except:
+        logging.info("No XBMC host configured for target `%s'" % (target))
+        return
+
+    title = get_title(topic)
+    if title is None:
+        title = "%s notification" % (SCRIPTNAME)
+
+    command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s"},"id":1}' % (title, payload)
+    command = command.encode('utf-8')
+    url = 'http://%s/jsonrpc' % (xbmchost)
+    try:
+        logging.debug("Sending XBMC notification to %s [%s]..." % (target, xbmchost))
+        req = urllib2.Request(url, command)
+        req.add_header("Content-type", "application/json")
+        response = urllib2.urlopen(req)
+        logging.debug("Successfully sent XBMC notification")
+    except urllib2.URLError, e:
+        logging.error("URLError sending %s to %s: %s" % (url, xbmchost, str(e)))
+    except Exception, e:
+        logging.error("Error sending JSON request to %s: %s" % (xbmchost, str(e)))
+
 def connect():
     """
     Connect to the broker
@@ -232,6 +264,11 @@ def on_message(mosq, userdata, msg):
                 elif service == 'smtp':
                     for sendto in get_targets(target, 'smtp_targets'):
                         notify_smtp(topic, payload, sendto)
+
+                # XBMC
+                elif service == 'xbmc':
+                    for sendto in get_targets(target, 'xbmc_targets'):
+                        notify_xbmc(topic, payload, sendto)
 
                 else:
                     logging.warn("Unsupported service '%s' in target %s" % (service, t))

@@ -12,7 +12,6 @@ lwt = 'lwt/mqtt2pushover'	# Where the MQTT LWT will be publied to. Ignore if Non
 
 # Pushover.net user/app keys. Each element defines an "application"
 # which is associated with one pushover.net userkey and one appkey.
-
 pushover_targets = {
     'nagios'     : ['userkey1', 'appkey1'],
     'alerts'     : ['userkey2', 'appkey2'],
@@ -20,18 +19,26 @@ pushover_targets = {
     'extraphone' : ['userkey2', 'appkey3'],
 }
 
+# Mail (SMTP) recipients
+smtp_targets = {
+    'localj'     : [ 'jpm@localhost' ],
+    'special'    : [ 'ben@gmail', 'suzie@example.net' ],
+}
+
+# XBMC hosts (<ipaddress>:<port>)
+xbmc_targets = {
+    'master'     : '192.168.1.40:8080',
+    'living'     : '192.168.1.41:80'
+}
+
+
+# SMTP specific config
 smtp_config = {
     'server'    : 'localhost:25',
     'sender'    : "MQwhatsit <jpm@localhost>",
     'username'  : None,
     'password'  : None,
     'starttls'  : False,
-}
-
-# Mail (SMTP) recipients
-smtp_targets = {
-    'localj'    : [ 'jpm@localhost' ],
-    'special'   : [ 'ben@gmail', 'suzie@example.net' ],
 }
 
 # Maps MQTT topics to "targets" For example, the `monitoring/icinga/#'
