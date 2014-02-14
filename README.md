@@ -11,6 +11,7 @@ For example, you may wish to notify via e-mail and to Pushover of an alarm publi
 
 Support for the following services is available:
 
+* files (output to files on the file system)
 * Pushover.net
 * Twitter
 * SMTP (e-mail)

@@ -66,6 +66,18 @@ srv = Service(None, None)
 
 service_plugins = {}
 
+# http://stackoverflow.com/questions/1305532/
+class Struct:
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+    def __repr__(self):
+        return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in self.__dict__.iteritems()))
+    def enum(self):
+        item = {}
+        for (k, v) in self.__dict__.iteritems():
+            item[k] = v
+        return item
+
 # initialise MQTT broker connection
 mqttc = paho.Client(SCRIPTNAME, clean_session=False)
 
@@ -218,9 +230,10 @@ def processor():
         except:
             pass
 
+        st = Struct(**item)
         try:
             module = service_plugins[service]['module']
-            module.plugin(srv, item)
+            module.plugin(srv, st)
         except Exception, e:
             logging.error("Cannot invoke plugin for `%s': %s" % (service, str(e)))
 
