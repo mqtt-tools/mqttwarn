@@ -195,6 +195,23 @@ recipients get the message.
 
 ### `twitter`
 
+Notification of one or more [Twitter](http://twitter.com) accounts requires setting
+up an application at [apps.twitter.com](https://apps.twitter.com). For each Twitter
+account, you need four (4) bits which are named as shown below.
+
+Upon configuring this service's targets, make sure the four (4) elements of the
+list are in the order specified!
+
+```python
+twitter_config        = None                # This service requires no configuration
+twitter_targets = {
+  'janejol'   :  [ 'vvvvvvvvvvvvvvvvvvvvvv',                              # consumer_key
+                   'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # consumer_secret
+                   'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',  # access_token_key
+                   'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'           # access_token_secret
+                  ],
+}
+```
 
 ## Plugins
 
