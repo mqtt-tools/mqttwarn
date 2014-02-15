@@ -213,6 +213,8 @@ twitter_targets = {
 }
 ```
 
+![a tweet](assets/tweet.jpg)
+
 ## Plugins
 
 Creating new plugins is rather easy, and I recommend you take the `file` plugin
