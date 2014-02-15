@@ -10,7 +10,7 @@ import os
 
 def plugin(srv, item):
 
-    srv.logging.debug("*** MODULE=%s: targets=%s, addrs=%s", __file__, item.targets, item.addrs)
+    srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     text = item.get('message', item.payload)
     application_name = item.get('title', item.topic)

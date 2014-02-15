@@ -7,7 +7,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 def plugin(srv, item):
 
-    srv.logging.debug("*** MODULE=%s: targets=%s, addrs=%s", __file__, item.targets, item.addrs)
+    srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     topic    = item.topic
     payload  = item.payload
@@ -24,9 +24,6 @@ def plugin(srv, item):
     text = message
     if message is None:
         text = payload
-
-    print "M=", message
-    print "P=", payload
 
     try:
         f = open(filename, "a")

@@ -25,6 +25,17 @@ file_targets = {
     'log-me'        : ['/tmp/log.me'],
 }
 
+
+# Twitter
+twitter_config        = None                # This service requires no configuration
+twitter_targets = {
+  'janejol'   :  [ 'vvvvvvvvvvvvvvvvvvvvvv',                              # consumer_key
+                   'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # consumer_secret
+                   'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',  # access_token_key
+                   'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'           # access_token_secret
+                  ],
+}
+
 # Pushover.net user/app keys. Each element defines an "application"
 # which is associated with one pushover.net userkey and one appkey.
 
@@ -65,16 +76,17 @@ xbmc_targets = {
 
 # Maps MQTT topics to "targets" For example, the `monitoring/icinga/#'
 # topic maps to the `pushover:nagios' application which in turn (see above), maps to
-# the `userkey1' and `appkey1' combinations. Any message published to 
+# the `userkey1' and `appkey1' combinations. Any message published to
 # `owntracks/jpm/xx' will be pushed to 'pushover:tracking' AND 'smtp:localj'
 # Topic wildcards (+ and #) are supported.
 #
 # Used by: all services
 
 topicmap = {
-    'monitoring/icinga/#'   : ['pushover:nagios'],
-    'notification/warn'     : ['pushover:alerts'],
-    'owntracks/jpm/+'       : ['pushover:tracking', 'smtp:localj']
+    'monitoring/icinga/#'     : ['pushover:nagios'],
+    'notification/warn'       : ['pushover:alerts'],
+    'owntracks/jpm/+'         : ['pushover:tracking', 'smtp:localj'],
+    'home/monitoring/alert/+' : ['twitter:janejol', 'smtp:nagios', 'prowl:one'],
 }
 
 # MQTT topic -> notification title (default: None if not configured, meaning
@@ -103,7 +115,7 @@ prioritymap = {
 # MQTT topic -> message formatting map. If a message for a particular
 # topic defined here is received, we use this format string to
 # transform the incoming payload into the outgoing "message". In addition,
-# we attempt to decode the incoming payload as JSON; if that is 
+# we attempt to decode the incoming payload as JSON; if that is
 # successful, the JSON keys are merged into other keys and may be used
 # for message formatting. ++NOTE++: if the message fmt string contains
 # formatting elements which aren't in the payload, formatting will fail

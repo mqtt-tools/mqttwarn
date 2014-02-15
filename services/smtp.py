@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 
 def plugin(srv, item):
 
-    srv.logging.debug("*** MODULE=%s: targets=%s, addrs=%s", __file__, item.targets, item.addrs)
+    srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     targets  = item.targets
     config   = item.config

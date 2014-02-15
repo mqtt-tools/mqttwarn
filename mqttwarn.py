@@ -132,15 +132,16 @@ def get_messagefmt(topic):
     return fmt
 
 class Job(object):
-    def __init__(self, prio, service, topic, payload, targets, addresses):
+    def __init__(self, prio, service, target, topic, payload, targets, addresses):
         self.prio       = prio
         self.service    = service
+        self.target     = target
         self.topic      = topic
         self.payload    = payload
         self.targets    = targets
         self.addresses  = addresses
 
-        logging.debug("New `%s' job: %s" % (service, topic))
+        logging.debug("New `%s:%s' job: %s" % (service, target, topic))
         return
     def __cmp__(self, other):
         return cmp(self.prio, other.prio)
@@ -190,7 +191,7 @@ def on_message(mosq, userdata, msg):
 
                 for sendto in get_targets(target, service + '_targets'):
                     addresses = conf[service + '_targets'][target]
-                    job = Job(1, service, topic, payload, sendto, addresses)
+                    job = Job(1, service, target, topic, payload, sendto, addresses)
 
                     # Put the job on the queue
                     q_in.put(job)
@@ -218,11 +219,13 @@ def processor():
         job = q_in.get()
 
         service = job.service
+        target  = job.target
 
-        logging.debug("processor is handling: `%s' for %s" % (service, job.addresses))
+        logging.debug("processor is handling: `%s' for %s" % (service, target))
 
         item = {
             'service'       : service,
+            'target'        : job.target,
             'config'        : conf[service + '_config'],
             'topic'         : job.topic,
             'payload'       : job.payload,

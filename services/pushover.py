@@ -47,7 +47,7 @@ def plugin(srv, item):
     fmt      = item.fmt
     config   = item.config
 
-    srv.logging.debug("*** MODULE=%s: targets=%s, addrs=%s", __file__, targets, addrs)
+    srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     # addrs is an array with two elements:
     # 0 is the user key
