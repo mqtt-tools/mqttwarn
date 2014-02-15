@@ -11,6 +11,10 @@ def plugin(srv, item):
 
     config   = item.config
 
+
+# FIXME: remove next line
+    print item.data
+
     filename = item.addrs[0]
 
     text = item.get('message', item.payload)

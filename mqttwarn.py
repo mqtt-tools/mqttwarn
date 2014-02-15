@@ -131,6 +131,23 @@ def get_messagefmt(topic):
             break
     return fmt
 
+def get_topic_data(topic):
+    ''' Find out if there is a function in topicdatamap{} for
+        adding topic into data. If there is, invoke that
+        and return a dict of it '''
+    data = None
+    if 'topicdatamap' in conf:
+        for key in conf['topicdatamap'].keys():
+            if paho.topic_matches_sub(key, topic):
+                func = conf['topicdatamap'][key]
+                if hasattr(func, '__call__'):
+                    try:
+                        data = func(topic)
+                    except Exception, e:
+                        logging.warn("Cannot invoke func(%s): %s" % (topic, str(e)))
+                break
+    return data
+
 class Job(object):
     def __init__(self, prio, service, target, topic, payload, targets, addresses):
         self.prio       = prio
@@ -238,6 +255,10 @@ def processor():
         item['title'] = get_title(job.topic)
         item['priority']    = get_priority(job.topic)
 
+        transform_data = {}
+        topic_data = get_topic_data(job.topic)
+        if topic_data is not None and type(topic_data) == dict:
+            transform_data = dict(transform_data.items() + topic_data.items())
 
         # Attempt to decode the payload from JSON. If it's possible, add
         # the JSON keys into item to pass to the plugin, and create the
@@ -245,8 +266,8 @@ def processor():
 
         try:
             data = json.loads(job.payload)
-            # item = dict(data.items() + item.items())
-            item['data'] = dict(data.items())
+            transform_data = dict(transform_data.items() + data.items())
+            item['data'] = dict(transform_data.items())
 
             # See if there is a formatter for this topic. If so, create an
             # item containing the transformed payload. If that fails, use
@@ -255,7 +276,7 @@ def processor():
             text = "%s" % item.get('payload')
             if item.get('fmt') is not None:
                 try:
-                    text = item.get('fmt').format(**data).encode('utf-8')
+                    text = item.get('fmt').format(**transform_data).encode('utf-8')
                 except:
                     pass
             item['message'] = text
