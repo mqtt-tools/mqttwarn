@@ -33,7 +33,7 @@ Consider the following JSON payload published to the MQTT broker:
 mosquitto_pub -t 'osx/json' -m '{"fruit":"banana", "price": 63, "tst" : "1391779336"}'
 ```
 
-Using the `formatmap` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `formatmap` looks like this in the configuration file, and basically specified that messages published to `osx/json` should be transformed as on the right-hand side.
+Using the `formatmap` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `formatmap` looks like this in the configuration file, and basically specifies that messages published to `osx/json` should be transformed as on the right-hand side.
 
 ```python
 formatmap = {
@@ -300,14 +300,14 @@ The function we define to do that is:
 ```python
 def tdata(topic):
     if type(topic) == str:
-            try:
-                    # owntracks/username/device
-                    parts = topic.split('/')
-                    username = parts[1]
-                    deviceid = parts[2]
-            except:
-                    deviceid = 'unknown'
-                    username = 'unknown'
+        try:
+            # owntracks/username/device
+            parts = topic.split('/')
+            username = parts[1]
+            deviceid = parts[2]
+        except:
+            deviceid = 'unknown'
+            username = 'unknown'
             return dict(username=username, device=deviceid)
     return None
 ```

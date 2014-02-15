@@ -21,8 +21,3 @@ def plugin(srv, item):
         srv.logging.warning("Cannot invoke Notifier to osx: %s" % (str(e)))
 
     return  
-
-
-
-
-
