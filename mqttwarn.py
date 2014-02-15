@@ -252,7 +252,7 @@ def processor():
             # item containing the transformed payload. If that fails, use
             # the original payload
 
-            text = "%s\n" % item.get('payload')
+            text = "%s" % item.get('payload')
             if item.get('fmt') is not None:
                 try:
                     text = item.get('fmt').format(**data).encode('utf-8')

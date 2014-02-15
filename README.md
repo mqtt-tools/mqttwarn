@@ -116,6 +116,23 @@ exist in the original incoming payload.
 
 ### `osxnotify`
 
+### `prowl`
+
+This service is for [Prowl](http://www.prowlapp.com). Each target requires
+an application key and an application name.
+
+```python
+prowl_config = None             # This service requires no configuration
+prowl_targets = {
+                    # application key                           # app name
+    'pjpm'    :  [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'SuperAPP' ],
+}
+```
+
+![Prowl](assets/prowl.jpg)
+
+* Requires [prowlpy](https://github.com/jacobb/prowlpy)
+
 ### `pushover`
 
 ### `smtp`

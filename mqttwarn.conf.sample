@@ -19,7 +19,9 @@ services = [ 'file', 'smtp', 'pushover', 'osxnotify' ]
 #        SAMPLE_config        contains configuration for the service
 #        SAMPLE_targets        defines the targets for each service
 
-file_config  = None        # This service requires no configuration
+file_config  = {
+    'append_newline'   : True,
+}
 file_targets = {
     'f01'           : ['/tmp/f.01'],
     'log-me'        : ['/tmp/log.me'],
@@ -70,6 +72,13 @@ smtp_targets = {
     'special'    : [ 'ben@gmail', 'suzie@example.net' ],
 }
 
+# Prowl
+prowl_config = None             # This service requires no configuration
+prowl_targets = {
+                     # application key                           # app name
+    'pjpm'      :  [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'SuperAPP' ],
+}
+
 # OS X notification via terminal
 # The targets are used as application names
 osxnotify_config = None
@@ -103,7 +112,7 @@ topicmap = {
 # the title is whatever is specified for the appropriate service.
 # Topic wildcards (+ and #) are supported.
 #
-# Used by: pushover (title), smtp (subject)
+# Used by: pushover (title), smtp (subject), prowl
 
 titlemap = {
     'monitoring/icinga/#'   : 'Info',

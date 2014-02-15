@@ -9,21 +9,13 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    topic    = item.topic
-    payload  = item.payload
-    addrs    = item.addrs
-    targets  = item.targets
-    title    = item.title
-    priority = item.priority
-    fmt      = item.fmt
     config   = item.config
-    message  = item.message     # possibly converted payload
 
-    filename = addrs[0]
+    filename = item.addrs[0]
 
-    text = message
-    if message is None:
-        text = payload
+    text = item.get('message', item.payload)
+    if type(config) == dict and 'append_newline' in config:
+        text = text + "\n"
 
     try:
         f = open(filename, "a")

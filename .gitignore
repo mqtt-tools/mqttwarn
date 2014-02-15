@@ -3,3 +3,4 @@
 mqttwarn.conf
 *.log
 *.conf
+prowlpy.py
