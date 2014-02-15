@@ -148,6 +148,36 @@ item = {
 }
 ```
 
+## Advanced features
+
+### Using functions to replace incoming payloads
+
+Consider the following configuration snippet in addition to the configuration
+of the `mqtt` service shown above:
+
+```python
+def lookup_data(data):
+    if type(data) == dict and 'fruit' in data:
+            return "Ananas"
+    return None
+
+formatmap = {
+#   'in/a1'  :  u'Since when does a {fruit} cost {price}?',
+    'in/a1'  :  lookup_data,
+}
+```
+
+We've replaced the `formatmap` entry for the topic by a function which you
+define withing the `mqttwarn.conf` configuration file. These functions
+are invoked with decoded JSON `data` passed to them. They must return
+a string which replaces the outgoing `message`:
+
+```
+in/a1 {"fruit":"pineapple", "price": 131, "tst" : "1391779336"}
+out/food Ananas
+out/fruit/pineapple Ananas
+```
+
 
 ## Obligatory screenshot
 

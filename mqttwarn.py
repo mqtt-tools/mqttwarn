@@ -238,6 +238,7 @@ def processor():
         item['title'] = get_title(job.topic)
         item['priority']    = get_priority(job.topic)
 
+
         # Attempt to decode the payload from JSON. If it's possible, add
         # the JSON keys into item to pass to the plugin, and create the
         # outgoing (i.e. transformed) message.
@@ -260,6 +261,16 @@ def processor():
             item['message'] = text
         except:
             pass
+
+        # If the formatmap for this topic has a function in it,
+        # invoke that, pass data and replace message with its output
+        if hasattr(item['fmt'], '__call__'):
+            func = item['fmt']
+            try:
+                item['message'] = func(item['data'])
+            except Exception, e:
+                logging.debug("Cannot invoke %s(): %s" % (func, str(e)))
+
 
         st = Struct(**item)
         try:
