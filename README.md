@@ -54,6 +54,35 @@ You associate MQTT topic branches to applications in the configuration file (cop
 See details in the config sample for how to configure this script.
 The path to the configuration file (which must be valid Python) is obtained from the `MQTTWARNCONF` environment variable which defaults to `mqttwarn.conf` in the current directory.
 
+
+## Configuration of service plugins
+
+Service plugins are configured in the main `mqttwarn.conf` file. Each service has two mandatory _dict_s:
+
+* `service_config` defines things like connection settings for a service, even though many don't need that. Even so, the _dict_ must be defined (e.g. to `None`).
+* `service_targets` defines the notification "targets" we use to associate an incoming MQTT topic with the output (i.e. notificiation) to a service.
+
+We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
+
+### `file`
+
+### `mqtt`
+
+The `mqtt` service fires off a publish on a topic. Note that it creates a new connection to the configured broker for each message.
+
+### `osxnotify`
+
+### `pushover`
+
+### `smtp`
+
+### `twitter`
+
+
+## Plugins
+
+
+
 ## Obligatory screenshot
 
 ![pushover on iOS](assets/screenshot.png)
