@@ -232,31 +232,34 @@ def processor():
             'targets'       : job.targets,
             'addrs'         : job.addresses,
             'fmt'           : get_messagefmt(job.topic),
+            'data'          : None,
             'message'       : None,     # possibly transformed payload
         }
         item['title'] = get_title(job.topic)
         item['priority']    = get_priority(job.topic)
 
-        # Attempt to decode the payload from JSON. If it's possible, merge
-        # the JSON keys into item to pass to the plugin
+        # Attempt to decode the payload from JSON. If it's possible, add
+        # the JSON keys into item to pass to the plugin, and create the
+        # outgoing (i.e. transformed) message.
 
         try:
             data = json.loads(job.payload)
-            item = dict(data.items() + item.items())
+            # item = dict(data.items() + item.items())
+            item['data'] = dict(data.items())
+
+            # See if there is a formatter for this topic. If so, create an
+            # item containing the transformed payload. If that fails, use
+            # the original payload
+
+            text = "%s\n" % item.get('payload')
+            if item.get('fmt') is not None:
+                try:
+                    text = item.get('fmt').format(**data).encode('utf-8')
+                except:
+                    pass
+            item['message'] = text
         except:
             pass
-
-        # See if there is a formatter for this topic. If so, create an
-        # item containing the transformed payload. If that fails, use
-        # the original payload
-
-        text = "%s\n" % item.get('payload')
-        if item.get('fmt') is not None:
-            try:
-                text = item.get('fmt').format(**item).encode('utf-8')
-            except:
-                pass
-        item['message'] = text
 
         st = Struct(**item)
         try:

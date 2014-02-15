@@ -18,8 +18,18 @@ def plugin(srv, item):
     qos         = int(config.get('qos', 0))
     retain      = int(config.get('retain', 0))
 
-    # TODO: allow variable interpolations into topic
     outgoing_topic =  item.addrs[0]
+
+    # Attempt to interpolate data into topic name. If it isn't possible
+    # ignore, and return without publish
+
+    if item.data is not None:
+        try:
+            outgoing_topic =  item.addrs[0].format(**item.data).encode('utf-8')
+        except:
+            srv.logging.debug("Outgoing topic cannot be formatted; not published")
+            return
+
     outgoing_payload = item.get('message', item.payload)
 
     try:
@@ -31,4 +41,4 @@ def plugin(srv, item):
     except Exception, e:
         srv.logging.warning("Cannot PUBlish via `mqtt:%s': %s" % (item.target, str(e)))
 
-    return  
+    return
