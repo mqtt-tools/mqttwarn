@@ -66,6 +66,22 @@ We term the array for each target an "address list" for the particular service. 
 
 ### `file`
 
+The `file` service can be used for logging incoming topics, archiving, etc. Each message is written to a path specified in the targets list. Note that files are opened for appending and then closed on each notification.
+
+Supposing we wish to archive all incoming messages to the branch `arch/#` to a file `/data/arch`, we could configure the following:
+
+```python
+file_config  = {
+    'append_newline'   : True,
+}
+file_targets = {
+    'log-me'    : ['/data/arch'],
+}
+topicmap = {
+        'arch/#'   : ['file:log-me'],
+}
+```
+
 ### `mqtt`
 
 The `mqtt` service fires off a publish on a topic, creating a new connection to the configured broker for each message.
