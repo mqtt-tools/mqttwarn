@@ -182,7 +182,12 @@ def on_message(mosq, userdata, msg):
                     return
 
                 # FIXME: service (without :xxx) doesn't work
-                addresses = conf[service + '_targets'][target]
+                try:
+                    addresses = conf[service + '_targets'][target]
+                except:
+                    logging.error("Invalid configuration for service `%s'" % (service))
+                    return
+
                 for sendto in get_targets(target, service + '_targets'):
                     addresses = conf[service + '_targets'][target]
                     job = Job(1, service, topic, payload, sendto, addresses)

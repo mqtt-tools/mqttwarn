@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # The code for pushover() between cuts was written by Mike Matz and
 # gracefully swiped from https://github.com/pix0r/pushover
@@ -30,6 +31,10 @@ def pushover(**kwargs):
 
     if data['status'] != 1:
         raise PushoverError(output)
+
+__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
+__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 def plugin(srv, item):
 
