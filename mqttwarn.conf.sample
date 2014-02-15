@@ -25,6 +25,16 @@ file_targets = {
     'log-me'        : ['/tmp/log.me'],
 }
 
+# Outgoing MQTT publishes
+mqtt_config = {
+    'host'       : 'localhost',
+    'port'       : 1883,
+    'qos'        : 0,
+    'retain'     : False,
+}
+mqtt_targets = {
+    'alerts'    : [ 'test/this1' ],
+}
 
 # Twitter
 twitter_config        = None                # This service requires no configuration
