@@ -179,7 +179,7 @@ configuration.
 ```python
 smtp_config = {
     'server'    : 'localhost:25',
-    'sender'    : "MQwhatsit <jpm@localhost>",
+    'sender'    : "MQTTwarn <jpm@localhost>",
     'username'  : None,
     'password'  : None,
     'starttls'  : False,
