@@ -32,7 +32,7 @@ Consider the following JSON payload published to the MQTT broker:
 mosquitto_pub -t 'osx/json' -m '{"fruit":"banana", "price": 63, "tst" : "1391779336"}'
 ```
 
-Using the `formatmap` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `formatmap` looks like this in the configuration file:
+Using the `formatmap` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `formatmap` looks like this in the configuration file, and basically specified that messages published to `osx/json` should be transformed as on the right-hand side.
 
 ```python
 formatmap = {

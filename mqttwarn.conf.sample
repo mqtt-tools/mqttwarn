@@ -8,26 +8,27 @@ broker = 'localhost'
 port = 1883
 username = None
 password = None
-lwt = 'lwt/mqtt2pushover'	# Where the MQTT LWT will be publied to. Ignore if None
+lwt = 'lwt/mqtt2pushover'        # Where the MQTT LWT will be publied to. Ignore if None
 
 # List of services we will be using. Omit services you won't be using
 # This loads the respective service plugins from the services/ directory
-services = [ 'file', 'smtp', 'pushover' ]
+services = [ 'file', 'smtp', 'pushover', 'osxnotify' ]
 
 # Each service (for example, called SAMPLE) requires the definition of
 # two dicts:
-#	SAMPLE_config	contains configuration for the service
-#	SAMPLE_targets	defines the targets for each service
+#        SAMPLE_config        contains configuration for the service
+#        SAMPLE_targets        defines the targets for each service
 
-file_config  = None	# This service requires no configuration
+file_config  = None        # This service requires no configuration
 file_targets = {
-    'f01'	: ['/tmp/f.01'],
-    'log-me'	: ['/tmp/log.me'],
+    'f01'           : ['/tmp/f.01'],
+    'log-me'        : ['/tmp/log.me'],
 }
 
 # Pushover.net user/app keys. Each element defines an "application"
 # which is associated with one pushover.net userkey and one appkey.
-pushover_config  = None	# This service requires no configuration
+
+pushover_config  = None    # This service requires no configuration
 pushover_targets = {
     'nagios'     : ['userkey1', 'appkey1'],
     'alerts'     : ['userkey2', 'appkey2'],
@@ -48,8 +49,15 @@ smtp_targets = {
     'special'    : [ 'ben@gmail', 'suzie@example.net' ],
 }
 
+# OS X notification via terminal
+# The targets are used as application names
+osxnotify_config = None
+osxnotify_targets = {
+    'shell' :                 [ None ],
+    }
+
 # XBMC hosts (<ipaddress>:<port>)
-xmbc_config	= None
+xmbc_config        = None
 xbmc_targets = {
     'master'     : '192.168.1.40:8080',
     'living'     : '192.168.1.41:80'
@@ -87,9 +95,9 @@ titlemap = {
 # Used by: pushover
 
 prioritymap = {
-    'notification/info'   : -1,
-    'notification/warn'   : 0,
-    'monitoring/icinga/#  : 1
+    'notification/info'    : -1,
+    'notification/warn'    : 0,
+    'monitoring/icinga/#'  : 1
 }
 
 # MQTT topic -> message formatting map. If a message for a particular
@@ -102,7 +110,8 @@ prioritymap = {
 # and the message is output as it arrived.
 # * all
 formatmap = {
-    'file/11' 			:  '-->{payload}<--\n',
-    'owntracks/jane/phone'	:  '{topic} == lat={lat}, lon={lon} desc={desc}\n',
+    'file/11'                 :  '-->{payload}<--\n',
+    'owntracks/jane/phone'    :  '{topic} == lat={lat}, lon={lon} desc={desc}\n',
+    'osx/json'                :  "I'll have a {fruit} if it costs {price}",
 }
 
