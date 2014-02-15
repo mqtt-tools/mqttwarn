@@ -173,6 +173,26 @@ notify, say, one or more of your devices as well as one for your spouse.
 
 ### `smtp`
 
+The `smtp` service basically implements an MQTT to SMTP gateway which needs
+configuration.
+
+```python
+smtp_config = {
+    'server'    : 'localhost:25',
+    'sender'    : "MQwhatsit <jpm@localhost>",
+    'username'  : None,
+    'password'  : None,
+    'starttls'  : False,
+}
+smtp_targets = {
+    'localj'     : [ 'jpm@localhost' ],
+    'special'    : [ 'ben@gmail', 'suzie@example.net' ],
+}
+```
+
+Targets may contain more than one recipient, in which case all specified 
+recipients get the message.
+
 ### `twitter`
 
 
