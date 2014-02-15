@@ -125,6 +125,28 @@ exist in the original incoming payload.
 
 ## Plugins
 
+Creating new plugins is rather easy, and I recommend you take the `file` plugin
+and start from that.
+
+Plugins are invoked with two arguments (`srv` and `item`). `srv` is an object
+with some helper functions, and `item` a dict which contains information on the message
+which is to be handled by the plugin. `item` contains the following elements:
+
+```python
+item = {
+    'service'       : 'string',       # name of handling service (`twitter`, `file`, ..)
+    'target'        : 'string',       # name of target (`o1`, `janejol`) in service
+    'config'        : dict,           # None or dict from SERVICE_config {}
+    'topic'         : 'string',       # incoming topic branch name
+    'payload'       : <payload>       # incoming payload
+    'addrs'         : <list>,         # list of addresses from SERVICE_targets
+    'fmt'           : None,           # possible format string from formatmap{}
+    'data'          : None,           # possible dict if JSON parsed in payload
+    'message'       : None,           # possibly transformed payload
+    'title'         : None,           # possible title from titlemap{}
+    'priority'      : None,           # possible priority from prioritymap{}
+}
+```
 
 
 ## Obligatory screenshot
