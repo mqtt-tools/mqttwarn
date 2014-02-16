@@ -55,6 +55,7 @@ logging.debug("DEBUG MODE")
 
 q_in = Queue.Queue(maxsize=0)
 num_workers = 1
+exit_flag = False
 
 # Class with helper functions which is passed to each plugin
 # and its global instantiation
@@ -247,8 +248,8 @@ def processor():
     of handling the service, and invoke the module's plugin to do so.
     """
 
-    while True:
-        job = q_in.get()
+    while not exit_flag:
+        job = q_in.get(15)
 
         service = job.service
         target  = job.target
@@ -316,6 +317,8 @@ def processor():
             logging.error("Cannot invoke plugin for `%s': %s" % (service, str(e)))
 
         q_in.task_done()
+
+    logging.debug("Thread exiting...")
 
 # http://code.davidjanes.com/blog/2008/11/27/how-to-dynamically-load-python-code/
 def load_module(path):
@@ -400,6 +403,11 @@ def cleanup(signum, frame):
     Signal handler to ensure we disconnect cleanly
     in the event of a SIGTERM or SIGINT.
     """
+
+    global exit_flag
+
+    exit_flag = True
+
     logging.debug("Disconnecting from MQTT broker...")
     mqttc.loop_stop()
     mqttc.disconnect()
