@@ -47,7 +47,7 @@ MQTT_HOST = conf.get('broker', 'localhost')
 MQTT_PORT = int(conf.get('port', 1883))
 MQTT_LWT = conf.get('lwt', None)
 
-# initialise logging    
+# initialise logging
 logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
 logging.info("Starting %s" % SCRIPTNAME)
 logging.info("INFO MODE")
@@ -180,7 +180,9 @@ def on_message(mosq, userdata, msg):
     Message received from the broker
     """
 
-    # FIXME: skip retained messages
+    if msg.retain == 1:
+        logging.debug("Skipping retained %s" % msg.topic)
+        return
 
     topic = msg.topic
     payload = str(msg.payload)
@@ -354,7 +356,7 @@ def connect():
 
     srv.qttc = mqttc
     srv.logging = logging
-    
+
     logging.debug("Attempting connection to MQTT broker %s:%d..." % (MQTT_HOST, MQTT_PORT))
     mqttc.on_connect = on_connect
     mqttc.on_message = on_message
@@ -392,10 +394,10 @@ def connect():
         except:
             # FIXME: add logging with trace
             raise
-         
+
 def cleanup(signum, frame):
     """
-    Signal handler to ensure we disconnect cleanly 
+    Signal handler to ensure we disconnect cleanly
     in the event of a SIGTERM or SIGINT.
     """
     logging.debug("Disconnecting from MQTT broker...")
@@ -411,6 +413,6 @@ if __name__ == '__main__':
     # use the signal module to handle signals
     signal.signal(signal.SIGTERM, cleanup)
     signal.signal(signal.SIGINT, cleanup)
-        
+
     # connect to broker and start listening
     connect()
