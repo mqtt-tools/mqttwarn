@@ -109,6 +109,7 @@ def get_title(topic):
     for key in conf['titlemap'].keys():
         if paho.topic_matches_sub(key, topic):
             title = conf['titlemap'][key]
+            logging.debug("Found title '%s' for topic %s" % (title, topic))
             break
     return title
 
@@ -119,6 +120,7 @@ def get_priority(topic):
     for key in conf['prioritymap'].keys():
         if paho.topic_matches_sub(key, topic):
             priority = conf['prioritymap'][key]
+            logging.debug("Found priority '%d' for topic %s" % (priority, topic))
             break
     return priority
 
@@ -128,6 +130,7 @@ def get_messagefmt(topic):
     for key in conf['formatmap'].keys():
         if paho.topic_matches_sub(key, topic):
             fmt = conf['formatmap'][key]
+            logging.debug("Found format string '%s' for topic %s" % (fmt, topic))
             break
     return fmt
 
@@ -149,14 +152,12 @@ def get_topic_data(topic):
     return data
 
 class Job(object):
-    def __init__(self, prio, service, target, topic, payload, targets, addresses):
+    def __init__(self, prio, service, topic, payload, target):
         self.prio       = prio
         self.service    = service
-        self.target     = target
         self.topic      = topic
         self.payload    = payload
-        self.targets    = targets
-        self.addresses  = addresses
+        self.target     = target
 
         logging.debug("New `%s:%s' job: %s" % (service, target, topic))
         return
@@ -199,16 +200,8 @@ def on_message(mosq, userdata, msg):
                     logging.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
                     return
 
-                # FIXME: service (without :xxx) doesn't work
-                try:
-                    addresses = conf[service + '_targets'][target]
-                except:
-                    logging.error("Invalid configuration for service `%s'" % (service))
-                    return
-
                 for sendto in get_targets(target, service + '_targets'):
-                    addresses = conf[service + '_targets'][target]
-                    job = Job(1, service, target, topic, payload, sendto, addresses)
+                    job = Job(1, service, topic, payload, sendto)
 
                     # Put the job on the queue
                     q_in.put(job)
@@ -242,17 +235,16 @@ def processor():
 
         item = {
             'service'       : service,
-            'target'        : job.target,
+            'target'        : target,
             'config'        : conf[service + '_config'],
+            'addrs'         : conf[service + '_targets'][target],
             'topic'         : job.topic,
             'payload'       : job.payload,
-            'targets'       : job.targets,
-            'addrs'         : job.addresses,
             'fmt'           : get_messagefmt(job.topic),
             'data'          : None,
-            'message'       : None,     # possibly transformed payload
+            'message'       : job.payload     # might get replaced with a formatted payload
         }
-        item['title'] = get_title(job.topic)
+        item['title']       = get_title(job.topic)
         item['priority']    = get_priority(job.topic)
 
         transform_data = {}
@@ -277,7 +269,9 @@ def processor():
             if item.get('fmt') is not None:
                 try:
                     text = item.get('fmt').format(**transform_data).encode('utf-8')
-                except:
+                    logging.debug("Message formmating successful: %s" % text)
+                except Exception, e:
+                    logging.debug("Message formatting failed: %s" % (str(e)))
                     pass
             item['message'] = text
         except:
@@ -291,7 +285,6 @@ def processor():
                 item['message'] = func(item['data'])
             except Exception, e:
                 logging.debug("Cannot invoke %s(): %s" % (func, str(e)))
-
 
         st = Struct(**item)
         try:

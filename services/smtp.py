@@ -12,16 +12,13 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    targets  = item.targets
-    config   = item.config
-
     smtp_addresses = item.addrs
 
-    server      = config['server']
-    sender      = config['sender']
-    starttls    = config['starttls']
-    username    = config['username']
-    password    = config['password']
+    server      = item.config['server']
+    sender      = item.config['sender']
+    starttls    = item.config['starttls']
+    username    = item.config['username']
+    password    = item.config['password']
 
     msg = MIMEText(item.get('message', item.payload))
     msg['Subject']      = item.get('title', "%s notification" % (srv.SCRIPTNAME))
@@ -29,7 +26,7 @@ def plugin(srv, item):
     msg['X-Mailer']     = srv.SCRIPTNAME
 
     try:
-        srv.logging.debug("Sending SMTP notification to %s [%s]..." % (targets, smtp_addresses))
+        srv.logging.debug("Sending SMTP notification to %s [%s]..." % (item.target, smtp_addresses))
         server = smtplib.SMTP(server)
         server.set_debuglevel(0)
         server.ehlo()
@@ -41,7 +38,7 @@ def plugin(srv, item):
         server.quit()
         srv.logging.debug("Successfully sent SMTP notification")
     except Exception, e:
-        srv.logging.warn("Error sending notification to SMTP recipient %s [%s]: %s" % (targets, smtp_addresses, str(e)))
+        srv.logging.warn("Error sending notification to SMTP recipient %s [%s]: %s" % (item.target, smtp_addresses, str(e)))
         return
 
     return  

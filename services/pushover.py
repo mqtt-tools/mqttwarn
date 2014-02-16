@@ -39,9 +39,8 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 def plugin(srv, item):
 
     topic    = item.topic
-    payload  = item.payload
+    message  = item.message
     addrs    = item.addrs
-    targets  = item.targets
     title    = item.title
     priority = item.priority
     fmt      = item.fmt
@@ -57,7 +56,7 @@ def plugin(srv, item):
         userkey = addrs[0]
         appkey  = addrs[1]
     except:
-        srv.logging.warn("No pushover userkey/appkey configured for target `%s'" % (targets))
+        srv.logging.warn("No pushover userkey/appkey configured for target `%s'" % (item.target))
         return
 
     params = {
@@ -71,12 +70,11 @@ def plugin(srv, item):
     if priority is not None:
         params['priority'] = priority
 
-
     try:
-        srv.logging.debug("Sending pushover notification to %s [%s]..." % (targets, params))
-        pushover(message=payload, user=userkey, token=appkey, **params)
+        srv.logging.debug("Sending pushover notification to %s [%s]..." % (item.target, params))
+        pushover(message=message, user=userkey, token=appkey, **params)
         srv.logging.debug("Successfully sent pushover notification")
     except Exception, e:
-        srv.logging.warn("Error sending pushover notification to %s [%s]: %s" % (targets, params, str(e)))
+        srv.logging.warn("Error sending pushover notification to %s [%s]: %s" % (item.target, params, str(e)))
 
     return  
