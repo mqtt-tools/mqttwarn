@@ -321,7 +321,7 @@ def tdata(topic):
         except:
             deviceid = 'unknown'
             username = 'unknown'
-            return dict(username=username, device=deviceid)
+        return dict(username=username, device=deviceid)
     return None
 ```
 
