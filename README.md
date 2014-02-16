@@ -215,6 +215,19 @@ twitter_targets = {
 
 ![a tweet](assets/tweet.jpg)
 
+### `xbmc`
+
+This service allows for on-screen notification popups on [XBMC](http://xbmc.org/) instances. Each target requires
+the address and port of the XBMC instance (<hostname>:<port>).
+
+```python
+xbmc_config = None             # This service requires no configuration
+xbmc_targets = {
+    'living_room'    :  '192.168.1.40:8080',
+    'bedroom'        :  '192.168.1.41:8080'
+}
+```
+
 ## Plugins
 
 Creating new plugins is rather easy, and I recommend you take the `file` plugin
