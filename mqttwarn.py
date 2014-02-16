@@ -109,7 +109,6 @@ def get_title(topic):
     for key in conf['titlemap'].keys():
         if paho.topic_matches_sub(key, topic):
             title = conf['titlemap'][key]
-            logging.debug("Found title '%s' for topic %s" % (title, topic))
             break
     return title
 
@@ -120,7 +119,6 @@ def get_priority(topic):
     for key in conf['prioritymap'].keys():
         if paho.topic_matches_sub(key, topic):
             priority = conf['prioritymap'][key]
-            logging.debug("Found priority '%d' for topic %s" % (priority, topic))
             break
     return priority
 
@@ -130,7 +128,6 @@ def get_messagefmt(topic):
     for key in conf['formatmap'].keys():
         if paho.topic_matches_sub(key, topic):
             fmt = conf['formatmap'][key]
-            logging.debug("Found format string '%s' for topic %s" % (fmt, topic))
             break
     return fmt
 

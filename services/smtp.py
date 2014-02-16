@@ -20,7 +20,7 @@ def plugin(srv, item):
     username    = item.config['username']
     password    = item.config['password']
 
-    msg = MIMEText(item.get('message', item.payload))
+    msg = MIMEText(item.message)
     msg['Subject']      = item.get('title', "%s notification" % (srv.SCRIPTNAME))
     msg['From']         = sender
     msg['X-Mailer']     = srv.SCRIPTNAME

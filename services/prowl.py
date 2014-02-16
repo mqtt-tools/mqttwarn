@@ -15,7 +15,7 @@ def plugin(srv, item):
     application = item.addrs[1]
 
     title = item.get('title', srv.SCRIPTNAME)
-    text = item.get('message', item.payload)
+    text = item.message
     priority = item.get('priority', 0)
 
     try:

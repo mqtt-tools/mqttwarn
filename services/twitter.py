@@ -20,8 +20,7 @@ def plugin(srv, item):
         access_token_secret = twitter_keys[3]
     )
 
-    text = item.get('message', item.payload)
-    text = text[0:138]
+    text = item.message[0:138]
     try:
         srv.logging.debug("Sending tweet to %s..." % (item.target))
         res = twapi.PostUpdate(text, trim_user=False)

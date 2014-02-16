@@ -19,7 +19,7 @@ def plugin(srv, item):
 
     # If the incoming payload has been transformed, use that,
     # else the original payload
-    text = item.get('message', item.payload)
+    text = item.message
 
     if type(config) == dict and 'append_newline' in config:
         text = text + "\n"

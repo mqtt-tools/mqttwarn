@@ -30,7 +30,7 @@ def plugin(srv, item):
             srv.logging.debug("Outgoing topic cannot be formatted; not published")
             return
 
-    outgoing_payload = item.get('message', item.payload)
+    outgoing_payload = item.message
 
     try:
         mqtt.single(outgoing_topic, outgoing_payload,

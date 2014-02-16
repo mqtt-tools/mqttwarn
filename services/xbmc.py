@@ -13,10 +13,10 @@ def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     xbmchost = item.addrs
-    payload  = item.payload
     title    = item.title
+    message  = item.message
 
-    command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s"},"id":1}' % (title, payload)
+    command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s"},"id":1}' % (title, message)
     command = command.encode('utf-8')
     url = 'http://%s/jsonrpc' % (xbmchost)
     try:

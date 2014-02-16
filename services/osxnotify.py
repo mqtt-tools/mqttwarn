@@ -12,7 +12,7 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    text = item.get('message', item.payload)
+    text = item.message
     application_name = item.get('title', item.topic)
 
     try:
