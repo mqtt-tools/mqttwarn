@@ -230,11 +230,11 @@ item = {
     'target'        : 'string',       # name of target (`o1`, `janejol`) in service
     'config'        : dict,           # None or dict from SERVICE_config {}
     'topic'         : 'string',       # incoming topic branch name
-    'payload'       : <payload>       # incoming payload
+    'payload'       : <payload>       # raw message payload
+    'message'       : 'string',       # formatted message (if no format string then = payload)
     'addrs'         : <list>,         # list of addresses from SERVICE_targets
     'fmt'           : None,           # possible format string from formatmap{}
     'data'          : None,           # possible dict if JSON parsed in payload
-    'message'       : None,           # possibly transformed payload
     'title'         : None,           # possible title from titlemap{}
     'priority'      : None,           # possible priority from prioritymap{}
 }
@@ -338,7 +338,7 @@ filtermap = {
 }
 ```
 
-This specifies that when a message for the defined topic `owntracks/jane/phone` is processed, our function `owntracks_filter()` should be invoked to parse that. The filter function should return `True` if the message should be suppressed, or `False` otherwise. (As usual, topic names may contain MQTT wildcards.)
+This specifies that when a message for the defined topic `owntracks/jane/phone` is processed, our function `owntracks_filter()` should be invoked to parse that. The filter function should return `True` if the message should be suppressed, or `False` if the message should be processed. (As usual, topic names may contain MQTT wildcards.)
 
 The function we define to do that is:
 
