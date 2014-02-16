@@ -106,30 +106,43 @@ def get_title(topic):
     ''' Find the "title" (for pushover) or "subject" (for smtp)
         from the topic. '''
     title = None
-    for key in conf['titlemap'].keys():
-        if paho.topic_matches_sub(key, topic):
-            title = conf['titlemap'][key]
-            break
+    if 'titlemap' in conf:
+        for key in conf['titlemap'].keys():
+            if paho.topic_matches_sub(key, topic):
+                title = conf['titlemap'][key]
+                break
     return title
 
 def get_priority(topic):
     ''' Find the "priority" (for pushover)
         from the topic. '''
     priority = None
-    for key in conf['prioritymap'].keys():
-        if paho.topic_matches_sub(key, topic):
-            priority = conf['prioritymap'][key]
-            break
+    if 'prioritymap' in conf:
+        for key in conf['prioritymap'].keys():
+            if paho.topic_matches_sub(key, topic):
+                priority = conf['prioritymap'][key]
+                break
     return priority
 
 def get_messagefmt(topic):
     ''' Find the message format from the topic '''
     fmt = None
-    for key in conf['formatmap'].keys():
-        if paho.topic_matches_sub(key, topic):
-            fmt = conf['formatmap'][key]
-            break
+    if 'formatmap' in conf:
+        for key in conf['formatmap'].keys():
+            if paho.topic_matches_sub(key, topic):
+                fmt = conf['formatmap'][key]
+                break
     return fmt
+
+def get_messagefilter(topic):
+    ''' Find the message filter from the topic '''
+    filter = None
+    if 'filtermap' in conf:
+        for key in conf['filtermap'].keys():
+            if paho.topic_matches_sub(key, topic):
+                filter = conf['filtermap'][key]
+                break
+    return filter
 
 def get_topic_data(topic):
     ''' Find out if there is a function in topicdatamap{} for
@@ -172,6 +185,16 @@ def on_message(mosq, userdata, msg):
     topic = msg.topic
     payload = str(msg.payload)
     logging.debug("Message received on %s: %s" % (topic, payload))
+
+    # Check for any message filters
+    filter = get_messagefilter(topic)
+    if hasattr(filter, '__call__'):
+        try:
+            if filter(topic, payload):
+                logging.debug("Message on %s has been filtered. Skipping." % (topic))
+                return
+        except Exception, e:
+            logging.warn("Cannot invoke filter(%s): %s" % (topic, str(e)))
 
     # Try to find matching settings for this topic
     for key in conf['topicmap'].keys():
