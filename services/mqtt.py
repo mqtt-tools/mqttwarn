@@ -17,6 +17,16 @@ def plugin(srv, item):
     port        = int(config.get('port', '1883'))
     qos         = int(config.get('qos', 0))
     retain      = int(config.get('retain', 0))
+    username    = config.get('username', None)
+    password    = config.get('password', None)
+
+    auth = None
+
+    if username is not None:
+        auth = {
+            'username' : username,
+            'password' : password
+        }
 
     outgoing_topic =  item.addrs[0]
 
@@ -37,7 +47,8 @@ def plugin(srv, item):
             qos=qos,
             retain=retain,
             hostname=hostname,
-            port=port)
+            port=port,
+            auth=auth)
     except Exception, e:
         srv.logging.warning("Cannot PUBlish via `mqtt:%s': %s" % (item.target, str(e)))
 

@@ -33,6 +33,8 @@ mqtt_config = {
     'port'       : 1883,
     'qos'        : 0,
     'retain'     : False,
+#    'username'	 : "jane",
+#    'password'   : "secret",
 }
 mqtt_targets = {
     'alerts'    : [ 'test/this1' ],
