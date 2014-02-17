@@ -20,7 +20,7 @@ Support for the following services is available:
 * XBMC
 * Mac OS X notification center
 
-![definition by Google](assets/mqttwarn.jpg)
+![definition by Google](assets/mqttwarn.png)
 
 Notifications are transmitted to the appropriate service via plugins. We provide plugins for the above list of services, and you can easily add your own.
 
