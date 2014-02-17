@@ -149,6 +149,9 @@ mqttpub_targets = {
 
 ### `osxnotify`
 
+* Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
+
+
 ### `prowl`
 
 This service is for [Prowl](http://www.prowlapp.com). Each target requires
@@ -187,6 +190,8 @@ configured _user key_ and _app key_ combinations. This in turn enables you to
 notify, say, one or more of your devices as well as one for your spouse.
 
 ![pushover on iOS](assets/screenshot.png)
+
+* Requires: a [pushover.net](https://pushover.net/) account
 
 ### `redispub`
 
@@ -434,15 +439,6 @@ You'll need at least the following components:
 * An MQTT broker (e.g. [Mosquitto](http://mosquitto.org))
 * The Paho Python module: `pip install paho-mqtt`
 
-Depending on the notification services you wish to use, you'll also require one
-or more of the following:
-
-* A [pushover.net](https://pushover.net/) account
-* A [Twitter](https://twitter.com) account with application keys
-* NMA FIXME
-* Prowl FIXME
-* XBMC FIXME
-* Mac OS X notification center: a Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
 
 
 ## Installation
