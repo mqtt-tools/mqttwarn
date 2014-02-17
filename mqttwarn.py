@@ -357,7 +357,7 @@ def connect():
 
     load_plugins(services, conf)
 
-    srv.qttc = mqttc
+    srv.mqttc = mqttc
     srv.logging = logging
 
     logging.debug("Attempting connection to MQTT broker %s:%d..." % (MQTT_HOST, MQTT_PORT))

@@ -130,6 +130,21 @@ interpolated into the topic name of the outgoing publish, whereas the latter sho
 the outgoing topic branch without interpolated values, because they simply didn't
 exist in the original incoming payload.
 
+### `mqttpub`
+
+This service publishes a message to the broker _mqttwarn_ is connected to. (To
+publish a message to a _different_ broker, see `mqtt`.)
+
+Each target requires a topic name, the desired _qos_ and a _retain_ flag.
+
+```python
+mqttpub_config = None           # This service requires no configuration
+mqttpub_targets = {
+               # topic            qos     retain
+    'mout1'  : [ 'mout/1',         0,     False ],
+}
+```
+
 ### `osxnotify`
 
 ### `prowl`
