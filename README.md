@@ -286,10 +286,10 @@ are defined in `item.data`:
 ```python
 {
   'topic'         : topic name
-  '_dtepoch'      : epoch time              # 1392628581
-  '_dtiso']       : ISO date                # 2014-02-17T10:16:21.632367
-  '_dthhmm'       : timestamp HH:MM         # 10:16
-  '_dthhmmss'     : timestamp HH:MM:SS      # 10:16:21
+  '_dtepoch'      : epoch time                  # 1392628581
+  '_dtiso']       : ISO date (UTC)              # 2014-02-17T10:38:43.910691Z
+  '_dthhmm'       : timestamp HH:MM (local)     # 10:16
+  '_dthhmmss'     : timestamp HH:MM:SS (local)  # 10:16:21
 }
 ```
 
