@@ -15,8 +15,8 @@ Support for the following services is available:
 * Pushover.net
 * Twitter
 * SMTP (e-mail)
-* NMA
 * Prowl
+* Redis PUB
 * XBMC
 * Mac OS X notification center
 
@@ -187,6 +187,22 @@ configured _user key_ and _app key_ combinations. This in turn enables you to
 notify, say, one or more of your devices as well as one for your spouse.
 
 ![pushover on iOS](assets/screenshot.png)
+
+### `redispub`
+
+The `redispub` plugin publishes to a Redis channel.
+
+```python
+redispub_config = {
+    'host'    : 'localhost',
+    'port'    : 6379,
+}
+redispub_targets = {
+    'r1'      : [ 'channel-1' ],
+}
+```
+
+* Requires Python redis
 
 ### `smtp`
 

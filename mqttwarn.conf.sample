@@ -61,6 +61,16 @@ pushover_targets = {
     'extraphone' : ['userkey2', 'appkey3'],
 }
 
+# Redis PUB
+redispub_config = {
+    'host'    : 'localhost',
+    'port'    : 6379,
+}
+redispub_targets = {
+    'r1'      : [ 'channel-1' ],
+}
+
+
 # Mail (SMTP) recipients
 smtp_config = {
     'server'    : 'localhost:25',
