@@ -262,7 +262,7 @@ item = {
     'message'       : 'string',       # formatted message (if no format string then = payload)
     'addrs'         : <list>,         # list of addresses from SERVICE_targets
     'fmt'           : None,           # possible format string from formatmap{}
-    'data'          : None,           # possible dict if JSON parsed in payload
+    'data'          : None,           # dict with transformation data
     'title'         : None,           # possible title from titlemap{}
     'priority'      : None,           # possible priority from prioritymap{}
 }
