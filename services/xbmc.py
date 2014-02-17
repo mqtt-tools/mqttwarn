@@ -7,7 +7,10 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import urllib
 import urllib2
-import json
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 def plugin(srv, item):
 
