@@ -17,6 +17,7 @@ Support for the following services is available:
 * SMTP (e-mail)
 * Prowl
 * Redis PUB
+* SQLite3
 * XBMC
 * Mac OS X notification center
 
@@ -208,6 +209,20 @@ redispub_targets = {
 ```
 
 * Requires Python [redis-py](https://github.com/andymccurdy/redis-py)
+
+### `sqlite`
+
+The `sqlite` plugin creates the a table in the database file specified in the targets,
+and creates a schema with a single column called `payload` of type `TEXT`. _mqttwarn_
+commits messages routed to such a target immediately.
+
+```python
+sqlite_config = None        # This plugin requires no configuration
+sqlite_targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ],
+}
+```
 
 ### `smtp`
 

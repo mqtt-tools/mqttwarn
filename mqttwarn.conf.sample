@@ -70,6 +70,12 @@ redispub_targets = {
     'r1'      : [ 'channel-1' ],
 }
 
+# SQLite3
+sqlite_config = None
+sqlite_targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ],
+}
 
 # Mail (SMTP) recipients
 smtp_config = {
