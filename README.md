@@ -205,7 +205,7 @@ smtp_targets = {
 }
 ```
 
-Targets may contain more than one recipient, in which case all specified 
+Targets may contain more than one recipient, in which case all specified
 recipients get the message.
 
 ### `twitter`
@@ -269,6 +269,37 @@ item = {
 ```
 
 ## Advanced features
+
+### Transformation data
+
+_mqttwarn_ can transform an incoming message before passing it to a plugin service.
+On each message, _mqttwarn_ attempts to decode the incoming payload from JSON. If
+this is possible, a dict with _transformation data_ is made available to the
+service plugins as `item.data`.
+
+This transformation data is initially set up with some built-in values, in addition
+to those decoded from the incoming JSON payload. The following built-in variables
+are defined in `item.data`:
+
+```python
+{
+  'topic'         : topic name
+  '_dtepoch'      : epoch time              # 1392628581
+  '_dtiso']       : ISO date                # 2014-02-17T10:16:21.632367
+  '_dthhmm'       : timestamp HH:MM         # 10:16
+  '_dthhmmss'     : timestamp HH:MM:SS      # 10:16:21
+}
+```
+
+Any of these values can be used in `formatmap{}` to create custom outgoing
+messages.
+
+```python
+formatmap = {
+'some/topic'  :  "I'll have a {fruit} if it costs {price} at {_dthhmm}",
+}
+```
+
 
 ### Using functions to replace incoming payloads
 
@@ -356,7 +387,7 @@ jane: leave => Home
 
 ### Filtering notifications ###
 
-A notification can be filtered (or supressed) using a custom function. 
+A notification can be filtered (or supressed) using a custom function.
 
 An optional `filtermap` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
 

@@ -6,6 +6,7 @@ import logging
 import signal
 import sys
 import time
+from datetime import datetime
 try:
     import json
 except ImportError:
@@ -242,6 +243,21 @@ def on_disconnect(mosq, userdata, result_code):
         time.sleep(5)
         connect()
 
+def builtin_transform_data(topic):
+    ''' Return a dict with initial transformation data which is made
+        available to all plugins '''
+
+    tdata = {}
+    dt = datetime.now()
+
+    tdata['topic']      = topic
+    tdata['_dtepoch']   = int(time.time())          # 1392628581
+    tdata['_dtiso']     = dt.isoformat()            # 2014-02-17T10:16:21.632367
+    tdata['_dthhmm']    = dt.strftime('%H:%M')      # 10:16
+    tdata['_dthhmmss']   = dt.strftime('%H:%M:%S')  # hhmmss=10:16:21
+
+    return tdata
+
 def processor():
     """
     Queue runner. Pull a job from the queue, find the module in charge
@@ -270,7 +286,8 @@ def processor():
         item['title']       = get_title(job.topic)
         item['priority']    = get_priority(job.topic)
 
-        transform_data = {}
+        transform_data = builtin_transform_data(job.topic)
+
         topic_data = get_topic_data(job.topic)
         if topic_data is not None and type(topic_data) == dict:
             transform_data = dict(transform_data.items() + topic_data.items())
