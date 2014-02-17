@@ -20,6 +20,8 @@ Support for the following services is available:
 * XBMC
 * Mac OS X notification center
 
+![definition by Google](assets/mqttwarn.jpg)
+
 Notifications are transmitted to the appropriate service via plugins. We provide plugins for the above list of services, and you can easily add your own.
 
 In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you do do the following:
