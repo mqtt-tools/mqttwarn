@@ -202,7 +202,7 @@ redispub_targets = {
 }
 ```
 
-* Requires Python redis
+* Requires Python [redis-py](https://github.com/andymccurdy/redis-py)
 
 ### `smtp`
 
