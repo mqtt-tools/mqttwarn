@@ -40,5 +40,9 @@ def plugin(srv, item):
         srv.logging.debug("Successfully sent XBMC notification")
     except urllib2.URLError, e:
         srv.logging.error("URLError: %s" % (str(e)))
+        return False
     except Exception, e:
         srv.logging.error("Error sending XBMC notification to %s [%s]: %s" % (item.target, xbmchost, str(e)))
+        return False
+
+    return True

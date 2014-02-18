@@ -19,5 +19,6 @@ def plugin(srv, item):
         Notifier.notify(text,  title=application_name)
     except Exception, e:
         srv.logging.warning("Cannot invoke Notifier to osx: %s" % (str(e)))
+        return False
 
-    return  
+    return True

@@ -18,7 +18,7 @@ def plugin(srv, item):
 
     if HAVE_REDIS is False:
         srv.logging.warn("Redis is not installed")
-        return
+        return False
 
     host = item.config.get('host', 'localhost')
     port = int(item.config.get('port', 6379))
@@ -27,7 +27,7 @@ def plugin(srv, item):
         rp = redis.Redis(host, port)
     except Exception, e:
         srv.logging.warn("Cannot connect to redis on %s:%s : %s" % (host, port, str(e)))
-        return
+        return False
 
     channel = item.addrs[0]
     text = item.message
@@ -36,5 +36,6 @@ def plugin(srv, item):
         rp.publish(channel, text)
     except Exception, e:
         srv.logging.warn("Cannot publish to redis on %s:%s : %s" % (host, port, str(e)))
+        return False
 
-    return  
+    return True

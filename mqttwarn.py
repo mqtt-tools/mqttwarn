@@ -327,11 +327,15 @@ def processor():
                 logging.debug("Cannot invoke %s(): %s" % (func, str(e)))
 
         st = Struct(**item)
+        notified = False
         try:
             module = service_plugins[service]['module']
-            module.plugin(srv, st)
+            notified = module.plugin(srv, st)
         except Exception, e:
             logging.error("Cannot invoke plugin for `%s': %s" % (service, str(e)))
+
+        if not notified:
+            logging.warn("Notification of %s for `%s' FAILED" % (service, item.get('topic')))
 
         q_in.task_done()
 

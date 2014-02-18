@@ -18,7 +18,7 @@ def plugin(srv, item):
 
     if HAVE_SQLITE is False:
         srv.logging.warn("Sqlite3 is not installed")
-        return
+        return False
 
     path  = item.addrs[0]
     table = item.addrs[1]
@@ -26,14 +26,14 @@ def plugin(srv, item):
         conn = sqlite3.connect(path)
     except Exception, e:
         srv.logging.warn("Cannot connect to sqlite at %s : %s" % (path, str(e)))
-        return
+        return False
 
     c = conn.cursor()
     try:
         c.execute('CREATE TABLE IF NOT EXISTS %s (payload TEXT)' % table)
     except Exception, e:
         srv.logging.warn("Cannot create sqlite table in %s : %s" % (path, str(e)))
-        return
+        return False
 
     text = item.message
 
@@ -44,4 +44,4 @@ def plugin(srv, item):
     except Exception, e:
         srv.logging.warn("Cannot INSERT INTO sqlite:%s : %s" % (table, str(e)))
 
-    return  
+    return True

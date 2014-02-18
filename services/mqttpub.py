@@ -23,7 +23,7 @@ def plugin(srv, item):
             outgoing_topic =  item.addrs[0].format(**item.data).encode('utf-8')
         except:
             srv.logging.debug("Outgoing topic cannot be formatted; not published")
-            return
+            return False
 
     outgoing_payload = item.message
 
@@ -31,4 +31,6 @@ def plugin(srv, item):
         srv.mqttc.publish(outgoing_topic, outgoing_payload, qos=qos, retain=retain)
     except Exception, e:
         srv.logging.warning("Cannot PUBlish via `mqttpub:%s': %s" % (item.target, str(e)))
-    return
+        return False
+
+    return True

@@ -28,5 +28,6 @@ def plugin(srv, item):
             url=None)
     except Exception, e:
         srv.logging.warning("Cannot prowl: %s" % (str(e)))
+        return False
 
-    return
+    return True

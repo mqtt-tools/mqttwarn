@@ -30,5 +30,6 @@ def plugin(srv, item):
         f.close()
     except Exception, e:
         srv.logging.warning("Cannot write to file `%s': %s" % (filename, str(e)))
+        return False
 
-    return  
+    return True

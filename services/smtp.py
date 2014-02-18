@@ -39,6 +39,6 @@ def plugin(srv, item):
         srv.logging.debug("Successfully sent SMTP notification")
     except Exception, e:
         srv.logging.warn("Error sending notification to SMTP recipient %s [%s]: %s" % (item.target, smtp_addresses, str(e)))
-        return
+        return False
 
-    return  
+    return True

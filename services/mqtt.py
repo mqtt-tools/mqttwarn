@@ -38,7 +38,7 @@ def plugin(srv, item):
             outgoing_topic =  item.addrs[0].format(**item.data).encode('utf-8')
         except:
             srv.logging.debug("Outgoing topic cannot be formatted; not published")
-            return
+            return False
 
     outgoing_payload = item.message
 
@@ -51,5 +51,6 @@ def plugin(srv, item):
             auth=auth)
     except Exception, e:
         srv.logging.warning("Cannot PUBlish via `mqtt:%s': %s" % (item.target, str(e)))
+        return False
 
-    return
+    return True

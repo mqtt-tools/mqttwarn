@@ -57,7 +57,7 @@ def plugin(srv, item):
         appkey  = addrs[1]
     except:
         srv.logging.warn("No pushover userkey/appkey configured for target `%s'" % (item.target))
-        return
+        return False
 
     params = {
             'retry' : 60,
@@ -76,5 +76,6 @@ def plugin(srv, item):
         srv.logging.debug("Successfully sent pushover notification")
     except Exception, e:
         srv.logging.warn("Error sending pushover notification to %s [%s]: %s" % (item.target, params, str(e)))
+        return False
 
-    return  
+    return True
