@@ -21,8 +21,14 @@ def plugin(srv, item):
     method = item.addrs[0]
     url    = item.addrs[1]
     params = item.addrs[2]
-    auth   = item.addrs[3]
     timeout = item.config.get('timeout', 60)
+
+    auth = None
+    try:
+        username, password = item.addrs[3]
+        auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
+    except:
+        pass
 
     # Try and transform the URL. Use original URL if it's not possible
     try:
@@ -54,8 +60,7 @@ def plugin(srv, item):
             request.add_header('User-agent', srv.SCRIPTNAME)
 
             if auth is not None:
-                base64string = base64.encodestring('%s:%s' % (auth[0], auth[1])).replace('\n', '')
-                request.add_header("Authorization", "Basic %s" % base64string)
+                request.add_header("Authorization", "Basic %s" % auth)
 
             resp = urllib2.urlopen(request, timeout=timeout)
             data = resp.read()
@@ -76,8 +81,7 @@ def plugin(srv, item):
             request.add_data(encoded_params)
             request.add_header('User-agent', srv.SCRIPTNAME)
             if auth is not None:
-                base64string = base64.encodestring('%s:%s' % (auth[0], auth[1])).replace('\n', '')
-                request.add_header("Authorization", "Basic %s" % base64string)
+                request.add_header("Authorization", "Basic %s" % auth)
             resp = urllib2.urlopen(request, timeout=timeout)
             data = resp.read()
             # print "POST returns ", data
