@@ -20,6 +20,7 @@ def plugin(srv, item):
     method = item.addrs[0]
     url    = item.addrs[1]
     params = item.addrs[2]
+    timeout = item.config.get('timeout', 60)
 
     # Try and transform the URL. Use original URL if it's not possible
     try:
@@ -50,7 +51,7 @@ def plugin(srv, item):
             request = urllib2.Request(resource)
             request.add_header('User-agent', srv.SCRIPTNAME)
 
-            resp = urllib2.urlopen(request)
+            resp = urllib2.urlopen(request, timeout=timeout)
             data = resp.read()
         except Exception, e:
             srv.logging.warn("Cannot GET %s: %s" % (resource, str(e)))
@@ -68,7 +69,7 @@ def plugin(srv, item):
 
             request.add_data(encoded_params)
             request.add_header('User-agent', srv.SCRIPTNAME)
-            resp = urllib2.urlopen(request)
+            resp = urllib2.urlopen(request, timeout=timeout)
             data = resp.read()
             # print "POST returns ", data
         except Exception, e:

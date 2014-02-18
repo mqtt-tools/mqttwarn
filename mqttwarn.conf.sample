@@ -70,7 +70,9 @@ redispub_targets = {
     'r1'      : [ 'channel-1' ],
 }
 
-http_config = None
+http_config = {
+   'timeout'  : 60,
+}
 http_targets = {
                 #method     #URL
     'get1'    : [ "get",    "http://localhost/~jpm/mqttwarn.php?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],

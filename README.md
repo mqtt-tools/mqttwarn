@@ -97,7 +97,9 @@ Each target has three parameters:
 3. A dict of parameters. Each parameter value is transformed.
 
 ```python
-http_config = None
+http_config = {
+    'timeout' : 60,
+}
 http_targets = {
                 #method     #URL               # query params or None
   'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
@@ -411,16 +413,16 @@ An optional `topicdatamap` in our configuration file, defines the name of a func
 
 ```python
 topicdatamap = {
-    'owntracks/jane/phone' : tdata,
+    'owntracks/jane/phone' : OwnTracksTopicDataMap,
 }
 ```
 
-This specifies that when a message for the defined topic `owntracks/jane/phone` is processed, our function `tdata()` should be invoked to parse that. (As usual, topic names may contain MQTT wildcards.)
+This specifies that when a message for the defined topic `owntracks/jane/phone` is processed, our function `OwnTracksTopicDataMap()` should be invoked to parse that. (As usual, topic names may contain MQTT wildcards.)
 
 The function we define to do that is:
 
 ```python
-def tdata(topic):
+def OwnTracksTopicDataMap(topic):
     if type(topic) == str:
         try:
             # owntracks/username/device
