@@ -103,6 +103,11 @@ http_targets = {
     'post1'    : [ "post",    "http://localhost/~jpm/mqttwarn.php?r={_dtepoch}", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
 }
 
+Note that transforms in parameters must be quoted strings:
+
+* Wrong: `'q' : {name}`
+* Correct: `'q' : '{name'}`
+
 ### `mqtt`
 
 The `mqtt` service fires off a publish on a topic, creating a new connection to the configured broker for each message.
