@@ -7,19 +7,21 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import urllib
 import urllib2
+import base64
 try:
     import json
 except ImportError:
     import simplejson as json
 
 def plugin(srv, item):
-    ''' addrs: (method, url dict(params)) '''
+    ''' addrs: (method, url dict(params), list(username, password)) '''
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     method = item.addrs[0]
     url    = item.addrs[1]
     params = item.addrs[2]
+    auth   = item.addrs[3]
     timeout = item.config.get('timeout', 60)
 
     # Try and transform the URL. Use original URL if it's not possible
@@ -51,6 +53,10 @@ def plugin(srv, item):
             request = urllib2.Request(resource)
             request.add_header('User-agent', srv.SCRIPTNAME)
 
+            if auth is not None:
+                base64string = base64.encodestring('%s:%s' % (auth[0], auth[1])).replace('\n', '')
+                request.add_header("Authorization", "Basic %s" % base64string)
+
             resp = urllib2.urlopen(request, timeout=timeout)
             data = resp.read()
         except Exception, e:
@@ -69,6 +75,9 @@ def plugin(srv, item):
 
             request.add_data(encoded_params)
             request.add_header('User-agent', srv.SCRIPTNAME)
+            if auth is not None:
+                base64string = base64.encodestring('%s:%s' % (auth[0], auth[1])).replace('\n', '')
+                request.add_header("Authorization", "Basic %s" % base64string)
             resp = urllib2.urlopen(request, timeout=timeout)
             data = resp.read()
             # print "POST returns ", data

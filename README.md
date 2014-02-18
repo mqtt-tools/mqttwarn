@@ -101,9 +101,9 @@ http_config = {
     'timeout' : 60,
 }
 http_targets = {
-                #method     #URL               # query params or None
-  'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
-  'post1    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
+                #method     #URL               # query params or None          # list auth
+  'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, ('username', 'password') ],
+  'post1    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, None ],
 }
 ```
 
