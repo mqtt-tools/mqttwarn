@@ -12,6 +12,7 @@ Support for the following services is available:
 
 * files (output to files on the file system)
 * MQTT. Yes, outgoing MQTT, e.g. as a republisher to same or different broker
+* HTTP (GET, POST)
 * Pushover.net
 * Twitter
 * SMTP (e-mail)
@@ -84,6 +85,23 @@ topicmap = {
         'arch/#'   : ['file:log-me'],
 }
 ```
+
+### `http`
+
+The `http` service allows GET and POST requests to an HTTP service.
+
+Each target has three parameters:
+
+1. The HTTP method (one of `get` or `post`)
+2. The URL, which is transformed if possible (transformation errors are ignored)
+3. A dict of parameters. Each parameter value is transformed.
+
+http_config = None
+http_targets = {
+                #method     #URL
+    'get1'    : [ "get",    "http://localhost/~jpm/mqttwarn.php?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
+    'post1'    : [ "post",    "http://localhost/~jpm/mqttwarn.php?r={_dtepoch}", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
+}
 
 ### `mqtt`
 

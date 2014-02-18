@@ -70,6 +70,13 @@ redispub_targets = {
     'r1'      : [ 'channel-1' ],
 }
 
+http_config = None
+http_targets = {
+                #method     #URL
+    'get1'    : [ "get",    "http://localhost/~jpm/mqttwarn.php?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
+    'post1'    : [ "post",    "http://localhost/~jpm/mqttwarn.php?r={_dtepoch}", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
+}
+
 # SQLite3
 sqlite_config = None
 sqlite_targets = {
