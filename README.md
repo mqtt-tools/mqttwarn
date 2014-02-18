@@ -106,7 +106,7 @@ http_targets = {
 Note that transforms in parameters must be quoted strings:
 
 * Wrong: `'q' : {name}`
-* Correct: `'q' : '{name'}`
+* Correct: `'q' : '{name}'`
 
 ### `mqtt`
 
@@ -487,5 +487,9 @@ You'll need at least the following components:
 4. Launch `mqttwarn.py`
 
 I recommend you use [Supervisor](http://jpmens.net/2014/02/13/in-my-toolbox-supervisord/) for running this.
+
+## Press
+
+* [MQTTwarn: Ein Rundum-Sorglos-Notifier](http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312), article in German at JAXenter.
 
   [OwnTracks]: http://owntracks.org
