@@ -96,12 +96,14 @@ Each target has three parameters:
 2. The URL, which is transformed if possible (transformation errors are ignored)
 3. A dict of parameters. Each parameter value is transformed.
 
+```python
 http_config = None
 http_targets = {
                 #method     #URL
     'get1'    : [ "get",    "http://localhost/~jpm/mqttwarn.php?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
     'post1'    : [ "post",    "http://localhost/~jpm/mqttwarn.php?r={_dtepoch}", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
 }
+```
 
 Note that transforms in parameters must be quoted strings:
 
