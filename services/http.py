@@ -27,19 +27,27 @@ def plugin(srv, item):
     except:
         pass
 
-    for key in params.keys():
-        try:
-            params[key] = params[key].format(**item.data).encode('utf-8')
-        except Exception, e:
-            srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
-            return False
+    if params is not None:
+        for key in params.keys():
+            try:
+                params[key] = params[key].format(**item.data).encode('utf-8')
+            except Exception, e:
+                srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
+                return False
 
     message  = item.message
 
     if method.upper() == 'GET':
         try:
-            resource = '%s/%s' % (url, urllib.urlencode(params))
-            resp = urllib2.urlopen(resource)
+            if params is not None:
+                resource = '%s/%s' % (url, urllib.urlencode(params))
+            else:
+                resource = url
+
+            request = urllib2.Request(resource)
+            request.add_header('User-agent', srv.SCRIPTNAME)
+
+            resp = urllib2.urlopen(request)
             data = resp.read()
         except Exception, e:
             srv.logging.warn("Cannot GET %s: %s" % (resource, str(e)))
@@ -49,8 +57,15 @@ def plugin(srv, item):
 
     if method.upper() == 'POST':
         try:
-            encoded_params = urllib.urlencode(params)
-            resp = urllib2.urlopen(url, encoded_params)
+            request = urllib2.Request(url)
+            if params is not None:
+                encoded_params = urllib.urlencode(params)
+            else:
+                encoded_params = message
+
+            request.add_data(encoded_params)
+            request.add_header('User-agent', srv.SCRIPTNAME)
+            resp = urllib2.urlopen(request)
             data = resp.read()
             # print "POST returns ", data
         except Exception, e:
