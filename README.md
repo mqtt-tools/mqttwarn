@@ -99,9 +99,9 @@ Each target has three parameters:
 ```python
 http_config = None
 http_targets = {
-                #method     #URL
-    'get1'    : [ "get",    "http://localhost/~jpm/mqttwarn.php?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
-    'post1'    : [ "post",    "http://localhost/~jpm/mqttwarn.php?r={_dtepoch}", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
+                #method     #URL               # query params or None
+  'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
+  'post1    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' } ],
 }
 ```
 

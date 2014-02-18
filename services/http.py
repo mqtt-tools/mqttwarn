@@ -40,7 +40,10 @@ def plugin(srv, item):
     if method.upper() == 'GET':
         try:
             if params is not None:
-                resource = '%s/%s' % (url, urllib.urlencode(params))
+                resource = url
+                if not resource.endswith('?'):
+                    resource = resource + '?'
+                resource = resource + urllib.urlencode(params)
             else:
                 resource = url
 
