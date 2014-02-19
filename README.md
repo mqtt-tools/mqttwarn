@@ -15,6 +15,7 @@ Support for the following services is available:
 * HTTP (GET, POST)
 * NMA
 * Pushover.net
+* Twilio (messages)
 * Twitter
 * SMTP (e-mail)
 * Prowl
@@ -291,6 +292,19 @@ smtp_targets = {
 
 Targets may contain more than one recipient, in which case all specified
 recipients get the message.
+
+### `twilio`
+
+```python
+twilio_config = None  # This plugin requires no configuration
+twilio_targets = {
+             # Account SID            Auth Token            from              to
+   'hola'  : [ 'ACXXXXXXXXXXXXXXXXX', 'YYYYYYYYYYYYYYYYYY', "+15105551234",  "+12125551234" ],
+}
+
+Requires:
+ * a Twilio account
+ * [twilio-python](https://github.com/twilio/twilio-python)
 
 ### `twitter`
 
