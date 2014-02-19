@@ -303,6 +303,8 @@ twilio_targets = {
 }
 ```
 
+![Twilio test](assets/twillio.jpg)
+
 Requires:
  * a Twilio account
  * [twilio-python](https://github.com/twilio/twilio-python)
