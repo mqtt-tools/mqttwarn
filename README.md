@@ -13,6 +13,7 @@ Support for the following services is available:
 * files (output to files on the file system)
 * MQTT. Yes, outgoing MQTT, e.g. as a republisher to same or different broker
 * HTTP (GET, POST)
+* NMA
 * Pushover.net
 * Twitter
 * SMTP (e-mail)
@@ -175,6 +176,23 @@ mqttpub_targets = {
     'mout1'  : [ 'mout/1',         0,     False ],
 }
 ```
+
+### `nma`
+
+```python
+nma_config = None
+nma_targets = {
+                 # api key                                            app         event
+  'myapp'    : [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', "Nagios",  "Phone call" ],
+}
+```
+
+![NMA](assets/nma.jpg)
+
+Requires:
+
+* A [Notify My Android(NMA)](http://www.notifymyandroid.com) account
+* [pynma](https://github.com/uskr/pynma)
 
 ### `osxnotify`
 
