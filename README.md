@@ -331,6 +331,12 @@ twitter_targets = {
 
 ![a tweet](assets/tweet.jpg)
 
+Requires:
+
+* A Twitter account
+* app keys for Twitter, from [apps.twitter.com](https://apps.twitter.com)
+* [python-twitter](https://github.com/bear/python-twitter)
+
 ### `xbmc`
 
 This service allows for on-screen notification popups on [XBMC](http://xbmc.org/) instances. Each target requires
