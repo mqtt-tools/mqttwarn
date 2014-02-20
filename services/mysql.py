@@ -13,6 +13,8 @@ def add_row(cursor, tablename, rowdict):
     # XXX tablename not sanitized
     # XXX test for allowed keys is case-sensitive
 
+    unknown_keys = None
+
     # filter out keys that are not column names
     cursor.execute("describe %s" % tablename)
     allowed_keys = set(row[0] for row in cursor.fetchall())
@@ -20,7 +22,6 @@ def add_row(cursor, tablename, rowdict):
 
     if len(rowdict) > len(keys):
         unknown_keys = set(rowdict) - allowed_keys
-        print "skipping keys:", ", ".join(unknown_keys)
 
     columns = ", ".join(keys)
     values_template = ", ".join(["%s"] * len(keys))
@@ -29,6 +30,8 @@ def add_row(cursor, tablename, rowdict):
         tablename, columns, values_template)
     values = tuple(rowdict[key] for key in keys)
     cursor.execute(sql, values)
+
+    return unknown_keys
 
 def plugin(srv, item):
 
@@ -72,7 +75,9 @@ def plugin(srv, item):
                 col_data[key] = item.data[key]
 
     try:
-        add_row(cursor, table_name, col_data)
+        unknown_keys = add_row(cursor, table_name, col_data)
+        if unknown_keys is not None:
+            srv.logging.debug("Skipping unknown keys %s" % ",".join(unknown_keys))
         conn.commit()
     except Exception, e:
         srv.logging.warn("Cannot add mysql row: %s" % (str(e)))

@@ -305,6 +305,9 @@ to the _fallback_ column:
 +------+------+-------------+--------+
 ```
 
+You can add columns with the names of the built-in transformation types (e.g. `_dthhmmss`, see below)
+to have those values stored automatically.
+
 ### `nma`
 
 ```python
