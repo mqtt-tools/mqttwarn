@@ -8,26 +8,74 @@ This program subscribes to any number of MQTT topics (which may include wildcard
 
 For example, you may wish to notify via e-mail and to Pushover of an alarm published as text to the MQTT topic `home/monitoring/+`.
 
-Support for the following services is available:
-
-* files (output to files on the file system)
-* MQTT. Yes, outgoing MQTT, e.g. as a republisher to same or different broker
-* HTTP (GET, POST)
-* NMA
-* PushBullet
-* Pushover.net
-* Twilio (messages)
-* Twitter
-* SMTP (e-mail)
-* Prowl
-* Redis PUB
-* SQLite3
-* XBMC
-* Mac OS X notification center
+_mqttwarn_ supports a number of services (listed alphabetically below), including output to
+_files_, publishing to _MQTT_, HTTP GET and POST requests, _NMA_, _Pushbullet_, _Pushover_, _Twilio_, _Twitter_, SMTP, _Prowl_, Redis PUB, _XBMC_, etc.
 
 ![definition by Google](assets/mqttwarn.png)
 
 Notifications are transmitted to the appropriate service via plugins. We provide plugins for the above list of services, and you can easily add your own.
+
+
+## Getting started
+
+I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
+
+```python
+import logging
+loglevel = logging.DEBUG
+logformat = '%(asctime)-15s %(module)s %(message)s'
+
+broker = 'localhost'
+port = 1883
+
+services = [ 'file' ]
+
+file_config  = {
+    'append_newline'   : True,
+}
+file_targets = {
+    'mylog'	: ['/tmp/mqtt.log'],
+}
+
+topicmap = {
+    'test/+'   : ['file:mylog'],
+}
+```
+
+Launch `mqttwarn.py` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
+
+```
+mosquitto_pub -t test/1 -m "Hello"
+mosquitto_pub -t test/name -m '{ "name" : "Jane" }'
+```
+
+and our output file `/tmp/mqtt.log` should contain the payload of both messages:
+
+```shell
+cat /tmp/mqtt.log
+Hello
+{ "name" : "Jane" }
+```
+
+Both payloads where copied verbatim to the target.
+
+Stop _mqttwarn_, and add the following to its configuration file:
+
+```python
+formatmap = {
+    'test/name'                 :  '-->{name}<--',
+}
+```
+
+_mqttwarn_ is configured to subscribe to `test/+`, so it will also receive publishes to `test/name`. What we are configuring _mqttwarn_ to do here, is to try and decode the incoming JSON payload and format the output in such a way as that the JSON `name` element is copied to the output (surrounded with a bit of sugar to illustrate the fact that we can output whatever text we want).
+
+If you repeat the publish of the second message, you should see the following in your output file `/tmp/mqtt.log`:
+
+```
+-->Jane<--
+```
+
+## Transformation
 
 In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you do do the following:
 
