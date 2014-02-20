@@ -217,6 +217,21 @@ prowl_targets = {
 
 * Requires [prowlpy](https://github.com/jacobb/prowlpy)
 
+### `pushbullet`
+
+```python
+# Pushbullet
+pushbullet_config = None
+pushbullet_targets = {
+                   # API KEY                  device ID
+    'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy' ],
+}
+```
+
+Requires:
+* a [Pushbullet](https://www.pushbullet.com) account with API key
+* [pyPushBullet](https://github.com/Azelphur/pyPushBullet)
+
 ### `pushover`
 
 This service is for [Pushover](https://pushover.net), an app for iOS and Android.
