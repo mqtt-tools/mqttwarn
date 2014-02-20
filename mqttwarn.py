@@ -311,7 +311,6 @@ def processor():
                     text = item.get('fmt').format(**transform_data).encode('utf-8')
                     logging.debug("Message formmating successful: %s" % text)
                 except Exception, e:
-                    logging.debug("Message formatting failed: %s" % (str(e)))
                     pass
             item['message'] = text
         except:
