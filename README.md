@@ -42,6 +42,12 @@ topicmap = {
 }
 ```
 
+Note that the configuration file must be valid Python. After modifying the file, check it for syntax errors with
+
+```
+python mqttwarn.conf
+```
+
 Launch `mqttwarn.py` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
 
 ```
@@ -52,7 +58,6 @@ mosquitto_pub -t test/name -m '{ "name" : "Jane" }'
 and our output file `/tmp/mqtt.log` should contain the payload of both messages:
 
 ```shell
-cat /tmp/mqtt.log
 Hello
 { "name" : "Jane" }
 ```
