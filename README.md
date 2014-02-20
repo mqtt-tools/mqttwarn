@@ -247,7 +247,7 @@ nma_targets = {
 Requires:
 
 * A [Notify My Android(NMA)](http://www.notifymyandroid.com) account
-* [pynma](https://github.com/uskr/pynma)
+* [pynma](https://github.com/uskr/pynma). You don't have to install this -- just copy `pynma.py` to the _mqttwarn_ directory.
 
 ### `osxnotify`
 
@@ -290,7 +290,7 @@ pushbullet_targets = {
 
 Requires:
 * a [Pushbullet](https://www.pushbullet.com) account with API key
-* [pyPushBullet](https://github.com/Azelphur/pyPushBullet)
+* [pyPushBullet](https://github.com/Azelphur/pyPushBullet). You don't have to install this -- simply copy `pushbullet.py` to the _mqttwarn_ directory.
 
 ### `pushover`
 
