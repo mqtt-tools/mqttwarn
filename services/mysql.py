@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
+__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+
+import MySQLdb
+import sys
+
+# https://mail.python.org/pipermail/tutor/2010-December/080701.html
+def add_row(cursor, tablename, rowdict):
+    # XXX tablename not sanitized
+    # XXX test for allowed keys is case-sensitive
+
+    # filter out keys that are not column names
+    cursor.execute("describe %s" % tablename)
+    allowed_keys = set(row[0] for row in cursor.fetchall())
+    keys = allowed_keys.intersection(rowdict)
+
+    if len(rowdict) > len(keys):
+        unknown_keys = set(rowdict) - allowed_keys
+        print "skipping keys:", ", ".join(unknown_keys)
+
+    columns = ", ".join(keys)
+    values_template = ", ".join(["%s"] * len(keys))
+
+    sql = "insert into %s (%s) values (%s)" % (
+        tablename, columns, values_template)
+    values = tuple(rowdict[key] for key in keys)
+    cursor.execute(sql, values)
+
+def plugin(srv, item):
+
+    srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
+
+    host    = item.config.get('host', 'localhost')
+    port    = item.config.get('port', 3306)
+    user    = item.config.get('user')
+    passwd  = item.config.get('pass')
+    dbname  = item.config.get('dbname')
+
+    try:
+        table_name, fallback_col = item.addrs
+    except:
+        srv.logging.warn("mysql target incorrectly configured")
+        return False
+
+    try:
+        conn = MySQLdb.connect(host=host,
+                    user=user,
+                    passwd=passwd,
+                    db=dbname)
+        cursor = conn.cursor()
+    except Exception, e:
+        srv.logging.warn("Cannot connect to mysql: %s" % (str(e)))
+        return False
+
+    text = item.message
+
+    # Create new dict for column data. First add fallback column
+    # with full payload. Then attempt to use formatted JSON values
+    col_data = {
+        fallback_col : text
+       }
+
+    if item.data is not None:
+        for key in item.data.keys():
+            try:
+                col_data[key] = item.data[key].format(**item.data).encode('utf-8')
+            except Exception, e:
+                col_data[key] = item.data[key]
+
+    try:
+        add_row(cursor, table_name, col_data)
+        conn.commit()
+    except Exception, e:
+        srv.logging.warn("Cannot add mysql row: %s" % (str(e)))
+        cursor.close()
+        conn.close()
+        return False
+
+    cursor.close()
+    conn.close()
+
+    return True
