@@ -29,8 +29,10 @@ def plugin(srv, item):
     title = item.get('title', srv.SCRIPTNAME)
 
     try:
+        srv.logging.debug("Sending pushbullet notification to %s..." % (item.target))
         pb = PushBullet(apikey)
         pb.pushNote(device_id, title, text)
+        srv.logging.debug("Successfully sent pushbullet notification")
     except Exception, e:
         srv.logging.warning("Cannot notify pushbullet: %s" % (str(e)))
         return False
