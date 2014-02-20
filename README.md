@@ -228,6 +228,8 @@ pushbullet_targets = {
 }
 ```
 
+![Pushbullet](assets/pushbullet.jpg)
+
 Requires:
 * a [Pushbullet](https://www.pushbullet.com) account with API key
 * [pyPushBullet](https://github.com/Azelphur/pyPushBullet)
