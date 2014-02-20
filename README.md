@@ -14,6 +14,7 @@ Support for the following services is available:
 * MQTT. Yes, outgoing MQTT, e.g. as a republisher to same or different broker
 * HTTP (GET, POST)
 * NMA
+* PushBullet
 * Pushover.net
 * Twilio (messages)
 * Twitter
@@ -218,6 +219,10 @@ prowl_targets = {
 * Requires [prowlpy](https://github.com/jacobb/prowlpy)
 
 ### `pushbullet`
+
+This service is for [PushBullet](https://www.pushbullet.com), an app for iOS and Android, as well as an extension for Chrome, which allows notes, links, pictures, addresses and files to be sent between devices. 
+
+You can get your API key from [here](https://www.pushbullet.com/settings) after signing up for a PushBullet account. You will also need the device ID to push the notifications to. To obtain this you need  to follow the instructions at [pyPushBullet](https://github.com/Azelphur/pyPushBullet) and run ``./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices``.
 
 ```python
 # Pushbullet
