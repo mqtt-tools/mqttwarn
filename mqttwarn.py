@@ -387,7 +387,7 @@ def connect():
     mqttc.on_disconnect = on_disconnect
 
     # check for authentication
-    if conf['username'] is not None:
+    if 'username' in conf and conf['username'] is not None:
         mqttc.username_pw_set(conf['username'], conf['password'])
 
     # configure the last-will-and-testament if set
