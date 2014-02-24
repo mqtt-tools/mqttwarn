@@ -99,6 +99,13 @@ smtp_targets = {
     'special'    : [ 'ben@gmail', 'suzie@example.net' ],
 }
 
+# Pipe
+pipe_config = None      # This service requires no configuration
+pipe_targets = {
+             # argv0 .....
+   'wc'    : [ 'wc', '-l' ],
+}
+
 # Prowl
 prowl_config = None             # This service requires no configuration
 prowl_targets = {

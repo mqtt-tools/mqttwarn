@@ -330,6 +330,19 @@ Requires:
 * Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
 
 
+### `pipe`
+
+The `pipe` target launches the specified program and its arguments and pipes the
+(possibly formatted) message to the program's _stdin_. If the message doesn't have
+a training newline (`\n`), _mqttwarn_ appends one.
+
+pipe_config = None      # This service requires no configuration
+pipe_targets = {
+             # argv0 .....
+   'wc'    : [ 'wc',   '-l' ],
+}
+
+
 ### `prowl`
 
 This service is for [Prowl](http://www.prowlapp.com). Each target requires
@@ -579,7 +592,7 @@ formatmap = {
 We've replaced the `formatmap` entry for the topic by a function which you
 define withing the `mqttwarn.conf` configuration file. These functions
 are invoked with decoded JSON `data` passed to them. They must return
-a string which replaces the outgoing `message`:
+a string, and this returned string replaces the outgoing `message`:
 
 ```
 in/a1 {"fruit":"pineapple", "price": 131, "tst" : "1391779336"}
