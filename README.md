@@ -344,6 +344,9 @@ pipe_targets = {
 }
 ```
 
+Note, that for each message targetted to the `pipe` service, a new process is 
+spawned (fork/exec), so it is quite "expensive".
+
 
 ### `prowl`
 
