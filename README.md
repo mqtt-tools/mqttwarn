@@ -336,11 +336,13 @@ The `pipe` target launches the specified program and its arguments and pipes the
 (possibly formatted) message to the program's _stdin_. If the message doesn't have
 a training newline (`\n`), _mqttwarn_ appends one.
 
+```python
 pipe_config = None      # This service requires no configuration
 pipe_targets = {
              # argv0 .....
    'wc'    : [ 'wc',   '-l' ],
 }
+```
 
 
 ### `prowl`
