@@ -708,7 +708,7 @@ Now simply add your choice of target(s) to the topicmap and a nice format string
 
 ```python
 topicmap = {
-    '/owntracks/#'    : ['pushover, 'xbmc']
+    '/owntracks/#'    : ['pushover', 'xbmc']
 }
 
 formatmap = {
