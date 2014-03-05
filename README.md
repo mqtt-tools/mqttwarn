@@ -684,6 +684,38 @@ def owntracks_filter(topic, message):
 
 This filter will suppress any messages that do not contain the `event` token.
 
+## Examples ##
+
+This section contains some examples of how `mqttwarn` can be used with some more complex configurations.
+
+### Low battery notifications ###
+
+By subscribing to your [OwnTracks] topic and adding the following custom filter you can get `mqttwarn` to send notifications when your phone battery gets below a certain level;
+
+```python
+def owntracks_battfilter(topic, message):
+    data = dict(json.loads(message).items())
+    if data['batt'] is not None:
+        return int(data['batt']) > 20
+    return True
+
+filtermap = {
+    '/owntracks/#'    : owntracks_battfilter
+}
+```
+
+Now simply add your choice of target(s) to the topicmap and a nice format string and you are done;
+
+```python
+topicmap = {
+    '/owntracks/#'    : ['pushover, 'xbmc']
+}
+
+formatmap = {
+    '/owntracks/#'    : u'My phone battery is getting low ({batt}%)!'
+}
+```
+
 ## Requirements
 
 You'll need at least the following components:
