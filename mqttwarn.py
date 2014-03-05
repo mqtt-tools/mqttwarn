@@ -241,7 +241,7 @@ def on_disconnect(mosq, userdata, result_code):
         logging.info("Unexpected disconnection! Reconnecting in 5 seconds...")
         logging.debug("Result code: %s", result_code)
         time.sleep(5)
-        connect()
+        ## connect()
 
 def builtin_transform_data(topic):
     ''' Return a dict with initial transformation data which is made
