@@ -180,6 +180,14 @@ topicmap = {
   'in/a1'  : ['mqtt:o1', 'mqtt:o2'],
 }
 
+mqtt_config = {
+    'host'       : 'localhost',
+    'port'       : 1883,
+    'qos'        : 0,
+    'retain'     : False,
+#    'username'  : "jane",
+#    'password'   : "secret",
+}
 mqtt_targets = {
   'o1'    : [ 'out/food' ],
   'o2'    : [ 'out/fruit/{fruit}' ],
