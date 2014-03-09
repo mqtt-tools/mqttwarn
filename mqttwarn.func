@@ -1,0 +1,37 @@
+# Logging
+import logging
+loglevel = logging.DEBUG
+logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+
+# Need JSON for OwnTracks battery filter
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
+# custom function to extract the 'username' from the OwnTracks topic
+def owntracks_data(topic):
+    if type(topic) == str:
+        try:
+            # /owntracks/username
+            parts = topic.split('/')
+            username = parts[2]
+        except:
+            username = 'unknown'
+        return dict(username=username)
+    return None
+
+# custom function to filter out any OwnTracks notifications which are
+# not 'event' type publishes - i.e. standard location updates etc
+def owntracks_eventfilter(topic, message):
+    return message.find('event') == -1
+
+# custom function to filter out any OwnTracks notifications which do
+# not contain the 'batt' parameter
+def owntracks_battfilter(topic, message):
+    data = dict(json.loads(message).items())
+    if data['batt'] is not None:
+        return int(data['batt']) > 20
+    return True
+
+

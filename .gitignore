@@ -1,4 +1,5 @@
 *.pyc
+*.confc
 .DS_Store
 mqttwarn.conf
 *.log
