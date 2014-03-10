@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ConfigParser import RawConfigParser
-import codecs
-import ast
-
-
 import paho.mqtt.client as paho   # pip install paho-mqtt
 import logging
 import signal
@@ -27,6 +22,9 @@ except ImportError:
     md = md5.new
 import os
 import socket
+from ConfigParser import RawConfigParser, NoOptionError
+import codecs
+import ast
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
@@ -35,27 +33,97 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 # script name (without extension) used for config/logfile names
 SCRIPTNAME = os.path.splitext(os.path.basename(__file__))[0]
 
-CONFIGFILE = os.getenv(SCRIPTNAME.upper() + 'CONF', SCRIPTNAME + '.conf')
+CONFIGFILE = os.getenv(SCRIPTNAME.upper() + 'INI', SCRIPTNAME + '.ini')
 LOGFILE    = os.getenv(SCRIPTNAME.upper() + 'LOG', SCRIPTNAME + '.log')
 
-configfile = codecs.open(CONFIGFILE, 'r', encoding='utf-8')
-conf = RawConfigParser()
-conf.readfp(configfile)
+class Config(RawConfigParser):
 
-# load configuration
-functions = conf.get('mqttwarn', 'functions')
+    specials = {
+            'TRUE'  : True,
+            'FALSE' : False,
+            'NONE'  : None,
+        }
+
+    def __init__(self, configuration_file):
+        RawConfigParser.__init__(self)
+        f = codecs.open(configuration_file, 'r', encoding='utf-8')
+        self.readfp(f)
+        f.close()
+
+        ''' set defaults '''
+        self.hostname   = 'localhost'
+        self.port       = 1883
+        self.logformat  = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+        self.logfile    = LOGFILE
+        self.username   = None
+        self.password   = None
+        self.lwt        = 'clients/%s' % SCRIPTNAME
+        self.functions  = 'functions.py'
+
+        self.__dict__.update(self.config('defaults'))
+
+    def g(self, section, key, default=None):
+        try:
+            val = self.get(section, key)
+            if val.upper() in self.specials:
+                return self.specials[val.upper()]
+            return ast.literal_eval(val)
+        except NoOptionError:
+            return default
+        except ValueError:   # e.g. %(xxx)s in string
+            return val
+        except:
+            raise
+            return val
+
+    def config(self, section):
+        ''' Convert a whole section's options (except the options specified
+            explicitly below) into a dict, turning
+
+                [config:mqtt]
+                host = 'localhost'
+                username = None
+                list = [1, 'aaa', 'bbb', 4]
+
+            into
+
+                {u'username': None, u'host': 'localhost', u'list': [1, 'aaa', 'bbb', 4]}
+
+            Cannot use config.items() because I want each value to be
+            retrieved with g() as above '''
+
+        # d = {}
+        # for key, value in self.items(section):
+        #     if key not in ['targets']:
+        #         d[key] = self.g(section, key)
+
+        d = None
+        if self.has_section(section):
+            d = dict((key, self.g(section, key))
+                for (key) in self.options(section) if key not in ['targets'])
+        return d
+
+
 try:
-    execfile(functions)
+    cf = Config(CONFIGFILE)
 except Exception, e:
-    print "Cannot load %s: %s" % (functions, str(e))
+    print "Cannot open configuration at %s: %s" % (CONFIGFILE, str(e))
     sys.exit(2)
 
-LOGLEVEL = logging.DEBUG
-LOGFORMAT = conf.get('mqttwarn', 'logformat')
+# load configuration
+#try:
+#    execfile(cf.functions)
+#except Exception, e:
+#    print "Cannot load %s: %s" % (cf.functions, str(e))
+#    sys.exit(2)
 
-MQTT_HOST = conf.get('mqttwarn', 'broker')
-MQTT_PORT = int(conf.get('mqttwarn', 'port'))
-MQTT_LWT = conf.get('mqttwarn', 'lwt')
+LOGLEVEL  = logging.DEBUG
+LOGFILE   = cf.logfile
+LOGFORMAT = cf.logformat
+
+MQTT_HOST = cf.hostname
+MQTT_PORT = int(cf.port)
+MQTT_LWT = cf.lwt
 
 # initialise logging
 logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
@@ -107,8 +175,8 @@ def on_connect(mosq, userdata, result_code):
 
 def get_topics():
     topics = []
-    for section in conf.sections():
-        if section != 'mqttwarn':
+    for section in cf.sections():
+        if section != 'defaults' and not section.startswith('config:'):
             topics.append(section)
     return topics
 
@@ -116,37 +184,38 @@ def get_title(section):
     ''' Find the "title" (for pushover) or "subject" (for smtp)
         from the topic. '''
     title = None
-    if conf.has_option(section, 'title'):
-        title = conf.get(section, 'title')
+    if cf.has_option(section, 'title'):
+        title = cf.get(section, 'title')
     return title
 
 def get_priority(section):
     ''' Find the "priority" (for pushover)
         from the topic. '''
     priority = None
-    if conf.has_option(section, 'priority'):
-        priority = conf.get(section, 'priority')
+    if cf.has_option(section, 'priority'):
+        priority = cf.get(section, 'priority')
     return priority
 
 def get_messagefmt(section):
     ''' Find the message format from the topic '''
     fmt = None
-    if conf.has_option(section, 'format'):
-        fmt = conf.get(section, 'format')
+    if cf.has_option(section, 'format'):
+        fmt = cf.get(section, 'format')
     return fmt
 
 def is_filtered(section, topic, payload):
-    if conf.has_option(section, 'filter'):
-        filter = conf.get(section, 'filter')
-        if hasattr(filter, '__call__'):
-            print "has filter... %s" % filter
+    if cf.has_option(section, 'filter'):
+        filterfunc = cf.get(section, 'filter')
+        if hasattr(filterfunc, '__call__'):
+            print "has filter... %s" % filterfunc
             try:
-                return filter(topic, payload)
+                return filterfunc(topic, payload)
             except Exception, e:
-                logging.warn("Cannot invoke function %s defined in %s: %s" % (func, section, str(e)))
+                logging.warn("Cannot invoke function %s defined in %s: %s" % (filterfunc, section, str(e)))
     return False
 
 def get_topic_data(section, topic):
+    return #FIXME
     if conf.has_option(section, 'datamap'):
         datamap = conf.get(section, 'datamap')
         if hasattr(datamap, '__call__'):
@@ -192,8 +261,8 @@ def on_message(mosq, userdata, msg):
                 logging.debug("Message on %s has been filtered. Skipping." % (topic))
                 return
             
-            targetlist = eval(conf.get(section, 'target'))
-                    
+            targetlist = cf.g(section, 'target')
+
             for t in targetlist:
                 logging.debug("Topic [%s] going to %s" % (topic, t))
                 # Each target is either "service" or "service:target"
@@ -252,13 +321,13 @@ def builtin_transform_data(topic):
     return tdata
 
 def get_config(service):
-    config = service_plugins[service]['config']['config']
+    config = cf.config('config:' + service)
     if config is None:
         return {}
     return dict(config)
     
 def get_targets(service):
-    targets = service_plugins[service]['config']['targets']
+    targets = cf.g('config:' + service, 'targets')
     if targets is None:
         return {}
     return dict(targets)
@@ -358,10 +427,9 @@ def load_module(path):
         except:
             pass
 
-def load_services(services, global_config):
+def load_services(services):
     for service in services:
         modulefile = 'services/%s.py' % service
-        configfile = 'services/%s.conf' % service
 
         service_plugins[service] = {}
 
@@ -372,14 +440,13 @@ def load_services(services, global_config):
             logging.error("Can't load %s service (%s): %s" % (service, modulefile, str(e)))
             sys.exit(1)
 
-        config = {}
         try:
-            execfile(configfile, config)
+            service_config = cf.config('config:' + service)
         except Exception, e:
-            logging.error("Can't load %s service config (%s): %s" % (service, configfile, str(e)))
+            logging.error("Service `%s' has no config section: %s" % (service, str(e)))
             sys.exit(1)
 
-        service_plugins[service]['config'] = config
+        service_plugins[service]['config'] = service_config
             
 def connect():
     """
@@ -387,12 +454,12 @@ def connect():
     """
 
     try:
-        services = eval(conf.get('mqttwarn', 'services'))
+        services = cf.g('defaults', 'launch')
     except:
         logging.error("No services configured. Aborting")
         sys.exit(2)
 
-    load_services(services, conf)
+    load_services(services)
 
     srv.mqttc = mqttc
     srv.logging = logging
@@ -403,8 +470,8 @@ def connect():
     mqttc.on_disconnect = on_disconnect
 
     # check for authentication
-    if conf.has_option('mqttwarn', 'username'):
-        mqttc.username_pw_set(conf.get('mqttwarn', 'username'), conf.get('mqttwarn', 'password'))
+    if cf.username:
+        mqttc.username_pw_set(cf.username, cf.password)
 
     # configure the last-will-and-testament if set
     if MQTT_LWT is not None:

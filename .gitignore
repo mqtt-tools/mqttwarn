@@ -6,3 +6,4 @@ mqttwarn.conf
 *.conf
 prowlpy.py
 pushbullet.py
+mqttwarn.ini
