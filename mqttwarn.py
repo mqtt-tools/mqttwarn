@@ -138,6 +138,19 @@ class Config(RawConfigParser):
 
         return val
 
+    def filter(self, name, topic, payload):
+        ''' Attempt to invoke function `name' from the `functions'
+            package. Return that function's True/False '''
+
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            rc = func(topic, payload)
+            return rc
+        except:
+            raise
+
+        return False
+
 try:
     cf = Config(CONFIGFILE)
 except Exception, e:
@@ -243,12 +256,10 @@ def get_messagefmt(section):
 def is_filtered(section, topic, payload):
     if cf.has_option(section, 'filter'):
         filterfunc = cf.get(section, 'filter')
-        if hasattr(filterfunc, '__call__'):
-            print "has filter... %s" % filterfunc
-            try:
-                return filterfunc(topic, payload)
-            except Exception, e:
-                logging.warn("Cannot invoke function %s defined in %s: %s" % (filterfunc, section, str(e)))
+        try:
+            return cf.filter(filterfunc, topic, payload)
+        except Exception, e:
+            logging.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, str(e)))
     return False
 
 def get_topic_data(section, topic):
@@ -257,7 +268,7 @@ def get_topic_data(section, topic):
         try:
             return cf.datamap(name, topic)
         except Exception, e:
-            logging.warn("Cannot invoke function %s defined in %s: %s" % (name, section, str(e)))
+            logging.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, str(e)))
     return None
 
 class Job(object):
