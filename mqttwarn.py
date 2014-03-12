@@ -25,6 +25,7 @@ import socket
 from ConfigParser import RawConfigParser, NoOptionError
 import codecs
 import ast
+import re
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
@@ -113,11 +114,6 @@ class Config(RawConfigParser):
             Cannot use config.items() because I want each value to be
             retrieved with g() as above '''
 
-        # d = {}
-        # for key, value in self.items(section):
-        #     if key not in ['targets']:
-        #         d[key] = self.g(section, key)
-
         d = None
         if self.has_section(section):
             d = dict((key, self.g(section, key))
@@ -142,14 +138,24 @@ class Config(RawConfigParser):
         ''' Attempt to invoke function `name' from the `functions'
             package. Return that function's True/False '''
 
+        rc = False
         try:
             func = getattr(__import__(cf.functions, fromlist=[name]), name)
             rc = func(topic, payload)
-            return rc
         except:
             raise
 
-        return False
+        return rc
+
+    def formatmap(self, name, payload):
+        ''' Attempt to invoke `name' from the `functions' package,
+            and return it's string '''
+
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            return func(payload)
+        except:
+            raise
 
 try:
     cf = Config(CONFIGFILE)
@@ -157,20 +163,9 @@ except Exception, e:
     print "Cannot open configuration at %s: %s" % (CONFIGFILE, str(e))
     sys.exit(2)
 
-# load configuration
-#try:
-#    execfile(cf.functions)
-#except Exception, e:
-#    print "Cannot load %s: %s" % (cf.functions, str(e))
-#    sys.exit(2)
-
 LOGLEVEL  = logging.DEBUG
 LOGFILE   = cf.logfile
 LOGFORMAT = cf.logformat
-
-MQTT_HOST = cf.hostname
-MQTT_PORT = int(cf.port)
-MQTT_LWT = cf.lwt
 
 # initialise logging
 logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
@@ -453,12 +448,28 @@ def processor():
 
         # If the formatmap for this topic has a function in it,
         # invoke that, pass data and replace message with its output
-        if hasattr(item['fmt'], '__call__'):
-            func = item['fmt']
-            try:
-                item['message'] = func(item['data'])
-            except Exception, e:
-                logging.debug("Cannot invoke %s(): %s" % (func, str(e)))
+        #if hasattr(item['fmt'], '__call__'):
+        #    func = item['fmt']
+        #    try:
+        #        item['message'] = func(item['data'])
+        #    except Exception, e:
+        #        logging.debug("Cannot invoke %s(): %s" % (func, str(e)))
+
+        # If the formatmap for this topic looks like a function name
+        # `xxxxx()', attempt to invoke that function and replace our
+        # message with its output.
+
+        if item.get('fmt') is not None:
+            valid = re.match('^[\w]+\(\)', item['fmt'])
+            if valid is not None:
+                funcname = re.sub('[()]', '', item['fmt'])
+                try:
+                    res = cf.formatmap(funcname, item['data'])
+                    if res is not None:
+                        item['message'] = res
+                except Exception, e:
+                    logging.warn("Cannot invoke %s(): %s" % (funcname, str(e)))
+
 
         st = Struct(**item)
         notified = False
@@ -523,7 +534,7 @@ def connect():
     srv.mqttc = mqttc
     srv.logging = logging
 
-    logging.debug("Attempting connection to MQTT broker %s:%d..." % (MQTT_HOST, MQTT_PORT))
+    logging.debug("Attempting connection to MQTT broker %s:%d..." % (cf.hostname, int(cf.port)))
     mqttc.on_connect = on_connect
     mqttc.on_message = on_message
     mqttc.on_disconnect = on_disconnect
@@ -533,16 +544,16 @@ def connect():
         mqttc.username_pw_set(cf.username, cf.password)
 
     # configure the last-will-and-testament if set
-    if MQTT_LWT is not None:
-        mqttc.will_set(MQTT_LWT, payload=SCRIPTNAME, qos=0, retain=False)
+    if cf.lwt is not None:
+        mqttc.will_set(cf.lwt, payload=SCRIPTNAME, qos=0, retain=False)
 
     # Delays will be: 3, 6, 12, 24, 30, 30, ...
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
 
     try:
-        result = mqttc.connect(MQTT_HOST, MQTT_PORT, 60)
+        result = mqttc.connect(cf.hostname, int(cf.port), 60)
     except Exception, e:
-        logging.error("Cannot connect to MQTT broker at %s:%d: %s" % (MQTT_HOST, MQTT_PORT, str(e)))
+        logging.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), str(e)))
         sys.exit(2)
 
     # Launch worker threads to operate on queue
