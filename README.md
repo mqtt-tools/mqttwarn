@@ -20,32 +20,27 @@ Notifications are transmitted to the appropriate service via plugins. We provide
 
 I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
 
-```python
-import logging
-loglevel = logging.DEBUG
-logformat = '%(asctime)-15s %(module)s %(message)s'
+```ini
+[defaults]
+hostname  = 'localhost'
+port      = 1883
 
-broker = 'localhost'
-port = 1883
+; name the service providers you will be using.
+launch	 = file, log
 
-services = [ 'file' ]
+[config:file]
+append_newline = True
+targets = {
+    'mylog'     : ['/tmp/mqtt.log'],
+    }
+    
+[config:log]
+targets = {
+    'info'   : [ 'info' ],
+  }
 
-file_config  = {
-    'append_newline'   : True,
-}
-file_targets = {
-    'mylog'	: ['/tmp/mqtt.log'],
-}
-
-topicmap = {
-    'test/+'   : ['file:mylog'],
-}
-```
-
-Note that the configuration file must be valid Python. After modifying the file, check it for syntax errors with
-
-```
-python mqttwarn.conf
+[test/+]
+targets = file:mylog, log:info
 ```
 
 Launch `mqttwarn.py` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
@@ -64,15 +59,13 @@ Hello
 
 Both payloads where copied verbatim to the target.
 
-Stop _mqttwarn_, and add the following to its configuration file:
+Stop _mqttwarn_, and add the following line to the `[test/+]` section:
 
-```python
-formatmap = {
-    'test/name'                 :  '-->{name}<--',
-}
+```ini
+format  = -->{name}<--
 ```
 
-_mqttwarn_ is configured to subscribe to `test/+`, so it will also receive publishes to `test/name`. What we are configuring _mqttwarn_ to do here, is to try and decode the incoming JSON payload and format the output in such a way as that the JSON `name` element is copied to the output (surrounded with a bit of sugar to illustrate the fact that we can output whatever text we want).
+What we are configuring _mqttwarn_ to do here, is to try and decode the incoming JSON payload and format the output in such a way as that the JSON `name` element is copied to the output (surrounded with a bit of sugar to illustrate the fact that we can output whatever text we want).
 
 If you repeat the publish of the second message, you should see the following in your output file `/tmp/mqtt.log`:
 
@@ -95,34 +88,45 @@ mosquitto_pub -t 'osx/json' -m '{"fruit":"banana", "price": 63, "tst" : "1391779
 
 Using the `formatmap` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `formatmap` looks like this in the configuration file, and basically specifies that messages published to `osx/json` should be transformed as on the right-hand side.
 
-```python
-formatmap = {
-'osx/json'          :  "I'll have a {fruit} if it costs {price}",
-}
+```ini
+format = "I'll have a {fruit} if it costs {price}"
 ```
 
 The result is:
 
 ![OSX notifier](assets/jmbp-840.jpg)
 
-You associate MQTT topic branches to applications in the configuration file (copy `mqttwarn.conf.sample` to `mqttwarn.conf` for use). In other words, you can accomplish, say, following mappings:
+You associate MQTT topic branches to applications in the configuration file (copy `mqttwarn.ini.sample` to `mqttwarn.ini` for use). In other words, you can accomplish, say, following mappings:
 
 * PUBs to `owntracks/jane/iphone` should be notified via Pushover to John's phone
 * PUBs to `openhab/temperature` should be Tweeted
 * PUBs to `home/monitoring/alert/+` should notify Twitter, Mail, and Prowl
 
 See details in the config sample for how to configure this script.
-The path to the configuration file (which must be valid Python) is obtained from the `MQTTWARNCONF` environment variable which defaults to `mqttwarn.conf` in the current directory.
+The path to the configuration file (which must be valid Python) is obtained from the `MQTTWARNINI` environment variable which defaults to `mqttwarn.ini` in the current directory.
 
 
 ## Configuration of service plugins
 
-Service plugins are configured in the main `mqttwarn.conf` file. Each service has two mandatory _dict_s:
-
-* `service_config` defines things like connection settings for a service, even though many don't need that. Even so, the _dict_ must be defined (e.g. to `None`).
-* `service_targets` defines the notification "targets" we use to associate an incoming MQTT topic with the output (i.e. notificiation) to a service.
+Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:_service_]`, where _service_ is the name of the service. This section _may_ have some settings which are required for a particular service. One mandatory option is called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
+
+## Associate MQTT topics to a service target
+
+Each topic  _mqttwarn_ should subscribe to is configured in an individual section. The section name is the topic name. Consider the following example:
+
+```ini
+[owntracks/+/+]
+targets = log:info, file:f01, mysql:owntracks
+datamap = OwnTracksTopic2Data()
+format  = OwnTracksConvert()
+
+[my/special]
+targets = mysql:m1, log:info
+```
+
+MQTT messages received at `owntracks/+/+` will be directed to the three specified targets, whereas messages received at `my/special` will be stored in a `mysql` target and will be `log`ged at level "INFO".
 
 ### `file`
 
@@ -130,15 +134,11 @@ The `file` service can be used for logging incoming topics, archiving, etc. Each
 
 Supposing we wish to archive all incoming messages to the branch `arch/#` to a file `/data/arch`, we could configure the following:
 
-```python
-file_config  = {
-    'append_newline'   : True,
-}
-file_targets = {
+```ini
+[config:file]
+append_newline = True
+targets = {
     'log-me'    : ['/data/arch'],
-}
-topicmap = {
-        'arch/#'   : ['file:log-me'],
 }
 ```
 
@@ -153,11 +153,9 @@ Each target has four parameters:
 3. `None` or a dict of parameters. Each parameter value is transformed.
 4. `None` or a list of username/password e.g. `( 'username', 'password')`
 
-```python
-http_config = {
-    'timeout' : 60,
-}
-http_targets = {
+```ini
+timeout = 60
+targets = {
                 #method     #URL               # query params or None          # list auth
   'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, ('username', 'password') ],
   'post1    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, None ],
@@ -171,11 +169,17 @@ Note that transforms in parameters must be quoted strings:
 
 ### `log`
 
-'debug' : srv.logging.debug,
-'info'  : srv.logging.info,
-'warn'  : srv.logging.warning,
-'crit'  : srv.logging.critical,
-'error'  : srv.logging.error,
+The `log` service allows us to use the logging system in use by _mqttwarn_ proper, i.e. messages directed at `log` will land in _mqttwarn_'s log file.
+
+```ini
+[config:log]
+targets = {
+    'info'   : [ 'info' ],
+    'warn'   : [ 'warn' ],
+    'crit'   : [ 'crit' ],
+    'error'  : [ 'error' ]
+  }
+```
 
 ### `mqtt`
 
@@ -183,28 +187,22 @@ The `mqtt` service fires off a publish on a topic, creating a new connection to 
 
 Consider the following configuration snippets:
 
-```python
-topicmap = {
-  'in/a1'  : ['mqtt:o1', 'mqtt:o2'],
-}
-
-mqtt_config = {
-    'host'       : 'localhost',
-    'port'       : 1883,
-    'qos'        : 0,
-    'retain'     : False,
-#    'username'  : "jane",
-#    'password'   : "secret",
-}
-mqtt_targets = {
+```ini
+[config:mqtt]
+host =  'localhost'
+port =  1883
+qos =  0
+retain =  False
+username =  "jane"
+password =  "secret"
+targets = {
   'o1'    : [ 'out/food' ],
   'o2'    : [ 'out/fruit/{fruit}' ],
 }
 
-formatmap = {
-  'in/a1'  :  u'Since when does a {fruit} cost {price}?',
-}
-
+[in/a1]
+targets = mqtt:o1, mqtt:o2
+format =  u'Since when does a {fruit} cost {price}?'
 ```
 
 The `topicmap` specifies we should subscribe to `in/a1` and republish to two MQTT targets.
@@ -240,9 +238,9 @@ publish a message to a _different_ broker, see `mqtt`.)
 
 Each target requires a topic name, the desired _qos_ and a _retain_ flag.
 
-```python
-mqttpub_config = None           # This service requires no configuration
-mqttpub_targets = {
+```ini
+[config:mqttpub]
+targets = {
                # topic            qos     retain
     'mout1'  : [ 'mout/1',         0,     False ],
 }
@@ -252,18 +250,17 @@ mqttpub_targets = {
 
 The MySQL plugin is one of the most complicated to set up. It requires the following configuration:
 
-```python
-mysql_config = {
-   'host'      : 'localhost',
-   'port'      : 3306,
-   'user'      : 'jane',
-   'pass'      : 'secret',
-   'dbname'    : 'test',
-}
-mysql_targets = {
+```ini
+[config:mysql]
+host  =  'localhost'
+port  =  3306
+user  =  'jane'
+pass  =  'secret'
+dbname  =  'test'
+targets = {
           # tablename  #fallbackcolumn
  'm2'   : [ 'names',   'full'            ],
-}
+  }
 ```
 
 Suppose we create the following table for the target specified above:
@@ -326,12 +323,12 @@ to have those values stored automatically.
 
 ### `nma`
 
-```python
-nma_config = None
-nma_targets = {
+```ini
+[config:nma]
+targets = {
                  # api key                                            app         event
   'myapp'    : [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', "Nagios",  "Phone call" ],
-}
+  }
 ```
 
 ![NMA](assets/nma.jpg)
@@ -352,12 +349,12 @@ The `pipe` target launches the specified program and its arguments and pipes the
 (possibly formatted) message to the program's _stdin_. If the message doesn't have
 a training newline (`\n`), _mqttwarn_ appends one.
 
-```python
-pipe_config = None      # This service requires no configuration
-pipe_targets = {
+```ini
+[config:pipe]
+targets = {
              # argv0 .....
    'wc'    : [ 'wc',   '-l' ],
-}
+   }
 ```
 
 Note, that for each message targetted to the `pipe` service, a new process is 
@@ -369,12 +366,12 @@ spawned (fork/exec), so it is quite "expensive".
 This service is for [Prowl](http://www.prowlapp.com). Each target requires
 an application key and an application name.
 
-```python
-prowl_config = None             # This service requires no configuration
-prowl_targets = {
+```ini
+[config:prowl]
+targets = {
                     # application key                           # app name
     'pjpm'    :  [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'SuperAPP' ],
-}
+    }
 ```
 
 ![Prowl](assets/prowl.jpg)
@@ -387,13 +384,12 @@ This service is for [PushBullet](https://www.pushbullet.com), an app for Android
 
 You can get your API key from [here](https://www.pushbullet.com/account) after signing up for a PushBullet account. You will also need the device ID to push the notifications to. To obtain this you need  to follow the instructions at [pyPushBullet](https://github.com/Azelphur/pyPushBullet) and run ``./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices``.
 
-```python
-# Pushbullet
-pushbullet_config = None
-pushbullet_targets = {
+```ini
+[config:pushbullet]
+targets = {
                    # API KEY                  device ID
     'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy' ],
-}
+    }
 ```
 
 ![Pushbullet](assets/pushbullet.jpg)
@@ -408,14 +404,14 @@ This service is for [Pushover](https://pushover.net), an app for iOS and Android
 In order to receive pushover notifications you need what is called a _user key_
 and one or more _application keys_ which you configure in the targets definition:
 
-```python
-pushover_config  = None    # This service requires no configuration
-pushover_targets = {
+```ini
+[config:pushover]
+targets = {
     'nagios'     : ['userkey1', 'appkey1'],
     'alerts'     : ['userkey2', 'appkey2'],
     'tracking'   : ['userkey1', 'appkey2'],
     'extraphone' : ['userkey2', 'appkey3'],
-}
+    }
 ```
 
 This defines four targets (`nagios`, `alerts`, etc.) which are directed to the
@@ -430,14 +426,13 @@ notify, say, one or more of your devices as well as one for your spouse.
 
 The `redispub` plugin publishes to a Redis channel.
 
-```python
-redispub_config = {
-    'host'    : 'localhost',
-    'port'    : 6379,
-}
-redispub_targets = {
+```ini
+[config:redispub]
+host  =  'localhost'
+port  =  6379
+targets = {
     'r1'      : [ 'channel-1' ],
-}
+    }
 ```
 
 * Requires Python [redis-py](https://github.com/andymccurdy/redis-py)
@@ -448,12 +443,12 @@ The `sqlite` plugin creates the a table in the database file specified in the ta
 and creates a schema with a single column called `payload` of type `TEXT`. _mqttwarn_
 commits messages routed to such a target immediately.
 
-```python
-sqlite_config = None        # This plugin requires no configuration
-sqlite_targets = {
+```ini
+[config:sqlite]
+targets = {
                    #path        #tablename
   'demotable' : [ '/tmp/m.db',  'mqttwarn'  ],
-}
+  }
 ```
 
 ### `smtp`
@@ -461,18 +456,17 @@ sqlite_targets = {
 The `smtp` service basically implements an MQTT to SMTP gateway which needs
 configuration.
 
-```python
-smtp_config = {
-    'server'    : 'localhost:25',
-    'sender'    : "MQTTwarn <jpm@localhost>",
-    'username'  : None,
-    'password'  : None,
-    'starttls'  : False,
-}
-smtp_targets = {
+```ini
+[config:smtp]
+server  =  'localhost:25'
+sender  =  "MQTTwarn <jpm@localhost>"
+username  =  None
+password  =  None
+starttls  =  False
+targets = {
     'localj'     : [ 'jpm@localhost' ],
     'special'    : [ 'ben@gmail', 'suzie@example.net' ],
-}
+    }
 ```
 
 Targets may contain more than one recipient, in which case all specified
@@ -480,12 +474,12 @@ recipients get the message.
 
 ### `twilio`
 
-```python
-twilio_config = None  # This plugin requires no configuration
-twilio_targets = {
+```ini
+[config:twilio]
+targets = {
              # Account SID            Auth Token            from              to
    'hola'  : [ 'ACXXXXXXXXXXXXXXXXX', 'YYYYYYYYYYYYYYYYYY', "+15105551234",  "+12125551234" ],
-}
+   }
 ```
 
 ![Twilio test](assets/twillio.jpg)
@@ -503,15 +497,15 @@ account, you need four (4) bits which are named as shown below.
 Upon configuring this service's targets, make sure the four (4) elements of the
 list are in the order specified!
 
-```python
-twitter_config        = None                # This service requires no configuration
-twitter_targets = {
+```ini
+[config:twitter]
+targets = {
   'janejol'   :  [ 'vvvvvvvvvvvvvvvvvvvvvv',                              # consumer_key
                    'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # consumer_secret
                    'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',  # access_token_key
                    'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'           # access_token_secret
                   ],
-}
+   }
 ```
 
 ![a tweet](assets/tweet.jpg)
@@ -527,12 +521,12 @@ Requires:
 This service allows for on-screen notification popups on [XBMC](http://xbmc.org/) instances. Each target requires
 the address and port of the XBMC instance (<hostname>:<port>).
 
-```python
-xbmc_config = None             # This service requires no configuration
-xbmc_targets = {
+```ini
+[config:xbmc]
+targets = {
     'living_room'    :  '192.168.1.40:8080',
     'bedroom'        :  '192.168.1.41:8080'
-}
+    }
 ```
 
 ## Plugins
@@ -583,12 +577,11 @@ are defined in `item.data`:
 }
 ```
 
-Any of these values can be used in `formatmap{}` to create custom outgoing
+Any of these values can be used in `format` to create custom outgoing
 messages.
 
-```python
-formatmap = {
-'some/topic'  :  "I'll have a {fruit} if it costs {price} at {_dthhmm}",
+```ini
+format = I'll have a {fruit} if it costs {price} at {_dthhmm}
 }
 ```
 
@@ -603,15 +596,19 @@ def lookup_data(data):
     if type(data) == dict and 'fruit' in data:
             return "Ananas"
     return None
+```
 
-formatmap = {
-#   'in/a1'  :  u'Since when does a {fruit} cost {price}?',
-    'in/a1'  :  lookup_data,
-}
+Then, in the section defining the topic we listen on:
+
+```ini
+...
+[test/topic]
+#format =  Since when does a {fruit} cost {price}?
+format =  lookup_data()
 ```
 
 We've replaced the `formatmap` entry for the topic by a function which you
-define withing the `mqttwarn.conf` configuration file. These functions
+define within the _functions_ file you configure as `functions` in `mqttwarn.ini` configuration file. These functions
 are invoked with decoded JSON `data` passed to them. They must return
 a string, and this returned string replaces the outgoing `message`:
 
@@ -638,10 +635,9 @@ in transformations (see previous section), we would ideally want to parse the MQ
 
 An optional `topicdatamap` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
 
-```python
-topicdatamap = {
-    'owntracks/jane/phone' : OwnTracksTopicDataMap,
-}
+```ini
+[owntracks/jane/phone]
+datamap = OwnTracksTopicDataMap()
 ```
 
 This specifies that when a message for the defined topic `owntracks/jane/phone` is processed, our function `OwnTracksTopicDataMap()` should be invoked to parse that. (As usual, topic names may contain MQTT wildcards.)
@@ -663,12 +659,10 @@ def OwnTracksTopicDataMap(topic):
     return None
 ```
 
-The returned _dict_ is merged into the transformation data, i.e. it is made available to plugins and to transformation rules (`formatmap`). If we then create the following rule
+The returned _dict_ is merged into the transformation data, i.e. it is made available to plugins and to transformation rules (`format`). If we then create the following rule
 
-```python
-formatmap = {
-    'owntracks/jane/phone' : u'{username}: {event} => {desc}',
-}
+```ini
+format = {username}: {event} => {desc}
 ```
 
 the above PUBlish will be transformed into
@@ -681,11 +675,10 @@ jane: leave => Home
 
 A notification can be filtered (or supressed) using a custom function.
 
-An optional `filtermap` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
+An optional `filter` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
 
-```python
-filtermap = {
-    'owntracks/jane/phone' : owntracks_filter,
+```ini
+filter = owntracks_filter
 }
 ```
 
@@ -714,22 +707,15 @@ def owntracks_battfilter(topic, message):
     if data['batt'] is not None:
         return int(data['batt']) > 20
     return True
-
-filtermap = {
-    '/owntracks/#'    : owntracks_battfilter
-}
 ```
 
-Now simply add your choice of target(s) to the topicmap and a nice format string and you are done;
+Now simply add your choice of target(s) to the topic's section and a nice format string and you are done;
 
-```python
-topicmap = {
-    '/owntracks/#'    : ['pushover', 'xbmc']
-}
-
-formatmap = {
-    '/owntracks/#'    : u'My phone battery is getting low ({batt}%)!'
-}
+```ini
+[owntracks/#]
+targets = pushover, xbmc
+filter = owntracks_battfilter
+format = My phone battery is getting low ({batt}%)!
 ```
 
 ## Requirements
@@ -745,7 +731,7 @@ You'll need at least the following components:
 ## Installation
 
 1. Clone this repository into a fresh directory.
-2. Copy `mqttwarn.conf.sample` to `mqttwarn.conf` and edit to your taste
+2. Copy `mqttwarn.ini.sample` to `mqttwarn.ini` and edit to your taste
 3. Install the prerequisite Python modules for the services you want to use
 4. Launch `mqttwarn.py`
 
