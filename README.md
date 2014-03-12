@@ -111,6 +111,33 @@ The `functions` option specifies the path to a Python file containing functions 
 
 In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_) you want to be able to use in target definitions.
 
+
+## The `[config:xxx]` sections
+
+Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
+has a mandatory option called `targets`, which is a dictionary of target names, each 
+pointing to an array of "addresses". Address formats depend on the particular service.
+
+## The `[__topic__]` sections
+
+All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topics
+to subscribe to. _mqttwarn_ handles each message received on this subscription
+by handing it off to one or more service targets.
+
+Each of these sections has a number of optional (`O`) or mandatory (`M`)
+options:
+
+| Option        |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `targets`     |   M    | service targets for this SUB           |
+| `filter`      |   O    | function name to suppress this msg     |
+| `datamap`     |   O    | function name parse topic name to dict |
+| `format`      |   O    | function or string format for output   |
+| `priority`    |   O    | used by `pushover` targets             |
+| `title`       |   O    | used by `pushover` targets             |
+
+
+
 ## Transformation
 
 In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you do do the following:
