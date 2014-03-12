@@ -60,8 +60,26 @@ class Config(RawConfigParser):
         self.password   = None
         self.lwt        = 'clients/%s' % SCRIPTNAME
         self.functions  = None
+        self.loglevel   = 'DEBUG'
 
         self.__dict__.update(self.config('defaults'))
+
+        self.loglevelnumber = self.level2number(self.loglevel)
+
+    def level2number(self, level):
+
+        levels = {
+            'CRITICAL' : 50,
+            'DEBUG' : 10,
+            'ERROR' : 40,
+            'FATAL' : 50,
+            'INFO' : 20,
+            'NOTSET' : 0,
+            'WARN' : 30,
+            'WARNING' : 30,
+        }
+
+        return levels.get(level.upper(), levels['DEBUG'])
 
 
     def g(self, section, key, default=None):
@@ -164,6 +182,7 @@ except Exception, e:
     sys.exit(2)
 
 LOGLEVEL  = logging.DEBUG
+LOGLEVEL  = cf.loglevelnumber
 LOGFILE   = cf.logfile
 LOGFORMAT = cf.logformat
 
