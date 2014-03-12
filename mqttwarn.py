@@ -59,6 +59,7 @@ class Config(RawConfigParser):
         self.username   = None
         self.password   = None
         self.lwt        = 'clients/%s' % SCRIPTNAME
+        self.skipretained = False
         self.functions  = None
         self.loglevel   = 'DEBUG'
 
@@ -312,9 +313,10 @@ def on_message(mosq, userdata, msg):
     payload = str(msg.payload)
     logging.debug("Message received on %s: %s" % (topic, payload))
 
-#    if msg.retain == 1:
-#        logging.debug("Skipping retained message on %s" % topic)
-#        return
+    if msg.retain == 1:
+        if cf.skipretained:
+            logging.debug("Skipping retained message on %s" % topic)
+            return
 
     # Try to find matching settings for this topic
     for section in get_topics():
