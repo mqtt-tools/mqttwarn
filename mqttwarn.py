@@ -325,7 +325,6 @@ def on_message(mosq, userdata, msg):
                 return
             
             targetlist = cf.getlist(section, 'targets')
-            print "XXXXX ", targetlist
             if type(targetlist) != list:
                 logging.error("Target definition in section `%s' is incorrect" % section)
                 cleanup(0)
@@ -461,7 +460,6 @@ def processor():
             if item.get('fmt') is not None:
                 try:
                     text = item.get('fmt').format(**transform_data).encode('utf-8')
-                    logging.debug("Message formatting successful: %s" % text)
                 except Exception, e:
                     pass
             item['message'] = text
