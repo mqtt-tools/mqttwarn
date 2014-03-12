@@ -261,7 +261,10 @@ def get_topic_data(section, topic):
     if cf.has_option(section, 'datamap'):
         name = cf.get(section, 'datamap')
         try:
-            return cf.datamap(name, topic)
+            valid = re.match('^[\w]+\(\)', name)
+            if valid is not None:
+                name = re.sub('[()]', '', name)
+                return cf.datamap(name, topic)
         except Exception, e:
             logging.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, str(e)))
     return None
