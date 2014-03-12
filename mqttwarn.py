@@ -182,7 +182,6 @@ except Exception, e:
     print "Cannot open configuration at %s: %s" % (CONFIGFILE, str(e))
     sys.exit(2)
 
-LOGLEVEL  = logging.DEBUG
 LOGLEVEL  = cf.loglevelnumber
 LOGFILE   = cf.logfile
 LOGFORMAT = cf.logformat
@@ -467,15 +466,6 @@ def processor():
             item['message'] = text
         except:
             pass
-
-        # If the formatmap for this topic has a function in it,
-        # invoke that, pass data and replace message with its output
-        #if hasattr(item['fmt'], '__call__'):
-        #    func = item['fmt']
-        #    try:
-        #        item['message'] = func(item['data'])
-        #    except Exception, e:
-        #        logging.debug("Cannot invoke %s(): %s" % (func, str(e)))
 
         # If the formatmap for this topic looks like a function name
         # `xxxxx()', attempt to invoke that function and replace our
