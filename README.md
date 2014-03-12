@@ -43,6 +43,8 @@ targets = {
 targets = file:mylog, log:info
 ```
 
+**Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
+
 Launch `mqttwarn.py` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
 
 ```
