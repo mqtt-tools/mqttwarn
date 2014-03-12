@@ -145,8 +145,8 @@ options:
 | `filter`      |   O    | function name to suppress this msg     |
 | `datamap`     |   O    | function name parse topic name to dict |
 | `format`      |   O    | function or string format for output   |
-| `priority`    |   O    | used by `pushover` targets             |
-| `title`       |   O    | used by certain targets                |
+| `priority`    |   O    | used by certain targets (see below)    |
+| `title`       |   O    | used by certain targets (see below)    |
 
 
 ## Transformation
@@ -215,7 +215,9 @@ Each target has four parameters:
 4. `None` or a list of username/password e.g. `( 'username', 'password')`
 
 ```ini
+[config:http]
 timeout = 60
+
 targets = {
                 #method     #URL               # query params or None          # list auth
   'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, ('username', 'password') ],
