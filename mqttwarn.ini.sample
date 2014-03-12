@@ -1,0 +1,52 @@
+[defaults]
+hostname  = 'localhost'  ; default
+port      = 1883
+username  = None
+password  = None
+lwt	  = 'clients/mqttwarn'
+skipretained = False
+
+; logging
+logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+logfile	  = 'mqttwarn.log'
+
+; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
+loglevel     = DEBUG
+
+; path to file containing self-defined functions for formatmap and datamap
+; omit the '.py' extension
+functions = 'samplefuncs'
+
+; name the service providers you will be using.
+launch	 = file, log, osxnotify
+
+[config:file]
+append_newline = True
+targets = {
+    'f01'       : ['/tmp/f.01'],
+    'log-me'    : ['/tmp/log.me'],
+    }
+    
+[config:log]
+targets = {
+    'info'   : [ 'info' ],
+    'warn'   : [ 'warn' ],
+    'crit'   : [ 'crit' ],
+    'error'  : [ 'error' ]
+  }
+
+[config:osxnotify]
+targets = {
+    'shell' : [ None ],
+   }
+
+
+[hello/1]
+targets = log:info
+format = u'{name}: {number} => {_dthhmm}'
+
+[owntracks/+/+]
+targets = log:info, file:f01
+datamap = OwnTracksTopic2Data()
+format  = OwnTracksConvert()
+
