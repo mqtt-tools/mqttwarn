@@ -77,7 +77,7 @@ def plugin(srv, item):
     try:
         unknown_keys = add_row(cursor, table_name, col_data)
         if unknown_keys is not None:
-            srv.logging.debug("Skipping unknown keys %s" % ",".join(unknown_keys))
+            srv.logging.debug("Skipping unused keys %s" % ",".join(unknown_keys))
         conn.commit()
     except Exception, e:
         srv.logging.warn("Cannot add mysql row: %s" % (str(e)))
