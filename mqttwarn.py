@@ -58,9 +58,10 @@ class Config(RawConfigParser):
         self.username   = None
         self.password   = None
         self.lwt        = 'clients/%s' % SCRIPTNAME
-        self.functions  = 'functions.py'
+        self.functions  = None
 
         self.__dict__.update(self.config('defaults'))
+
 
     def g(self, section, key, default=None):
         try:
@@ -75,6 +76,26 @@ class Config(RawConfigParser):
         except:
             raise
             return val
+
+    def getlist(self, section, key):
+        ''' Return a list, fail if it isn't a list '''
+
+        val = None
+        try:
+            val = self.get(section, key)
+            val = [s.strip() for s in val.split(',')]
+        except:
+            logging.warn("Expecing a list in section `%s', key `%s'" % section, key)
+
+        return val
+
+    def getdict(self, section, key):
+        val = self.g(section, key)
+
+        try:
+            return dict(val)
+        except:
+            return None
 
     def config(self, section):
         ''' Convert a whole section's options (except the options specified
@@ -103,6 +124,19 @@ class Config(RawConfigParser):
                 for (key) in self.options(section) if key not in ['targets'])
         return d
 
+    def datamap(self, name, topic):
+        ''' Attempt to invoke function `name' loaded from the
+            `functions' Python package '''
+
+        val = None
+
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            val = func(topic)
+        except:
+            raise
+
+        return val
 
 try:
     cf = Config(CONFIGFILE)
@@ -177,7 +211,10 @@ def get_topics():
     topics = []
     for section in cf.sections():
         if section != 'defaults' and not section.startswith('config:'):
-            topics.append(section)
+            if cf.has_option(section, 'targets'):
+                topics.append(section)
+            else:
+                logging.warn("Section `%s' has no targets defined" % section)
     return topics
 
 def get_title(section):
@@ -215,14 +252,12 @@ def is_filtered(section, topic, payload):
     return False
 
 def get_topic_data(section, topic):
-    return #FIXME
-    if conf.has_option(section, 'datamap'):
-        datamap = conf.get(section, 'datamap')
-        if hasattr(datamap, '__call__'):
-            try:
-                return datamap(topic)
-            except Exception, e:
-                logging.warn("Cannot invoke function %s defined in %s: %s" % (datamap, section, str(e)))
+    if cf.has_option(section, 'datamap'):
+        name = cf.get(section, 'datamap')
+        try:
+            return cf.datamap(name, topic)
+        except Exception, e:
+            logging.warn("Cannot invoke function %s defined in %s: %s" % (name, section, str(e)))
     return None
 
 class Job(object):
@@ -261,7 +296,12 @@ def on_message(mosq, userdata, msg):
                 logging.debug("Message on %s has been filtered. Skipping." % (topic))
                 return
             
-            targetlist = cf.g(section, 'target')
+            targetlist = cf.getlist(section, 'targets')
+            print "XXXXX ", targetlist
+            if type(targetlist) != list:
+                logging.error("Target definition in section `%s' is incorrect" % section)
+                cleanup(0)
+
 
             for t in targetlist:
                 logging.debug("Topic [%s] going to %s" % (topic, t))
@@ -327,7 +367,15 @@ def get_config(service):
     return dict(config)
     
 def get_targets(service):
-    targets = cf.g('config:' + service, 'targets')
+    try:
+        targets = cf.getdict('config:' + service, 'targets')
+        if type(targets) != dict:
+            logging.error("No targets for service `%s'" % service)
+            cleanup(0)
+    except:
+        logging.error("No targets for service `%s'" % service)
+        cleanup(0)
+
     if targets is None:
         return {}
     return dict(targets)
@@ -454,7 +502,7 @@ def connect():
     """
 
     try:
-        services = cf.g('defaults', 'launch')
+        services = cf.getlist('defaults', 'launch')
     except:
         logging.error("No services configured. Aborting")
         sys.exit(2)
@@ -502,7 +550,7 @@ def connect():
             # FIXME: add logging with trace
             raise
 
-def cleanup(signum, frame):
+def cleanup(signum=None, frame=None):
     """
     Signal handler to ensure we disconnect cleanly
     in the event of a SIGTERM or SIGINT.

@@ -169,6 +169,14 @@ Note that transforms in parameters must be quoted strings:
 * Wrong: `'q' : {name}`
 * Correct: `'q' : '{name}'`
 
+### `log`
+
+'debug' : srv.logging.debug,
+'info'  : srv.logging.info,
+'warn'  : srv.logging.warning,
+'crit'  : srv.logging.critical,
+'error'  : srv.logging.error,
+
 ### `mqtt`
 
 The `mqtt` service fires off a publish on a topic, creating a new connection to the configured broker for each message.
