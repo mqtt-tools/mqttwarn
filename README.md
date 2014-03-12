@@ -716,7 +716,7 @@ A notification can be filtered (or supressed) using a custom function.
 An optional `filter` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
 
 ```ini
-filter = owntracks_filter
+filter = owntracks_filter()
 }
 ```
 
@@ -752,7 +752,7 @@ Now simply add your choice of target(s) to the topic's section and a nice format
 ```ini
 [owntracks/#]
 targets = pushover, xbmc
-filter = owntracks_battfilter
+filter = owntracks_battfilter()
 format = My phone battery is getting low ({batt}%)!
 ```
 

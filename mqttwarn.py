@@ -269,21 +269,30 @@ def get_messagefmt(section):
 
 def is_filtered(section, topic, payload):
     if cf.has_option(section, 'filter'):
-        filterfunc = cf.get(section, 'filter')
+        filterfunc = get_function_name( cf.get(section, 'filter') )
         try:
             return cf.filter(filterfunc, topic, payload)
         except Exception, e:
             logging.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, str(e)))
     return False
 
+def get_function_name(s):
+    func = None
+
+    if s is not None:
+        try:
+            valid = re.match('^[\w]+\(\)', s)
+            if valid is not None:
+                func = re.sub('[()]', '', s)
+        except:
+            pass
+    return func
+
 def get_topic_data(section, topic):
     if cf.has_option(section, 'datamap'):
-        name = cf.get(section, 'datamap')
+        name = get_function_name(cf.get(section, 'datamap'))
         try:
-            valid = re.match('^[\w]+\(\)', name)
-            if valid is not None:
-                name = re.sub('[()]', '', name)
-                return cf.datamap(name, topic)
+            return cf.datamap(name, topic)
         except Exception, e:
             logging.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, str(e)))
     return None
@@ -472,9 +481,8 @@ def processor():
         # message with its output.
 
         if item.get('fmt') is not None:
-            valid = re.match('^[\w]+\(\)', item['fmt'])
-            if valid is not None:
-                funcname = re.sub('[()]', '', item['fmt'])
+            funcname = get_function_name(item.get('fmt'))
+            if funcname is not None:
                 try:
                     res = cf.formatmap(funcname, item['data'])
                     if res is not None:
