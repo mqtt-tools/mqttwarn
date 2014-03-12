@@ -31,12 +31,12 @@ launch	 = file, log
 [config:file]
 append_newline = True
 targets = {
-    'mylog'     : ['/tmp/mqtt.log'],
+    'mylog'     : ['/tmp/mqtt.log']
     }
     
 [config:log]
 targets = {
-    'info'   : [ 'info' ],
+    'info'   : [ 'info' ]
   }
 
 [test/+]
@@ -176,8 +176,8 @@ Supposing we wish to archive all incoming messages to the branch `arch/#` to a f
 [config:file]
 append_newline = True
 targets = {
-    'log-me'    : ['/data/arch'],
-}
+    'log-me'    : ['/data/arch']
+   }
 ```
 
 ### `http`
@@ -196,8 +196,8 @@ timeout = 60
 targets = {
                 #method     #URL               # query params or None          # list auth
   'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, ('username', 'password') ],
-  'post1    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, None ],
-}
+  'post1    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, None ]
+  }
 ```
 
 Note that transforms in parameters must be quoted strings:
@@ -235,8 +235,8 @@ username =  "jane"
 password =  "secret"
 targets = {
   'o1'    : [ 'out/food' ],
-  'o2'    : [ 'out/fruit/{fruit}' ],
-}
+  'o2'    : [ 'out/fruit/{fruit}' ]
+  }
 
 [in/a1]
 targets = mqtt:o1, mqtt:o2
@@ -280,8 +280,8 @@ Each target requires a topic name, the desired _qos_ and a _retain_ flag.
 [config:mqttpub]
 targets = {
                # topic            qos     retain
-    'mout1'  : [ 'mout/1',         0,     False ],
-}
+    'mout1'  : [ 'mout/1',         0,     False ]
+  }
 ```
 
 ### `mysql`
@@ -297,7 +297,7 @@ pass  =  'secret'
 dbname  =  'test'
 targets = {
           # tablename  #fallbackcolumn
- 'm2'   : [ 'names',   'full'            ],
+ 'm2'   : [ 'names',   'full'            ]
   }
 ```
 
@@ -365,7 +365,7 @@ to have those values stored automatically.
 [config:nma]
 targets = {
                  # api key                                            app         event
-  'myapp'    : [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', "Nagios",  "Phone call" ],
+  'myapp'    : [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', "Nagios",  "Phone call" ]
   }
 ```
 
@@ -391,7 +391,7 @@ a training newline (`\n`), _mqttwarn_ appends one.
 [config:pipe]
 targets = {
              # argv0 .....
-   'wc'    : [ 'wc',   '-l' ],
+   'wc'    : [ 'wc',   '-l' ]
    }
 ```
 
@@ -408,7 +408,7 @@ an application key and an application name.
 [config:prowl]
 targets = {
                     # application key                           # app name
-    'pjpm'    :  [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'SuperAPP' ],
+    'pjpm'    :  [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'SuperAPP' ]
     }
 ```
 
@@ -426,7 +426,7 @@ You can get your API key from [here](https://www.pushbullet.com/account) after s
 [config:pushbullet]
 targets = {
                    # API KEY                  device ID
-    'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy' ],
+    'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy' ]
     }
 ```
 
@@ -448,7 +448,7 @@ targets = {
     'nagios'     : ['userkey1', 'appkey1'],
     'alerts'     : ['userkey2', 'appkey2'],
     'tracking'   : ['userkey1', 'appkey2'],
-    'extraphone' : ['userkey2', 'appkey3'],
+    'extraphone' : ['userkey2', 'appkey3']
     }
 ```
 
@@ -469,7 +469,7 @@ The `redispub` plugin publishes to a Redis channel.
 host  =  'localhost'
 port  =  6379
 targets = {
-    'r1'      : [ 'channel-1' ],
+    'r1'      : [ 'channel-1' ]
     }
 ```
 
@@ -485,7 +485,7 @@ commits messages routed to such a target immediately.
 [config:sqlite]
 targets = {
                    #path        #tablename
-  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ],
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
   }
 ```
 
@@ -503,7 +503,7 @@ password  =  None
 starttls  =  False
 targets = {
     'localj'     : [ 'jpm@localhost' ],
-    'special'    : [ 'ben@gmail', 'suzie@example.net' ],
+    'special'    : [ 'ben@gmail', 'suzie@example.net' ]
     }
 ```
 
@@ -516,7 +516,7 @@ recipients get the message.
 [config:twilio]
 targets = {
              # Account SID            Auth Token            from              to
-   'hola'  : [ 'ACXXXXXXXXXXXXXXXXX', 'YYYYYYYYYYYYYYYYYY', "+15105551234",  "+12125551234" ],
+   'hola'  : [ 'ACXXXXXXXXXXXXXXXXX', 'YYYYYYYYYYYYYYYYYY', "+15105551234",  "+12125551234" ]
    }
 ```
 
@@ -542,7 +542,7 @@ targets = {
                    'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # consumer_secret
                    'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',  # access_token_key
                    'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'           # access_token_secret
-                  ],
+                  ]
    }
 ```
 
