@@ -73,6 +73,42 @@ If you repeat the publish of the second message, you should see the following in
 -->Jane<--
 ```
 
+## The `[defaults]` section
+
+Most of the options in the configuration file have sensible defaults, and/or ought to be self-explanatory:
+
+```ini
+[defaults]
+hostname  = 'localhost'  ; default
+port      = 1883
+username  = None
+password  = None
+lwt       = 'clients/mqttwarn'
+skipretained = True
+
+; logging
+logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+logfile   = 'mqttwarn.log'
+
+; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
+loglevel     = DEBUG
+
+; path to file containing self-defined functions for formatmap and datamap
+; omit the '.py' extension
+functions = 'myfuncs'
+
+; name the service providers you will be using.
+launch   = file, log, osxnotify, mysql, smtp
+```
+
+### `functions`
+
+The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). Do not specify the `.py` extension to the path name you configure here.
+
+### `launch`
+
+In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_) you want to be able to use in target definitions.
+
 ## Transformation
 
 In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you do do the following:
