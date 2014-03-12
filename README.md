@@ -124,6 +124,18 @@ All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topic
 to subscribe to. _mqttwarn_ handles each message received on this subscription
 by handing it off to one or more service targets.
 
+The section name is the topic name. Consider the following example:
+
+```ini
+[icinga/+/+]
+targets = log:info, file:f01, mysql:nagios
+
+[my/special]
+targets = mysql:m1, log:info
+```
+
+MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received at `my/special` will be stored in a `mysql` target and will be `log`ged at level "INFO".
+
 Each of these sections has a number of optional (`O`) or mandatory (`M`)
 options:
 
@@ -134,8 +146,7 @@ options:
 | `datamap`     |   O    | function name parse topic name to dict |
 | `format`      |   O    | function or string format for output   |
 | `priority`    |   O    | used by `pushover` targets             |
-| `title`       |   O    | used by `pushover` targets             |
-
+| `title`       |   O    | used by certain targets                |
 
 
 ## Transformation
@@ -177,21 +188,6 @@ Service plugins are configured in the main `mqttwarn.ini` file. Each service has
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
 
-## Associate MQTT topics to a service target
-
-Each topic  _mqttwarn_ should subscribe to is configured in an individual section. The section name is the topic name. Consider the following example:
-
-```ini
-[owntracks/+/+]
-targets = log:info, file:f01, mysql:owntracks
-datamap = OwnTracksTopic2Data()
-format  = OwnTracksConvert()
-
-[my/special]
-targets = mysql:m1, log:info
-```
-
-MQTT messages received at `owntracks/+/+` will be directed to the three specified targets, whereas messages received at `my/special` will be stored in a `mysql` target and will be `log`ged at level "INFO".
 
 ### `file`
 
@@ -396,6 +392,10 @@ targets = {
   }
 ```
 
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `priority`    |   O    | priority. (dflt: 0)                    |
+
 ![NMA](assets/nma.jpg)
 
 Requires:
@@ -407,6 +407,9 @@ Requires:
 
 * Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
 
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: topic name)   |
 
 ### `pipe`
 
@@ -439,6 +442,12 @@ targets = {
     }
 ```
 
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: `mqttwarn`)   |
+| `priority`    |   O    | priority. (dflt: 0)                    |
+
+
 ![Prowl](assets/prowl.jpg)
 
 * Requires [prowlpy](https://github.com/jacobb/prowlpy)
@@ -456,6 +465,10 @@ targets = {
     'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy' ]
     }
 ```
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: `mqttwarn`)   |
 
 ![Pushbullet](assets/pushbullet.jpg)
 
@@ -482,6 +495,11 @@ targets = {
 This defines four targets (`nagios`, `alerts`, etc.) which are directed to the
 configured _user key_ and _app key_ combinations. This in turn enables you to
 notify, say, one or more of your devices as well as one for your spouse.
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: pushover dflt) |
+| `priority`    |   O    | priority. (dflt: pushover setting)     |
 
 ![pushover on iOS](assets/screenshot.png)
 
@@ -536,6 +554,10 @@ targets = {
 
 Targets may contain more than one recipient, in which case all specified
 recipients get the message.
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | e-mail subject. (dflt: `mqttwarn notification`) |
 
 ### `twilio`
 
@@ -593,6 +615,10 @@ targets = {
     'bedroom'        :  '192.168.1.41:8080'
     }
 ```
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | notification title                     |
 
 ## Plugins
 
