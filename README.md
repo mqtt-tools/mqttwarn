@@ -150,7 +150,7 @@ Each target has four parameters:
 
 1. The HTTP method (one of `get` or `post`)
 2. The URL, which is transformed if possible (transformation errors are ignored)
-3. `None` or a dict of parameters. Each individual parameter value is transformed.
+3. `None` or a dict of parameters. Each indiv parameter value is transformed.
 4. `None` or a list of username/password e.g. `( 'username', 'password')`
 
 ```python
