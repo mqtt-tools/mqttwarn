@@ -329,16 +329,17 @@ def on_message(mosq, userdata, msg):
     # Try to find matching settings for this topic
     for section in get_topics():
         if paho.topic_matches_sub(section, topic):
+            logging.debug("Section %s matches topic %s. Processing..." % (section, topic))
             # Check for any message filters
             if is_filtered(section, topic, payload):
                 logging.debug("Message on %s has been filtered. Skipping." % (topic))
-                return
+                continue
             
             targetlist = cf.getlist(section, 'targets')
             if type(targetlist) != list:
                 logging.error("Target definition in section `%s' is incorrect" % section)
                 cleanup(0)
-
+                return
 
             for t in targetlist:
                 logging.debug("Topic [%s] going to %s" % (topic, t))
