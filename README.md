@@ -124,7 +124,7 @@ All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topic
 to subscribe to. _mqttwarn_ handles each message received on this subscription
 by handing it off to one or more service targets.
 
-The section name is the topic name. Consider the following example:
+The section name is the topic name (can be overridden using the `topic` option). Consider the following example:
 
 ```ini
 [icinga/+/+]
@@ -139,14 +139,15 @@ MQTT messages received at `icinga/+/+` will be directed to the three specified t
 Each of these sections has a number of optional (`O`) or mandatory (`M`)
 options:
 
-| Option        |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `targets`     |   M    | service targets for this SUB           |
-| `filter`      |   O    | function name to suppress this msg     |
-| `datamap`     |   O    | function name parse topic name to dict |
-| `format`      |   O    | function or string format for output   |
-| `priority`    |   O    | used by certain targets (see below)    |
-| `title`       |   O    | used by certain targets (see below)    |
+| Option        |  M/O   | Description                                    |
+| ------------- | :----: | ---------------------------------------------- |
+| `targets`     |   M    | service targets for this SUB                   |
+| `topic`       |   O    | topic to subscribe to (overrides section name) |
+| `filter`      |   O    | function name to suppress this msg             |
+| `datamap`     |   O    | function name parse topic name to dict         |
+| `format`      |   O    | function or string format for output           |
+| `priority`    |   O    | used by certain targets (see below)            |
+| `title`       |   O    | used by certain targets (see below)            |
 
 
 ## Transformation
