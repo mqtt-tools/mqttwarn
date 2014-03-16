@@ -45,8 +45,15 @@ targets = {
 targets = log:info
 format = u'{name}: {number} => {_dthhmm}'
 
-[owntracks/+/+]
+[owntracks-location]
+topic = owntracks/+/+
 targets = log:info, file:f01
 datamap = OwnTracksTopic2Data()
 format  = OwnTracksConvert()
 
+[owntracks-battery]
+topic = owntracks/+/+
+targets = log:info, file:f01
+datamap = OwnTracksTopic2Data()
+filter  = OwnTracksBattFilter()
+format  = {username}'s phone battery is getting low ({batt}%)

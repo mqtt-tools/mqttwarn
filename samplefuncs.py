@@ -23,3 +23,10 @@ def OwnTracksConvert(data):
 
         return "{username} {device} {tst} at location {lat},{lon}".format(**data)
 
+# custom function to filter out any OwnTracks notifications which do
+# not contain the 'batt' parameter
+def OwnTracksBattFilter(topic, message):
+    data = dict(json.loads(message).items())
+    if data['batt'] is not None:
+        return int(data['batt']) > 20
+    return True

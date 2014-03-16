@@ -105,7 +105,7 @@ class Config(RawConfigParser):
             val = self.get(section, key)
             val = [s.strip() for s in val.split(',')]
         except:
-            logging.warn("Expecing a list in section `%s', key `%s'" % section, key)
+            logging.warn("Expecting a list in section `%s', key `%s'" % (section, key))
 
         return val
 
@@ -230,19 +230,25 @@ mqttc = paho.Client(SCRIPTNAME, clean_session=False)
 
 def on_connect(mosq, userdata, result_code):
     logging.debug("Connected to MQTT broker, subscribing to topics...")
-    for section in get_topics():
-        logging.debug("Subscribing to %s" % section)
-        mqttc.subscribe(str(section), 0)
+    for section in get_sections():
+        topic = get_topic(section)
+        logging.debug("Subscribing to %s" % topic)
+        mqttc.subscribe(str(topic), 0)
 
-def get_topics():
-    topics = []
+def get_sections():
+    sections = []
     for section in cf.sections():
         if section != 'defaults' and not section.startswith('config:'):
             if cf.has_option(section, 'targets'):
-                topics.append(section)
+                sections.append(section)
             else:
                 logging.warn("Section `%s' has no targets defined" % section)
-    return topics
+    return sections
+
+def get_topic(section):
+    if cf.has_option(section, 'topic'):
+        return cf.get(section, 'topic')
+    return section
 
 def get_title(section):
     ''' Find the "title" (for pushover) or "subject" (for smtp)
@@ -327,9 +333,11 @@ def on_message(mosq, userdata, msg):
             return
 
     # Try to find matching settings for this topic
-    for section in get_topics():
-        if paho.topic_matches_sub(section, topic):
-            logging.debug("Section %s matches topic %s. Processing..." % (section, topic))
+    for section in get_sections():
+        # Get the topic for this section (usually the section name but optionally overridden)
+        match_topic = get_topic(section)
+        if paho.topic_matches_sub(match_topic, topic):
+            logging.debug("Message on %s matches section [%s]. Processing..." % (topic, section))
             # Check for any message filters
             if is_filtered(section, topic, payload):
                 logging.debug("Message on %s has been filtered. Skipping." % (topic))
@@ -337,12 +345,12 @@ def on_message(mosq, userdata, msg):
             
             targetlist = cf.getlist(section, 'targets')
             if type(targetlist) != list:
-                logging.error("Target definition in section `%s' is incorrect" % section)
+                logging.error("Target definition in section [%s] is incorrect" % section)
                 cleanup(0)
                 return
 
             for t in targetlist:
-                logging.debug("Topic [%s] going to %s" % (topic, t))
+                logging.debug("Message on %s going to %s" % (topic, t))
                 # Each target is either "service" or "service:target"
                 # If no target specified then notify ALL targets
                 service = t
