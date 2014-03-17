@@ -21,7 +21,7 @@ def plugin(srv, item):
     # else the original payload
     text = item.message
 
-    if type(config) == dict and 'append_newline' in config:
+    if type(config) == dict and 'append_newline' in config and config['append_newline']:
         text = text + "\n"
 
     try:

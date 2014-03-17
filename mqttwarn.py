@@ -22,6 +22,10 @@ except ImportError:
     md = md5.new
 import os
 import socket
+from ConfigParser import RawConfigParser, NoOptionError
+import codecs
+import ast
+import re
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
@@ -30,23 +34,157 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 # script name (without extension) used for config/logfile names
 SCRIPTNAME = os.path.splitext(os.path.basename(__file__))[0]
 
-CONFIGFILE = os.getenv(SCRIPTNAME.upper() + 'CONF', SCRIPTNAME + '.conf')
+CONFIGFILE = os.getenv(SCRIPTNAME.upper() + 'INI', SCRIPTNAME + '.ini')
 LOGFILE    = os.getenv(SCRIPTNAME.upper() + 'LOG', SCRIPTNAME + '.log')
 
-# load configuration
-conf = {}
+class Config(RawConfigParser):
+
+    specials = {
+            'TRUE'  : True,
+            'FALSE' : False,
+            'NONE'  : None,
+        }
+
+    def __init__(self, configuration_file):
+        RawConfigParser.__init__(self)
+        f = codecs.open(configuration_file, 'r', encoding='utf-8')
+        self.readfp(f)
+        f.close()
+
+        ''' set defaults '''
+        self.hostname   = 'localhost'
+        self.port       = 1883
+        self.logformat  = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+        self.logfile    = LOGFILE
+        self.username   = None
+        self.password   = None
+        self.lwt        = 'clients/%s' % SCRIPTNAME
+        self.skipretained = False
+        self.functions  = None
+        self.loglevel   = 'DEBUG'
+
+        self.__dict__.update(self.config('defaults'))
+
+        self.loglevelnumber = self.level2number(self.loglevel)
+
+    def level2number(self, level):
+
+        levels = {
+            'CRITICAL' : 50,
+            'DEBUG' : 10,
+            'ERROR' : 40,
+            'FATAL' : 50,
+            'INFO' : 20,
+            'NOTSET' : 0,
+            'WARN' : 30,
+            'WARNING' : 30,
+        }
+
+        return levels.get(level.upper(), levels['DEBUG'])
+
+
+    def g(self, section, key, default=None):
+        try:
+            val = self.get(section, key)
+            if val.upper() in self.specials:
+                return self.specials[val.upper()]
+            return ast.literal_eval(val)
+        except NoOptionError:
+            return default
+        except ValueError:   # e.g. %(xxx)s in string
+            return val
+        except:
+            raise
+            return val
+
+    def getlist(self, section, key):
+        ''' Return a list, fail if it isn't a list '''
+
+        val = None
+        try:
+            val = self.get(section, key)
+            val = [s.strip() for s in val.split(',')]
+        except:
+            logging.warn("Expecting a list in section `%s', key `%s'" % (section, key))
+
+        return val
+
+    def getdict(self, section, key):
+        val = self.g(section, key)
+
+        try:
+            return dict(val)
+        except:
+            return None
+
+    def config(self, section):
+        ''' Convert a whole section's options (except the options specified
+            explicitly below) into a dict, turning
+
+                [config:mqtt]
+                host = 'localhost'
+                username = None
+                list = [1, 'aaa', 'bbb', 4]
+
+            into
+
+                {u'username': None, u'host': 'localhost', u'list': [1, 'aaa', 'bbb', 4]}
+
+            Cannot use config.items() because I want each value to be
+            retrieved with g() as above '''
+
+        d = None
+        if self.has_section(section):
+            d = dict((key, self.g(section, key))
+                for (key) in self.options(section) if key not in ['targets'])
+        return d
+
+    def datamap(self, name, topic):
+        ''' Attempt to invoke function `name' loaded from the
+            `functions' Python package '''
+
+        val = None
+
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            val = func(topic)
+        except:
+            raise
+
+        return val
+
+    def filter(self, name, topic, payload):
+        ''' Attempt to invoke function `name' from the `functions'
+            package. Return that function's True/False '''
+
+        rc = False
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            rc = func(topic, payload)
+        except:
+            raise
+
+        return rc
+
+    def formatmap(self, name, payload):
+        ''' Attempt to invoke `name' from the `functions' package,
+            and return it's string '''
+
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            return func(payload)
+        except:
+            raise
+
 try:
-    execfile(CONFIGFILE, conf)
+    cf = Config(CONFIGFILE)
 except Exception, e:
-    print "Cannot load %s: %s" % (CONFIGFILE, str(e))
+    print "Cannot open configuration at %s: %s" % (CONFIGFILE, str(e))
     sys.exit(2)
 
-LOGLEVEL = conf.get('loglevel', logging.DEBUG)
-LOGFORMAT = conf.get('logformat', '%(asctime)-15s %(message)s')
-
-MQTT_HOST = conf.get('broker', 'localhost')
-MQTT_PORT = int(conf.get('port', 1883))
-MQTT_LWT = conf.get('lwt', None)
+LOGLEVEL  = cf.loglevelnumber
+LOGFILE   = cf.logfile
+LOGFORMAT = cf.logformat
 
 # initialise logging
 logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
@@ -92,81 +230,84 @@ mqttc = paho.Client(SCRIPTNAME, clean_session=False)
 
 def on_connect(mosq, userdata, result_code):
     logging.debug("Connected to MQTT broker, subscribing to topics...")
-    for topic in conf['topicmap'].keys():
+    for section in get_sections():
+        topic = get_topic(section)
         logging.debug("Subscribing to %s" % topic)
-        mqttc.subscribe(topic, 0)
+        mqttc.subscribe(str(topic), 0)
 
-def get_targets(target, targetkey):
-    ''' If no specific target then return ALL targets for
-        this key. '''
-    if target is None:
-        return conf[targetkey].keys()
+def get_sections():
+    sections = []
+    for section in cf.sections():
+        if section != 'defaults' and not section.startswith('config:'):
+            if cf.has_option(section, 'targets'):
+                sections.append(section)
+            else:
+                logging.warn("Section `%s' has no targets defined" % section)
+    return sections
 
-    return [target]
+def get_topic(section):
+    if cf.has_option(section, 'topic'):
+        return cf.get(section, 'topic')
+    return section
 
-def get_title(topic):
+def get_title(section):
     ''' Find the "title" (for pushover) or "subject" (for smtp)
         from the topic. '''
     title = None
-    if 'titlemap' in conf:
-        for key in conf['titlemap'].keys():
-            if paho.topic_matches_sub(key, topic):
-                title = conf['titlemap'][key]
-                break
+    if cf.has_option(section, 'title'):
+        title = cf.get(section, 'title')
     return title
 
-def get_priority(topic):
+def get_priority(section):
     ''' Find the "priority" (for pushover)
         from the topic. '''
     priority = None
-    if 'prioritymap' in conf:
-        for key in conf['prioritymap'].keys():
-            if paho.topic_matches_sub(key, topic):
-                priority = conf['prioritymap'][key]
-                break
+    if cf.has_option(section, 'priority'):
+        priority = cf.get(section, 'priority')
     return priority
 
-def get_messagefmt(topic):
+def get_messagefmt(section):
     ''' Find the message format from the topic '''
     fmt = None
-    if 'formatmap' in conf:
-        for key in conf['formatmap'].keys():
-            if paho.topic_matches_sub(key, topic):
-                fmt = conf['formatmap'][key]
-                break
+    if cf.has_option(section, 'format'):
+        fmt = cf.get(section, 'format')
     return fmt
 
-def get_messagefilter(topic):
-    ''' Find the message filter from the topic '''
-    filter = None
-    if 'filtermap' in conf:
-        for key in conf['filtermap'].keys():
-            if paho.topic_matches_sub(key, topic):
-                filter = conf['filtermap'][key]
-                break
-    return filter
+def is_filtered(section, topic, payload):
+    if cf.has_option(section, 'filter'):
+        filterfunc = get_function_name( cf.get(section, 'filter') )
+        try:
+            return cf.filter(filterfunc, topic, payload)
+        except Exception, e:
+            logging.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, str(e)))
+    return False
 
-def get_topic_data(topic):
-    ''' Find out if there is a function in topicdatamap{} for
-        adding topic into data. If there is, invoke that
-        and return a dict of it '''
-    data = None
-    if 'topicdatamap' in conf:
-        for key in conf['topicdatamap'].keys():
-            if paho.topic_matches_sub(key, topic):
-                func = conf['topicdatamap'][key]
-                if hasattr(func, '__call__'):
-                    try:
-                        data = func(topic)
-                    except Exception, e:
-                        logging.warn("Cannot invoke func(%s): %s" % (topic, str(e)))
-                break
-    return data
+def get_function_name(s):
+    func = None
+
+    if s is not None:
+        try:
+            valid = re.match('^[\w]+\(\)', s)
+            if valid is not None:
+                func = re.sub('[()]', '', s)
+        except:
+            pass
+    return func
+
+def get_topic_data(section, topic):
+    if cf.has_option(section, 'datamap'):
+        name = get_function_name(cf.get(section, 'datamap'))
+        try:
+            return cf.datamap(name, topic)
+        except Exception, e:
+            logging.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, str(e)))
+    return None
 
 class Job(object):
-    def __init__(self, prio, service, topic, payload, target):
+    def __init__(self, prio, service, section, topic, payload, target):
         self.prio       = prio
         self.service    = service
+        self.section    = section
         self.topic      = topic
         self.payload    = payload
         self.target     = target
@@ -182,31 +323,34 @@ def on_message(mosq, userdata, msg):
     Message received from the broker
     """
 
-    if msg.retain == 1:
-        logging.debug("Skipping retained %s" % msg.topic)
-        return
-
     topic = msg.topic
     payload = str(msg.payload)
     logging.debug("Message received on %s: %s" % (topic, payload))
 
-    # Check for any message filters
-    filter = get_messagefilter(topic)
-    if hasattr(filter, '__call__'):
-        try:
-            if filter(topic, payload):
-                logging.debug("Message on %s has been filtered. Skipping." % (topic))
-                return
-        except Exception, e:
-            logging.warn("Cannot invoke filter(%s): %s" % (topic, str(e)))
+    if msg.retain == 1:
+        if cf.skipretained:
+            logging.debug("Skipping retained message on %s" % topic)
+            return
 
     # Try to find matching settings for this topic
-    for key in conf['topicmap'].keys():
-        if paho.topic_matches_sub(key, topic):
-            targetlist = conf['topicmap'][key]
-            logging.debug("Topic [%s] going to %s" % (topic, targetlist))
+    for section in get_sections():
+        # Get the topic for this section (usually the section name but optionally overridden)
+        match_topic = get_topic(section)
+        if paho.topic_matches_sub(match_topic, topic):
+            logging.debug("Message on %s matches section [%s]. Processing..." % (topic, section))
+            # Check for any message filters
+            if is_filtered(section, topic, payload):
+                logging.debug("Message on %s has been filtered. Skipping." % (topic))
+                continue
+            
+            targetlist = cf.getlist(section, 'targets')
+            if type(targetlist) != list:
+                logging.error("Target definition in section [%s] is incorrect" % section)
+                cleanup(0)
+                return
 
             for t in targetlist:
+                logging.debug("Message on %s going to %s" % (topic, t))
                 # Each target is either "service" or "service:target"
                 # If no target specified then notify ALL targets
                 service = t
@@ -224,10 +368,14 @@ def on_message(mosq, userdata, msg):
                     logging.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
                     return
 
-                for sendto in get_targets(target, service + '_targets'):
-                    job = Job(1, service, topic, payload, sendto)
-
-                    # Put the job on the queue
+                sendtos = None
+                if target is None:
+                    sendtos = get_targets(service)
+                else:
+                    sendtos = [target]
+                
+                for sendto in sendtos:
+                    job = Job(1, service, section, topic, payload, sendto)
                     q_in.put(job)
     return
 
@@ -258,6 +406,26 @@ def builtin_transform_data(topic):
 
     return tdata
 
+def get_config(service):
+    config = cf.config('config:' + service)
+    if config is None:
+        return {}
+    return dict(config)
+    
+def get_targets(service):
+    try:
+        targets = cf.getdict('config:' + service, 'targets')
+        if type(targets) != dict:
+            logging.error("No targets for service `%s'" % service)
+            cleanup(0)
+    except:
+        logging.error("No targets for service `%s'" % service)
+        cleanup(0)
+
+    if targets is None:
+        return {}
+    return dict(targets)
+    
 def processor():
     """
     Queue runner. Pull a job from the queue, find the module in charge
@@ -268,27 +436,29 @@ def processor():
         job = q_in.get(15)
 
         service = job.service
+        section = job.section
         target  = job.target
 
-        logging.debug("processor is handling: `%s' for %s" % (service, target))
-
+        logging.debug("Processor is handling: `%s' for %s" % (service, target))
+        
         item = {
             'service'       : service,
+            'section'       : section,
             'target'        : target,
-            'config'        : conf[service + '_config'],
-            'addrs'         : conf[service + '_targets'][target],
+            'config'        : get_config(service),
+            'addrs'         : get_targets(service)[target],
             'topic'         : job.topic,
             'payload'       : job.payload,
-            'fmt'           : get_messagefmt(job.topic),
+            'title'         : get_title(section),
+            'priority'      : get_priority(section),
+            'fmt'           : get_messagefmt(section),
             'data'          : None,
             'message'       : job.payload     # might get replaced with a formatted payload
         }
-        item['title']       = get_title(job.topic)
-        item['priority']    = get_priority(job.topic)
 
         transform_data = builtin_transform_data(job.topic)
 
-        topic_data = get_topic_data(job.topic)
+        topic_data = get_topic_data(job.section, job.topic)
         if topic_data is not None and type(topic_data) == dict:
             transform_data = dict(transform_data.items() + topic_data.items())
 
@@ -309,21 +479,26 @@ def processor():
             if item.get('fmt') is not None:
                 try:
                     text = item.get('fmt').format(**transform_data).encode('utf-8')
-                    logging.debug("Message formmating successful: %s" % text)
                 except Exception, e:
                     pass
             item['message'] = text
         except:
             pass
 
-        # If the formatmap for this topic has a function in it,
-        # invoke that, pass data and replace message with its output
-        if hasattr(item['fmt'], '__call__'):
-            func = item['fmt']
-            try:
-                item['message'] = func(item['data'])
-            except Exception, e:
-                logging.debug("Cannot invoke %s(): %s" % (func, str(e)))
+        # If the formatmap for this topic looks like a function name
+        # `xxxxx()', attempt to invoke that function and replace our
+        # message with its output.
+
+        if item.get('fmt') is not None:
+            funcname = get_function_name(item.get('fmt'))
+            if funcname is not None:
+                try:
+                    res = cf.formatmap(funcname, item['data'])
+                    if res is not None:
+                        item['message'] = res
+                except Exception, e:
+                    logging.warn("Cannot invoke %s(): %s" % (funcname, str(e)))
+
 
         st = Struct(**item)
         notified = False
@@ -331,7 +506,7 @@ def processor():
             module = service_plugins[service]['module']
             notified = module.plugin(srv, st)
         except Exception, e:
-            logging.error("Cannot invoke plugin for `%s': %s" % (service, str(e)))
+            logging.error("Cannot invoke service for `%s': %s" % (service, str(e)))
 
         if not notified:
             logging.warn("Notification of %s for `%s' FAILED" % (service, item.get('topic')))
@@ -351,55 +526,63 @@ def load_module(path):
         except:
             pass
 
-def load_plugins(plugin_list, global_config):
-    for p in plugin_list:
-        filename = 'services/%s.py' % p
+def load_services(services):
+    for service in services:
+        modulefile = 'services/%s.py' % service
 
-        service_plugins[p] = {}
+        service_plugins[service] = {}
 
         try:
-            service_plugins[p]['module'] = load_module(filename)
-            logging.debug("Plugin [%s] loaded" % (filename))
+            service_plugins[service]['module'] = load_module(modulefile)
+            logging.debug("Service %s loaded" % (service))
         except Exception, e:
-            logging.error("Can't load %s plugin (%s): %s" % (p, filename, str(e)))
+            logging.error("Can't load %s service (%s): %s" % (service, modulefile, str(e)))
             sys.exit(1)
 
+        try:
+            service_config = cf.config('config:' + service)
+        except Exception, e:
+            logging.error("Service `%s' has no config section: %s" % (service, str(e)))
+            sys.exit(1)
+
+        service_plugins[service]['config'] = service_config
+            
 def connect():
     """
     Load service plugins, connect to the broker, launch daemon threads and listen forever
     """
 
     try:
-        services = conf['services']
+        services = cf.getlist('defaults', 'launch')
     except:
         logging.error("No services configured. Aborting")
         sys.exit(2)
 
-    load_plugins(services, conf)
+    load_services(services)
 
     srv.mqttc = mqttc
     srv.logging = logging
 
-    logging.debug("Attempting connection to MQTT broker %s:%d..." % (MQTT_HOST, MQTT_PORT))
+    logging.debug("Attempting connection to MQTT broker %s:%d..." % (cf.hostname, int(cf.port)))
     mqttc.on_connect = on_connect
     mqttc.on_message = on_message
     mqttc.on_disconnect = on_disconnect
 
     # check for authentication
-    if 'username' in conf and conf['username'] is not None:
-        mqttc.username_pw_set(conf['username'], conf['password'])
+    if cf.username:
+        mqttc.username_pw_set(cf.username, cf.password)
 
     # configure the last-will-and-testament if set
-    if MQTT_LWT is not None:
-        mqttc.will_set(MQTT_LWT, payload=SCRIPTNAME, qos=0, retain=False)
+    if cf.lwt is not None:
+        mqttc.will_set(cf.lwt, payload=SCRIPTNAME, qos=0, retain=False)
 
     # Delays will be: 3, 6, 12, 24, 30, 30, ...
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
 
     try:
-        result = mqttc.connect(MQTT_HOST, MQTT_PORT, 60)
+        result = mqttc.connect(cf.hostname, int(cf.port), 60)
     except Exception, e:
-        logging.error("Cannot connect to MQTT broker at %s:%d: %s" % (MQTT_HOST, MQTT_PORT, str(e)))
+        logging.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), str(e)))
         sys.exit(2)
 
     # Launch worker threads to operate on queue
@@ -418,7 +601,7 @@ def connect():
             # FIXME: add logging with trace
             raise
 
-def cleanup(signum, frame):
+def cleanup(signum=None, frame=None):
     """
     Signal handler to ensure we disconnect cleanly
     in the event of a SIGTERM or SIGINT.
