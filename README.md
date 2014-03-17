@@ -676,7 +676,6 @@ messages.
 
 ```ini
 format = I'll have a {fruit} if it costs {price} at {_dthhmm}
-}
 ```
 
 
@@ -773,7 +772,6 @@ An optional `filter` in our configuration file, defines the name of a function w
 
 ```ini
 filter = owntracks_filter()
-}
 ```
 
 This specifies that when a message for the defined topic `owntracks/jane/phone` is processed, our function `owntracks_filter()` should be invoked to parse that. The filter function should return `True` if the message should be suppressed, or `False` if the message should be processed. (As usual, topic names may contain MQTT wildcards.)
