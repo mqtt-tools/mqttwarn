@@ -1,5 +1,10 @@
 import time
 
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 def OwnTracksTopic2Data(topic):
     if type(topic) == str:
         try:
