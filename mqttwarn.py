@@ -230,10 +230,14 @@ mqttc = paho.Client(SCRIPTNAME, clean_session=False)
 
 def on_connect(mosq, userdata, result_code):
     logging.debug("Connected to MQTT broker, subscribing to topics...")
+    subscribed = []
     for section in get_sections():
         topic = get_topic(section)
+        if topic in subscribed:
+            continue
         logging.debug("Subscribing to %s" % topic)
         mqttc.subscribe(str(topic), 0)
+        subscribed.append(topic)
 
 def get_sections():
     sections = []
@@ -337,10 +341,10 @@ def on_message(mosq, userdata, msg):
         # Get the topic for this section (usually the section name but optionally overridden)
         match_topic = get_topic(section)
         if paho.topic_matches_sub(match_topic, topic):
-            logging.debug("Message on %s matches section [%s]. Processing..." % (topic, section))
+            logging.debug("Section [%s] matches message on %s. Processing..." % (section, topic))
             # Check for any message filters
             if is_filtered(section, topic, payload):
-                logging.debug("Message on %s has been filtered. Skipping." % (topic))
+                logging.debug("Filter in section [%s] has skipped message on %s" % (section, topic))
                 continue
             
             targetlist = cf.getlist(section, 'targets')
