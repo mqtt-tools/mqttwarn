@@ -430,6 +430,33 @@ def get_targets(service):
         return {}
     return dict(targets)
     
+def xform(field, orig_value, item, transform_data):
+    ''' Attempt transformation on orig_value.
+        1st. function()
+        2nd. inline {xxxx}
+        '''
+
+    if orig_value is None:
+        return None
+
+    res = orig_value
+
+    if item.get(field) is not None:
+        funcname = get_function_name(item.get(field))
+        if funcname is not None:
+            try:
+                res = cf.datamap(funcname, item['data'])
+                return res
+            except Exception, e:
+                logging.warn("Cannot invoke %s() on %s: %s" % (funcname, field, str(e)))
+
+        try:
+            res = item.get(field).format(**transform_data).encode('utf-8')
+        except Exception, e:
+            pass
+
+    return res
+
 def processor():
     """
     Queue runner. Pull a job from the queue, find the module in charge
@@ -474,46 +501,11 @@ def processor():
             data = json.loads(job.payload)
             transform_data = dict(transform_data.items() + data.items())
             item['data'] = dict(transform_data.items())
-
-            # See if there is a formatter for this topic. If so, create an
-            # item containing the transformed payload. If that fails, use
-            # the original payload
-
-            text = "%s" % item.get('payload')
-            if item.get('fmt') is not None:
-                try:
-                    text = item.get('fmt').format(**transform_data).encode('utf-8')
-                except Exception, e:
-                    pass
-            item['message'] = text
         except:
             pass
 
-        # If the formatmap for this topic looks like a function name
-        # `xxxxx()', attempt to invoke that function and replace our
-        # message with its output.
-
-        if item.get('fmt') is not None:
-            funcname = get_function_name(item.get('fmt'))
-            if funcname is not None:
-                try:
-                    res = cf.formatmap(funcname, item['data'])
-                    if res is not None:
-                        item['message'] = res
-                except Exception, e:
-                    logging.warn("Cannot invoke %s(): %s" % (funcname, str(e)))
-
-        # attempt to expand title (from a function or format)
-        if item.get('title') is not None:
-            funcname = get_function_name(item.get('title'))
-            if funcname is not None:
-                try:
-                    res = cf.datamap(funcname, item['data'])
-                    if res is not None:
-                        item['title'] = res
-                except Exception, e:
-                    logging.warn("Cannot invoke %s() on title: %s" % (funcname, str(e)))
-
+        item['message'] = xform('fmt',   item.get('message'), item, transform_data)
+        item['title']   = xform('title', item.get('title'), item, transform_data)
 
         st = Struct(**item)
         notified = False
