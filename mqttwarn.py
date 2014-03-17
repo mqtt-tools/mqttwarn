@@ -503,6 +503,17 @@ def processor():
                 except Exception, e:
                     logging.warn("Cannot invoke %s(): %s" % (funcname, str(e)))
 
+        # attempt to expand title (from a function or format)
+        if item.get('title') is not None:
+            funcname = get_function_name(item.get('title'))
+            if funcname is not None:
+                try:
+                    res = cf.datamap(funcname, item['data'])
+                    if res is not None:
+                        item['title'] = res
+                except Exception, e:
+                    logging.warn("Cannot invoke %s() on title: %s" % (funcname, str(e)))
+
 
         st = Struct(**item)
         notified = False

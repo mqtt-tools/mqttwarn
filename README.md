@@ -147,7 +147,7 @@ options:
 | `datamap`     |   O    | function name parse topic name to dict         |
 | `format`      |   O    | function or string format for output           |
 | `priority`    |   O    | used by certain targets (see below)            |
-| `title`       |   O    | used by certain targets (see below)            |
+| `title`       |   O    | used by certain targets (see below). May be func()       |
 
 
 ## Transformation
