@@ -664,6 +664,7 @@ are defined in `item.data`:
 ```python
 {
   'topic'         : topic name
+  'payload'       : topic payload
   '_dtepoch'      : epoch time                  # 1392628581
   '_dtiso']       : ISO date (UTC)              # 2014-02-17T10:38:43.910691Z
   '_dthhmm'       : timestamp HH:MM (local)     # 10:16
