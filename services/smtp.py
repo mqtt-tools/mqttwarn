@@ -21,6 +21,7 @@ def plugin(srv, item):
     password    = item.config['password']
 
     msg = MIMEText(item.message)
+    msg['To']           =  ', '.join( smtp_addresses )
     msg['Subject']      = item.get('title', "%s notification" % (srv.SCRIPTNAME))
     msg['From']         = sender
     msg['X-Mailer']     = srv.SCRIPTNAME
