@@ -22,6 +22,7 @@ def plugin(srv, item):
 
     msg = MIMEText(item.message)
     msg['Subject']      = item.get('title', "%s notification" % (srv.SCRIPTNAME))
+    msg['To']           = ", ".join(smtp_addresses)
     msg['From']         = sender
     msg['X-Mailer']     = srv.SCRIPTNAME
 
