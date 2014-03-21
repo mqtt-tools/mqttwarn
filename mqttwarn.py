@@ -570,13 +570,13 @@ def connect():
         logging.error("No services configured. Aborting")
         sys.exit(2)
 
-    load_services(services)
-
     try:
         os.chdir(cf.directory)
     except Exception, e:
         logging.error("Cannot chdir to %s: %s" % (cf.directory, str(e)))
         sys.exit(2)
+
+    load_services(services)
 
     srv.mqttc = mqttc
     srv.logging = logging

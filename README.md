@@ -104,7 +104,8 @@ functions = 'myfuncs'
 launch   = file, log, osxnotify, mysql, smtp
 
 ; the directory to which we should cd after startup (default: ".")
-; the cd is performed after loading service plugins
+; the cd is performed before loading service plugins, so it should
+; contain a `services/' directory with the required service plugins.
 directory = /tmp/
 ```
 
