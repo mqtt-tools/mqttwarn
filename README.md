@@ -169,11 +169,13 @@ Consider the following JSON payload published to the MQTT broker:
 mosquitto_pub -t 'osx/json' -m '{"fruit":"banana", "price": 63, "tst" : "1391779336"}'
 ```
 
-Using the `format` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `format` looks like this in the configuration file, and basically specifies that messages published to `osx/json` should be transformed as on the right-hand side.
+Using `format` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `format` looks like this in the configuration file, and basically specifies that messages published to `osx/json` should be transformed as on the right-hand side.
 
 ```ini
 format = "I'll have a {fruit} if it costs {price}"
 ```
+
+(Embedded `"\n"` are converted to newlines on output.)
 
 The result is:
 

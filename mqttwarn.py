@@ -458,6 +458,8 @@ def xform(function, orig_value, transform_data):
         except Exception, e:
             pass
 
+    if type(res) == str:
+        res = res.replace("\\n", "\n")
     return res
 
 def processor():
