@@ -147,8 +147,8 @@ options:
 | `filter`      |   O    | function name to suppress this msg             |
 | `datamap`     |   O    | function name parse topic name to dict         |
 | `format`      |   O    | function or string format for output           |
-| `priority`    |   O    | used by certain targets (see below)            |
-| `title`       |   O    | used by certain targets (see below). May be func()       |
+| `priority`    |   O    | used by certain targets (see below). May be func()  |
+| `title`       |   O    | used by certain targets (see below). May be func()  |
 
 
 ## Transformation
@@ -157,6 +157,7 @@ In addition to passing the payload received via MQTT to a service, _mqttwarn_ al
 
 * Transform payloads on a per/topic basis. For example, you know you'll be receiving JSON, but you want to warn with a nicely formatted message.
 * For certain services, you can change the _title_ (or _subject_) of the outgoing message.
+* For certain services, you can change the _priority_ of the outgoing message.
 
 Consider the following JSON payload published to the MQTT broker:
 
@@ -164,7 +165,7 @@ Consider the following JSON payload published to the MQTT broker:
 mosquitto_pub -t 'osx/json' -m '{"fruit":"banana", "price": 63, "tst" : "1391779336"}'
 ```
 
-Using the `formatmap` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `formatmap` looks like this in the configuration file, and basically specifies that messages published to `osx/json` should be transformed as on the right-hand side.
+Using the `format` we can configure _mqttwarn_ to transform that JSON into a different outgoing message which is the text that is actually notified. Part of said `format` looks like this in the configuration file, and basically specifies that messages published to `osx/json` should be transformed as on the right-hand side.
 
 ```ini
 format = "I'll have a {fruit} if it costs {price}"
