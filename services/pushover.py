@@ -38,13 +38,10 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 def plugin(srv, item):
 
-    topic    = item.topic
     message  = item.message
     addrs    = item.addrs
     title    = item.title
     priority = item.priority
-    fmt      = item.fmt
-    config   = item.config
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 

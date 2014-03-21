@@ -432,7 +432,7 @@ def get_targets(service):
         return {}
     return dict(targets)
     
-def xform(field, orig_value, item, transform_data):
+def xform(function, orig_value, transform_data):
     ''' Attempt transformation on orig_value.
         1st. function()
         2nd. inline {xxxx}
@@ -443,17 +443,17 @@ def xform(field, orig_value, item, transform_data):
 
     res = orig_value
 
-    if item.get(field) is not None:
-        funcname = get_function_name(item.get(field))
-        if funcname is not None:
+    if function is not None:
+        function_name = get_function_name(function)
+        if function_name is not None:
             try:
-                res = cf.datamap(funcname, item['data'])
+                res = cf.datamap(function_name, transform_data)
                 return res
             except Exception, e:
-                logging.warn("Cannot invoke %s() on %s: %s" % (funcname, field, str(e)))
+                logging.warn("Cannot invoke %s() on %s: %s" % (function_name, function, str(e)))
 
         try:
-            res = item.get(field).format(**transform_data).encode('utf-8')
+            res = function.format(**transform_data).encode('utf-8')
         except Exception, e:
             pass
 
@@ -482,11 +482,10 @@ def processor():
             'addrs'         : get_targets(service)[target],
             'topic'         : job.topic,
             'payload'       : job.payload,
-            'title'         : get_title(section),
             'priority'      : get_priority(section),
-            'fmt'           : get_messagefmt(section),
             'data'          : None,
-            'message'       : job.payload     # might get replaced with a formatted payload
+            'title'         : None,
+            'message'       : None
         }
 
         transform_data = builtin_transform_data(job.topic, job.payload)
@@ -498,16 +497,16 @@ def processor():
         # Attempt to decode the payload from JSON. If it's possible, add
         # the JSON keys into item to pass to the plugin, and create the
         # outgoing (i.e. transformed) message.
-
         try:
-            data = json.loads(job.payload)
-            transform_data = dict(transform_data.items() + data.items())
-            item['data'] = dict(transform_data.items())
+            payload_data = json.loads(job.payload)
+            transform_data = dict(transform_data.items() + payload_data.items())
         except:
             pass
 
-        item['message'] = xform('fmt',   item.get('message'), item, transform_data)
-        item['title']   = xform('title', item.get('title'), item, transform_data)
+        item['data'] = dict(transform_data.items())
+
+        item['title'] = xform(get_title(section), SCRIPTNAME, transform_data)
+        item['message'] = xform(get_messagefmt(section), job.payload, transform_data)
 
         st = Struct(**item)
         notified = False
