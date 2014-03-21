@@ -450,7 +450,7 @@ def xform(function, orig_value, transform_data):
                 res = cf.datamap(function_name, transform_data)
                 return res
             except Exception, e:
-                logging.warn("Cannot invoke %s() on %s: %s" % (function_name, function, str(e)))
+                logging.warn("Cannot invoke %s(): %s" % (function_name, str(e)))
 
         try:
             res = function.format(**transform_data).encode('utf-8')
@@ -482,10 +482,10 @@ def processor():
             'addrs'         : get_targets(service)[target],
             'topic'         : job.topic,
             'payload'       : job.payload,
-            'priority'      : get_priority(section),
             'data'          : None,
             'title'         : None,
-            'message'       : None
+            'message'       : None,
+            'priority'      : None
         }
 
         transform_data = builtin_transform_data(job.topic, job.payload)
@@ -507,6 +507,7 @@ def processor():
 
         item['title'] = xform(get_title(section), SCRIPTNAME, transform_data)
         item['message'] = xform(get_messagefmt(section), job.payload, transform_data)
+        item['priority'] = int(xform(get_priority(section), 0, transform_data))
 
         st = Struct(**item)
         notified = False
