@@ -59,6 +59,7 @@ class Config(RawConfigParser):
         self.username   = None
         self.password   = None
         self.lwt        = 'clients/%s' % SCRIPTNAME
+        self.lwtpayload = SCRIPTNAME
         self.skipretained = False
         self.functions  = None
         self.loglevel   = 'DEBUG'
@@ -582,7 +583,7 @@ def connect():
 
     # configure the last-will-and-testament if set
     if cf.lwt is not None:
-        mqttc.will_set(cf.lwt, payload=SCRIPTNAME, qos=0, retain=False)
+        mqttc.will_set(cf.lwt, payload=cf.lwtpayload, qos=0, retain=False)
 
     # Delays will be: 3, 6, 12, 24, 30, 30, ...
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)

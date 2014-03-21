@@ -1,9 +1,10 @@
 [defaults]
-hostname  = 'localhost'  ; default
-port      = 1883
-username  = None
-password  = None
-lwt	  = 'clients/mqttwarn'
+hostname     = 'localhost'  ; default
+port         = 1883
+username     = None
+password     = None
+lwt	     = 'clients/mqttwarn'
+lwtpayload   = 'offline'
 skipretained = False
 
 ; logging
