@@ -63,6 +63,7 @@ class Config(RawConfigParser):
         self.skipretained = False
         self.functions  = None
         self.loglevel   = 'DEBUG'
+        self.directory  = '.'
 
         self.__dict__.update(self.config('defaults'))
 
@@ -568,6 +569,12 @@ def connect():
         sys.exit(2)
 
     load_services(services)
+
+    try:
+        os.chdir(cf.directory)
+    except Exception, e:
+        logging.error("Cannot chdir to %s: %s" % (cf.directory, str(e)))
+        sys.exit(2)
 
     srv.mqttc = mqttc
     srv.logging = logging
