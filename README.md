@@ -81,11 +81,12 @@ Most of the options in the configuration file have sensible defaults, and/or oug
 
 ```ini
 [defaults]
-hostname  = 'localhost'  ; default
-port      = 1883
-username  = None
-password  = None
-lwt       = 'clients/mqttwarn'
+hostname     = 'localhost'  ; default
+port         = 1883
+username     = None
+password     = None
+lwt          = 'clients/mqttwarn'
+lwtpayload   = 'offline'
 skipretained = True
 
 ; logging
