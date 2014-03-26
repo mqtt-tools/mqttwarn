@@ -26,6 +26,14 @@ from ConfigParser import RawConfigParser, NoOptionError
 import codecs
 import ast
 import re
+HAVE_JINJA = True
+try:
+    from jinja2 import Environment, FileSystemLoader
+    jenv = Environment(
+            loader = FileSystemLoader('templates/', encoding='utf-8'),
+            trim_blocks = True)
+except ImportError:
+    HAVE_JINJA = False
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
@@ -241,6 +249,20 @@ def on_connect(mosq, userdata, result_code):
         mqttc.subscribe(str(topic), 0)
         subscribed.append(topic)
 
+def render_template(filename, data):
+    text = None
+    if HAVE_JINJA is True:
+        try:
+            template = jenv.get_template(filename)
+        except Exception:
+            return None
+
+        text = template.render(data)
+
+
+    return text
+
+
 def get_sections():
     sections = []
     for section in cf.sections():
@@ -263,6 +285,13 @@ def get_title(section):
     if cf.has_option(section, 'title'):
         title = cf.get(section, 'title')
     return title
+
+def get_template(section):
+    ''' Find the optional template filename from the topic. '''
+    template = None
+    if cf.has_option(section, 'template'):
+        template = cf.get(section, 'template')
+    return template
 
 def get_priority(section):
     ''' Find the "priority" (for pushover)
@@ -511,6 +540,13 @@ def processor():
         item['title'] = xform(get_title(section), SCRIPTNAME, transform_data)
         item['message'] = xform(get_messagefmt(section), job.payload, transform_data)
         item['priority'] = int(xform(get_priority(section), 0, transform_data))
+
+        if HAVE_JINJA is True:
+            template = get_template(section)
+            if template is not None:
+                text = render_template(template, transform_data)
+                if text is not None:
+                    item['message'] = text
 
         st = Struct(**item)
         notified = False

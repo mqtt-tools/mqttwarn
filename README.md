@@ -154,6 +154,7 @@ options:
 | `format`      |   O    | function or string format for output           |
 | `priority`    |   O    | used by certain targets (see below). May be func()  |
 | `title`       |   O    | used by certain targets (see below). May be func()  |
+| `template`    |   O    | use Jinja2 template instead of `format`        |     
 
 
 ## Transformation
@@ -842,6 +843,55 @@ def owntracks_filter(topic, message):
 
 This filter will suppress any messages that do not contain the `event` token.
 
+### Templates ###
+
+Instead of formatting output with the `format` specification as described above,
+_mqttwarn_ has provision for rendering the output message from [Jinja2] templates,
+probably particularly interesting for the `smtp` or `nntp` and `file` targets.
+
+Consider the following example topic configuration, where we illustrate using
+a template instead of `format` (which is commented out).
+
+```ini
+[nn/+]
+targets = nntp:jpaa
+; format = {name}: {number} => {_dthhmm}
+template = demo.j2
+```
+
+_mqttwarn_ loads Jinja2 templates from the `templates/` directory relative to the
+configured `directory`. Assuming we have the following content in the file
+`templates/demo.j2`
+
+```jinja2
+{#
+    this is a comment
+    in Jinja2
+    See http://jinja.pocoo.org/docs/templates/ for information
+    on Jinja2 templates.
+#}
+{% set upname = name | upper %}
+{% set width = 60 %}
+{% for n in range(0, width) %}-{% endfor %}
+
+Name.................: {{ upname }}
+Number...............: {{ number }}
+Timestamp............: {{ _dthhmm }}
+```
+
+could produce the following message, on any target which uses this configuration.
+
+```
+------------------------------------------------------------
+Name.................: JANE JOLIE
+Number...............: 47
+Timestamp............: 15:47
+```
+
+As mentioned already, we think this is useful for targets which expect a certain
+amount of text (`file`, `smtp`, and `nntp` come to mind).
+
+
 ## Examples ##
 
 This section contains some examples of how `mqttwarn` can be used with some more complex configurations.
@@ -891,3 +941,4 @@ I recommend you use [Supervisor](http://jpmens.net/2014/02/13/in-my-toolbox-supe
 * [MQTTwarn: Ein Rundum-Sorglos-Notifier](http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312), article in German at JAXenter.
 
   [OwnTracks]: http://owntracks.org
+  [Jinja2]: http://jinja.pocoo.org/docs/templates/

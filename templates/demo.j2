@@ -1,0 +1,13 @@
+{#
+    this is a comment
+    in Jinja2
+    See http://jinja.pocoo.org/docs/templates/ for information
+    on Jinja2 templates.
+#}
+{% set upname = name | upper %}
+{% set width = 60 %}
+{% for n in range(0, width) %}-{% endfor %}
+
+Name.................: {{ upname }}
+Number...............: {{ number }}
+Timestamp............: {{ _dthhmm }}
