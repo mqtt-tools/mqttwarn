@@ -877,6 +877,7 @@ configured `directory`. Assuming we have the following content in the file
 Name.................: {{ upname }}
 Number...............: {{ number }}
 Timestamp............: {{ _dthhmm }}
+Original payload.....: {{ payload }}
 ```
 
 could produce the following message, on any target which uses this configuration.
@@ -885,8 +886,14 @@ could produce the following message, on any target which uses this configuration
 ------------------------------------------------------------
 Name.................: JANE JOLIE
 Number...............: 47
-Timestamp............: 15:47
+Timestamp............: 19:15
+Original payload.....: {"name":"Jane Jolie","number":47, "id":91}
 ```
+
+One of the template variables you may be interested in is called `{{ payload }}`; this
+carries the original MQTT message in it. Also, if the payload was JSON, those are
+available also (as shown in the above example), together with all the other
+transformation data.
 
 If the template cannot be rendered, say, it contains a Jinja2 error or the template
 file cannot be found, etc., the original raw message is used in lieu on output.
