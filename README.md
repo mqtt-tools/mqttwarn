@@ -415,6 +415,54 @@ Requires:
 * A [Notify My Android(NMA)](http://www.notifymyandroid.com) account
 * [pynma](https://github.com/uskr/pynma). You don't have to install this -- just copy `pynma.py` to the _mqttwarn_ directory.
 
+### `nntp`
+
+The `nntp` target is used to post articles to an NNTP news server on a particular newsgroup.
+
+```ini
+[config:nntp]
+server  = t1.prox
+port    = 119
+; username = jane@example.com
+; password = secret
+targets = {
+    #              from_hdr                       newsgroup
+    'aa'     : [ 'Me and I <jj@example.com>',    'jp.aa' ],
+  }
+```
+
+Each target's configuration includes the value given to the `From:` header as well as
+a single newsgroup to which the article is posted.
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | The post's subject (dflt: `mqttwarn`)  |
+
+Example:
+
+```
+mosquitto_pub -t nn/ohoh -m '{"name":"Jane Jolie","number":47, "id":91}'
+```
+
+turns into
+
+```
+Path: t1.prox!t1.prox!not-for-mail
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Me and I <jj@example.com>
+Subject: Hi there Jane Jolie
+Newsgroups: jp.aa
+Date: Wed, 26 Mar 2014 22:41:25 -0000
+User-Agent: mqttwarn
+Lines: 1
+Message-ID: <5332caf6$0$20197$41d98655@t1.prox>
+
+Jane Jolie: 47 => 13:41
+
+```
+
 ### `osxnotify`
 
 * Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
