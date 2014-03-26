@@ -45,7 +45,7 @@ def plugin(srv, item):
         nntp = nntplib.NNTP(host, port, user=username, password=password)
 
         print nntp.getwelcome()
-        nntp.set_debuglevel(1)
+        nntp.set_debuglevel(0)
 
         nntp.post(msg_file)
         nntp.quit()
