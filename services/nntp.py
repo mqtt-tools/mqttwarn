@@ -44,7 +44,7 @@ def plugin(srv, item):
         msg_file = StringIO.StringIO(msg.as_string())
         nntp = nntplib.NNTP(host, port, user=username, password=password)
 
-        print nntp.getwelcome()
+        srv.logging.debug(nntp.getwelcome())
         nntp.set_debuglevel(0)
 
         nntp.post(msg_file)
