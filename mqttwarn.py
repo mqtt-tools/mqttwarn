@@ -252,13 +252,8 @@ def on_connect(mosq, userdata, result_code):
 def render_template(filename, data):
     text = None
     if HAVE_JINJA is True:
-        try:
-            template = jenv.get_template(filename)
-        except Exception:
-            return None
-
+        template = jenv.get_template(filename)
         text = template.render(data)
-
 
     return text
 
@@ -544,9 +539,12 @@ def processor():
         if HAVE_JINJA is True:
             template = get_template(section)
             if template is not None:
-                text = render_template(template, transform_data)
-                if text is not None:
-                    item['message'] = text
+                try:
+                    text = render_template(template, transform_data)
+                    if text is not None:
+                        item['message'] = text
+                except Exception, e:
+                    logging.warn("Cannot render `%s' template: %s" % (template, str(e)))
 
         st = Struct(**item)
         notified = False

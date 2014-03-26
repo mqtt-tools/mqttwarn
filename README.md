@@ -888,9 +888,14 @@ Number...............: 47
 Timestamp............: 15:47
 ```
 
+If the template cannot be rendered, say, it contains a Jinja2 error or the template
+file cannot be found, etc., the original raw message is used in lieu on output.
+
 As mentioned already, we think this is useful for targets which expect a certain
 amount of text (`file`, `smtp`, and `nntp` come to mind).
 
+Use of this feature requires [Jinja2], but you don't have to install it if you don't need
+templating.
 
 ## Examples ##
 
