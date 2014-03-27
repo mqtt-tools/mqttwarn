@@ -493,12 +493,13 @@ targets = {
 targets = osxsay:victoria
 ```
 
-* Note: this requires your speakers be enabled and can be a pain for co-workers or family members.
 
 ```ini
 [say/alert]
 targets = osxsay:alex
 ```
+
+* Note: this requires your speakers be enabled and can be a pain for co-workers or family members, and we can't show you a screen shot...
 
 ### `pipe`
 
