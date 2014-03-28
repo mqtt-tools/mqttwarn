@@ -44,7 +44,7 @@ def plugin(srv, item):
             authheader = "Basic %s" % base64string
             req.add_header("Authorization", authheader)
         response = urllib2.urlopen(req)
-	srv.logging.debug("Successfully sent XBMC notification")
+        srv.logging.debug("Successfully sent XBMC notification")
     except urllib2.URLError, e:
         srv.logging.error("URLError: %s" % (str(e)))
         return False
