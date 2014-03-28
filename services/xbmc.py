@@ -7,6 +7,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import urllib
 import urllib2
+import base64
 try:
     import json
 except ImportError:
@@ -19,6 +20,8 @@ def plugin(srv, item):
     xbmchost = item.addrs
     title    = item.title
     message  = item.message
+#    xbmcpassword = "xbmc"
+#    xbmcusername = "xbmc"
 
     jsonparams = {
         "jsonrpc" : "2.0",
@@ -36,8 +39,12 @@ def plugin(srv, item):
         srv.logging.debug("Sending XBMC notification to %s [%s]..." % (item.target, xbmchost))
         req = urllib2.Request(url, jsoncommand)
         req.add_header("Content-type", "application/json")
+        if xbmcpassword:
+            base64string = base64.encodestring ('%s:%s' % (xbmcusername, xbmcpassword))[:-1]
+            authheader = "Basic %s" % base64string
+            req.add_header("Authorization", authheader)
         response = urllib2.urlopen(req)
-        srv.logging.debug("Successfully sent XBMC notification")
+	srv.logging.debug("Successfully sent XBMC notification")
     except urllib2.URLError, e:
         srv.logging.error("URLError: %s" % (str(e)))
         return False
