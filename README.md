@@ -696,14 +696,14 @@ Requires:
 ### `xbmc`
 
 This service allows for on-screen notification popups on [XBMC](http://xbmc.org/) instances. Each target requires
-the address and port of the XBMC instance (<hostname>:<port>).
+the address and port of the XBMC instance (<hostname>:<port>), and an optional username and password if authentication is required.
 
 ```ini
 [config:xbmc]
 targets = {
-			#  host:port		username password
-    'living_room'    :  [ '192.168.1.40:8080', 'xbmc', 'xbmc' ],
-    'bedroom'        :  [ '192.168.1.41:8080', 'xbmc', 'xbmc' }
+			  # host:port,           [user], [password]
+    'living_with_auth' :  [ '192.168.1.40:8080', 'xbmc', 'xbmc' ],
+    'bedroom_no_auth'  :  [ '192.168.1.41:8080' }
     }
 ```
 
