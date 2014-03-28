@@ -701,8 +701,9 @@ the address and port of the XBMC instance (<hostname>:<port>).
 ```ini
 [config:xbmc]
 targets = {
-    'living_room'    :  '192.168.1.40:8080',
-    'bedroom'        :  '192.168.1.41:8080'
+			#  host:port		username password
+    'living_room'    :  [ '192.168.1.40:8080', 'xbmc', 'xbmc' ],
+    'bedroom'        :  [ '192.168.1.41:8080', 'xbmc', 'xbmc' }
     }
 ```
 
