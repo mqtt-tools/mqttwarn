@@ -17,11 +17,9 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    xbmchost = item.addrs
+    xbmchost, xbmcusername, xbmcpassword  = item.addrs
     title    = item.title
     message  = item.message
-#    xbmcpassword = "xbmc"
-#    xbmcusername = "xbmc"
 
     jsonparams = {
         "jsonrpc" : "2.0",
@@ -43,6 +41,9 @@ def plugin(srv, item):
             base64string = base64.encodestring ('%s:%s' % (xbmcusername, xbmcpassword))[:-1]
             authheader = "Basic %s" % base64string
             req.add_header("Authorization", authheader)
+	    srv.logging.debug("Adding XBMC authentication header")
+	else:
+	    srv.logging.debug("Not adding XBMC authentication header")	
         response = urllib2.urlopen(req)
         srv.logging.debug("Successfully sent XBMC notification")
     except urllib2.URLError, e:
