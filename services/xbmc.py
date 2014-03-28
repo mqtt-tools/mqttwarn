@@ -17,7 +17,12 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    xbmchost, xbmcusername, xbmcpassword  = item.addrs
+    try:
+        xbmchost, xbmcusername, xbmcpassword  = item.addrs
+    except:
+        xbmchost = item.addrs
+
+
     title    = item.title
     message  = item.message
 
@@ -25,9 +30,9 @@ def plugin(srv, item):
         "jsonrpc" : "2.0",
         "method"  : "GUI.ShowNotification",
         "id"      : 1,
-        "params"  : { 
-            "title"   : title, 
-            "message" : message 
+        "params"  : {
+            "title"   : title,
+            "message" : message
         }
     }
     jsoncommand = json.dumps(jsonparams)
