@@ -701,9 +701,9 @@ the address and port of the XBMC instance (<hostname>:<port>), and an optional u
 ```ini
 [config:xbmc]
 targets = {
-			  # host:port,           [user], [password]
+                          # host:port,           [user], [password]
     'living_with_auth' :  [ '192.168.1.40:8080', 'xbmc', 'xbmc' ],
-    'bedroom_no_auth'  :  [ '192.168.1.41:8080' }
+    'bedroom_no_auth'  :  [ '192.168.1.41:8080' ] }
     }
 ```
 
