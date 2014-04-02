@@ -424,8 +424,8 @@ The `nntp` target is used to post articles to an NNTP news server on a particula
 [config:nntp]
 server  = t1.prox
 port    = 119
-; username = jane@example.com
-; password = secret
+; username = "jane@example.com"
+; password = "secret"
 targets = {
     #              from_hdr                       newsgroup
     'aa'     : [ 'Me and I <jj@example.com>',    'jp.aa' ],
