@@ -154,6 +154,7 @@ options:
 | `format`      |   O    | function or string format for output           |
 | `priority`    |   O    | used by certain targets (see below). May be func()  |
 | `title`       |   O    | used by certain targets (see below). May be func()  |
+| `image`       |   O    | used by certain targets (see below). May be func()  |
 | `template`    |   O    | use Jinja2 template instead of `format`        |     
 
 
@@ -710,6 +711,7 @@ targets = {
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | notification title                     |
+| `image`       |   O    | notification image url                 |
 
 ## Plugins
 
