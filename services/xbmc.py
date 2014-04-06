@@ -27,6 +27,7 @@ def plugin(srv, item):
 
     title    = item.title
     message  = item.message
+    image    = item.image
 
     jsonparams = {
         "jsonrpc" : "2.0",
@@ -34,7 +35,8 @@ def plugin(srv, item):
         "id"      : 1,
         "params"  : {
             "title"   : title,
-            "message" : message
+            "message" : message,
+            "image"   : image
         }
     }
     jsoncommand = json.dumps(jsonparams)

@@ -273,35 +273,11 @@ def get_topic(section):
         return cf.get(section, 'topic')
     return section
 
-def get_title(section):
-    ''' Find the "title" (for pushover) or "subject" (for smtp)
-        from the topic. '''
-    title = None
-    if cf.has_option(section, 'title'):
-        title = cf.get(section, 'title')
-    return title
-
-def get_template(section):
-    ''' Find the optional template filename from the topic. '''
-    template = None
-    if cf.has_option(section, 'template'):
-        template = cf.get(section, 'template')
-    return template
-
-def get_priority(section):
-    ''' Find the "priority" (for pushover)
-        from the topic. '''
-    priority = None
-    if cf.has_option(section, 'priority'):
-        priority = cf.get(section, 'priority')
-    return priority
-
-def get_messagefmt(section):
-    ''' Find the message format from the topic '''
-    fmt = None
-    if cf.has_option(section, 'format'):
-        fmt = cf.get(section, 'format')
-    return fmt
+def get_config(section, name):
+    value = None
+    if cf.has_option(section, name):
+        value = cf.get(section, name)
+    return value
 
 def is_filtered(section, topic, payload):
     if cf.has_option(section, 'filter'):
@@ -400,7 +376,7 @@ def on_message(mosq, userdata, msg):
 
                 sendtos = None
                 if target is None:
-                    sendtos = get_targets(service)
+                    sendtos = get_service_targets(service)
                 else:
                     sendtos = [target]
                 
@@ -437,13 +413,13 @@ def builtin_transform_data(topic, payload):
 
     return tdata
 
-def get_config(service):
+def get_service_config(service):
     config = cf.config('config:' + service)
     if config is None:
         return {}
     return dict(config)
     
-def get_targets(service):
+def get_service_targets(service):
     try:
         targets = cf.getdict('config:' + service, 'targets')
         if type(targets) != dict:
@@ -505,12 +481,13 @@ def processor():
             'service'       : service,
             'section'       : section,
             'target'        : target,
-            'config'        : get_config(service),
-            'addrs'         : get_targets(service)[target],
+            'config'        : get_service_config(service),
+            'addrs'         : get_service_targets(service)[target],
             'topic'         : job.topic,
             'payload'       : job.payload,
             'data'          : None,
             'title'         : None,
+            'image'         : None,
             'message'       : None,
             'priority'      : None
         }
@@ -532,12 +509,13 @@ def processor():
 
         item['data'] = dict(transform_data.items())
 
-        item['title'] = xform(get_title(section), SCRIPTNAME, transform_data)
-        item['message'] = xform(get_messagefmt(section), job.payload, transform_data)
-        item['priority'] = int(xform(get_priority(section), 0, transform_data))
+        item['title'] = xform(get_config(section, 'title'), SCRIPTNAME, transform_data)
+        item['image'] = xform(get_config(section, 'image'), '', transform_data)
+        item['message'] = xform(get_config(section, 'format'), job.payload, transform_data)
+        item['priority'] = int(xform(get_config(section, 'priority'), 0, transform_data))
 
         if HAVE_JINJA is True:
-            template = get_template(section)
+            template = get_config(section, 'template')
             if template is not None:
                 try:
                     text = render_template(template, transform_data)
