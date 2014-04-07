@@ -15,6 +15,8 @@ _files_, publishing to _MQTT_, HTTP GET and POST requests, _NMA_, _Pushbullet_, 
 
 Notifications are transmitted to the appropriate service via plugins. We provide plugins for the above list of services, and you can easily add your own.
 
+I've written an introductory post, explaining [what mqttwarn can be used for](http://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/).
+
 
 ## Getting started
 
