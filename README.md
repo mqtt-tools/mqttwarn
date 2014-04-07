@@ -711,7 +711,7 @@ targets = {
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | notification title                     |
-| `image`       |   O    | notification image url                 |
+| `image`       |   O    | notification image url  ([example](https://github.com/jpmens/mqttwarn/issues/53#issuecomment-39691429))|
 
 ## Plugins
 
