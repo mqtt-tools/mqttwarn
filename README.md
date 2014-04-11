@@ -523,16 +523,20 @@ The transformation function I've defined as follows:
 ```python
 def check_temperature(data):
     '''Calculate Nagios/Icinga warning status'''
+    OK = 0
+    WARNING = 1
+    CRITICAL = 2
+    UNKNOWN = 3
     if type(data) == dict:
         if 'temp' in data:
             temp = int(data['temp'])
             if temp < 20:
-                return 0        # OK
+                return OK
             if temp < 25:
-                return 1        # WARNING
-            return 2            # CRITICAL
+                return WARNING
+            return CRITICAL
 
-    return 3 # UNKNOWN
+    return UNKNOWN
 ```
 
 Requires [pynsca](https://github.com/djmitche/pynsca), but you don't have to install that; it suffices if you drop `pynsca.py` alongside `mqttwarn.py` (i.e. in the same directory)
