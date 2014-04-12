@@ -8,8 +8,29 @@ This program subscribes to any number of MQTT topics (which may include wildcard
 
 For example, you may wish to notify via e-mail and to Pushover of an alarm published as text to the MQTT topic `home/monitoring/+`.
 
-_mqttwarn_ supports a number of services (listed alphabetically below), including output to
-_files_, publishing to _MQTT_, HTTP GET and POST requests, _NMA_, _Pushbullet_, _Pushover_, _Twilio_, _Twitter_, SMTP, _Prowl_, Redis PUB, _XBMC_, MySQL, etc.
+_mqttwarn_ supports a number of services (listed alphabetically below):
+
+* [file](#file)
+* [http](#http)
+* [log](#log)
+* [mqtt](#mqtt)
+* [mqttpub](#mqttpub)
+* [mysql](#mysql)
+* [nma](#nma)
+* [nntp](#nntp)
+* [nsca](#nsca)
+* [osxnotify](#osxnotify)
+* [osxsay](#osxsay)
+* [pipe](#pipe)
+* [prowl](#prowl)
+* [pushbullet](#pushbullet)
+* [pushover](#pushover)
+* [redispub](#redispub)
+* [sqlite](#sqlite)
+* [smtp](#smtp)
+* [twilio](#twilio)
+* [twitter](#twitter)
+* [xbmc](#xbmc)
 
 ![definition by Google](assets/mqttwarn.png)
 
