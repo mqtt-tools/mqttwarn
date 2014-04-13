@@ -1087,7 +1087,7 @@ The Jinja2 template looks like this:
     payload respectively.
 #}
 {% set data = {
-	'host'		: 'ardu3',
+	'host'		: topic,
 	'short_message'	: "Heat " + payload,
 	'tst'		: _dtiso,
 	'temperature'	: payload,
@@ -1101,7 +1101,7 @@ and an example JSON string returned by that template is then passed to our confi
 targets thusly:
 
 ```json
-"host": "ardu3", "woohooo": 17, "tst": "2014-04-13T09:25:46.247150Z", "temperature": "22", "short_message": "Heat 22"}
+"host": "arduino/temp", "woohooo": 17, "tst": "2014-04-13T09:25:46.247150Z", "temperature": "22", "short_message": "Heat 22"}
 ```
 
 
