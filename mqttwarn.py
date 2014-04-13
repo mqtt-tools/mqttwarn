@@ -524,16 +524,19 @@ def processor():
                 except Exception, e:
                     logging.warn("Cannot render `%s' template: %s" % (template, str(e)))
 
-        st = Struct(**item)
-        notified = False
-        try:
-            module = service_plugins[service]['module']
-            notified = module.plugin(srv, st)
-        except Exception, e:
-            logging.error("Cannot invoke service for `%s': %s" % (service, str(e)))
+        if item.get('message') is not None:
+            st = Struct(**item)
+            notified = False
+            try:
+                module = service_plugins[service]['module']
+                notified = module.plugin(srv, st)
+            except Exception, e:
+                logging.error("Cannot invoke service for `%s': %s" % (service, str(e)))
 
-        if not notified:
-            logging.warn("Notification of %s for `%s' FAILED" % (service, item.get('topic')))
+            if not notified:
+                logging.warn("Notification of %s for `%s' FAILED" % (service, item.get('topic')))
+        else:
+            logging.warn("Notification of %s for `%s' suppressed: text is None" % (service, item.get('topic')))
 
         q_in.task_done()
 
