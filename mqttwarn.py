@@ -32,6 +32,7 @@ try:
     jenv = Environment(
             loader = FileSystemLoader('templates/', encoding='utf-8'),
             trim_blocks = True)
+    jenv.filters['jsonify'] = json.dumps
 except ImportError:
     HAVE_JINJA = False
 
