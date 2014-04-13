@@ -525,7 +525,7 @@ def processor():
                 except Exception, e:
                     logging.warn("Cannot render `%s' template: %s" % (template, str(e)))
 
-        if item.get('message') is not None:
+        if item.get('message') is not None and len(item.get('message')) > 0:
             st = Struct(**item)
             notified = False
             try:
@@ -537,7 +537,7 @@ def processor():
             if not notified:
                 logging.warn("Notification of %s for `%s' FAILED" % (service, item.get('topic')))
         else:
-            logging.warn("Notification of %s for `%s' suppressed: text is None" % (service, item.get('topic')))
+            logging.warn("Notification of %s for `%s' suppressed: text is empty" % (service, item.get('topic')))
 
         q_in.task_done()
 

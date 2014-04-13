@@ -898,7 +898,7 @@ out/food Ananas
 out/fruit/pineapple Ananas
 ```
 
-If a function operating on a message (i.e. within `format =`) returns `None`, the target notification is suppressed.
+If a function operating on a message (i.e. within `format =`) returns `None` or an empty string, the target notification is suppressed.
 
 ### Incorporating topic names into transformation data
 
