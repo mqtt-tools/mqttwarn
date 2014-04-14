@@ -286,7 +286,7 @@ targets = {
 
 The priority field can be used to indicate a message colour.
 
-![irccat](assets/irccat.jpg)
+![irccat](assets/irccat.png)
 
 ### `log`
 
