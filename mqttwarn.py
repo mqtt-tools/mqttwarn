@@ -244,10 +244,11 @@ def on_connect(mosq, userdata, result_code):
     subscribed = []
     for section in get_sections():
         topic = get_topic(section)
+        qos = get_qos(section)
         if topic in subscribed:
             continue
-        logging.debug("Subscribing to %s" % topic)
-        mqttc.subscribe(str(topic), 0)
+        logging.debug("Subscribing to %s (qos=%d)" % (topic, qos))
+        mqttc.subscribe(str(topic), qos)
         subscribed.append(topic)
 
 def render_template(filename, data):
@@ -273,6 +274,12 @@ def get_topic(section):
     if cf.has_option(section, 'topic'):
         return cf.get(section, 'topic')
     return section
+
+def get_qos(section):
+    qos = 0
+    if cf.has_option(section, 'qos'):
+        qos = int(cf.get(section, 'qos'))
+    return qos
 
 def get_config(section, name):
     value = None

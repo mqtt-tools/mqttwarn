@@ -181,6 +181,7 @@ options:
 | `title`       |   O    | used by certain targets (see below). May be func()  |
 | `image`       |   O    | used by certain targets (see below). May be func()  |
 | `template`    |   O    | use Jinja2 template instead of `format`        |     
+| `qos`         |   O    | MQTT QoS for subscription (dflt: 0)            |
 
 
 ## Transformation
@@ -684,7 +685,7 @@ targets = {
    }
 ```
 
-Note, that for each message targetted to the `pipe` service, a new process is 
+Note, that for each message targetted to the `pipe` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
 
 
@@ -713,7 +714,7 @@ targets = {
 
 ### `pushbullet`
 
-This service is for [PushBullet](https://www.pushbullet.com), an app for Android along with an extension for Chrome, which allows notes, links, pictures, addresses and files to be sent between devices. 
+This service is for [PushBullet](https://www.pushbullet.com), an app for Android along with an extension for Chrome, which allows notes, links, pictures, addresses and files to be sent between devices.
 
 You can get your API key from [here](https://www.pushbullet.com/account) after signing up for a PushBullet account. You will also need the device ID to push the notifications to. To obtain this you need  to follow the instructions at [pyPushBullet](https://github.com/Azelphur/pyPushBullet) and run ``./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices``.
 
