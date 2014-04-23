@@ -885,7 +885,7 @@ targets = {
 
 ### `xmpp`
 
-The `xmpp` service sends notification of one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
+The `xmpp` service sends notification to one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
 (Jabber) recipients.
 
 ```ini
