@@ -822,7 +822,7 @@ recipients get the message.
 
 ### `syslog`
 
-The `syslog` service transfers MQTT messages to a syslog server.
+The `syslog` service transfers MQTT messages to a local syslog server.
 
 ```ini
 [config:syslog]
