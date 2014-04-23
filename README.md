@@ -33,6 +33,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [twilio](#twilio)
 * [twitter](#twitter)
 * [xbmc](#xbmc)
+* [xmpp](#xmpp)
 
 ![definition by Google](assets/mqttwarn.png)
 
@@ -881,6 +882,27 @@ targets = {
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | notification title                     |
 | `image`       |   O    | notification image url  ([example](https://github.com/jpmens/mqttwarn/issues/53#issuecomment-39691429))|
+
+### `xmpp`
+
+The `xmpp` service sends notification to one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
+(Jabber) recipients.
+
+```ini
+[config:xmpp]
+sender = 'mqttwarn@jabber.server'
+password = 'Password for sender'
+targets = {
+    'admin' : [ 'admin1@jabber.server', 'admin2@jabber.server' ]
+    }
+```
+
+Targets may contain more than one recipient, in which case all specified
+recipients get the message.
+
+Requires:
+* XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
+* [xmpppy](http://xmpppy.sourceforge.net)
 
 ## Plugins
 
