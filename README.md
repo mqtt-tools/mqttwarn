@@ -885,8 +885,8 @@ targets = {
 
 ### `xmpp`
 
-The `xmpp` service implements an MQTT to XMPP gateway. One sender can reach 
-multiple recipients.  
+The `xmpp` service sends notification of one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
+(Jabber) recipients.
 
 ```ini
 [config:xmpp]
