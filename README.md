@@ -900,30 +900,6 @@ targets = {
 | `image`       |   O    | notification image url  ([example](https://github.com/jpmens/mqttwarn/issues/53#issuecomment-39691429))|
 
 
-
-
-### `xmpp`
-
-Notification of one or more [XMPP](http://en.wikipedia.org/wiki/XMPP) (Jabber) recipients. 
-
-```ini
-[config:xmpp]
-sender =  "notifications@swissjabber.org"
-password =  None
-targets = {
-    'local'  : [ 'fab@swissjabber.org' ],
-    'remote' : [ 'ben@gmail', 'suzie@example.net' ]
-    }
-```
-
-Targets may contain more than one recipient, in which case all specified
-recipients get the message.
-
-Requires:
-
-* A XMPP (Jabber) account
-* [xmpppy](http://xmpppy.sourceforge.net/)
-
 ## Plugins
 
 Creating new plugins is rather easy, and I recommend you take the `file` plugin
