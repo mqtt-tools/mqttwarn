@@ -30,6 +30,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [redispub](#redispub)
 * [sqlite](#sqlite)
 * [smtp](#smtp)
+* [syslog](#syslog)
 * [twilio](#twilio)
 * [twitter](#twitter)
 * [xbmc](#xbmc)
@@ -180,7 +181,7 @@ options:
 | `priority`    |   O    | used by certain targets (see below). May be func()  |
 | `title`       |   O    | used by certain targets (see below). May be func()  |
 | `image`       |   O    | used by certain targets (see below). May be func()  |
-| `template`    |   O    | use Jinja2 template instead of `format`        |     
+| `template`    |   O    | use Jinja2 template instead of `format`        |
 | `qos`         |   O    | MQTT QoS for subscription (dflt: 0)            |
 
 
@@ -782,7 +783,7 @@ targets = {
 
 ### `sqlite`
 
-The `sqlite` plugin creates the a table in the database file specified in the targets,
+The `sqlite` plugin creates a table in the database file specified in the targets,
 and creates a schema with a single column called `payload` of type `TEXT`. _mqttwarn_
 commits messages routed to such a target immediately.
 
@@ -818,6 +819,27 @@ recipients get the message.
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | e-mail subject. (dflt: `mqttwarn notification`) |
+
+### `syslog`
+
+The `syslog` service transfers MQTT messages to a local syslog server.
+
+```ini
+[config:syslog]
+targets = {
+              # facility    priority,  option
+    'user'   : ['user',     'debug',  'pid'],
+    'kernel' : ['kernel',   'warn',   'pid']
+    }
+```
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: `mqttwarn`)   |
+
+```
+Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
+```
 
 ### `twilio`
 
