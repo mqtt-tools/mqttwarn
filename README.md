@@ -14,6 +14,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss](#gss)
 * [http](#http)
 * [irccat](#irccat)
+* [linuxnotify](#linuxnotify)
 * [log](#log)
 * [mqtt](#mqtt)
 * [mqttpub](#mqttpub)
@@ -332,6 +333,22 @@ targets = {
 The priority field can be used to indicate a message colour.
 
 ![irccat](assets/irccat.png)
+
+### `linuxnotify`
+The `linuxnotify` service is used to display notifications on a running desktop
+environment (only tested with Gnome3).
+
+```ini
+[config:linuxnotify]
+targets = {
+    'warn' : [ 'Warning' ]
+    }
+```
+
+![linuxnotify](assets/linuxnotify.png)
+
+Requires:
+* gobject-introspection Python bindings
 
 ### `log`
 
@@ -903,6 +920,7 @@ targets = {
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | notification title                     |
 | `image`       |   O    | notification image url  ([example](https://github.com/jpmens/mqttwarn/issues/53#issuecomment-39691429))|
+
 
 ## Plugins
 
