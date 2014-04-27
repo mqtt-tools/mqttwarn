@@ -262,6 +262,8 @@ targets  = {
     }
 ```
 
+NOTE: only the first 100 chars of the message will be announced since this is the max length supported by the Google Translate API.
+
 Requires
 * [Freeswitch](https://www.freeswitch.org/)
 * Internet connection for Google Translate API
