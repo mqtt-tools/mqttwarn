@@ -10,6 +10,7 @@ For example, you may wish to notify via e-mail and to Pushover of an alarm publi
 
 _mqttwarn_ supports a number of services (listed alphabetically below):
 
+* [dbus](#dbus)
 * [file](#file)
 * [freeswitch](#freeswitch)
 * [gss](#gss)
@@ -230,6 +231,21 @@ Service plugins are configured in the main `mqttwarn.ini` file. Each service has
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
 
+### `dbus`
+
+The `dbus` service send a message over the dbus to the user's desktop (only
+tested with Gnome3).
+
+```ini
+[config:dbus]
+targets = {
+    'warn' : [ 'Warning' ],
+    'note' : [ 'Note' ]
+    }
+```
+
+Requires:
+* Python [dbus](http://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
 
 ### `file`
 
