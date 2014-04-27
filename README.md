@@ -268,6 +268,8 @@ The `freeswitch` service will make a VOIP call to the number specified in your t
 
 In order to use this service you must enable the XML RPC API in Freeswitch - see instructions [here](http://wiki.freeswitch.org/wiki/Mod_xml_rpc).
 
+Some of you may be paranoid and not like the idea of sending your announcements to Google for translation, but this was the quickest, easiest form of TTS I could find. If anyone has any better suggestions I would be more than happy to have a look.
+
 ```ini
 [config:freeswitch]
 host     = 'localhost'
