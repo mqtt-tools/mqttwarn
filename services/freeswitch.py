@@ -22,6 +22,10 @@ def plugin(srv, item):
     title    = item.title
     message  = item.message
 
+    if len(message) > 100:
+        srv.logging.debug("Message is too long (%d chars) for Google Translate API (max 100 chars allowed), truncating message before processing" % (len(message)))
+        message = message[:100]
+
     try:
         # Google Translate API
         params = urllib.urlencode({ 'tl' : 'en', 'q' : message })
