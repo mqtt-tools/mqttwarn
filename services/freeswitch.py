@@ -37,7 +37,7 @@ def plugin(srv, item):
         # originate the call
         server.freeswitch.api("originate", channel_vars + gateway + number + " &playback(" + shout_url + ")")
     except Exception, e:
-        srv.logging.error("Error sending XBMC notification to %s [%s]: %s" % (item.target, xbmchost, str(e)))
+        srv.logging.error("Error originating Freeswitch VOIP call to %s via %s%s: %s" % (item.target, gateway, number, str(e)))
         return False
 
     return True
