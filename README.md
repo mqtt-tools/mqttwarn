@@ -396,7 +396,8 @@ Requires:
 
 ### `log`
 
-The `log` service allows us to use the logging system in use by _mqttwarn_ proper, i.e. messages directed at `log` will land in _mqttwarn_'s log file.
+The `log` service allows us to use the logging system in use by _mqttwarn_
+proper, i.e. messages directed at `log` will land in _mqttwarn_'s log file.
 
 ```ini
 [config:log]
@@ -410,7 +411,8 @@ targets = {
 
 ### `mqtt`
 
-The `mqtt` service fires off a publish on a topic, creating a new connection to the configured broker for each message.
+The `mqtt` service fires off a publish on a topic, creating a new connection
+to the configured broker for each message.
 
 Consider the following configuration snippets:
 
@@ -432,9 +434,9 @@ targets = mqtt:o1, mqtt:o2
 format =  u'Since when does a {fruit} cost {price}?'
 ```
 
-The `topicmap` specifies we should subscribe to `in/a1` and republish to two MQTT targets.
-The second target (`mqtt:o2`) has a topic branch with a variable in it which is to be
-interpolated (`{fruit}`).
+The `topicmap` specifies we should subscribe to `in/a1` and republish to two
+MQTT targets. The second target (`mqtt:o2`) has a topic branch with a variable
+in it which is to be interpolated (`{fruit}`).
 
 These are the results for appropriate publishes:
 
