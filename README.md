@@ -555,6 +555,9 @@ to have those values stored automatically.
 
 ### `nma`
 
+The `nma` service uses [NMA (Notify My Android)](http://www.notifymyandroid.com)
+to delivery notifications from _mqttwarn_ to your Android device.
+
 ```ini
 [config:nma]
 targets = {
