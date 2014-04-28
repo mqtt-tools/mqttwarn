@@ -2,7 +2,7 @@
 
 To _warn_, _alert_, or _notify_.
 
-![definition by Google](assets/jmbp-841.jpg)
+![Definition by Google](assets/google-definition.jpg)
 
 This program subscribes to any number of MQTT topics (which may include wildcards) and publishes received payloads to one or more notification services, including support for notifying more than one distinct service for the same message.
 
@@ -213,7 +213,7 @@ format = "I'll have a {fruit} if it costs {price}"
 
 The result is:
 
-![OSX notifier](assets/jmbp-840.jpg)
+![OSX notifier](assets/osxnotify.jpg)
 
 You associate MQTT topic branches to applications in the configuration file (copy `mqttwarn.ini.sample` to `mqttwarn.ini` for use). In other words, you can accomplish, say, following mappings:
 
@@ -281,7 +281,7 @@ targets  = {
     }
 ```
 
-NOTE: only the first 100 chars of the message will be announced since this is the max length supported by the Google Translate API.
+Note: only the first 100 chars of the message will be announced since this is the max length supported by the Google Translate API.
 
 Requires
 * [Freeswitch](https://www.freeswitch.org/)
@@ -315,7 +315,7 @@ mosquitto_pub -t nn/ohoh -m '{"username": "jan", "device":"phone", "lat": "-33.8
 
 turns into
 
-![GSS](assets/gss_screenshot.png)
+![GSS](assets/gss.png)
 
 Note: It is important that the top row into your blank spreadsheet has column headings that correspond the values that represent your dictionary keys.
 If these column headers are not available, you will most likely see an error like this:
@@ -325,8 +325,7 @@ gdata.service.RequestError: {'status': 400, 'body': 'We&#39;re sorry, a server e
 ```
 
 Requires:
-* [gdata-python-client](https://code.google.com/p/gdata-python-client/). This client has to be installed
-
+* [gdata-python-client](https://code.google.com/p/gdata-python-client/)
 
 
 ### `http`
@@ -396,7 +395,8 @@ Requires:
 
 ### `log`
 
-The `log` service allows us to use the logging system in use by _mqttwarn_ proper, i.e. messages directed at `log` will land in _mqttwarn_'s log file.
+The `log` service allows us to use the logging system in use by _mqttwarn_
+proper, i.e. messages directed at `log` will land in _mqttwarn_'s log file.
 
 ```ini
 [config:log]
@@ -410,7 +410,8 @@ targets = {
 
 ### `mqtt`
 
-The `mqtt` service fires off a publish on a topic, creating a new connection to the configured broker for each message.
+The `mqtt` service fires off a publish on a topic, creating a new connection
+to the configured broker for each message.
 
 Consider the following configuration snippets:
 
@@ -432,9 +433,9 @@ targets = mqtt:o1, mqtt:o2
 format =  u'Since when does a {fruit} cost {price}?'
 ```
 
-The `topicmap` specifies we should subscribe to `in/a1` and republish to two MQTT targets.
-The second target (`mqtt:o2`) has a topic branch with a variable in it which is to be
-interpolated (`{fruit}`).
+The `topicmap` specifies we should subscribe to `in/a1` and republish to two
+MQTT targets. The second target (`mqtt:o2`) has a topic branch with a variable
+in it which is to be interpolated (`{fruit}`).
 
 These are the results for appropriate publishes:
 
@@ -555,6 +556,9 @@ to have those values stored automatically.
 
 ### `nma`
 
+The `nma` service uses [NMA (Notify My Android)](http://www.notifymyandroid.com)
+to delivery notifications from _mqttwarn_ to your Android device.
+
 ```ini
 [config:nma]
 targets = {
@@ -666,7 +670,7 @@ mosquitto_pub -t arduino/temp -m '{"temp": 20}'
 Using a transformation function for _priority_ to decide on the status to
 be sent to Nagios/Icinga, we obtain the following:
 
-![Icinga](assets/icinga-temp.jpg)
+![Icinga](assets/icinga.jpg)
 
 
 | Topic option  |  M/O   | Description                            |
@@ -694,7 +698,8 @@ def check_temperature(data):
     return UNKNOWN
 ```
 
-Requires [pynsca](https://github.com/djmitche/pynsca), but you don't have to install that; it suffices if you drop `pynsca.py` alongside `mqttwarn.py` (i.e. in the same directory)
+Requires:
+* [pynsca](https://github.com/djmitche/pynsca), but you don't have to install that; it suffices if you drop `pynsca.py` alongside `mqttwarn.py` (i.e. in the same directory)
 
 ### `osxnotify`
 
@@ -703,6 +708,8 @@ Requires [pynsca](https://github.com/djmitche/pynsca), but you don't have to ins
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: topic name)   |
+
+![osxnotify](assets/osxnotify.jpg)
 
 ### `osxsay`
 
@@ -772,13 +779,20 @@ targets = {
 
 ![Prowl](assets/prowl.jpg)
 
-* Requires [prowlpy](https://github.com/jacobb/prowlpy)
+Requires:
+* [prowlpy](https://github.com/jacobb/prowlpy)
 
 ### `pushbullet`
 
-This service is for [PushBullet](https://www.pushbullet.com), an app for Android along with an extension for Chrome, which allows notes, links, pictures, addresses and files to be sent between devices.
+This service is for [PushBullet](https://www.pushbullet.com), an app for
+Android along with an extension for Chrome, which allows notes, links,
+pictures, addresses and files to be sent between devices.
 
-You can get your API key from [here](https://www.pushbullet.com/account) after signing up for a PushBullet account. You will also need the device ID to push the notifications to. To obtain this you need  to follow the instructions at [pyPushBullet](https://github.com/Azelphur/pyPushBullet) and run ``./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices``.
+You can get your API key from [here](https://www.pushbullet.com/account) after
+signing up for a PushBullet account. You will also need the device ID to push
+the notifications to. To obtain this you need  to follow the instructions at
+[pyPushBullet](https://github.com/Azelphur/pyPushBullet) and run
+``./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices``.
 
 ```ini
 [config:pushbullet]
@@ -823,9 +837,10 @@ notify, say, one or more of your devices as well as one for your spouse.
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
 
-![pushover on iOS](assets/screenshot.png)
+![pushover on iOS](assets/pushover.png)
 
-* Requires: a [pushover.net](https://pushover.net/) account
+Requires:
+* a [pushover.net](https://pushover.net/) account
 
 ### `redispub`
 
@@ -840,7 +855,8 @@ targets = {
     }
 ```
 
-* Requires Python [redis-py](https://github.com/andymccurdy/redis-py)
+Requires:
+* d[redis-py](https://github.com/andymccurdy/redis-py)
 
 ### `sqlite`
 
@@ -938,10 +954,9 @@ targets = {
    }
 ```
 
-![a tweet](assets/tweet.jpg)
+![a tweet](assets/twitter.jpg)
 
 Requires:
-
 * A Twitter account
 * app keys for Twitter, from [apps.twitter.com](https://apps.twitter.com)
 * [python-twitter](https://github.com/bear/python-twitter)
