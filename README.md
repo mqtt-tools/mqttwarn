@@ -26,6 +26,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [nsca](#nsca)
 * [osxnotify](#osxnotify)
 * [osxsay](#osxsay)
+* [pastebinpub](#pastebinpub)
 * [pipe](#pipe)
 * [prowl](#prowl)
 * [pushbullet](#pushbullet)
