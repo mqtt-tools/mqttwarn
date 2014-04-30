@@ -740,6 +740,32 @@ targets = osxsay:alex
 
 * Note: this requires your speakers be enabled and can be a pain for co-workers or family members, and we can't show you a screen shot...
 
+### `pastebinpub`
+
+The `pastebinpub` service is publishing messages to [Pastebin](http://pastebin.com).
+
+Note: Be careful what you post on this target, it could be public. If you are
+not a paying customer of Pastebin you are limited to 25 unlisted and
+10 private pastes.
+
+```ini
+[config:pastebinpub]
+targets = {
+    'warn' : [ 'api_dev_key',  # API dev key
+               'username',  # Username
+               'password',  # Password
+                1,  # Privacy level
+               '1H'  # Expire
+            ]
+    }
+```
+
+Requires:
+* An account at [Pastebin](http://pastebin.com)
+* Python bindings for the [Pastebin API](https://github.com/Morrolan/PastebinAPI)
+  You don't have to install this -- simply copy `pastebin.py` to the _mqttwarn_ directory.
+  `curl -O https://raw.githubusercontent.com/Morrolan/PastebinAPI/master/pastebin.py`
+
 ### `pipe`
 
 The `pipe` target launches the specified program and its arguments and pipes the
