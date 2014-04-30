@@ -760,6 +760,8 @@ targets = {
     }
 ```
 
+![osxnotify](assets/pastebin.png)
+
 Requires:
 * An account at [Pastebin](http://pastebin.com)
 * Python bindings for the [Pastebin API](https://github.com/Morrolan/PastebinAPI)
