@@ -241,16 +241,47 @@ class Struct:
 mqttc = paho.Client(SCRIPTNAME, clean_session=cf.cleansession)
 
 def on_connect(mosq, userdata, result_code):
-    logging.debug("Connected to MQTT broker, subscribing to topics...")
-    subscribed = []
-    for section in get_sections():
-        topic = get_topic(section)
-        qos = get_qos(section)
-        if topic in subscribed:
-            continue
-        logging.debug("Subscribing to %s (qos=%d)" % (topic, qos))
-        mqttc.subscribe(str(topic), qos)
-        subscribed.append(topic)
+    """
+    Handle connections (or failures) to the broker.
+    This is called after the client has received a CONNACK message
+    from the broker in response to calling connect().
+
+    The result_code is one of;
+    0: Success
+    1: Refused - unacceptable protocol version
+    2: Refused - identifier rejected
+    3: Refused - server unavailable
+    4: Refused - bad user name or password (MQTT v3.1 broker only)
+    5: Refused - not authorised (MQTT v3.1 broker only)
+    """
+    if result_code == 0:
+        logging.debug("Connected to MQTT broker, subscribing to topics...")
+
+        subscribed = []
+        for section in get_sections():
+            topic = get_topic(section)
+            qos = get_qos(section)
+
+            if topic in subscribed:
+                continue
+
+            logging.debug("Subscribing to %s (qos=%d)" % (topic, qos))
+            mqttc.subscribe(str(topic), qos)
+            subscribed.append(topic)
+
+    elif result_code == 1:
+        logging.info("Connection refused - unacceptable protocol version")
+    elif result_code == 2:
+        logging.info("Connection refused - identifier rejected")
+    elif result_code == 3:
+        logging.info("Connection refused - server unavailable")
+    elif result_code == 4:
+        logging.info("Connection refused - bad user name or password")
+    elif result_code == 5:
+        logging.info("Connection refused - not authorised")
+    else:
+        logging.warning("Connection failed - result code %d" % (result_code))
+
 
 def render_template(filename, data):
     text = None
@@ -399,12 +430,10 @@ def on_disconnect(mosq, userdata, result_code):
     Handle disconnections from the broker
     """
     if result_code == 0:
-        logging.info("Clean disconnection")
+        logging.info("Clean disconnection from broker")
     else:
-        logging.info("Unexpected disconnection! Reconnecting in 5 seconds...")
-        logging.debug("Result code: %s", result_code)
+        logging.info("Broker connection lost. Will attempt to reconnect in 5s...")
         time.sleep(5)
-        ## connect()
 
 def builtin_transform_data(topic, payload):
     ''' Return a dict with initial transformation data which is made
