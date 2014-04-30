@@ -73,6 +73,7 @@ class Config(RawConfigParser):
         self.functions  = None
         self.loglevel   = 'DEBUG'
         self.directory  = '.'
+        self.cleansession = False
 
         self.__dict__.update(self.config('defaults'))
 
@@ -237,7 +238,7 @@ class Struct:
         return item
 
 # initialise MQTT broker connection
-mqttc = paho.Client(SCRIPTNAME, clean_session=False)
+mqttc = paho.Client(SCRIPTNAME, clean_session=cf.cleansession)
 
 def on_connect(mosq, userdata, result_code):
     logging.debug("Connected to MQTT broker, subscribing to topics...")

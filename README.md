@@ -119,6 +119,7 @@ password     = None
 lwt          = 'clients/mqttwarn'
 lwtpayload   = 'offline'
 skipretained = True
+cleansession = False
 
 ; logging
 logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
