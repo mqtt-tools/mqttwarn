@@ -3,9 +3,10 @@ hostname     = 'localhost'  ; default
 port         = 1883
 username     = None
 password     = None
+clientid     = 'mqttwarn'
 lwt	     = 'clients/mqttwarn'
-lwtpayload   = 'offline'
 skipretained = False
+cleansession = False
 
 ; logging
 logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'

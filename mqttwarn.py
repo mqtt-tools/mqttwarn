@@ -46,6 +46,10 @@ SCRIPTNAME = os.path.splitext(os.path.basename(__file__))[0]
 CONFIGFILE = os.getenv(SCRIPTNAME.upper() + 'INI', SCRIPTNAME + '.ini')
 LOGFILE    = os.getenv(SCRIPTNAME.upper() + 'LOG', SCRIPTNAME + '.log')
 
+# lwt values - may make these configurable later?
+LWTALIVE   = "1"
+LWTDEAD    = "0"
+
 class Config(RawConfigParser):
 
     specials = {
@@ -61,19 +65,21 @@ class Config(RawConfigParser):
         f.close()
 
         ''' set defaults '''
-        self.hostname   = 'localhost'
-        self.port       = 1883
-        self.logformat  = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
-        self.logfile    = LOGFILE
-        self.username   = None
-        self.password   = None
-        self.lwt        = 'clients/%s' % SCRIPTNAME
-        self.lwtpayload = SCRIPTNAME
+        self.hostname     = 'localhost'
+        self.port         = 1883
+        self.username     = None
+        self.password     = None
+        self.clientid     = SCRIPTNAME
+        self.lwt          = 'clients/%s' % SCRIPTNAME
         self.skipretained = False
-        self.functions  = None
-        self.loglevel   = 'DEBUG'
-        self.directory  = '.'
         self.cleansession = False
+
+        self.logformat    = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+        self.logfile      = LOGFILE
+        self.loglevel     = 'DEBUG'
+
+        self.functions    = None
+        self.directory    = '.'
 
         self.__dict__.update(self.config('defaults'))
 
@@ -204,6 +210,10 @@ logging.info("Starting %s" % SCRIPTNAME)
 logging.info("INFO MODE")
 logging.debug("DEBUG MODE")
 
+# initialise MQTT broker connection
+mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession)
+
+# initialise processor queue
 q_in = Queue.Queue(maxsize=0)
 num_workers = 1
 exit_flag = False
@@ -237,52 +247,6 @@ class Struct:
             item[k] = v
         return item
 
-# initialise MQTT broker connection
-mqttc = paho.Client(SCRIPTNAME, clean_session=cf.cleansession)
-
-def on_connect(mosq, userdata, result_code):
-    """
-    Handle connections (or failures) to the broker.
-    This is called after the client has received a CONNACK message
-    from the broker in response to calling connect().
-
-    The result_code is one of;
-    0: Success
-    1: Refused - unacceptable protocol version
-    2: Refused - identifier rejected
-    3: Refused - server unavailable
-    4: Refused - bad user name or password (MQTT v3.1 broker only)
-    5: Refused - not authorised (MQTT v3.1 broker only)
-    """
-    if result_code == 0:
-        logging.debug("Connected to MQTT broker, subscribing to topics...")
-
-        subscribed = []
-        for section in get_sections():
-            topic = get_topic(section)
-            qos = get_qos(section)
-
-            if topic in subscribed:
-                continue
-
-            logging.debug("Subscribing to %s (qos=%d)" % (topic, qos))
-            mqttc.subscribe(str(topic), qos)
-            subscribed.append(topic)
-
-    elif result_code == 1:
-        logging.info("Connection refused - unacceptable protocol version")
-    elif result_code == 2:
-        logging.info("Connection refused - identifier rejected")
-    elif result_code == 3:
-        logging.info("Connection refused - server unavailable")
-    elif result_code == 4:
-        logging.info("Connection refused - bad user name or password")
-    elif result_code == 5:
-        logging.info("Connection refused - not authorised")
-    else:
-        logging.warning("Connection failed - result code %d" % (result_code))
-
-
 def render_template(filename, data):
     text = None
     if HAVE_JINJA is True:
@@ -290,7 +254,6 @@ def render_template(filename, data):
         text = template.render(data)
 
     return text
-
 
 def get_sections():
     sections = []
@@ -363,12 +326,65 @@ class Job(object):
     def __cmp__(self, other):
         return cmp(self.prio, other.prio)
 
+# MQTT broker callbacks 
+def on_connect(mosq, userdata, result_code):
+    """
+    Handle connections (or failures) to the broker.
+    This is called after the client has received a CONNACK message
+    from the broker in response to calling connect().
+
+    The result_code is one of;
+    0: Success
+    1: Refused - unacceptable protocol version
+    2: Refused - identifier rejected
+    3: Refused - server unavailable
+    4: Refused - bad user name or password (MQTT v3.1 broker only)
+    5: Refused - not authorised (MQTT v3.1 broker only)
+    """
+    if result_code == 0:
+        logging.debug("Connected to MQTT broker, subscribing to topics...")
+
+        subscribed = []
+        for section in get_sections():
+            topic = get_topic(section)
+            qos = get_qos(section)
+
+            if topic in subscribed:
+                continue
+
+            logging.debug("Subscribing to %s (qos=%d)" % (topic, qos))
+            mqttc.subscribe(str(topic), qos)
+            subscribed.append(topic)
+
+        mqttc.publish(cf.lwt, LWTALIVE, qos=0, retain=True)
+
+    elif result_code == 1:
+        logging.info("Connection refused - unacceptable protocol version")
+    elif result_code == 2:
+        logging.info("Connection refused - identifier rejected")
+    elif result_code == 3:
+        logging.info("Connection refused - server unavailable")
+    elif result_code == 4:
+        logging.info("Connection refused - bad user name or password")
+    elif result_code == 5:
+        logging.info("Connection refused - not authorised")
+    else:
+        logging.warning("Connection failed - result code %d" % (result_code))
+
+def on_disconnect(mosq, userdata, result_code):
+    """
+    Handle disconnections from the broker
+    """
+    if result_code == 0:
+        logging.info("Clean disconnection from broker")
+    else:
+        logging.info("Broker connection lost. Will attempt to reconnect in 5s...")
+        time.sleep(5)
 
 def on_message(mosq, userdata, msg):
     """
     Message received from the broker
     """
-
     topic = msg.topic
     payload = str(msg.payload)
     logging.debug("Message received on %s: %s" % (topic, payload))
@@ -423,17 +439,7 @@ def on_message(mosq, userdata, msg):
                 for sendto in sendtos:
                     job = Job(1, service, section, topic, payload, sendto)
                     q_in.put(job)
-    return
-
-def on_disconnect(mosq, userdata, result_code):
-    """
-    Handle disconnections from the broker
-    """
-    if result_code == 0:
-        logging.info("Clean disconnection from broker")
-    else:
-        logging.info("Broker connection lost. Will attempt to reconnect in 5s...")
-        time.sleep(5)
+# End of MQTT broker callbacks
 
 def builtin_transform_data(topic, payload):
     ''' Return a dict with initial transformation data which is made
@@ -643,15 +649,15 @@ def connect():
     if cf.username:
         mqttc.username_pw_set(cf.username, cf.password)
 
-    # configure the last-will-and-testament if set
-    if cf.lwt is not None:
-        mqttc.will_set(cf.lwt, payload=cf.lwtpayload, qos=0, retain=False)
+    # set the lwt before connecting
+    logging.debug("Setting LWT to %s..." % (cf.lwt))
+    mqttc.will_set(cf.lwt, payload=LWTDEAD, qos=0, retain=True)
 
     # Delays will be: 3, 6, 12, 24, 30, 30, ...
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
 
     try:
-        result = mqttc.connect(cf.hostname, int(cf.port), 60)
+        mqttc.connect(cf.hostname, int(cf.port), 60)
     except Exception, e:
         logging.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), str(e)))
         sys.exit(2)
@@ -683,10 +689,13 @@ def cleanup(signum=None, frame=None):
     exit_flag = True
 
     logging.debug("Disconnecting from MQTT broker...")
+    mqttc.publish(cf.lwt, LWTDEAD, qos=0, retain=True)
     mqttc.loop_stop()
     mqttc.disconnect()
+
     logging.info("Waiting for queue to drain")
     q_in.join()
+
     logging.debug("Exiting on signal %d", signum)
     sys.exit(signum)
 
