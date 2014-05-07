@@ -1166,6 +1166,9 @@ def p01Format(data, srv):
     return s
 ```
 
+Be advised that if you MQTT publish back to the same topic which triggerred the invocation
+of your function, you'll create an endless loop.
+
 ### Incorporating topic names into transformation data
 
 An MQTT topic branch name contains information you may want to use in transformations.
