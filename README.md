@@ -1105,7 +1105,7 @@ are defined in `item.data`:
   'topic'         : topic name
   'payload'       : topic payload
   '_dtepoch'      : epoch time                  # 1392628581
-  '_dtiso']       : ISO date (UTC)              # 2014-02-17T10:38:43.910691Z
+  '_dtiso'        : ISO date (UTC)              # 2014-02-17T10:38:43.910691Z
   '_dthhmm'       : timestamp HH:MM (local)     # 10:16
   '_dthhmmss'     : timestamp HH:MM:SS (local)  # 10:16:21
 }
@@ -1125,7 +1125,7 @@ Consider the following configuration snippet in addition to the configuration
 of the `mqtt` service shown above:
 
 ```python
-def lookup_data(data):
+def lookup_data(data, srv=None):
     if type(data) == dict and 'fruit' in data:
             return "Ananas"
     return None
@@ -1152,6 +1152,19 @@ out/fruit/pineapple Ananas
 ```
 
 If a function operating on a message (i.e. within `format =`) returns `None` or an empty string, the target notification is suppressed.
+
+The optional `srv` is an object with some helper functions. In particular, these allow us to use _mqttwarn_'s logging and MQTT publish functions, as in this example:
+
+```python
+def p01Format(data, srv):
+    s = "p01-HOLA"
+
+    srv.logging.info("+++++++++++ HUHU")
+
+    srv.mqttc.publish("p01/RESPonse", s, qos=0, retain=False)
+
+    return s
+```
 
 ### Incorporating topic names into transformation data
 

@@ -165,7 +165,10 @@ class Config(RawConfigParser):
 
         try:
             func = getattr(__import__(cf.functions, fromlist=[name]), name)
-            val = func(topic)
+            try:
+                val = func(topic, srv)  # new version
+            except TypeError:
+                val = func(topic)       # legacy
         except:
             raise
 
@@ -184,15 +187,21 @@ class Config(RawConfigParser):
 
         return rc
 
-    def formatmap(self, name, payload):
-        ''' Attempt to invoke `name' from the `functions' package,
-            and return it's string '''
-
-        try:
-            func = getattr(__import__(cf.functions, fromlist=[name]), name)
-            return func(payload)
-        except:
-            raise
+#    def formatmap(self, name, payload):
+#        ''' Attempt to invoke `name' from the `functions' package,
+#            and return it's string '''
+#
+#        val = None
+#        try:
+#            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+#            try:
+#                val = func(payload, srv)
+#            except TypeError:
+#                val = func(payload)
+#        except:
+#            raise
+#
+#        return val
 
 try:
     cf = Config(CONFIGFILE)
