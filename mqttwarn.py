@@ -187,6 +187,75 @@ class Config(RawConfigParser):
 
         return rc
 
+# This class, shamelessly stolen from https://gist.github.com/cypreess/5481681
+# The `srv' bits are added for mqttwarn
+class PeriodicThread(object):
+    """
+    Python periodic Thread using Timer with instant cancellation
+    """
+
+    def __init__(self, callback=None, period=1, name=None, srv=None, *args, **kwargs):
+        self.name = name
+        self.srv = srv
+        self.args = args
+        self.kwargs = kwargs
+        self.callback = callback
+        self.period = period
+        self.stop = False
+        self.current_timer = None
+        self.schedule_lock = threading.Lock()
+
+    def start(self):
+        """
+        Mimics Thread standard start method
+        """
+        self.schedule_timer()
+
+    def run(self):
+        """
+        By default run callback. Override it if you want to use inheritance
+        """
+        if self.callback is not None:
+            self.callback(srv)
+
+    def _run(self):
+        """
+        Run desired callback and then reschedule Timer (if thread is not stopped)
+        """
+        try:
+            self.run()
+        except Exception, e:
+            logging.exception("Exception in running periodic thread")
+        finally:
+            with self.schedule_lock:
+                if not self.stop:
+                    self.schedule_timer()
+
+    def schedule_timer(self):
+        """
+        Schedules next Timer run
+        """
+        self.current_timer = threading.Timer(self.period, self._run, *self.args, **self.kwargs)
+        if self.name:
+            self.current_timer.name = self.name
+        self.current_timer.start()
+
+    def cancel(self):
+        """
+        Mimics Timer standard cancel method
+        """
+        with self.schedule_lock:
+            self.stop = True
+            if self.current_timer is not None:
+                self.current_timer.cancel()
+
+    def join(self):
+        """
+        Mimics Thread standard join method
+        """
+        self.current_timer.join()
+
+
 #    def formatmap(self, name, payload):
 #        ''' Attempt to invoke `name' from the `functions' package,
 #            and return it's string '''
@@ -226,6 +295,8 @@ mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession)
 q_in = Queue.Queue(maxsize=0)
 num_workers = 1
 exit_flag = False
+
+ptlist = {}         # List of PeriodicThread() objects
 
 # Class with helper functions which is passed to each plugin
 # and its global instantiation
@@ -267,7 +338,7 @@ def render_template(filename, data):
 def get_sections():
     sections = []
     for section in cf.sections():
-        if section != 'defaults' and not section.startswith('config:'):
+        if section != 'defaults' and section != 'cron' and not section.startswith('config:'):
             if cf.has_option(section, 'targets'):
                 sections.append(section)
             else:
@@ -335,7 +406,7 @@ class Job(object):
     def __cmp__(self, other):
         return cmp(self.prio, other.prio)
 
-# MQTT broker callbacks 
+# MQTT broker callbacks
 def on_connect(mosq, userdata, result_code):
     """
     Handle connections (or failures) to the broker.
@@ -413,7 +484,7 @@ def on_message(mosq, userdata, msg):
             if is_filtered(section, topic, payload):
                 logging.debug("Filter in section [%s] has skipped message on %s" % (section, topic))
                 continue
-            
+
             targetlist = cf.getlist(section, 'targets')
             if type(targetlist) != list:
                 logging.error("Target definition in section [%s] is incorrect" % section)
@@ -444,7 +515,7 @@ def on_message(mosq, userdata, msg):
                     sendtos = get_service_targets(service)
                 else:
                     sendtos = [target]
-                
+
                 for sendto in sendtos:
                     job = Job(1, service, section, topic, payload, sendto)
                     q_in.put(job)
@@ -471,7 +542,7 @@ def get_service_config(service):
     if config is None:
         return {}
     return dict(config)
-    
+
 def get_service_targets(service):
     try:
         targets = cf.getdict('config:' + service, 'targets')
@@ -485,7 +556,7 @@ def get_service_targets(service):
     if targets is None:
         return {}
     return dict(targets)
-    
+
 def xform(function, orig_value, transform_data):
     ''' Attempt transformation on orig_value.
         1st. function()
@@ -529,7 +600,7 @@ def processor():
         target  = job.target
 
         logging.debug("Processor is handling: `%s' for %s" % (service, target))
-        
+
         item = {
             'service'       : service,
             'section'       : section,
@@ -626,7 +697,7 @@ def load_services(services):
             sys.exit(1)
 
         service_plugins[service]['config'] = service_config
-            
+
 def connect():
     """
     Load service plugins, connect to the broker, launch daemon threads and listen forever
@@ -677,6 +748,23 @@ def connect():
         t.daemon = True
         t.start()
 
+    # If the config file has a [cron] section, the key names therein are
+    # functions from 'myfuncs.py' which should be invoked periodically.
+    # The key's value (must be numeric!) is the period in seconds.
+
+    if cf.has_section('cron'):
+        for name, val in cf.items('cron'):
+            try:
+                func = getattr(__import__(cf.functions, fromlist=[name]), name)
+                interval = int(val)
+                ptlist[name] = PeriodicThread(func, interval, srv=srv)
+                ptlist[name].start()
+            except AttributeError:
+                logging.error("[cron] section has function [%s] specified, but that's not defined" % name)
+                continue
+
+
+
     while True:
         try:
             mqttc.loop_forever()
@@ -696,6 +784,10 @@ def cleanup(signum=None, frame=None):
     global exit_flag
 
     exit_flag = True
+
+    for ptname in ptlist:
+        logging.debug("Cancel %s timer" % ptname)
+        ptlist[ptname].cancel()
 
     logging.debug("Disconnecting from MQTT broker...")
     mqttc.publish(cf.lwt, LWTDEAD, qos=0, retain=True)

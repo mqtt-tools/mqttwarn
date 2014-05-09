@@ -1304,6 +1304,36 @@ amount of text (`file`, `smtp`, and `nntp` come to mind).
 Use of this feature requires [Jinja2], but you don't have to install it if you don't need
 templating.
 
+### Periodic tasks ###
+
+_mqttwarn_ can use functions you define in the file specified `[defaults]` section
+to periodically do whatever you want, for example, publish an MQTT message. There
+are two things you have to do:
+
+1. Create the function
+2. Configure _mqttwarn_ to use that function and specify the interval in seconds
+
+Assume we have the following custom function defined:
+
+```python
+def pinger(srv=None):
+    srv.mqttc.publish("pt/PINGER", "Hello from mqttwarn!", qos=0)
+```
+
+We configure this function to run every, say, 10 seconds, in the `mqttwarn.ini`,
+in the `[cron]` section:
+
+```ini
+[cron]
+pinger = 10
+```
+
+Each keyword in the `[cron]` section specifies the name of one of your custom
+functions, and its integer value is an interval in _seconds_ after which your
+custom function (_pinger()_ in this case) is invoked. You function has access
+to the `srv` object (which was described earlier).
+
+
 ## Examples ##
 
 This section contains some examples of how `mqttwarn` can be used with some more complex configurations.
