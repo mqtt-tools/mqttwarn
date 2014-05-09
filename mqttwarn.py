@@ -756,7 +756,7 @@ def connect():
         for name, val in cf.items('cron'):
             try:
                 func = getattr(__import__(cf.functions, fromlist=[name]), name)
-                interval = int(val)
+                interval = float(val)
                 ptlist[name] = PeriodicThread(func, interval, srv=srv)
                 ptlist[name].start()
             except AttributeError:
