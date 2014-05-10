@@ -1330,7 +1330,7 @@ pinger = 10.5
 
 Each keyword in the `[cron]` section specifies the name of one of your custom
 functions, and its float value is an interval in _seconds_ after which your
-custom function (_pinger()_ in this case) is invoked. You function has access
+custom function (_pinger()_ in this case) is invoked. Your function has access
 to the `srv` object (which was described earlier).
 
 
