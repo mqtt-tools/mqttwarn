@@ -143,12 +143,17 @@ directory = /tmp/
 
 ; optional: TLS parameters. (Don't forget to set the port number for
 ; TLS (probably 8883).
+; You will need to set at least `ca_certs' if you want TLS support
 ; ca_certs: path to the Certificate Authority certificate file (concatenated
 ;           PEM file)
 ; tls_version: currently either 'tlsv1' or 'sslv3'
 ; tls_insecure: True or False (False is default): Do or do not verify
 ;               broker's certificate CN
-ca_certs = '/Users/jpm/tmp/mqtt/root.ca'
+; certfile: path to PEM encode client certificate file
+; keyfile: path to PEM encode client private key file
+ca_certs = '/path/to/ca-certs.pem'
+certfile = '/path/to/client.crt'
+keyfile = '/path/to/client.key'
 tls_version = 'tlsv1'
 tls_insecure = False
 
