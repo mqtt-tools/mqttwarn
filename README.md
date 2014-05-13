@@ -139,6 +139,19 @@ launch   = file, log, osxnotify, mysql, smtp
 ; the cd is performed before loading service plugins, so it should
 ; contain a `services/' directory with the required service plugins.
 directory = /tmp/
+
+
+; optional: TLS parameters. (Don't forget to set the port number for
+; TLS (probably 8883).
+; ca_certs: path to the Certificate Authority certificate file (concatenated
+;           PEM file)
+; tls_version: currently either 'tlsv1' or 'sslv3'
+; tls_insecure: True or False (False is default): Do or do not verify
+;               broker's certificate CN
+ca_certs = '/Users/jpm/tmp/mqtt/root.ca'
+tls_version = 'tlsv1'
+tls_insecure = False
+
 ```
 
 ### `functions`

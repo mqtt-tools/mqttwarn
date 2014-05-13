@@ -26,6 +26,11 @@ from ConfigParser import RawConfigParser, NoOptionError
 import codecs
 import ast
 import re
+HAVE_TLS = True
+try:
+    import ssl
+except ImportError:
+    HAVE_TLS = False
 HAVE_JINJA = True
 try:
     from jinja2 import Environment, FileSystemLoader
@@ -80,8 +85,27 @@ class Config(RawConfigParser):
 
         self.functions    = None
         self.directory    = '.'
+        self.ca_certs     = None
+        self.tls_version  = None
+        self.certfile     = None
+        self.keyfile      = None
+        self.tls_insecure = False
+        self.tls          = False
 
         self.__dict__.update(self.config('defaults'))
+
+        if HAVE_TLS == False:
+            logging.error("TLS parameters set but no TLS available (SSL)")
+            sys.exit(2)
+
+        if self.ca_certs is not None:
+            self.tls = True
+
+        if self.tls_version is not None:
+            if self.tls_version == 'tlsv1':
+                self.tls_version = ssl.PROTOCOL_TLSv1
+            if self.tls_version == 'sslv3':
+                self.tls_version = ssl.PROTOCOL_SSLv3
 
         self.loglevelnumber = self.level2number(self.loglevel)
 
@@ -735,6 +759,12 @@ def connect():
 
     # Delays will be: 3, 6, 12, 24, 30, 30, ...
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
+
+    if cf.tls == True:
+        mqttc.tls_set(cf.ca_certs, cf.certfile, cf.keyfile, tls_version=cf.tls_version, ciphers=None)
+
+    if cf.tls_insecure:
+        mqttc.tls_insecure_set(True)
 
     try:
         mqttc.connect(cf.hostname, int(cf.port), 60)
