@@ -914,7 +914,7 @@ notify, say, one or more of your devices as well as one for your spouse.
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
-| `callback`    |   O    | URL for pushover to ack messages        |
+| `callback`    |   O    | URL for pushover to [ack messages](https://pushover.net/api#receipt)        |
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
 
