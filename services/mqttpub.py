@@ -26,6 +26,8 @@ def plugin(srv, item):
             return False
 
     outgoing_payload = item.message
+    if type(outgoing_payload) == unicode:
+        outgoing_payload = bytearray(outgoing_payload, encoding='utf-8')
 
     try:
         srv.mqttc.publish(outgoing_topic, outgoing_payload, qos=qos, retain=retain)
