@@ -42,6 +42,7 @@ def plugin(srv, item):
     addrs    = item.addrs
     title    = item.title
     priority = item.priority
+    callback = item.callback
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
@@ -66,6 +67,9 @@ def plugin(srv, item):
 
     if priority is not None:
         params['priority'] = priority
+
+    if callback is not None:
+        params['callback'] = callback
 
     try:
         srv.logging.debug("Sending pushover notification to %s [%s]..." % (item.target, params))
