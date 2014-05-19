@@ -293,23 +293,6 @@ class PeriodicThread(object):
         """
         self.current_timer.join()
 
-
-#    def formatmap(self, name, payload):
-#        ''' Attempt to invoke `name' from the `functions' package,
-#            and return it's string '''
-#
-#        val = None
-#        try:
-#            func = getattr(__import__(cf.functions, fromlist=[name]), name)
-#            try:
-#                val = func(payload, srv)
-#            except TypeError:
-#                val = func(payload)
-#        except:
-#            raise
-#
-#        return val
-
 try:
     cf = Config(CONFIGFILE)
 except Exception, e:
@@ -668,6 +651,13 @@ def processor():
         topic_data = get_topic_data(job.section, job.topic)
         if topic_data is not None and type(topic_data) == dict:
             transform_data = dict(transform_data.items() + topic_data.items())
+
+        # The dict returned is completely merged into transformation data
+        # The difference bewteen this and `get_topic_data()' is that this
+        # function obtains the topic string as well as the payload and any
+        # existing transformation data, and it can do 'things' with all.
+        # This is the way it should originally have been, but I can no
+        # longer fix the original ... (legacy)
 
         all_data = get_all_data(job.section, job.topic, transform_data)
         if all_data is not None and type(all_data) == dict:
