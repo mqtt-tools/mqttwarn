@@ -128,7 +128,7 @@ logfile   = 'mqttwarn.log'
 ; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
 loglevel     = DEBUG
 
-; path to file containing self-defined functions for formatmap and datamap
+; path to file containing self-defined functions for formatmap, alldata, and datamap
 ; omit the '.py' extension
 functions = 'myfuncs'
 
@@ -201,6 +201,7 @@ options:
 | `topic`       |   O    | topic to subscribe to (overrides section name) |
 | `filter`      |   O    | function name to suppress this msg             |
 | `datamap`     |   O    | function name parse topic name to dict         |
+| `alldata`     |   O    | function to merge topic, and payload with more |
 | `format`      |   O    | function or string format for output           |
 | `priority`    |   O    | used by certain targets (see below). May be func()  |
 | `title`       |   O    | used by certain targets (see below). May be func()  |
@@ -1240,6 +1241,14 @@ the above PUBlish will be transformed into
 ```
 jane: leave => Home
 ```
+
+### Merging more data ###
+
+The optional `alldata` function you write and configure on a per/topic basis, is
+passed the message _topic_, its _data_ and an optional _srv_ object. This function
+should return a _dict_ (or _None_) of data which is merged into the whole
+list of transformation data. This expands on the two other transformation functions
+to make topic and the message's payload available simultaneously.
 
 ### Filtering notifications ###
 

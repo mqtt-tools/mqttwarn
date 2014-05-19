@@ -198,6 +198,20 @@ class Config(RawConfigParser):
 
         return val
 
+    def alldata(self, name, topic, data):
+        ''' Attempt to invoke function `name' loaded from the
+            `functions' Python package '''
+
+        val = None
+
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            val = func(topic, data, srv)
+        except:
+            raise
+
+        return val
+
     def filter(self, name, topic, payload):
         ''' Attempt to invoke function `name' from the `functions'
             package. Return that function's True/False '''
@@ -414,6 +428,15 @@ def get_topic_data(section, topic):
             return cf.datamap(name, topic)
         except Exception, e:
             logging.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, str(e)))
+    return None
+
+def get_all_data(section, topic, data):
+    if cf.has_option(section, 'alldata'):
+        name = get_function_name(cf.get(section, 'alldata'))
+        try:
+            return cf.alldata(name, topic, data)
+        except Exception, e:
+            logging.warn("Cannot invoke alldata function %s defined in %s: %s" % (name, section, str(e)))
     return None
 
 class Job(object):
@@ -645,6 +668,10 @@ def processor():
         topic_data = get_topic_data(job.section, job.topic)
         if topic_data is not None and type(topic_data) == dict:
             transform_data = dict(transform_data.items() + topic_data.items())
+
+        all_data = get_all_data(job.section, job.topic, transform_data)
+        if all_data is not None and type(all_data) == dict:
+            transform_data = dict(transform_data.items() + all_data.items())
 
         # Attempt to decode the payload from JSON. If it's possible, add
         # the JSON keys into item to pass to the plugin, and create the
