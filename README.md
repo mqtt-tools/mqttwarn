@@ -376,6 +376,10 @@ Note that transforms in parameters must be quoted strings:
 * Wrong: `'q' : {name}`
 * Correct: `'q' : '{name}'`
 
+As a special case, if the quoted parameter starts with an `@` character (e.g.
+`'@name'`, it will not be formatted via `.format()`; instead, `name` is taken
+directly from the transformation data.
+
 ### `irccat`
 
 The `irccat` target fires a message off to a listening [irccat](https://github.com/RJ/irccat/tree/master) which has a connection open on one or more IRC channels.
