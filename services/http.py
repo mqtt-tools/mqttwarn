@@ -37,7 +37,6 @@ def plugin(srv, item):
         pass
 
     if params is not None:
-        print params
         for key in params.keys():
 
             # { 'q' : '@message' }
@@ -55,7 +54,6 @@ def plugin(srv, item):
 
     message  = item.message
 
-    print params
     if method.upper() == 'GET':
         try:
             if params is not None:
