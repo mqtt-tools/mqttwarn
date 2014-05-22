@@ -37,15 +37,25 @@ def plugin(srv, item):
         pass
 
     if params is not None:
+        print params
         for key in params.keys():
-            try:
-                params[key] = params[key].format(**item.data).encode('utf-8')
-            except Exception, e:
-                srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
-                return False
+
+            # { 'q' : '@message' }
+            # Quoted field, starts with '@'. Do not use .format, instead grab
+            # the item's [message] and inject as parameter value.
+            if params[key].startswith('@'):         # "@message"
+                params[key] = item.get(params[key][1:], "NOP")
+
+            else:
+                try:
+                    params[key] = params[key].format(**item.data).encode('utf-8')
+                except Exception, e:
+                    srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
+                    return False
 
     message  = item.message
 
+    print params
     if method.upper() == 'GET':
         try:
             if params is not None:
