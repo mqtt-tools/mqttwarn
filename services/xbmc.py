@@ -34,9 +34,10 @@ def plugin(srv, item):
         "method"  : "GUI.ShowNotification",
         "id"      : 1,
         "params"  : {
-            "title"   : title,
-            "message" : message,
-            "image"   : image
+            "title"       : title,
+            "message"     : message,
+            "image"       : image,
+            "displaytime" : 10000
         }
     }
     jsoncommand = json.dumps(jsonparams)
