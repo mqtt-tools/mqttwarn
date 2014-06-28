@@ -46,9 +46,10 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    # addrs is an array with two elements:
+    # addrs is an array with two or three elements:
     # 0 is the user key
     # 1 is the app key
+    # 2 (if present) is the PushOver sound to play for the message
 
     try:
         userkey = addrs[0]
@@ -61,6 +62,9 @@ def plugin(srv, item):
             'retry' : 60,
             'expire' : 3600,
         }
+
+    if len(addrs) > 2:
+        params['sound'] = addrs[2]
 
     if title is not None:
         params['title'] = title
