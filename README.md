@@ -635,6 +635,7 @@ targets = {
         # target to use: [ list of fields to ignore and not store ]
         'target_name' : ['field1', 'field2','field3' ]
     }
+```
 
 ### `nma`
 
