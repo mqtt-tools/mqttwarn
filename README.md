@@ -21,6 +21,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [mqtt](#mqtt)
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
+* [mysql_dynamic](#mysql_dynamic)
 * [nma](#nma)
 * [nntp](#nntp)
 * [nsca](#nsca)
@@ -611,6 +612,29 @@ to the _fallback_ column:
 
 You can add columns with the names of the built-in transformation types (e.g. `_dthhmmss`, see below)
 to have those values stored automatically.
+
+### `mysql_dynamic`
+
+Similar to the MySQL plugin but tables and columns are created dynamically as needed. Each field will be stored at a different column and some fields can be ignored. 
+
+At this point, tables are not modified if the payload format changes and there is no fallback column.
+
+An index table will keep track of the latest update to the remaining tables.
+
+It requires the following configuration:
+```ini
+[config:mysql_dynamic]
+host  =  'localhost'
+port  =  3306
+user  =  'dbusername'
+pass  =  'dbpassword'
+dbname  =  'database'
+index   =  'index_table_name'
+
+targets = {
+        # target to use: [ list of fields to ignore and not store ]
+        'target_name' : ['field1', 'field2','field3' ]
+    }
 
 ### `nma`
 
