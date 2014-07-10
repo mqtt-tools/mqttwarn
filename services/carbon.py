@@ -28,8 +28,30 @@ def plugin(srv, item):
     # else the original payload
     text = item.message
 
-    metric_name = item.data.get('topic', 'ohno').replace('/', '.')
-    carbon_msg = "%s %s %d\n" % (metric_name, text, int(time.time()))
+    try:
+        parts = text.split()
+    except:
+        srv.logging.error("target `carbon': cannot split string")
+        return False
+
+    if len(parts) == 1:
+        metric_name = item.data.get('topic', 'ohno').replace('/', '.')
+        value = parts[0]
+        tics = int(time.time())
+    else:
+        if len(parts) == 2:
+            metric_name = parts[0]
+            value = parts[1]
+            tics = int(time.time())
+        else:
+            if len(parts) == 3:
+                metric_name = parts[0]
+                value = parts[1]
+                tics = int(parts[2])
+
+    carbon_msg = "%s %s %d" % (metric_name, value, tics)
+    srv.logging.debug("Sending to carbon: %s" % (carbon_msg))
+    carbon_msg = carbon_msg + "\n"
     try:
         sock = socket.socket()
         sock.connect((carbon_host, carbon_port))
