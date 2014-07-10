@@ -10,6 +10,7 @@ For example, you may wish to notify via e-mail and to Pushover of an alarm publi
 
 _mqttwarn_ supports a number of services (listed alphabetically below):
 
+* [carbon](#carbon)
 * [dbus](#dbus)
 * [file](#file)
 * [freeswitch](#freeswitch)
@@ -253,6 +254,35 @@ The path to the configuration file (which must be valid Python) is obtained from
 Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:_service_]`, where _service_ is the name of the service. This section _may_ have some settings which are required for a particular service. One mandatory option is called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
+
+### `carbon`
+
+The `carbon` service sends a metric to a Carbon-enabled server over TCP.
+
+```ini
+[config:carbon]
+targets = {
+        'c1' : [ '172.16.153.110', 2003 ],
+  }
+
+[c/#]
+targets = carbon:c1
+```
+
+In this configuration, all messages published to `c/#` would be forwarded to
+the Carbon server at the specified IP address and TCP port number.
+
+The topic name is translated into a Carbon _metric_ name by replacing slashes
+by periods. A timestamp is appended to the message automatically.
+
+For example, publishing this:
+
+```
+mosquitto_pub -t c/temp/arduino -m 12
+```
+
+would result in the value `12` being used as the value for the Carbon metric
+`c.temp.arduino`.
 
 ### `dbus`
 
