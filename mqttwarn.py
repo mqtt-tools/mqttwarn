@@ -1,6 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+""" mqttwarn.py
+
+Usage:
+  mqttwarn.py [options]
+  mqttwarn.py (-h | --help)
+  mqttwarn.py --version
+
+The options of the command will overwrite what is given by the configuration file (if specified).
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+  -c=<path>	Configuration file.
+  -p=<int>      MQTT broker port to connect to.
+  -l    	Log to stdout.
+"""
+
+
 import paho.mqtt.client as paho   # pip install paho-mqtt
 import logging
 import signal
@@ -40,6 +58,7 @@ try:
     jenv.filters['jsonify'] = json.dumps
 except ImportError:
     HAVE_JINJA = False
+from docopt import docopt
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
@@ -63,11 +82,8 @@ class Config(RawConfigParser):
             'NONE'  : None,
         }
 
-    def __init__(self, configuration_file):
+    def __init__(self, configuration_file=None):
         RawConfigParser.__init__(self)
-        f = codecs.open(configuration_file, 'r', encoding='utf-8')
-        self.readfp(f)
-        f.close()
 
         ''' set defaults '''
         self.hostname     = 'localhost'
@@ -92,7 +108,11 @@ class Config(RawConfigParser):
         self.tls_insecure = False
         self.tls          = False
 
-        self.__dict__.update(self.config('defaults'))
+        if configuration_file is not None:
+            f = codecs.open(configuration_file, 'r', encoding='utf-8')
+            self.readfp(f)
+            f.close()
+            self.__dict__.update(self.config('defaults'))
 
         if HAVE_TLS == False:
             logging.error("TLS parameters set but no TLS available (SSL)")
@@ -293,42 +313,7 @@ class PeriodicThread(object):
         """
         self.current_timer.join()
 
-try:
-    cf = Config(CONFIGFILE)
-except Exception, e:
-    print "Cannot open configuration at %s: %s" % (CONFIGFILE, str(e))
-    sys.exit(2)
 
-LOGLEVEL  = cf.loglevelnumber
-LOGFILE   = cf.logfile
-LOGFORMAT = cf.logformat
-
-# initialise logging
-logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
-logging.info("Starting %s" % SCRIPTNAME)
-logging.info("INFO MODE")
-logging.debug("DEBUG MODE")
-
-# initialise MQTT broker connection
-mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession)
-
-# initialise processor queue
-q_in = Queue.Queue(maxsize=0)
-num_workers = 1
-exit_flag = False
-
-ptlist = {}         # List of PeriodicThread() objects
-
-# Class with helper functions which is passed to each plugin
-# and its global instantiation
-class Service(object):
-    def __init__(self, mqttc, logging):
-        self.mqttc    = mqttc
-        self.logging  = logging
-        self.SCRIPTNAME = SCRIPTNAME
-srv = Service(None, None)
-
-service_plugins = {}
 
 # http://stackoverflow.com/questions/1305532/
 class Struct:
@@ -848,11 +833,59 @@ def cleanup(signum=None, frame=None):
     logging.debug("Exiting on signal %d", signum)
     sys.exit(signum)
 
-if __name__ == '__main__':
+def main():
+    """ main function """
+    options = docopt(__doc__,  version='0.6')
 
+    global cf, logging, service_plugins, mqttc, srv, num_workers, exit_flag, q_in, ptlist
+    cf = Config()
+    if options.get("-c") is not None:
+        cf = Config(options.get("-c"))
+    opt_map = {
+        '-p': 'port',
+    }
+    for key, val in opt_map.items():
+        if key in options.keys() and options.get(key) is not None:
+            cf.__dict__[val] = options.get(key)
+    LOGLEVEL  = cf.loglevelnumber
+    LOGFILE   = cf.logfile
+    LOGFORMAT = cf.logformat
+
+    # initialise logging
+    if options.get('-l'):
+       logging.basicConfig(level=LOGLEVEL, format=LOGFORMAT)
+    else:
+       logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
+    logging.info("Starting %s" % SCRIPTNAME)
+    logging.info("INFO MODE")
+    logging.debug("DEBUG MODE")
+
+    # initialise MQTT broker connection
+    mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession)
+
+    # initialise processor queue
+    q_in = Queue.Queue(maxsize=0)
+    num_workers = 1
+    exit_flag = False
+
+    ptlist = {}         # List of PeriodicThread() objects
+
+    # Class with helper functions which is passed to each plugin
+    # and its global instantiation
+    class Service(object):
+        def __init__(self, mqttc, logging):
+            self.mqttc    = mqttc
+            self.logging  = logging
+            self.SCRIPTNAME = SCRIPTNAME
+    srv = Service(None, None)
+
+    service_plugins = {}
     # use the signal module to handle signals
     signal.signal(signal.SIGTERM, cleanup)
     signal.signal(signal.SIGINT, cleanup)
 
     # connect to broker and start listening
     connect()
+
+if __name__ == '__main__':
+    main()
