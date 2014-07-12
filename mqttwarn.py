@@ -11,11 +11,12 @@ Usage:
 The options of the command will overwrite what is given by the configuration file (if specified).
 
 Options:
-  -h --help     Show this screen.
-  --version     Show version.
-  -c=<path>	    Configuration file. [default: mqttwarn.ini]
-  -p=<int>      MQTT broker port to connect to.
-  -l    	Log to stdout.
+  -h --help         Show this screen.
+  --version         Show version.
+  -c=<path>	        Configuration file. [default: mqttwarn.ini]
+  -p=<int>          MQTT broker port to connect to.
+  -l    	        Log to stdout.
+  -L=<LOGLEVEL>     Loglevel (CRITICAL, DEBUG, ERROR, INFO, WARN)
 """
 
 
@@ -124,6 +125,9 @@ class Config(RawConfigParser):
             logging.error("TLS parameters set but no TLS available (SSL)")
             sys.exit(2)
 
+    def eval_cfg(self):
+        """ config might be updated through options
+        """
         if self.ca_certs is not None:
             self.tls = True
 
@@ -372,6 +376,7 @@ class MqttWarn(object):
             cfg -> Instance of class Config()
         """
         self._cfg = cfg
+
         # initialise logging
         if self._cfg.log_stdout:
             logging.basicConfig(level=self._cfg.loglevelnumber,
@@ -908,10 +913,12 @@ def main():
         opt_map = {
             '-p': 'port',
             '-l': 'log_stdout',
+            '-L': 'loglevel',
             }
         for key, val in opt_map.items():
             if key in options.keys() and options.get(key) is not None:
                 cfg.__dict__[val] = options.get(key)
+    cfg.eval_cfg()
     mqttwarn = MqttWarn(cfg)
     mqttwarn.connect()
 
