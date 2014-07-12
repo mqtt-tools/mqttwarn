@@ -388,6 +388,10 @@ class MqttWarn(object):
         logging.info("Starting %s" % SCRIPTNAME)
         logging.info("INFO MODE")
         logging.debug("DEBUG MODE")
+        if HAVE_DOCOPT:
+            logging.debug("python-docopt found: Evaluating options")
+        else:
+            logging.debug("python-docopt could not be imported; no option parsed")
 
         # initialise MQTT broker connection
         self._mqttc = paho.Client(self._cfg.clientid, clean_session=self._cfg.cleansession)
@@ -895,6 +899,7 @@ class MqttWarn(object):
 
         logging.debug("Exiting on signal %d", signum)
         sys.exit(signum)
+
 
 def main():
     """ main function """
