@@ -109,7 +109,7 @@ If you repeat the publish of the second message, you should see the following in
 -->Jane<--
 ```
 
-## mqttwarn with options
+## docopt
 
 If the library python-docopt is found, options are available.
 
