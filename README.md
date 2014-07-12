@@ -122,14 +122,15 @@ Usage:
   mqttwarn.py (-h | --help)
   mqttwarn.py --version
 
-The options of the command will overwrite what is given by the configuration file (if specified).
+The options of the command will overrule what is given by the configuration file (if specified).
 
 Options:
-  -h --help     Show this screen.
-  --version     Show version.
-  -c=<path>	Configuration file.
-  -p=<int>      MQTT broker port to connect to.
-  -l    	Log to stdout.
+  -h --help         Show this screen.
+  --version         Show version.
+  -c=<path>	        Configuration file. [default: mqttwarn.ini]
+  -p=<int>          MQTT broker port to connect to.
+  -l    	        Log to stdout.
+  -L=<LOGLEVEL>     Loglevel (CRITICAL, DEBUG, ERROR, INFO, WARN)
 ```
 
 As written, the options overrule what is given in the configfile.
