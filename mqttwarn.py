@@ -13,7 +13,7 @@ The options of the command will overwrite what is given by the configuration fil
 Options:
   -h --help     Show this screen.
   --version     Show version.
-  -c=<path>	Configuration file.
+  -c=<path>	    Configuration file. [default: mqttwarn.ini]
   -p=<int>      MQTT broker port to connect to.
   -l    	Log to stdout.
 """
