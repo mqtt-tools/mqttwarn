@@ -1527,6 +1527,8 @@ functions, and its float value is an interval in _seconds_ after which your
 custom function (_pinger()_ in this case) is invoked. Your function has access
 to the `srv` object (which was described earlier).
 
+Function names are to be specified in lower-case characters.
+
 
 ## Examples ##
 
