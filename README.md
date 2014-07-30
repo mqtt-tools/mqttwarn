@@ -110,6 +110,52 @@ If you repeat the publish of the second message, you should see the following in
 -->Jane<--
 ```
 
+## docopt
+
+If the library python-docopt is found, options are available.
+
+```
+$ ./mqttwarn.py -h
+ mqttwarn.py
+
+Usage:
+  mqttwarn.py [options]
+  mqttwarn.py (-h | --help)
+  mqttwarn.py --version
+
+The options of the command will overrule what is given by the configuration file (if specified).
+
+Options:
+  -h --help         Show this screen.
+  --version         Show version.
+  -c=<path>	        Configuration file. [default: mqttwarn.ini]
+  -p=<int>          MQTT broker port to connect to.
+  -l    	        Log to stdout.
+  -L=<LOGLEVEL>     Loglevel (CRITICAL, DEBUG, ERROR, INFO, WARN)
+```
+
+As written, the options overrule what is given in the configfile.
+
+```
+$ grep port mqttwarn.ini
+port      = 4883
+$ ./mqttwarn.py -p 1883 -l
+2014-07-12 08:28:03,048 INFO  [mqttwarn] Starting mqttwarn
+2014-07-12 08:28:03,048 INFO  [mqttwarn] INFO MODE
+2014-07-12 08:28:03,048 DEBUG [mqttwarn] DEBUG MODE
+2014-07-12 08:28:03,050 DEBUG [mqttwarn] Service file loaded
+2014-07-12 08:28:03,050 DEBUG [mqttwarn] Service log loaded
+2014-07-12 08:28:03,050 DEBUG [mqttwarn] Attempting connection to MQTT broker localhost:1883...
+2014-07-12 08:28:03,051 DEBUG [mqttwarn] Setting LWT to clients/mqttwarn...
+2014-07-12 08:28:03,053 DEBUG [mqttwarn] Connected to MQTT broker, subscribing to topics...
+2014-07-12 08:28:03,053 DEBUG [mqttwarn] Subscribing to test/+ (qos=0)
+^C2014-07-12 08:28:04,425 DEBUG [mqttwarn] Disconnecting from MQTT broker...
+2014-07-12 08:28:04,425 INFO  [mqttwarn] Clean disconnection from broker
+2014-07-12 08:28:04,426 INFO  [mqttwarn] Waiting for queue to drain
+2014-07-12 08:28:04,427 DEBUG [mqttwarn] Exiting on signal 2
+```
+
+
 ## The `[defaults]` section
 
 Most of the options in the configuration file have sensible defaults, and/or ought to be self-explanatory:
