@@ -16,6 +16,8 @@ def get_datastream(feed, datastream_name):
 		return datastream
 
 def plugin(srv, item):
+	srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
+
 	config = item.config
 
 	#it's essential to have an apikey
@@ -39,5 +41,5 @@ def plugin(srv, item):
 	try:
 		feed.update()
 	except requests.HTTPError as e:
-		print "Xively Error: " + e.strerror
+		srv.logging.error("Xively Error: " + e.strerror)
 	return True
