@@ -15,7 +15,7 @@ def plugin(srv, item):
     # addrs is a list[] associated with a particular target.
     # While it may contain more than one item (e.g. pushover)
     # the `file' service carries one only, i.e. a path name
-    filename = item.addrs[0]
+    filename = item.addrs[0].format(**item.data).encode('utf-8')
 
     # If the incoming payload has been transformed, use that,
     # else the original payload
