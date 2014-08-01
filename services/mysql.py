@@ -44,7 +44,8 @@ def plugin(srv, item):
     dbname  = item.config.get('dbname')
 
     try:
-        table_name, fallback_col = item.addrs
+        table_name = item.addrs[0].format(**item.data).encode('utf-8')
+        fallback_col = item.addrs[1].format(**item.data).encode('utf-8')
     except:
         srv.logging.warn("mysql target incorrectly configured")
         return False
