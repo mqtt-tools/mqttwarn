@@ -78,6 +78,7 @@ class Config(RawConfigParser):
         self.lwt          = 'clients/%s' % SCRIPTNAME
         self.skipretained = False
         self.cleansession = False
+        self.protocol     = 3
 
         self.logformat    = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
         self.logfile      = LOGFILE
@@ -310,7 +311,7 @@ logging.info("INFO MODE")
 logging.debug("DEBUG MODE")
 
 # initialise MQTT broker connection
-mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession)
+mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession, protocol=cf.protocol)
 
 # initialise processor queue
 q_in = Queue.Queue(maxsize=0)
