@@ -31,6 +31,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [pastebinpub](#pastebinpub)
 * [pipe](#pipe)
 * [prowl](#prowl)
+* [pushalot](#pushalot)
 * [pushbullet](#pushbullet)
 * [pushover](#pushover)
 * [redispub](#redispub)
@@ -969,6 +970,28 @@ targets = {
 
 Requires:
 * [prowlpy](https://github.com/jacobb/prowlpy)
+
+### `pushalot`
+This service is for [pushalot](http://www.pushalot.com), which is a notifier app for Windows Phone and Windows8. 
+
+It requires an Authorization token, which you can generate after creating an account at [pushalot.com](http://www.pushalot.com) We can then use that to configure the target definition:
+
+```ini
+[config:pushalot]
+targets = {
+                   # Authorization token   
+    'info'     : ['xxxxxxxxxxxxxxxxxxxxxxx'],
+    'warn'     : ['xxxxxxxxxxxxxxxxxxxxxxx']
+    }
+````
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: `mqttwarn`)   |
+
+Requires:
+* a [pushalot](http://www.pushalot.com) account with Authorization token
+
 
 ### `pushbullet`
 
