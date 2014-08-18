@@ -989,6 +989,8 @@ targets = {
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: `mqttwarn`)   |
 
+![Pushalot](assets/pushalot.png)
+
 Requires:
 * a [pushalot](http://www.pushalot.com) account with Authorization token
 
