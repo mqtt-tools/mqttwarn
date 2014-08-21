@@ -313,6 +313,9 @@ targets = {
     }
 ```
 
+Requires:
+* Python [dbus](http://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
+
 ### `emoncms`
 
 The `emoncms` service sends a numerical payload to an [EmonCMS](http://emoncms.org/) instance. [EmonCMS](http://emoncms.org/) is a powerful open-source web-app for processing, logging and visualising energy, temperature and other environmental data.
@@ -331,9 +334,6 @@ targets = {
     'solar'  : [ 1, 'solar' ]
     }
 ```
-
-Requires:
-* Python [dbus](http://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
 
 ### `file`
 
