@@ -24,7 +24,12 @@ def plugin(srv, item):
 
     node  = item.addrs[0]
     name  = item.addrs[1]
-    value = float(item.payload) 
+
+    try:
+        value = float(item.payload)
+    except ValueError:
+        srv.logging.warn("Unable to process message payload as it is not a number: %s" % (str(e)))
+        return False
 
     try:
         params = { 'apikey': apikey, 'node': node, 'json': json.dumps({ name : value }) }
