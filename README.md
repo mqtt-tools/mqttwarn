@@ -17,6 +17,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [freeswitch](#freeswitch)
 * [gss](#gss)
 * [http](#http)
+* [instapush](#instapush)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
@@ -70,7 +71,7 @@ append_newline = True
 targets = {
     'mylog'     : ['/tmp/mqtt.log']
     }
-    
+
 [config:log]
 targets = {
     'info'   : [ 'info' ]
@@ -177,7 +178,7 @@ In the `launch` option you specify which _services_ (of those available in the `
 ## The `[config:xxx]` sections
 
 Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
-has a mandatory option called `targets`, which is a dictionary of target names, each 
+has a mandatory option called `targets`, which is a dictionary of target names, each
 pointing to an array of "addresses". Address formats depend on the particular service.
 
 ## The `[__topic__]` sections
@@ -447,6 +448,34 @@ As a special case, if the quoted parameter starts with an `@` character (e.g.
 `'@name'`, it will not be formatted via `.format()`; instead, `name` is taken
 directly from the transformation data.
 
+### `instapush`
+
+This service is for [Instapush](https://instapush.im), an app for
+both IOS and Android, which provides free instant notifications.
+
+You should first create an application and respective event following the [tutorial](https://instapush.im/home/start/).
+
+Afterward you will find your Application ID and Application Secret in the "Basic Info" of your application.
+
+Each target corresponds to an event in your instapush application, you can define as many trackers as you wish as long as it's a JSON object.
+
+for the ini example I've setup:
+| Field        | Value                |
+| ------------ | -------------------- |
+| Event title  | alerts               |
+| Trackers     | object, action       |
+| Push Message | {object} is {action} |
+
+```ini
+[config:instapush]
+appid = '12345abc123456'
+appsecret = '1234567890abcd123456789abcdef123456789'
+targets = {
+             # event   # trackers
+  'notify' : [ 'alerts', {"object":"alarm", "action":"ringing"}]
+  }
+```
+
 ### `irccat`
 
 The `irccat` target fires a message off to a listening [irccat](https://github.com/RJ/irccat/tree/master) which has a connection open on one or more IRC channels.
@@ -575,7 +604,7 @@ ca_certs = foobar.crt
 ;certfile = xxx.crt
 ;keyfile = xxx.key
 tls_version = tlsv1
-;ciphers = xxxxx xx 
+;ciphers = xxxxx xx
 ```
 
 This shows the currently full configuration possible. Global values from the
@@ -992,14 +1021,14 @@ Requires:
 * [prowlpy](https://github.com/jacobb/prowlpy)
 
 ### `pushalot`
-This service is for [pushalot](http://www.pushalot.com), which is a notifier app for Windows Phone and Windows8. 
+This service is for [pushalot](http://www.pushalot.com), which is a notifier app for Windows Phone and Windows8.
 
 It requires an Authorization token, which you can generate after creating an account at [pushalot.com](http://www.pushalot.com) We can then use that to configure the target definition:
 
 ```ini
 [config:pushalot]
 targets = {
-                   # Authorization token   
+                   # Authorization token
     'info'     : ['xxxxxxxxxxxxxxxxxxxxxxx'],
     'warn'     : ['xxxxxxxxxxxxxxxxxxxxxxx']
     }
@@ -1245,7 +1274,7 @@ The `xively` service can send a subset of your data to [Xively](http://xively.co
 [config:xively]
 apikey = '1234567890abcdefghiklmnopqrstuvwxyz'
 targets = {
-        # feedid        : [ 'datastream1', 'datastream2'] 
+        # feedid        : [ 'datastream1', 'datastream2']
         '1234567' : [ 'dataItem1', 'dataItem2' ],
         '7654321' : [ 'dataItemA' ]
   }
