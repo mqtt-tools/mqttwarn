@@ -8,6 +8,10 @@ lwt	     = 'clients/mqttwarn'
 skipretained = False
 cleansession = False
 
+# MQTTv31 = 3   (default)
+# MQTTv311 = 4
+protocol     = 3
+
 ; logging
 logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
 logfile	  = 'mqttwarn.log'
