@@ -460,11 +460,12 @@ Afterward you will find your Application ID and Application Secret in the "Basic
 Each target corresponds to an event in your instapush application, you can define as many trackers as you wish as long as it's a JSON object.
 
 for the ini example I've setup:
-| Field        | Value                |
-| ------------ | -------------------- |
-| Event title  | alerts               |
-| Trackers     | object, action       |
-| Push Message | {object} is {action} |
+
+| Field          | Value                |
+| -------------- | -------------------- |
+| `Event title`  | alerts               |
+| `Trackers`     | object, action       |
+| `Push Message` | {object} is {action} |
 
 ```ini
 [config:instapush]
