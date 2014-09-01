@@ -477,6 +477,8 @@ targets = {
   }
 ```
 
+![instapush](assets/instapush.png)
+
 ### `irccat`
 
 The `irccat` target fires a message off to a listening [irccat](https://github.com/RJ/irccat/tree/master) which has a connection open on one or more IRC channels.
