@@ -465,7 +465,7 @@ for the ini example I've setup:
 | -------------- | -------------------- |
 | `Event title`  | alerts               |
 | `Trackers`     | object, action       |
-| `Push Message` | {object} is {action} |
+| `Push Message` | {object} just {action} |
 
 ```ini
 [config:instapush]
@@ -473,7 +473,7 @@ appid = '12345abc123456'
 appsecret = '1234567890abcd123456789abcdef123456789'
 targets = {
              # event   # trackers
-  'notify' : [ 'alerts', {"object":"alarm", "action":"ringing"}]
+  'notify' : [ 'alerts', {"object":"door", "action":"opened/closed"}]
   }
 ```
 
