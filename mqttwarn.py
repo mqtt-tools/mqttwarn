@@ -533,12 +533,11 @@ def send_failover(reason, message):
     send_to_targets('failover', reason, message)
 
 def send_to_targets(section, topic, payload):
-    targetlist = cf.getlist(section, 'targets')
-    if targetlist is None:
-        logging.warn("No targets defined in section [%s], skipping message on %s" % (section, topic))
-        cleanup(0)
+    if cf.has_section(section) == False:
+        logging.warn("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
         return
-        
+
+    targetlist = cf.getlist(section, 'targets')
     if type(targetlist) != list:
         logging.error("Target definition in section [%s] is incorrect" % section)
         cleanup(0)
