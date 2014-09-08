@@ -182,9 +182,17 @@ pointing to an array of "addresses". Address formats depend on the particular se
 
 ## The `[failover]` section
 
-There is a special section for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection. 
+There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection. 
 
 This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_. 
+
+Below is an example which will log any failover events to an error log, and display them on all XBMC targets:
+
+```ini
+[failover]
+targets  = log:error, xbmc
+title    = mqttwarn
+```
 
 ## The `[__topic__]` sections
 
