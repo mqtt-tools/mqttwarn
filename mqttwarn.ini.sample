@@ -46,6 +46,9 @@ targets = {
     'shell' : [ None ],
    }
 
+; special config for 'failover' events
+[failover]
+targets = osxnotify
 
 [hello/1]
 targets = log:info

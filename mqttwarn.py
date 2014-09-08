@@ -360,11 +360,18 @@ def render_template(filename, data):
 def get_sections():
     sections = []
     for section in cf.sections():
-        if section != 'defaults' and section != 'cron' and not section.startswith('config:'):
-            if cf.has_option(section, 'targets'):
-                sections.append(section)
-            else:
-                logging.warn("Section `%s' has no targets defined" % section)
+        if section == 'defaults':
+            continue
+        if section == 'cron':
+            continue
+        if section == 'failover':
+            continue
+        if section.startswith('config:'):
+            continue
+        if cf.has_option(section, 'targets'):
+            sections.append(section)
+        else:
+            logging.warn("Section `%s' has no targets defined" % section)
     return sections
 
 def get_topic(section):
@@ -489,7 +496,7 @@ def on_disconnect(mosq, userdata, result_code):
     if result_code == 0:
         logging.info("Clean disconnection from broker")
     else:
-        logging.info("Broker connection lost. Will attempt to reconnect in 5s...")
+        send_failover("brokerdisconnected", "Broker connection lost. Will attempt to reconnect in 5s...")
         time.sleep(5)
 
 def on_message(mosq, userdata, msg):
@@ -515,42 +522,56 @@ def on_message(mosq, userdata, msg):
             if is_filtered(section, topic, payload):
                 logging.debug("Filter in section [%s] has skipped message on %s" % (section, topic))
                 continue
-
-            targetlist = cf.getlist(section, 'targets')
-            if type(targetlist) != list:
-                logging.error("Target definition in section [%s] is incorrect" % section)
-                cleanup(0)
-                return
-
-            for t in targetlist:
-                logging.debug("Message on %s going to %s" % (topic, t))
-                # Each target is either "service" or "service:target"
-                # If no target specified then notify ALL targets
-                service = t
-                target = None
-
-                # Check if this is for a specific target
-                if t.find(':') != -1:
-                    try:
-                        service, target = t.split(':', 2)
-                    except:
-                        logging.warn("Invalid target %s - should be 'service:target'" % (t))
-                        continue
-
-                if not service in service_plugins:
-                    logging.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
-                    return
-
-                sendtos = None
-                if target is None:
-                    sendtos = get_service_targets(service)
-                else:
-                    sendtos = [target]
-
-                for sendto in sendtos:
-                    job = Job(1, service, section, topic, payload, sendto)
-                    q_in.put(job)
+            # Send the message to any targets specified
+            send_to_targets(section, topic, payload)
 # End of MQTT broker callbacks
+
+def send_failover(reason, message):
+    # Make sure we dump this event to the log
+    logging.warn(message)
+    # Attempt to send the message to our failover targets
+    send_to_targets('failover', reason, message)
+
+def send_to_targets(section, topic, payload):
+    targetlist = cf.getlist(section, 'targets')
+    if targetlist is None:
+        logging.warn("No targets defined in section [%s], skipping message on %s" % (section, topic))
+        cleanup(0)
+        return
+        
+    if type(targetlist) != list:
+        logging.error("Target definition in section [%s] is incorrect" % section)
+        cleanup(0)
+        return
+
+    for t in targetlist:
+        logging.debug("Message on %s going to %s" % (topic, t))
+        # Each target is either "service" or "service:target"
+        # If no target specified then notify ALL targets
+        service = t
+        target = None
+
+        # Check if this is for a specific target
+        if t.find(':') != -1:
+            try:
+                service, target = t.split(':', 2)
+            except:
+                logging.warn("Invalid target %s - should be 'service:target'" % (t))
+                continue
+
+        if not service in service_plugins:
+            logging.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
+            return
+
+        sendtos = None
+        if target is None:
+            sendtos = get_service_targets(service)
+        else:
+            sendtos = [target]
+
+        for sendto in sendtos:
+            job = Job(1, service, section, topic, payload, sendto)
+            q_in.put(job)
 
 def builtin_transform_data(topic, payload):
     ''' Return a dict with initial transformation data which is made
