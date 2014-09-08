@@ -147,8 +147,8 @@ class Config(RawConfigParser):
         try:
             val = self.get(section, key)
             val = [s.strip() for s in val.split(',')]
-        except:
-            logging.warn("Expecting a list in section `%s', key `%s'" % (section, key))
+        except Exception, e:
+            logging.warn("Expecting a list in section `%s', key `%s' (%s)" % (section, key, str(e)))
 
         return val
 
