@@ -174,12 +174,17 @@ The `functions` option specifies the path to a Python file containing functions 
 
 In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_) you want to be able to use in target definitions.
 
-
 ## The `[config:xxx]` sections
 
 Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
 has a mandatory option called `targets`, which is a dictionary of target names, each
 pointing to an array of "addresses". Address formats depend on the particular service.
+
+## The `[failover]` section
+
+There is a special section for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection. 
+
+This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_. 
 
 ## The `[__topic__]` sections
 
