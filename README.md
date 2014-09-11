@@ -1718,6 +1718,9 @@ You'll need at least the following components:
 * An MQTT broker (e.g. [Mosquitto](http://mosquitto.org))
 * The Paho Python module: `pip install paho-mqtt`
 
+## Notes
+
+"MQTT" is a trademark of the OASIS open standards consortium, which publishes the MQTT specifications.
 
 
 ## Installation
