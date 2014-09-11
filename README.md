@@ -1090,6 +1090,7 @@ and one or more _application keys_ which you configure in the targets definition
 
 ```ini
 [config:pushover]
+callback = None
 targets = {
     'nagios'     : ['userkey1', 'appkey1', 'sound1'],
     'alerts'     : ['userkey2', 'appkey2'],
@@ -1104,9 +1105,10 @@ notify, say, one or more of your devices as well as one for your spouse. As you
 can see in the example, you can even specify an optional sound to be played for
 the individual users. For a list of available sounds see the [Pushover API List](https://pushover.net/api#sounds).
 
+NOTE: `callback` is an optional URL for pushover to [ack messages](https://pushover.net/api#receipt).
+
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
-| `callback`    |   O    | URL for pushover to [ack messages](https://pushover.net/api#receipt)        |
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
 

@@ -42,7 +42,9 @@ def plugin(srv, item):
     addrs    = item.addrs
     title    = item.title
     priority = item.priority
-    callback = item.callback
+
+    # optional callback URL
+    callback = item.config.get('callback', None)
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 

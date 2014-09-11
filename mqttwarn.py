@@ -699,7 +699,6 @@ def processor():
         item['image'] = xform(get_config(section, 'image'), '', transform_data)
         item['message'] = xform(get_config(section, 'format'), job.payload, transform_data)
         item['priority'] = int(xform(get_config(section, 'priority'), 0, transform_data))
-        item['callback'] = xform(get_config(section, 'callback'), SCRIPTNAME, transform_data)
 
         if HAVE_JINJA is True:
             template = get_config(section, 'template')
