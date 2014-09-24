@@ -34,7 +34,7 @@ def plugin(srv, item):
         slack = Slacker(token)
         slack.chat.post_message(channel, text, username=username, icon_emoji=icon)
     except Exception, e:
-        srv.logging.warning("Cannot post to slack `%s': %s" % (filename, str(e)))
+        srv.logging.warning("Cannot post to slack: %s" % (str(e)))
         return False
 
     return True

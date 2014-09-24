@@ -1156,7 +1156,7 @@ targets = {
   }
 ```
 
-Each target defines a channel (`#channelname`) or a user (`@username`) to be
+Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
 addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
 
 ![Slack](assets/slack.png)
