@@ -15,6 +15,10 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
+    if HAVE_SLACK == False:
+        srv.logging.error("slacker module missing")
+        return False
+
     token = item.config.get('token')
     if token is None:
         srv.logging.error("No token found for slack")
