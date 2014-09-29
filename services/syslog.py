@@ -14,35 +14,24 @@ def plugin(srv, item):
                         __file__, item.service, item.target)
 
     facilities = {
-            'kernel' : syslog.LOG_KERN,
-            'user'   : syslog.LOG_USER,
-            'mail'   : syslog.LOG_MAIL,
-            'daemon' : syslog.LOG_DAEMON,
-            'auth'   : syslog.LOG_KERN,
-            'LPR'    : syslog.LOG_LPR,
-            'news'   : syslog.LOG_NEWS,
-            'uucp'   : syslog.LOG_UUCP,
-            'cron'   : syslog.LOG_CRON,
-            'syslog' : syslog.LOG_SYSLOG,
-            'local0' : syslog.LOG_LOCAL0,
-            'local1' : syslog.LOG_LOCAL1,
-            'local2' : syslog.LOG_LOCAL2,
-            'local3' : syslog.LOG_LOCAL3,
-            'local4' : syslog.LOG_LOCAL4,
-            'local5' : syslog.LOG_LOCAL5,
-            'local6' : syslog.LOG_LOCAL6,
-            'local7' : syslog.LOG_LOCAL7
-        }
-
-    priorities = {
-        'emerg'  : syslog.LOG_EMERG,
-        'alert'  : syslog.LOG_ALERT,
-        'crit'   : syslog.LOG_CRIT,
-        'error'  : syslog.LOG_ERR,
-        'warn'   : syslog.LOG_WARNING,
-        'notice' : syslog.LOG_NOTICE,
-        'info'   : syslog.LOG_INFO,
-        'debug'  : syslog.LOG_DEBUG
+        'kernel' : syslog.LOG_KERN,
+        'user'   : syslog.LOG_USER,
+        'mail'   : syslog.LOG_MAIL,
+        'daemon' : syslog.LOG_DAEMON,
+        'auth'   : syslog.LOG_KERN,
+        'LPR'    : syslog.LOG_LPR,
+        'news'   : syslog.LOG_NEWS,
+        'uucp'   : syslog.LOG_UUCP,
+        'cron'   : syslog.LOG_CRON,
+        'syslog' : syslog.LOG_SYSLOG,
+        'local0' : syslog.LOG_LOCAL0,
+        'local1' : syslog.LOG_LOCAL1,
+        'local2' : syslog.LOG_LOCAL2,
+        'local3' : syslog.LOG_LOCAL3,
+        'local4' : syslog.LOG_LOCAL4,
+        'local5' : syslog.LOG_LOCAL5,
+        'local6' : syslog.LOG_LOCAL6,
+        'local7' : syslog.LOG_LOCAL7
     }
 
     options = {
@@ -53,17 +42,28 @@ def plugin(srv, item):
         'perror' : syslog.LOG_PERROR
     }
 
-    facility  = facilities[item.addrs[0]]
-    priority = priorities[item.addrs[1]]
-    option = options[item.addrs[2]]
-    message = item.message
-    title = item.get('title', srv.SCRIPTNAME)
+    priorities = {
+        5        : syslog.LOG_EMERG,
+        4        : syslog.LOG_ALERT,
+        3        : syslog.LOG_CRIT,
+        2        : syslog.LOG_ERR,
+        1        : syslog.LOG_WARNING,
+        0        : syslog.LOG_NOTICE,
+        -1       : syslog.LOG_INFO,
+        -2       : syslog.LOG_DEBUG
+    }
 
-    syslog.openlog(title, option, facility)
+    title = item.get('title', srv.SCRIPTNAME)
+    facility  = facilities[item.addrs[0]]
+    option = options[item.addrs[1]]
+
+    priority = priorities[item.get('priority', -1)]
+    message = item.message
 
     try:
         srv.logging.debug("Message is going to syslog facility %s..." \
             % ((item.target).upper()))
+        syslog.openlog(title, option, facility)
         syslog.syslog(priority, message)
         srv.logging.debug("Successfully sent")
         syslog.closelog()

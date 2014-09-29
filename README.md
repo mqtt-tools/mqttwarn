@@ -1187,15 +1187,28 @@ The `syslog` service transfers MQTT messages to a local syslog server.
 ```ini
 [config:syslog]
 targets = {
-              # facility    priority,  option
-    'user'   : ['user',     'debug',  'pid'],
-    'kernel' : ['kernel',   'warn',   'pid']
+              # facility    option
+    'user'   : ['user',     'pid'],
+    'kernel' : ['kernel',   'pid']
     }
 ```
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: `mqttwarn`)   |
+| `priority`    |   O    | log level (dflt: -1)                   |
+
+Where `priority` can be between -2 and 5 and maps to `syslog` levels by;
+
+| Priority | Syslog Log Level |
+| -2       | LOG_DEBUG        |
+| -1       | LOG_INFO         |
+| 0        | LOG_NOTICE       |
+| 1        | LOG_WARNING      |
+| 2        | LOG_ERR          |
+| 3        | LOG_CRIT         |
+| 4        | LOG_ALERT        |
+| 5        | LOG_EMERG        |
 
 ```
 Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
