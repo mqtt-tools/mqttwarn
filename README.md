@@ -1201,6 +1201,7 @@ targets = {
 Where `priority` can be between -2 and 5 and maps to `syslog` levels by;
 
 | Priority | Syslog Log Level |
+| -------- | ---------------- |
 | -2       | LOG_DEBUG        |
 | -1       | LOG_INFO         |
 | 0        | LOG_NOTICE       |
