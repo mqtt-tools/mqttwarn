@@ -24,19 +24,13 @@ def plugin(srv, item):
     title    = item.title
     message  = item.message
 
-    '''
-    if len(message) > 100:
-        srv.logging.debug("Message is too long (%d chars) for Google Translate API (max 100 chars allowed), truncating message before processing" % (len(message)))
-        message = message[:100]
-    '''
-
     try:
         manager = asterisk.manager.Manager()
         manager.connect(host, port)
         response = manager.login(username, password)
         srv.logging.debug("Authentication {}".format(response))
         channel = gateway + number
-        channel_vars = {'text': message, 'lang': 'en'}
+        channel_vars = {'text': message}
         # originate the call
         response = manager.originate(channel, extension, context=context, priority='1', caller_id=extension, variables=channel_vars)
         srv.logging.info("Call {}".format(response))
