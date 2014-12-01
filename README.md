@@ -11,12 +11,12 @@ For example, you may wish to notify via e-mail and to Pushover of an alarm publi
 _mqttwarn_ supports a number of services (listed alphabetically below):
 
 * [apns](#apns)
+* [asterisk](#asterisk)
 * [carbon](#carbon)
 * [dbus](#dbus)
 * [emoncms](#emoncms)
 * [file](#file)
 * [freeswitch](#freeswitch)
-* [asterisk](#asterisk)
 * [gss](#gss)
 * [http](#http)
 * [instapush](#instapush)
@@ -465,9 +465,9 @@ Requires
 
 ## `asterisk`
 
-The `asterisk` service will make a VOIP conference between the number and the extension (in defined context). Also it send the message as variable to the extension, so you can 'speak' it. Configuration is similar as [freeswitch](#freeswitch) but in this case service use [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239). 
+The `asterisk` service will make a VOIP conference between the number and the extension (in defined context). Also it sends the message as variable to the extension, so you can 'speak' to it. Configuration is similar as with the [freeswitch](#freeswitch) service, but in service uses [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239). 
 
-Please be clean if you'd plan to open AMI port for Internet. I strongly recommend you use AMI only in trusted networks.
+The plugin author strongly recommends you use AMI only in trusted networks.
 
 ```ini
 [config:asterisk]
@@ -483,8 +483,9 @@ targets  = {
 ```
 
 Requires
-* [Asterisk](http://www.asterisk.org/) with configurate AMI interface (manager.conf)
-* pyst2 -  powerful python abstraction of the various Asterisk apis (pip install pyst2) 
+
+* [Asterisk](http://www.asterisk.org/) with configured AMI interface (manager.conf)
+* pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2) 
 
 ### `gss`
 
