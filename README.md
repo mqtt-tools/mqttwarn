@@ -16,6 +16,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [emoncms](#emoncms)
 * [file](#file)
 * [freeswitch](#freeswitch)
+* [asterisk](#asterisk)
 * [gss](#gss)
 * [http](#http)
 * [instapush](#instapush)
@@ -462,6 +463,28 @@ Requires
 * [Freeswitch](https://www.freeswitch.org/)
 * Internet connection for Google Translate API
 
+## `asterisk`
+
+The `asterisk` service will make a VOIP conference between the number and the extension (in defined context). Also it send the message as variable to the extension, so you can 'speak' it. Configuration is similar as [freeswitch](#freeswitch) but in this case service use [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239). 
+
+Please be clean if you'd plan to open AMI port for Internet. I strongly recommend you use AMI only in trusted networks.
+
+```ini
+[config:asterisk]
+host     = 'localhost'
+port     = 5038
+username = 'mqttwarn'
+password = '<AMI password>'
+extension = 2222
+context = 'default'
+targets  = {
+    'user'    : ['SIP/avaya/', '0123456789']
+          }
+```
+
+Requires
+* [Asterisk](http://www.asterisk.org/) with configurate AMI interface (manager.conf)
+* pyst2 -  powerful python abstraction of the various Asterisk apis (pip install pyst2) 
 
 ### `gss`
 
