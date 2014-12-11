@@ -10,6 +10,7 @@ For example, you may wish to notify via e-mail and to Pushover of an alarm publi
 
 _mqttwarn_ supports a number of services (listed alphabetically below):
 
+* [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
 * [carbon](#carbon)
@@ -274,6 +275,24 @@ The path to the configuration file (which must be valid Python) is obtained from
 Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:_service_]`, where _service_ is the name of the service. This section _may_ have some settings which are required for a particular service. One mandatory option is called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
+
+### `amqp`
+
+The `amqp` service basically implements an MQTT to AMQP gateway which is a little bit
+overkill as, say, RabbitMQ already has a pretty versatile MQTT plugin. The that as it
+may, the configuration is as follows:
+
+```ini
+[config:amqp]
+uri     =  'amqp://user:password@localhost:5672/'
+    'test01'     : [ 'name_of_exchange',    'routing_key' ],
+    }
+```
+
+The exchange specified in the target configuration must exist prior to using this
+target.
+
+Requires: [Puka](https://github.com/majek/puka/) (`pip install puka`)
 
 ### `apns`
 
