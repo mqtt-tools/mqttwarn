@@ -652,20 +652,26 @@ def processor():
 
         logging.debug("Processor is handling: `%s' for %s" % (service, target))
 
-        item = {
-            'service'       : service,
-            'section'       : section,
-            'target'        : target,
-            'config'        : get_service_config(service),
-            'addrs'         : get_service_targets(service)[target],
-            'topic'         : job.topic,
-            'payload'       : job.payload,
-            'data'          : None,
-            'title'         : None,
-            'image'         : None,
-            'message'       : None,
-            'priority'      : None
-        }
+        item = {}
+        try:
+            item = {
+                'service'       : service,
+                'section'       : section,
+                'target'        : target,
+                'config'        : get_service_config(service),
+                'addrs'         : get_service_targets(service)[target],
+                'topic'         : job.topic,
+                'payload'       : job.payload,
+                'data'          : None,
+                'title'         : None,
+                'image'         : None,
+                'message'       : None,
+                'priority'      : None
+            }
+        except Exception, e:
+            logging.error("Cannot handle service=%s, target=%s: %s" % (service, target, str(e)))
+            q_in.task_done()
+            return
 
         transform_data = builtin_transform_data(job.topic, job.payload)
 
