@@ -23,6 +23,7 @@ def plugin(srv, item):
     data = dict()
     data["event"] = item.addrs[0]
     data["trackers"]  = item.addrs[1]
+    data["trackers"].update(item.data)
 
     try:
         method = "POST"
