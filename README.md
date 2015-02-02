@@ -234,7 +234,7 @@ targets = {
   }
 ```
 
-For the message dispatching functionality the message is dispatched to the targets matching the most specific topic. If the message is received at `/test/out/FL_power_consumption/state` it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state` will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
+With the message dispatching configuration the message is dispatched to the targets matching the most specific topic. If the message is received at `/test/out/FL_power_consumption/state` it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state` will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
 The dispatcher mechanism is always trying to find the most specific match.
 It allows to define the wide topic with default targets while some more specific topic can be handled differently. It gives additional flexibility in a message routing.
 
