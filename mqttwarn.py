@@ -136,6 +136,8 @@ class Config(RawConfigParser):
             return default
         except ValueError:   # e.g. %(xxx)s in string
             return val
+        except SyntaxError:  # If not python value, e.g. list of targets coma separated
+            return val
         except:
             raise
             return val
@@ -537,11 +539,41 @@ def send_to_targets(section, topic, payload):
         logging.warn("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
         return
 
-    targetlist = cf.getlist(section, 'targets')
-    if type(targetlist) != list:
-        logging.error("Target definition in section [%s] is incorrect" % section)
-        cleanup(0)
-        return
+    dispatcher_dict = cf.getdict(section, 'targets')
+    if type(dispatcher_dict) == dict:
+        def get_key(item):
+            # precede a key with the number of topic levels and then use reverse alphabetic sort order
+            # '+' is after '#' in ascii table
+            # caveat: for instance space is allowed in topic name but will be less specific than '+', '#'
+            # so replace '#' with first ascii character and '+' with second ascii character
+            # http://public.dhe.ibm.com/software/dw/webservices/ws-mqtt/mqtt-v3r1.html#appendix-a
+
+            # item[0] represents topic. replace wildcard characters to ensure the right order
+            modified_topic = item[0].replace('#', chr(0x01)).replace('+', chr(0x02))
+            levels = len(item[0].split('/'))
+            # concatenate levels with leading zeros and modified topic and return as a key
+            return "{:03d}{}".format(levels, modified_topic)
+
+        # produce a sorted list of topic/targets with longest and more specific first
+        sorted_dispatcher = sorted(dispatcher_dict.items(), key=get_key, reverse=True)
+        for match_topic, targets in sorted_dispatcher:
+            if paho.topic_matches_sub(match_topic, topic):
+                # hocus pocus, let targets become a list
+                targetlist = targets if type(targets) == list else [targets]
+                logging.debug("Most specific match %s dispatched to %s" % (match_topic, targets))
+                # first most specific topic matches then stops processing
+                break
+        else:
+            # Not found then no action. This could be configured intentionally.
+            logging.debug("Dispatcher definition does not contain matching topic/target pair in section [%s]" % section)
+            return
+    else:
+        targetlist = cf.getlist(section, 'targets')
+        if type(targetlist) != list:
+            # if targets is neither dict nor list
+            logging.error("Target definition in section [%s] is incorrect" % section)
+            cleanup(0)
+            return
 
     for t in targetlist:
         logging.debug("Message on %s going to %s" % (topic, t))
