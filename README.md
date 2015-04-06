@@ -1547,12 +1547,12 @@ The `xively` service can send a subset of your data to [Xively](http://xively.co
 apikey = '1234567890abcdefghiklmnopqrstuvwxyz'
 targets = {
         # feedid        : [ 'datastream1', 'datastream2']
-        '1234567' : [ 'dataItem1', 'dataItem2' ],
+        '1234567' : [ 'temperature', 'waterlevel' ],
         '7654321' : [ 'dataItemA' ]
   }
 ```
 
-Publishing the following message will add a datapoint to the `temperature` and
+Publishing the following JSON message will add a datapoint to the `temperature` and
 `waterlevel` channel of your xively feed 1234567 (`humidity` will be ignored,
 as it's not defined in the xively
 configuration above):
