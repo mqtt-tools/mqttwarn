@@ -1552,6 +1552,16 @@ targets = {
   }
 ```
 
+Publishing the following message will add a datapoint to the `temperature` and
+`waterlevel` channel of your xively feed 1234567 (`humidity` will be ignored,
+as it's not defined in the xively
+configuration above):
+
+```
+mosquitto_pub -t "osx/json" -m '{"temperature":15,"waterlevel":100,"humidity":35}'
+```
+
+
 Requires:
 * [Xively](http://xively.com) account with an already existing Feed
 * [xively-python](https://github.com/xively/xively-python) - pip install xively-python
