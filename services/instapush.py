@@ -19,11 +19,12 @@ def plugin(srv, item):
 
     appid = item.config['appid']
     appsecret = item.config['appsecret']
-
     data = dict()
     data["event"] = item.addrs[0]
-    data["trackers"]  = item.addrs[1]
-    data["trackers"].update(item.data)
+    if len(item.addrs) > 1:
+        data["trackers"] = item.addrs[1]
+    else:
+        data["trackers"]  = json.loads(item.message)
 
     try:
         method = "POST"
@@ -37,17 +38,18 @@ def plugin(srv, item):
         request.add_header('x-instapush-appsecret', appsecret)
         request.add_header("Content-Type",'application/json')
 
-        connection = opener.open(request)
-	reply = str(connection.read())
-        r = json.loads(reply)
+        connection = opener.open(request,timeout=5)
 
-	srv.logging.debug("Server reply: %s" % reply)
+	reply = str(connection.read())
+	srv.logging.info("Server reply: %s" % reply)
+
+        r = json.loads(reply)
 	srv.logging.info("%s: %s" % (item.target, r['msg']))
 
         return not r['error']
 
-    except Exception, e:
-        srv.logging.warn("Failed to send POST request to instapush using %s: %s" % (resource, str(e)))
+    except urllib2.HTTPError, e:
+        srv.logging.warn("Failed to send POST request to instapush using %s: %s" % (resource, str(e.read())))
         return False
 
     return True
