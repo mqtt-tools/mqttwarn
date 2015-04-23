@@ -476,6 +476,8 @@ targets = {
   }
 ```
 
+Note: if your "targets" has a list with only 1 element, that will be considered the "event" and the "trackers" will be the mqtt payload
+
 ### `irccat`
 
 The `irccat` target fires a message off to a listening [irccat](https://github.com/RJ/irccat/tree/master) which has a connection open on one or more IRC channels.
