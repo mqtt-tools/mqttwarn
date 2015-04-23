@@ -187,9 +187,9 @@ pointing to an array of "addresses". Address formats depend on the particular se
 
 ## The `[failover]` section
 
-There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection. 
+There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection.
 
-This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_. 
+This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_.
 
 Below is an example which will log any failover events to an error log, and display them on all XBMC targets:
 
@@ -356,7 +356,7 @@ targets = {
                  # path to cert in PEM format   # key in PEM format
     'prod'     : ['/path/to/prod.crt',          '/path/to/prod.key'],
     }
-    
+
 [test/token/+]
 targets = apns
 alldata = apnsdata()
@@ -587,7 +587,7 @@ Requires
 
 ## `asterisk`
 
-The `asterisk` service will make a VOIP conference between the number and the extension (in defined context). Also it sends the message as variable to the extension, so you can 'speak' to it. Configuration is similar as with the [freeswitch](#freeswitch) service, but in service uses [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239). 
+The `asterisk` service will make a VOIP conference between the number and the extension (in defined context). Also it sends the message as variable to the extension, so you can 'speak' to it. Configuration is similar as with the [freeswitch](#freeswitch) service, but in service uses [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239).
 
 The plugin author strongly recommends you use AMI only in trusted networks.
 
@@ -607,7 +607,7 @@ targets  = {
 Requires
 
 * [Asterisk](http://www.asterisk.org/) with configured AMI interface (manager.conf)
-* pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2) 
+* pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2)
 
 ### `gss`
 
@@ -710,6 +710,7 @@ targets = {
 ```
 
 ![instapush](assets/instapush.png)
+Note: if your "targets" has a list with only 1 element, that will be considered the "event" and the "trackers" will be the mqtt payload
 
 ### `irccat`
 
