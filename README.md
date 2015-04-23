@@ -10,8 +10,12 @@ For example, you may wish to notify via e-mail and to Pushover of an alarm publi
 
 _mqttwarn_ supports a number of services (listed alphabetically below):
 
+* [amqp](#amqp)
+* [apns](#apns)
+* [asterisk](#asterisk)
 * [carbon](#carbon)
 * [dbus](#dbus)
+* [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
 * [file](#file)
 * [freeswitch](#freeswitch)
@@ -37,6 +41,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [pushbullet](#pushbullet)
 * [pushover](#pushover)
 * [redispub](#redispub)
+* [slack](#slack)
 * [sqlite](#sqlite)
 * [smtp](#smtp)
 * [syslog](#syslog)
@@ -174,12 +179,25 @@ The `functions` option specifies the path to a Python file containing functions 
 
 In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_) you want to be able to use in target definitions.
 
-
 ## The `[config:xxx]` sections
 
 Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
 has a mandatory option called `targets`, which is a dictionary of target names, each
 pointing to an array of "addresses". Address formats depend on the particular service.
+
+## The `[failover]` section
+
+There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection. 
+
+This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_. 
+
+Below is an example which will log any failover events to an error log, and display them on all XBMC targets:
+
+```ini
+[failover]
+targets  = log:error, xbmc
+title    = mqttwarn
+```
 
 ## The `[__topic__]` sections
 
@@ -198,6 +216,28 @@ targets = mysql:m1, log:info
 ```
 
 MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received at `my/special` will be stored in a `mysql` target and will be `log`ged at level "INFO".
+
+If more then one section is matching the topic then message will be handled to targets in all matching sections.
+
+Targets can be also defined as a dictionary containing the pairs of topic and targets. In that case message matching the section can be dispatched in more flexible ways to selected targets. Consider the following example:
+
+```ini
+[#]
+targets = {
+    '/#': 'file:0',
+    '/test/#': 'file:1',
+    '/test/out/#': 'file:2',
+    '/test/out/+': 'file:3',
+    '/test/out/+/+': 'file:4',
+    '/test/out/+/state': 'file:5',
+    '/test/out/FL_power_consumption/state': [ 'file:6', 'file:7' ],
+    '/test/out/BR_ambient_power_sensor/state': 'file:8',
+  }
+```
+
+With the message dispatching configuration the message is dispatched to the targets matching the most specific topic. If the message is received at `/test/out/FL_power_consumption/state` it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state` will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
+The dispatcher mechanism is always trying to find the most specific match.
+It allows to define the wide topic with default targets while some more specific topic can be handled differently. It gives additional flexibility in a message routing.
 
 Each of these sections has a number of optional (`O`) or mandatory (`M`)
 options:
@@ -259,6 +299,95 @@ Service plugins are configured in the main `mqttwarn.ini` file. Each service has
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
 
+### `amqp`
+
+The `amqp` service basically implements an MQTT to AMQP gateway which is a little bit
+overkill as, say, RabbitMQ already has a pretty versatile MQTT plugin. The that as it
+may, the configuration is as follows:
+
+```ini
+[config:amqp]
+uri     =  'amqp://user:password@localhost:5672/'
+    'test01'     : [ 'name_of_exchange',    'routing_key' ],
+    }
+```
+
+The exchange specified in the target configuration must exist prior to using this
+target.
+
+Requires: [Puka](https://github.com/majek/puka/) (`pip install puka`)
+
+### `apns`
+
+The `apns` service interacts with the Apple Push Notification Service (APNS) and
+is a bit special (and one of _mqttwarn_'s more complex services) in as much as
+it requires an X.509 certificate and a key which are typically available to
+developers only.
+
+The following discussion assumes one of these payloads published via MQTT:
+
+```json
+{"alert": "Vehicle moved" }
+```
+
+```json
+{"alert": "Vehicle moved", "custom" : { "tid": "C2" }}
+```
+
+In both cases, the message which will be displayed in the notification of the iOS
+device is "Vehicle moved". The second example depends on the app which receives
+the notification. This custom data is per/app. This example app uses the custom
+data to show a button:
+
+![APNS notification](assets/apns.png)
+
+This is the configuration we'll discuss.
+
+```ini
+[defaults]
+hostname  = 'localhost'
+port      = 1883
+functions = 'myfuncs'
+
+launch	 = apns
+
+[config:apns]
+targets = {
+                 # path to cert in PEM format   # key in PEM format
+    'prod'     : ['/path/to/prod.crt',          '/path/to/prod.key'],
+    }
+    
+[test/token/+]
+targets = apns
+alldata = apnsdata()
+format  = {alert}
+```
+
+Certificate and Key files are in PEM format, and the key file must *not* be
+password-protected. (The PKCS#12 file you get as a developer can be extracted thusly:
+
+```
+openssl pkcs12 -in apns-CTRL.p12 -nocerts -nodes | openssl rsa > prod.key
+openssl pkcs12 -in apns-CTRL.p12 -clcerts -nokeys  > xxxx
+```
+
+then copy/paste from `xxxx` the sandbox or production certificate into `prod.crt`.)
+
+The _myfuncs_ function `apnsdata()` extracts the last part of the topic into
+`apns_token`, the hex token for the target device, which is required within the
+`apns` service.
+
+```python
+def apnsdata(topic, data, srv=None):
+    return dict(apns_token = topic.split('/')[-1])
+```
+
+A publish to topic `test/token/380757b117f15a46dff2bd0be1d57929c34124dacb28d346dedb14d3464325e5`
+would thus emit the APNS notification to the specified device.
+
+
+Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
+
 ### `carbon`
 
 The `carbon` service sends a metric to a Carbon-enabled server over TCP.
@@ -316,6 +445,86 @@ targets = {
 
 Requires:
 * Python [dbus](http://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
+
+### `dnsupdate`
+
+The `dnsupdate` service updates an authoritative DNS server via RFC 2136 DNS Updates.
+Consider the following configuration:
+
+```ini
+[config:dnsupdate]
+dns_nameserver = '127.0.0.2'
+dns_keyname= 'mqttwarn-auth'
+dns_keyblob= 'kQNwTJ ... evi2DqP5UA=='
+targets = {
+   #target             DNS-Zone      DNS domain              TTL,  type
+   'temp'         :  [ 'foo.aa.',     'temperature.foo.aa.', 300, 'TXT'   ],
+   'addr'         :  [ 'foo.aa.',     'www.foo.aa.',         60,  'A'   ],
+  }
+
+[test/temp]
+targets = log:info, dnsupdate:temp
+format = Current temperature: {payload}C
+
+[test/a]
+targets = log:info, dnsupdate:addr
+format = {payload}
+```
+
+`dns_nameserver` is the address of the authoritative server the update should be sent
+to via a TCP update. `dns_keyname` and `dns_keyblob` are the TSIG key names and base64-representation of the key respectively. These can be created with either of:
+
+```
+ldns-keygen  -a hmac-sha256 -b 256 keyname
+dnssec-keygen -n HOST -a HMAC-SHA256 -b 256 keyname
+```
+
+where _keyname_ is the name then added to `dns_keyname` (in this example: `mqttwarn-auth`).
+
+Supposing a BIND DNS server configured to allow updates, you would then configure it
+as follows:
+
+```
+key "mqttwarn-auth" {
+  algorithm hmac-sha256;
+  secret "kQNwTJ ... evi2DqP5UA==";
+};
+
+...
+zone "foo.aa" in {
+   type master;
+   file "keytest/foo.aa";
+   update-policy {
+      grant mqttwarn-auth. zonesub ANY;
+   };
+};
+```
+
+For the `test/temp` topic, a pub and the resulting DNS query:
+
+```
+$ mosquitto_pub -t test/temp -m 42'
+$ dig @127.0.0.2 +noall +answer temperature.foo.aa txt
+temperature.foo.aa. 300 IN  TXT "Current temperature: 42C"
+```
+
+The `test/a` topic expects an address:
+
+```
+$ mosquitto_pub -t test/a -m 172.16.153.44
+$ dig @127.0.0.2 +short www.foo.aa
+172.16.153.44
+```
+
+Ensure you watch both mqttwarn's logfile as well as the log of your
+authoritative name server which will show you what's going on:
+
+```
+client 127.0.0.2#52786/key mqttwarn-auth: view internal: updating zone 'foo.aa/IN': adding an RR at 'www.foo.aa' A 172.16.153.44
+```
+
+Requires:
+* [dnspython](http://www.dnspython.org)
 
 ### `emoncms`
 
@@ -376,6 +585,29 @@ Requires
 * [Freeswitch](https://www.freeswitch.org/)
 * Internet connection for Google Translate API
 
+## `asterisk`
+
+The `asterisk` service will make a VOIP conference between the number and the extension (in defined context). Also it sends the message as variable to the extension, so you can 'speak' to it. Configuration is similar as with the [freeswitch](#freeswitch) service, but in service uses [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239). 
+
+The plugin author strongly recommends you use AMI only in trusted networks.
+
+```ini
+[config:asterisk]
+host     = 'localhost'
+port     = 5038
+username = 'mqttwarn'
+password = '<AMI password>'
+extension = 2222
+context = 'default'
+targets  = {
+    'user'    : ['SIP/avaya/', '0123456789']
+          }
+```
+
+Requires
+
+* [Asterisk](http://www.asterisk.org/) with configured AMI interface (manager.conf)
+* pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2) 
 
 ### `gss`
 
@@ -1085,6 +1317,7 @@ and one or more _application keys_ which you configure in the targets definition
 
 ```ini
 [config:pushover]
+callback = None
 targets = {
     'nagios'     : ['userkey1', 'appkey1', 'sound1'],
     'alerts'     : ['userkey2', 'appkey2'],
@@ -1099,9 +1332,10 @@ notify, say, one or more of your devices as well as one for your spouse. As you
 can see in the example, you can even specify an optional sound to be played for
 the individual users. For a list of available sounds see the [Pushover API List](https://pushover.net/api#sounds).
 
+NOTE: `callback` is an optional URL for pushover to [ack messages](https://pushover.net/api#receipt).
+
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
-| `callback`    |   O    | URL for pushover to [ack messages](https://pushover.net/api#receipt)        |
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
 
@@ -1125,6 +1359,27 @@ targets = {
 
 Requires:
 * d[redis-py](https://github.com/andymccurdy/redis-py)
+
+### `slack`
+
+The `slack` plugin posts messages to channels in or users of the [slack.com](http://slack.com) service. The configuration of this service requires an API token obtaininable there.
+
+```ini
+[config:slack]
+token = 'xxxx-1234567890-1234567890-1234567890-1234a1'
+targets = {
+              #  #channel/@user   username, icon
+   'jpmens'  : [ '@jpmens',       "Alerter",   ':door:' ],
+   'general'  : [ '#general',     "mqttwarn",   ':syringe:' ],
+  }
+```
+
+Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
+addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
+
+![Slack](assets/slack.png)
+
+This plugin requires [Python slacker](https://github.com/os/slacker).
 
 ### `sqlite`
 
@@ -1172,15 +1427,29 @@ The `syslog` service transfers MQTT messages to a local syslog server.
 ```ini
 [config:syslog]
 targets = {
-              # facility    priority,  option
-    'user'   : ['user',     'debug',  'pid'],
-    'kernel' : ['kernel',   'warn',   'pid']
+              # facility    option
+    'user'   : ['user',     'pid'],
+    'kernel' : ['kernel',   'pid']
     }
 ```
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: `mqttwarn`)   |
+| `priority`    |   O    | log level (dflt: -1)                   |
+
+Where `priority` can be between -2 and 5 and maps to `syslog` levels by;
+
+| Priority | Syslog Log Level |
+| -------- | ---------------- |
+| -2       | LOG_DEBUG        |
+| -1       | LOG_INFO         |
+| 0        | LOG_NOTICE       |
+| 1        | LOG_WARNING      |
+| 2        | LOG_ERR          |
+| 3        | LOG_CRIT         |
+| 4        | LOG_ALERT        |
+| 5        | LOG_EMERG        |
 
 ```
 Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
@@ -1278,10 +1547,20 @@ The `xively` service can send a subset of your data to [Xively](http://xively.co
 apikey = '1234567890abcdefghiklmnopqrstuvwxyz'
 targets = {
         # feedid        : [ 'datastream1', 'datastream2']
-        '1234567' : [ 'dataItem1', 'dataItem2' ],
+        '1234567' : [ 'temperature', 'waterlevel' ],
         '7654321' : [ 'dataItemA' ]
   }
 ```
+
+Publishing the following JSON message will add a datapoint to the `temperature` and
+`waterlevel` channel of your xively feed 1234567 (`humidity` will be ignored,
+as it's not defined in the xively
+configuration above):
+
+```
+mosquitto_pub -t "osx/json" -m '{"temperature":15,"waterlevel":100,"humidity":35}'
+```
+
 
 Requires:
 * [Xively](http://xively.com) account with an already existing Feed
@@ -1705,6 +1984,9 @@ You'll need at least the following components:
 * An MQTT broker (e.g. [Mosquitto](http://mosquitto.org))
 * The Paho Python module: `pip install paho-mqtt`
 
+## Notes
+
+"MQTT" is a trademark of the OASIS open standards consortium, which publishes the MQTT specifications.
 
 
 ## Installation

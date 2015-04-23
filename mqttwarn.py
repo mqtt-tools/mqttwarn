@@ -136,6 +136,8 @@ class Config(RawConfigParser):
             return default
         except ValueError:   # e.g. %(xxx)s in string
             return val
+        except SyntaxError:  # If not python value, e.g. list of targets coma separated
+            return val
         except:
             raise
             return val
@@ -147,8 +149,8 @@ class Config(RawConfigParser):
         try:
             val = self.get(section, key)
             val = [s.strip() for s in val.split(',')]
-        except:
-            logging.warn("Expecting a list in section `%s', key `%s'" % (section, key))
+        except Exception, e:
+            logging.warn("Expecting a list in section `%s', key `%s' (%s)" % (section, key, str(e)))
 
         return val
 
@@ -360,11 +362,18 @@ def render_template(filename, data):
 def get_sections():
     sections = []
     for section in cf.sections():
-        if section != 'defaults' and section != 'cron' and not section.startswith('config:'):
-            if cf.has_option(section, 'targets'):
-                sections.append(section)
-            else:
-                logging.warn("Section `%s' has no targets defined" % section)
+        if section == 'defaults':
+            continue
+        if section == 'cron':
+            continue
+        if section == 'failover':
+            continue
+        if section.startswith('config:'):
+            continue
+        if cf.has_option(section, 'targets'):
+            sections.append(section)
+        else:
+            logging.warn("Section `%s' has no targets defined" % section)
     return sections
 
 def get_topic(section):
@@ -489,7 +498,7 @@ def on_disconnect(mosq, userdata, result_code):
     if result_code == 0:
         logging.info("Clean disconnection from broker")
     else:
-        logging.info("Broker connection lost. Will attempt to reconnect in 5s...")
+        send_failover("brokerdisconnected", "Broker connection lost. Will attempt to reconnect in 5s...")
         time.sleep(5)
 
 def on_message(mosq, userdata, msg):
@@ -515,42 +524,85 @@ def on_message(mosq, userdata, msg):
             if is_filtered(section, topic, payload):
                 logging.debug("Filter in section [%s] has skipped message on %s" % (section, topic))
                 continue
-
-            targetlist = cf.getlist(section, 'targets')
-            if type(targetlist) != list:
-                logging.error("Target definition in section [%s] is incorrect" % section)
-                cleanup(0)
-                return
-
-            for t in targetlist:
-                logging.debug("Message on %s going to %s" % (topic, t))
-                # Each target is either "service" or "service:target"
-                # If no target specified then notify ALL targets
-                service = t
-                target = None
-
-                # Check if this is for a specific target
-                if t.find(':') != -1:
-                    try:
-                        service, target = t.split(':', 2)
-                    except:
-                        logging.warn("Invalid target %s - should be 'service:target'" % (t))
-                        continue
-
-                if not service in service_plugins:
-                    logging.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
-                    return
-
-                sendtos = None
-                if target is None:
-                    sendtos = get_service_targets(service)
-                else:
-                    sendtos = [target]
-
-                for sendto in sendtos:
-                    job = Job(1, service, section, topic, payload, sendto)
-                    q_in.put(job)
+            # Send the message to any targets specified
+            send_to_targets(section, topic, payload)
 # End of MQTT broker callbacks
+
+def send_failover(reason, message):
+    # Make sure we dump this event to the log
+    logging.warn(message)
+    # Attempt to send the message to our failover targets
+    send_to_targets('failover', reason, message)
+
+def send_to_targets(section, topic, payload):
+    if cf.has_section(section) == False:
+        logging.warn("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
+        return
+
+    dispatcher_dict = cf.getdict(section, 'targets')
+    if type(dispatcher_dict) == dict:
+        def get_key(item):
+            # precede a key with the number of topic levels and then use reverse alphabetic sort order
+            # '+' is after '#' in ascii table
+            # caveat: for instance space is allowed in topic name but will be less specific than '+', '#'
+            # so replace '#' with first ascii character and '+' with second ascii character
+            # http://public.dhe.ibm.com/software/dw/webservices/ws-mqtt/mqtt-v3r1.html#appendix-a
+
+            # item[0] represents topic. replace wildcard characters to ensure the right order
+            modified_topic = item[0].replace('#', chr(0x01)).replace('+', chr(0x02))
+            levels = len(item[0].split('/'))
+            # concatenate levels with leading zeros and modified topic and return as a key
+            return "{:03d}{}".format(levels, modified_topic)
+
+        # produce a sorted list of topic/targets with longest and more specific first
+        sorted_dispatcher = sorted(dispatcher_dict.items(), key=get_key, reverse=True)
+        for match_topic, targets in sorted_dispatcher:
+            if paho.topic_matches_sub(match_topic, topic):
+                # hocus pocus, let targets become a list
+                targetlist = targets if type(targets) == list else [targets]
+                logging.debug("Most specific match %s dispatched to %s" % (match_topic, targets))
+                # first most specific topic matches then stops processing
+                break
+        else:
+            # Not found then no action. This could be configured intentionally.
+            logging.debug("Dispatcher definition does not contain matching topic/target pair in section [%s]" % section)
+            return
+    else:
+        targetlist = cf.getlist(section, 'targets')
+        if type(targetlist) != list:
+            # if targets is neither dict nor list
+            logging.error("Target definition in section [%s] is incorrect" % section)
+            cleanup(0)
+            return
+
+    for t in targetlist:
+        logging.debug("Message on %s going to %s" % (topic, t))
+        # Each target is either "service" or "service:target"
+        # If no target specified then notify ALL targets
+        service = t
+        target = None
+
+        # Check if this is for a specific target
+        if t.find(':') != -1:
+            try:
+                service, target = t.split(':', 2)
+            except:
+                logging.warn("Invalid target %s - should be 'service:target'" % (t))
+                continue
+
+        if not service in service_plugins:
+            logging.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
+            return
+
+        sendtos = None
+        if target is None:
+            sendtos = get_service_targets(service)
+        else:
+            sendtos = [target]
+
+        for sendto in sendtos:
+            job = Job(1, service, section, topic, payload, sendto)
+            q_in.put(job)
 
 def builtin_transform_data(topic, payload):
     ''' Return a dict with initial transformation data which is made
@@ -632,20 +684,26 @@ def processor():
 
         logging.debug("Processor is handling: `%s' for %s" % (service, target))
 
-        item = {
-            'service'       : service,
-            'section'       : section,
-            'target'        : target,
-            'config'        : get_service_config(service),
-            'addrs'         : get_service_targets(service)[target],
-            'topic'         : job.topic,
-            'payload'       : job.payload,
-            'data'          : None,
-            'title'         : None,
-            'image'         : None,
-            'message'       : None,
-            'priority'      : None
-        }
+        item = {}
+        try:
+            item = {
+                'service'       : service,
+                'section'       : section,
+                'target'        : target,
+                'config'        : get_service_config(service),
+                'addrs'         : get_service_targets(service)[target],
+                'topic'         : job.topic,
+                'payload'       : job.payload,
+                'data'          : None,
+                'title'         : None,
+                'image'         : None,
+                'message'       : None,
+                'priority'      : None
+            }
+        except Exception, e:
+            logging.error("Cannot handle service=%s, target=%s: %s" % (service, target, str(e)))
+            q_in.task_done()
+            return
 
         transform_data = builtin_transform_data(job.topic, job.payload)
 
@@ -679,7 +737,6 @@ def processor():
         item['image'] = xform(get_config(section, 'image'), '', transform_data)
         item['message'] = xform(get_config(section, 'format'), job.payload, transform_data)
         item['priority'] = int(xform(get_config(section, 'priority'), 0, transform_data))
-        item['callback'] = xform(get_config(section, 'callback'), SCRIPTNAME, transform_data)
 
         if HAVE_JINJA is True:
             template = get_config(section, 'template')
