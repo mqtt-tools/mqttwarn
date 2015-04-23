@@ -710,6 +710,7 @@ targets = {
 ```
 
 ![instapush](assets/instapush.png)
+
 Note: if your "targets" has a list with only 1 element, that will be considered the "event" and the "trackers" will be the mqtt payload
 
 ### `irccat`
