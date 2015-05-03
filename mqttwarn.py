@@ -463,6 +463,8 @@ def on_connect(mosq, userdata, result_code):
     """
     if result_code == 0:
         logging.debug("Connected to MQTT broker, subscribing to topics...")
+        if not cf.cleansession:
+            logging.debug("Cleansession not set previous subscriptions for clientid %s remain active" % cf.clientid)
 
         subscribed = []
         for section in get_sections():
