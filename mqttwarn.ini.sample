@@ -24,7 +24,7 @@ loglevel     = DEBUG
 functions = 'samplefuncs'
 
 ; name the service providers you will be using.
-launch	 = file, log, osxnotify
+launch	 = file, log
 
 [config:file]
 append_newline = True
@@ -42,14 +42,9 @@ targets = {
     'error'  : [ 'error' ]
   }
 
-[config:osxnotify]
-targets = {
-    'shell' : [ None ],
-   }
-
 ; special config for 'failover' events
 [failover]
-targets = log:error, file:mqttwarn, osxnotify:shell
+targets = log:error, file:mqttwarn
 
 [hello/1]
 targets = log:info
