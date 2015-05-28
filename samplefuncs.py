@@ -35,5 +35,5 @@ def OwnTracksBattFilter(topic, message):
     if 'batt' in data:
         if data['batt'] is not None:
             return int(data['batt']) > 20
-
     
+    return True     # Suppress message because no 'batt'
