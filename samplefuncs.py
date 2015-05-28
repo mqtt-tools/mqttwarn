@@ -31,10 +31,9 @@ def OwnTracksConvert(data):
 # custom function to filter out any OwnTracks notifications which do
 # not contain the 'batt' parameter
 def OwnTracksBattFilter(topic, message):
-    if type(data) == dict:
-        data = dict(json.loads(message).items())
-        if 'batt' in data:
-            if data['batt'] is not None:
-                return int(data['batt']) > 20
+    data = dict(json.loads(message).items())
+    if 'batt' in data:
+        if data['batt'] is not None:
+            return int(data['batt']) > 20
 
-    return True         # Suppress message
+    
