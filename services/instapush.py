@@ -25,7 +25,12 @@ def plugin(srv, item):
         data["trackers"] = item.addrs[1]
     else:
         data["trackers"]  = json.loads(item.message)
-
+    for key in data["trackers"].keys():
+        try:
+            data["trackers"][key] = data["trackers"][key].format(**item.data).encode('utf-8')
+        except Exception, e:
+            srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
+            return False
     try:
         method = "POST"
         resource = "https://api.instapush.im/v1/post"
