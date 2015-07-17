@@ -165,16 +165,12 @@ class Config(RawConfigParser):
     def config(self, section):
         ''' Convert a whole section's options (except the options specified
             explicitly below) into a dict, turning
-
                 [config:mqtt]
                 host = 'localhost'
                 username = None
                 list = [1, 'aaa', 'bbb', 4]
-
             into
-
                 {u'username': None, u'host': 'localhost', u'list': [1, 'aaa', 'bbb', 4]}
-
             Cannot use config.items() because I want each value to be
             retrieved with g() as above '''
 
@@ -452,7 +448,6 @@ def on_connect(mosq, userdata, result_code):
     Handle connections (or failures) to the broker.
     This is called after the client has received a CONNACK message
     from the broker in response to calling connect().
-
     The result_code is one of;
     0: Success
     1: Refused - unacceptable protocol version
@@ -670,7 +665,16 @@ def xform(function, orig_value, transform_data):
     if type(res) == str:
         res = res.replace("\\n", "\n")
     return res
-
+	
+#convert payload from string to dict for easy processing
+def nsca_data_dict(payload):
+	try:
+		converted_payload = "{"+payload+"}"
+		converted_payload = ast.literal_eval(converted_payload)
+	except:
+		logging.debug("payload content: %s is not valid for parsing", payload)
+	return converted_payload
+			
 def processor():
     """
     Queue runner. Pull a job from the queue, find the module in charge
@@ -685,29 +689,51 @@ def processor():
         target  = job.target
 
         logging.debug("Processor is handling: `%s' for %s" % (service, target))
+		#payload need to have these key:value pairs at least 
+		#payload: {'Host_name': 'str', 'Name': 'name_of_service', 'Value': 'value_of_service'}	
 
         item = {}
         try:
-            item = {
-                'service'       : service,
-                'section'       : section,
-                'target'        : target,
-                'config'        : get_service_config(service),
-                'addrs'         : get_service_targets(service)[target],
-                'topic'         : job.topic,
-                'payload'       : job.payload,
-                'data'          : None,
-                'title'         : None,
-                'image'         : None,
-                'message'       : None,
-                'priority'      : None
-            }
+			if ( service == "nsca" ):
+				payload = nsca_data_dict(job.payload)
+				if (payload.has_key('HostName')):
+					item = {
+						'service'       : service,
+						'section'       : section,
+						'target'        : target,
+						'config'        : get_service_config(service),
+						'addrs'         : [payload['HostName'], payload['Name']],
+						'topic'         : job.topic,
+						'payload'       : payload,
+						'data'          : None,
+						'title'         : None,
+						'image'         : None,
+						'message'       : None,
+						'priority'      : None
+					}
+					logging.debug("item content: `%s'" % (item))
+			else:	
+				item = {
+					'service'       : service,
+					'section'       : section,
+					'target'        : target,
+					'config'        : get_service_config(service),
+					'addrs'         : get_service_targets(service)[target],
+					'topic'         : job.topic,
+					'payload'       : job.payload,
+					'data'          : None,
+					'title'         : None,
+					'image'         : None,
+					'message'       : None,
+					'priority'      : None
+				}
         except Exception, e:
             logging.error("Cannot handle service=%s, target=%s: %s" % (service, target, str(e)))
             q_in.task_done()
             return
-
-        transform_data = builtin_transform_data(job.topic, job.payload)
+		
+		#former was job.payload
+        transform_data = builtin_transform_data(job.topic, payload) 
 
         topic_data = get_topic_data(job.section, job.topic)
         if topic_data is not None and type(topic_data) == dict:
@@ -758,7 +784,6 @@ def processor():
                 notified = module.plugin(srv, st)
             except Exception, e:
                 logging.error("Cannot invoke service for `%s': %s" % (service, str(e)))
-
             if not notified:
                 logging.warn("Notification of %s for `%s' FAILED" % (service, item.get('topic')))
         else:
