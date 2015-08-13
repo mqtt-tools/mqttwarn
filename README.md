@@ -669,9 +669,11 @@ timeout = 60
 targets = {
                 #method     #URL               # query params or None          # list auth
   'get1'    : [ "get",  "http://example.org?", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, ('username', 'password') ],
-  'post1    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, None ]
+  'post1'    : [ "post", "http://example.net", { 'q': '{name}', 'isod' : '{_dtiso}', 'xx': 'yy' }, None ]
   }
 ```
+
+If you want to use the mqtt message content directly in the query parameters use `'{payload}'`
 
 Note that transforms in parameters must be quoted strings:
 
