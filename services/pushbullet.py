@@ -7,7 +7,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 HAVE_PUSHBULLET=True
 try:
-    from pushbulle.pushbullet import PushBullet
+    from pushbullet.pushbullet import PushBullet
 except ImportError:
     HAVE_PUSHBULLET=False
 
