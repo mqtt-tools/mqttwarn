@@ -21,8 +21,8 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [freeswitch](#freeswitch)
 * [gss](#gss)
 * [http](#http)
-* [ionic](#ionic)
 * [instapush](#instapush)
+* [ionic](#ionic)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
@@ -700,6 +700,8 @@ targets = {
   'anyappalias' : [ '<ionic app id>', '<ionic app secret>', '<device token 1>', '<device token 2>', '<device token N>']
   }
 ```
+
+![ionic](assets/ionic.png)
 
 ### `instapush`
 
