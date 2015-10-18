@@ -21,6 +21,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [freeswitch](#freeswitch)
 * [gss](#gss)
 * [http](#http)
+* [ionic](#ionic)
 * [instapush](#instapush)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
@@ -683,6 +684,22 @@ Note that transforms in parameters must be quoted strings:
 As a special case, if the quoted parameter starts with an `@` character (e.g.
 `'@name'`, it will not be formatted via `.format()`; instead, `name` is taken
 directly from the transformation data.
+
+### `ionic`
+
+This service is for [Ionic](http://ionicframework.com/). Ionic framework allows easy development of HTML5 hybrid mobile apps. This service can be used for pushing notifications to ionic hybrid apps (android, ios, ...). Please read following for more details on ionic:
+[Ionic tutorial](http://ionicframework.com/getting-started/) and [Ionic push service](http://docs.ionic.io/docs/push-overview)
+
+You will get Ionic appid and Ionic appsecret (private key) after registering with Ionic push service. And you will get device token(s) when app initiates push service interaction.
+
+Using this service, *plain texts* can be sent to one or many ionic apps. And each app can inturn push to many devices. Following is the ini example:
+
+```ini
+[config:ionic]
+targets = {
+  'anyappalias' : [ '<ionic app id>', '<ionic app secret>', '<device token 1>', '<device token 2>', '<device token N>']
+  }
+```
 
 ### `instapush`
 
