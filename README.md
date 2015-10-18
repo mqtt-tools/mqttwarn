@@ -690,7 +690,7 @@ directly from the transformation data.
 This service is for [Ionic](http://ionicframework.com/). Ionic framework allows easy development of HTML5 hybrid mobile apps. This service can be used for pushing notifications to ionic hybrid apps (android, ios, ...). Please read following for more details on ionic:
 [Ionic tutorial](http://ionicframework.com/getting-started/) and [Ionic push service](http://docs.ionic.io/docs/push-overview)
 
-You will get Ionic appid and Ionic appsecret (private key) from registering with Ionic push service. And will get device token(s) when app initiates push service interaction.
+You will get Ionic appid and Ionic appsecret (private key) after registering with Ionic push service. And you will get device token(s) when app initiates push service interaction.
 
 Using this service, *plain texts* can be sent to one or many ionic apps. And each app can inturn push to many devices. Following is the ini example:
 
