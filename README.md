@@ -1035,7 +1035,7 @@ timeout = 10  # duration of notification
 targets = {
                           # host:port,            broadcast address
     'all'               :  [ '192.168.1.40:6544', '192.168.1.255'],
-    'frontend_bedroom'  :  [ '192.168.1.40:6544', '192.168.1.74' ] }
+    'frontend_bedroom'  :  [ '192.168.1.40:6544', '192.168.1.74' ]
     }
 ```
 
