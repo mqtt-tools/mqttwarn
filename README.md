@@ -48,6 +48,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [sqlite](#sqlite)
 * [smtp](#smtp)
 * [syslog](#syslog)
+* [thingspeak](#thingspeak)
 * [twilio](#twilio)
 * [twitter](#twitter)
 * [xbmc](#xbmc)
