@@ -48,6 +48,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [sqlite](#sqlite)
 * [smtp](#smtp)
 * [syslog](#syslog)
+* [thingspeak](#thingspeak)
 * [twilio](#twilio)
 * [twitter](#twitter)
 * [xbmc](#xbmc)
@@ -1516,6 +1517,22 @@ Where `priority` can be between -2 and 5 and maps to `syslog` levels by;
 ```
 Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
 ```
+
+### `thingspeak`
+
+The `thingspeak` service publishes data to thingspeak.com using the thingspeak API.
+
+```ini
+[config:thingspeak]
+targets = {
+                     #API WRITE KEY     field     optional builddata=true/false        
+    'field1'   : [ 'XXYYZZXXYYZZXXYY' ,'field1' , 'true' ],
+    'field2'   : [ 'XXYYZZXXYYZZXXYY' ,'field2' ]
+  }
+```
+Using  builddata=true you can build an update with multiple fields in 1 update. Using this function no direct update. Only with the next update without builddata=true all entries are send (e.g. when multiple sensors are updating diferent topics, then you can do the build the data and submit when the last sensor is sending the data)
+
+note: use the field as per the example, (lower case, `'field1'` with the last digit being the field number ) 
 
 ### `twilio`
 
