@@ -25,7 +25,7 @@ def pushover(**kwargs):
     url = urlparse.urljoin(PUSHOVER_API, "messages.json")
     data = urllib.urlencode(kwargs)
     req = urllib2.Request(url, data)
-    response = urllib2.urlopen(req)
+    response = urllib2.urlopen(req, timeout=3)
     output = response.read()
     data = json.loads(output)
 
