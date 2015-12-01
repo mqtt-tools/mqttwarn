@@ -51,7 +51,7 @@ def plugin(srv, item):
             base64string = base64.encodestring ('%s:%s' % (xbmcusername, xbmcpassword))[:-1]
             authheader = "Basic %s" % base64string
             req.add_header("Authorization", authheader)
-        response = urllib2.urlopen(req, timeout = 1)
+        response = urllib2.urlopen(req, timeout = 2)
         srv.logging.debug("Successfully sent XBMC notification")
     except urllib2.URLError, e:
         srv.logging.error("URLError: %s" % (str(e)))

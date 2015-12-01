@@ -671,6 +671,28 @@ def xform(function, orig_value, transform_data):
         res = res.replace("\\n", "\n")
     return res
 
+# http://code.activestate.com/recipes/473878-timeout-function-using-threading/
+def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
+    import threading
+    class InterruptableThread(threading.Thread):
+        def __init__(self):
+            threading.Thread.__init__(self)
+            self.result = None
+
+        def run(self):
+            try:
+                self.result = func(*args, **kwargs)
+            except:
+                self.result = default
+
+    it = InterruptableThread()
+    it.start()
+    it.join(timeout_secs)
+    if it.isAlive():
+        return default
+    else:
+        return it.result
+
 def processor():
     """
     Queue runner. Pull a job from the queue, find the module in charge
@@ -754,8 +776,9 @@ def processor():
             st = Struct(**item)
             notified = False
             try:
+                # fire the plugin in a separate thread and kill it if it doesn't return in 10s 
                 module = service_plugins[service]['module']
-                notified = module.plugin(srv, st)
+                notified = timeout(module.plugin, (srv, st))
             except Exception, e:
                 logging.error("Cannot invoke service for `%s': %s" % (service, str(e)))
 
