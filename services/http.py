@@ -14,7 +14,7 @@ except ImportError:
     import simplejson as json
 
 def plugin(srv, item):
-    ''' addrs: (method, url dict(params), list(username, password)) '''
+    ''' addrs: (method, url, dict(params), list(username, password), json) '''
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
@@ -27,6 +27,12 @@ def plugin(srv, item):
     try:
         username, password = item.addrs[3]
         auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
+    except:
+        pass
+
+    tojson = None
+    try:
+        tojson = item.addrs[4]
     except:
         pass
 
@@ -82,7 +88,10 @@ def plugin(srv, item):
         try:
             request = urllib2.Request(url)
             if params is not None:
-                encoded_params = urllib.urlencode(params)
+                if tojson is not None:
+                    encoded_params = json.dumps(params)
+                else:
+                    encoded_params = urllib.urlencode(params)
             else:
                 encoded_params = message
 
