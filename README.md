@@ -558,10 +558,13 @@ Supposing we wish to archive all incoming messages to the branch `arch/#` to a f
 ```ini
 [config:file]
 append_newline = True
+overwrite = False
 targets = {
     'log-me'    : ['/data/arch']
    }
 ```
+
+If `append_newline` is True, a newline character is unconditionally appended to the string written to the file. If `overwrite` is True, the file is opened for truncation upon writing (i.e. the file will contain the last message only).
 
 
 ## `freeswitch`

@@ -9,6 +9,8 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
+    mode = "a"
+
     # item.config is brought in from the configuration file
     config   = item.config
 
@@ -23,9 +25,11 @@ def plugin(srv, item):
 
     if type(config) == dict and 'append_newline' in config and config['append_newline']:
         text = text + "\n"
+    if type(config) == dict and 'overwrite' in config and config['overwrite']:
+        mode = "w"
 
     try:
-        f = open(filename, "a")
+        f = open(filename, mode)
         f.write(text)
         f.close()
     except Exception, e:
