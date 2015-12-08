@@ -51,6 +51,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [thingspeak](#thingspeak)
 * [twilio](#twilio)
 * [twitter](#twitter)
+* [winnotify](#winnotify)
 * [xbmc](#xbmc)
 * [xmpp](#xmpp)
 * [xively](#xively)
@@ -1580,6 +1581,39 @@ Requires:
 * A Twitter account
 * app keys for Twitter, from [apps.twitter.com](https://apps.twitter.com)
 * [python-twitter](https://github.com/bear/python-twitter)
+
+### `winnotify`
+
+The `winnotify` service is a _very_ basic notification bubble. It's meant to serve the same purpose as the "linuxnotify" service.
+It is only tested with Windows 7. Execution policy must be set to allow powershell scripts to run - you may either sign the script yourself after inspecting it, or set your execution policy to unrestricted with `set-executionpolicy unrestricted` from an elevated powershell prompt.
+
+Known limitations: 
+
+* Icons do not disappear until dismissed by a mouse cursor passing over the notification area. They will accumulate.
+* Accumulated icons might not show their tooltips.
+
+These limitations suggest sparing usage. Below is an example of how it looks when used sparingly. 
+
+![winnotify](assets/winnotify.png)
+
+Above is nice, but below is an example where the notifications are useless through overuse.
+![winnotify](assets/winnotify_toomany.png)
+
+Example usage in the .ini:  
+```ini
+[config:winnotify]
+targets = {
+	'normal' : [ 'None' ],
+	'info'   : [ 'Info' ],
+	'warn'   : [ 'Warning' ],
+	'err'	 : [ 'Error' ]
+	}
+
+[calls/#]
+targets = winnotify:normal
+format = {calleridname} ({callerid}) is calling {dnid}
+
+```
 
 ### `xbmc`
 
