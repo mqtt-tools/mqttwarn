@@ -1585,19 +1585,12 @@ Requires:
 ### `winnotify`
 
 The `winnotify` service is a _very_ basic notification bubble. It's meant to serve the same purpose as the "linuxnotify" service.
-It is only tested with Windows 7. Execution policy must be set to allow powershell scripts to run - you may either sign the script yourself after inspecting it, or set your execution policy to unrestricted with `set-executionpolicy unrestricted` from an elevated powershell prompt.
-
-Known limitations: 
-
-* Icons do not disappear until dismissed by a mouse cursor passing over the notification area. They will accumulate.
-* Accumulated icons might not show their tooltips.
-
-These limitations suggest sparing usage. Below is an example of how it looks when used sparingly. 
+It is only tested with Windows 7. 
 
 ![winnotify](assets/winnotify.png)
 
-Above is nice, but below is an example where the notifications are useless through overuse.
-![winnotify](assets/winnotify_toomany.png)
+Requirements:
+* pythonnet
 
 Example usage in the .ini:  
 ```ini
