@@ -783,7 +783,7 @@ def processor():
                 logging.error("Cannot invoke service for `%s': %s" % (service, str(e)))
 
             if not notified:
-                logging.warn("Notification of %s for `%s' FAILED" % (service, item.get('topic')))
+                logging.warn("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))
         else:
             logging.warn("Notification of %s for `%s' suppressed: text is empty" % (service, item.get('topic')))
 

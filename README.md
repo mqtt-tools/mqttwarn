@@ -569,24 +569,24 @@ If `append_newline` is True, a newline character is unconditionally appended to 
 
 ## `freeswitch`
 
-The `freeswitch` service will make a VOIP call to the number specified in your target and 'speak' the message using the [Google Translate API](translate.google.com). Each target includes the gateway to use as well as the number/extension to call, so you can make internal calls direct to an extension, or call any external number using your external gateway.
+The `freeswitch` service will make a VOIP call to the number specified in your target and 'speak' the message using the TTS service you specify. Each target includes the gateway to use as well as the number/extension to call, so you can make internal calls direct to an extension, or call any external number using your external gateway.
 
 In order to use this service you must enable the XML RPC API in Freeswitch - see instructions [here](http://wiki.freeswitch.org/wiki/Mod_xml_rpc).
 
-Some of you may be paranoid and not like the idea of sending your announcements to Google for translation, but this was the quickest, easiest form of TTS I could find. If anyone has any better suggestions I would be more than happy to have a look.
+You need to provide a TTS URL to perform the conversion of your message to an announcement. This can be an online service like VoiceRSS or the [Google Translate API](translate.google.com) (see example below). Or it could be a local TTS service you are using.
 
 ```ini
 [config:freeswitch]
-host     = 'localhost'
-port     = 8050
-username = 'freeswitch'
-password = '<xml_rpc_password>'
-targets  = {
+host      = 'localhost'
+port      = 8050
+username  = 'freeswitch'
+password  = '<xml_rpc_password>'
+ttsurl    = 'translate.google.com/translate_tts?'
+ttsparams = { 'tl': 'en', 'ie': 'UTF-8', 'client': 'mqttwarn', 'q': '{payload}' }
+targets   = {
     'mobile'    : ['sofia/gateway/domain/', '0123456789']
     }
 ```
-
-Note: only the first 100 chars of the message will be announced since this is the max length supported by the Google Translate API.
 
 Requires
 * [Freeswitch](https://www.freeswitch.org/)

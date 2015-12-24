@@ -12,24 +12,47 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    host     = item.config['host']
-    port     = item.config['port']
-    username = item.config['username']
-    password = item.config['password']
+    host      = item.config['host']
+    port      = item.config['port']
+    username  = item.config['username']
+    password  = item.config['password']
+    ttsurl    = item.config['ttsurl']
+    ttsparams = item.config['ttsparams']
  
-    gateway  = item.addrs[0]
-    number   = item.addrs[1]    
-    title    = item.title
-    message  = item.message
+    gateway   = item.addrs[0]
+    number    = item.addrs[1]    
+    title     = item.title
 
-    if len(message) > 100:
-        srv.logging.warning("Message is too long (%d chars) for Google Translate API (max 100 chars allowed), truncating message before processing" % (len(message)))
-        message = message[:100]
+    if ttsurl.startswith('http://'):
+        ttsurl = ttsurl[7:]
+    elif ttsurl.startswith('https://'):
+        ttsurl = ttsurl[8:]
+
+    if ttsparams is not None:
+        for key in ttsparams.keys():
+
+            # { 'q' : '@message' }
+            # Quoted field, starts with '@'. Do not use .format, instead grab
+            # the item's [message] and inject as parameter value.
+            if ttsparams[key].startswith('@'):         # "@message"
+                ttsparams[key] = item.get(ttsparams[key][1:], "NOP")
+
+            else:
+                try:
+                    ttsparams[key] = ttsparams[key].format(**item.data).encode('utf-8')
+                except Exception, e:
+                    srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
+                    return False
 
     try:
-        # Google Translate API
-        params = urllib.urlencode({ 'tl' : 'en', 'ie' : 'UTF-8', 'client' : 'mqttwarn', 'q' : message })
-        shout_url = "shout://translate.google.com/translate_tts?" + params
+        # TTS service
+        shout_url = "shout://%s" % ttsurl
+        if ttsparams is not None:
+            if not shout_url.endswith('?'):
+                shout_url = shout_url + '?'
+            shout_url = shout_url + urllib.urlencode(ttsparams)
+        # debugging
+        srv.logging.debug("Shout URL: %s" % shout_url)
         # Freeswitch API
         server = ServerProxy("http://%s:%s@%s:%d" % (username, password, host, port))
         # channel variables we need to setup the call
