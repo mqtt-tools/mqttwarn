@@ -20,6 +20,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [file](#file)
 * [freeswitch](#freeswitch)
 * [gss](#gss)
+* [gss2](#gss2)
 * [http](#http)
 * [instapush](#instapush)
 * [ionic](#ionic)
@@ -654,6 +655,78 @@ gdata.service.RequestError: {'status': 400, 'body': 'We&#39;re sorry, a server e
 
 Requires:
 * [gdata-python-client](https://code.google.com/p/gdata-python-client/)
+
+
+
+### `gss2`
+
+The `gss2` service interacts directly with a Google Docs Spreadsheet. Each message can be written to a row in a selected worksheet.
+
+Each target has two parameters:
+
+1. The spreadsheet URL. You can copy the URL from your browser that shows the spreadsheet.
+2. The worksheet name. Try "Sheet1".
+
+```ini
+[config:gss2]
+client_secrets_filename = client_secrets.json
+oauth2_code = 
+oauth2_storage_filename = oauth2.store
+targets = {
+    # spreadsheet_url                                          # worksheet_name
+    'test': [ 'https://docs.google.com/spre...cdA-ik8uk/edit', 'Sheet1']
+    # This target would be addressed as 'gss2:test'.
+    }
+```
+
+Note: It is important that the top row into your blank spreadsheet has column headings that correspond the values that represent your dictionary keys. If these column headers are not available or different from the dictionary keys, the new rows will be empty.
+
+Note: Google Spreadsheets initially consist of 100 or 1,000 empty rows. The new rows added by `gss2` will be *below*, so you might want to delete those empty rows.
+
+Other than `gss`, `gss2` uses OAuth 2.0 authentication. It is a lot harder to get working - but it does actually work.
+
+Here is an overview how the authentication with Google works:
+
+1. You obtain a `client_secrets.json` file from Google Developers Console.
+1. You reference that file in the `client_secrets_filename` field and restart mqttwarn.
+1. You grab an URL from the logs and visit that in your webbrowser.
+1. You copy the resulting code to `mqttwarn.ini`, field `oauth2_code`
+   and restart mqttwarn.
+1. `gss2` stores the eventual credentials in the file you specified in
+   field `oauth2_storage_filename`.
+1. Everyone lives happily ever after. I hope you reach this point without
+   severe technology burnout.
+1. Technically, you could remove the code from field `oauth2_code`,
+   but it does not harm to leave it there.
+
+Now to the details of this process:
+The contents of the file `client_secrets_filename` needs to be obtained by you as described in the [Google Developers API Client Library for Python docs](https://developers.google.com/api-client-library/python/auth/installed-app) on OAuth 2.0 for an Installed Application.
+Unfortunately, [Google prohibits](http://stackoverflow.com/a/28109307/217001) developers to publish their credentials as part of open source software. So you need to get the credentials yourself.
+
+To get them:
+
+1. Log in to the Google Developers website from
+  [here](https://developers.google.com/).
+1. Follow the instructions in section `Creating application credentials` from
+  the [OAuth 2.0 for Installed Applications](https://developers.google.com/api-client-library/python/auth/installed-app#creatingcred) chapter.
+  You are looking for an `OAuth client ID`.
+1. In the [Credentials screen of the API manager](https://console.developers.google.com/apis/credentials)
+  there is a download icon next to your new client ID. The downloaded
+  file should be named something like `client_secret_664...json`.
+1. Store that file near e.g. `mqttwarn.ini` and ensure the setting
+  `client_secrets_filename` has the valid path name of it.
+
+Then you start with the `gss2` service enabled and with the `client_secrets_filename` readable. Once an event is to be published, you will find an error in the logs with a URL that you need to visit with a web browser that is logged into your Google account. Google will offer you to accept access to
+Google Docs/Drive. Once you accept, you get to copy a code that you need to paste into field `oauth2_code` and restart mqttwarn.
+
+The file defined in `oauth2_storage_filename` needs to be missing or writable and will be created or overwritten. Once OAuth credentials have been established (using the `oauth2_code`), they are persisted in there.
+
+Requires:
+* [google-api-python-client](https://pypi.python.org/pypi/google-api-python-client/)
+  (`pip install google-api-python-client`)
+* [gspread](https://github.com/burnash/gspread)
+  (`pip install gspread`)
+
 
 
 ### `http`
