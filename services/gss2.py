@@ -109,7 +109,7 @@ def plugin(srv, item):
         srv.logging.debug("Successfully added row to spreadsheet")
 
     except Exception as e:
-        srv.logging.warn("Error adding row to spreadsheet %s [%s]: %s" % (spreadsheet_key, worksheet_id, str(e)))
+        srv.logging.warn("Error adding row to spreadsheet %s [%s]: %s" % (spreadsheet_url, worksheet_name, str(e)))
         return False
 
     return True
