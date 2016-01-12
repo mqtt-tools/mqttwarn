@@ -9,7 +9,10 @@ HAVE_PUSHBULLET=True
 try:
     from pushbullet.pushbullet import PushBullet
 except ImportError:
-    HAVE_PUSHBULLET=False
+    try:
+        from pushbullet import PushBullet
+    except ImportError:
+        HAVE_PUSHBULLET=False
 
 def plugin(srv, item):
     ''' expects (apikey, device_id) in adddrs '''
