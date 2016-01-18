@@ -27,7 +27,7 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
     if not HAVE_GSS:
-        srv.logging.error("Google Spreadsheet is not installed. Consider 'pip install gdata'.")
+        srv.logging.error("Google Spreadsheet or oauth2client is not installed. Consider 'pip install gspread google-api-python-client'.")
         return False
 
     try:
