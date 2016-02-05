@@ -39,6 +39,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [osxsay](#osxsay)
 * [pastebinpub](#pastebinpub)
 * [pipe](#pipe)
+* [postgres](#postgres)
 * [prowl](#prowl)
 * [pushalot](#pushalot)
 * [pushbullet](#pushbullet)
@@ -1354,6 +1355,80 @@ targets = {
 Note, that for each message targetted to the `pipe` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
 
+### `postgres`
+
+The `postgres` plugin behaves virtually identically to the [MySQL](#mysql) plugin above. It is configured in the same way:
+
+```ini
+[config:postgres]
+host  =  'localhost'
+port  =  5432
+user  =  'jane'
+pass  =  'secret'
+dbname  =  'test'
+targets = {
+          # tablename  #fallbackcolumn
+ 'pg'   : [ 'names',   'message'            ]
+  }
+```
+
+Suppose we create the following table for the target specified above:
+
+```
+CREATE TABLE names (id INTEGER, name CHARACTER VARYING(128));
+```
+
+and publish this JSON payload:
+
+```
+mosquitto_pub -t pg/1 -m '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }'
+```
+
+This will result in the two columns `id` and `name` being populated:
+
+```postgres
++------+------------+
+| id   | name       |
++------+------------+
+|   90 | Jane Jolie |
++------+------------+
+```
+
+Exactly as in the `MySQL` plugin, a _fallback column_ can be defined into which _mqttwarn_ adds
+the "rest of" the payload for all columns not targetted with JSON data. Lets now
+add our fallback column to the schema:
+
+```postgres
+ALTER TABLE names ADD message TEXT;
+```
+
+Publishing the same payload again, will insert this row into the table:
+
+```postgres
++------+------------+-----------------------------------------------------+
+| id   | name       | message                                             |
++------+------------+-----------------------------------------------------+
+|   90 | Jane Jolie | NULL                                                |
+|   90 | Jane Jolie | { "name" : "Jane Jolie", "id" : 90, "number" : 17 } |
++------+------------+-----------------------------------------------------+
+```
+
+As you can imagine, if we add a `number` column to the table, it too will be
+correctly populated with the value `17`.
+
+The payload of messages which do not contain valid JSON will be coped verbatim
+to the _fallback_ column:
+
+```postgres
++------+------+-------------+--------+
+| id   | name | message     | number |
++------+------+-------------+--------+
+| NULL | NULL | I love MQTT |   NULL |
++------+------+-------------+--------+
+```
+
+You can add columns with the names of the built-in transformation types (e.g. `_dthhmmss`, see below)
+to have those values stored automatically.
 
 ### `prowl`
 
