@@ -38,20 +38,29 @@ def OwnTracksBattFilter(topic, message):
     
     return True     # Suppress message because no 'batt'
 
-def TopicTargetList(topic=None, payload=None, data=None, srv=None):
+def TopicTargetList(topic=None, data=None, srv=None):
     """
-    Custom function to compute list of topic subscription
-    targets based on topic and/or transformation data.
-    Pass MQTT topic, transformation data, service object
-    and optionally raw message payload.
+    Custom function to compute list of topic targets based on MQTT topic and/or transformation data.
+    Obtains MQTT topic, transformation data and service object.
+    Returns list of topic target identifiers.
     """
-    if srv is not None:
-        srv.logging.debug('topic={topic}, payload={payload}, data={data}, srv={srv}'.format(**locals()))
 
-    # Use a fixed list of topic subscription targets for demonstration purposes.
-    # In the real world, you would look up proper targets based on information
+    # optional debug logger
+    if srv is not None:
+        srv.logging.debug('topic={topic}, data={data}, srv={srv}'.format(**locals()))
+
+    # Use a fixed list of topic targets for demonstration purposes.
+    targets = ['log:debug']
+
+    # In the real world, you would compute proper topic targets based on information
     # derived from transformation data, which in turn might have been enriched
-    # by ``datamap`` or ``alldata`` transformation functions before.
-    targets = ['foo:bar', 'log:info', 'file:mqttwarn']
+    # by ``datamap`` or ``alldata`` transformation functions before, like that:
+    if 'condition' in data:
+
+        if data['condition'] == 'sunny':
+            targets.append('file:mqttwarn')
+
+        elif data['condition'] == 'rainy':
+            targets.append('log:warn')
 
     return targets

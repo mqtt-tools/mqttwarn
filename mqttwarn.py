@@ -459,8 +459,10 @@ def get_topic_targets(section, topic, data):
         name = get_function_name(cf.get(section, 'targets'))
         try:
             return cf.topic_target_list(name, topic, data)
-        except Exception, e:
-            logging.warn("Cannot invoke topic targets function %s defined in %s: %s" % (name, section, str(e)))
+        except Exception as ex:
+            error = repr(ex)
+            logging.warn('Error invoking topic targets function "{name}" ' \
+                         'defined in section "{section}": {error}'.format(**locals()))
     return None
 
 class Job(object):
@@ -581,6 +583,12 @@ def send_to_targets(section, topic, payload):
 
     if function_name is not None:
         targetlist = get_topic_targets(section, topic, data)
+        targetlist_type = type(targetlist)
+        if targetlist_type is not types.ListType:
+            logging.error('Topic target definition by function "{function_name}" ' \
+                          'in section "{section}" is empty or incorrect. ' \
+                          'targetlist={targetlist}, type={targetlist_type}'.format(**locals()))
+            return
 
     elif type(dispatcher_dict) == dict:
         def get_key(item):
