@@ -1976,7 +1976,7 @@ owntracks/jane/phone -m '{"_type": "location", "lat": "52.4770352" ..  "desc": "
 In order to be able to obtain the username (`jane`) and her device name (`phone`) for use
 in transformations (see previous section), we would ideally want to parse the MQTT topic name and add that to the item data our plugins obtain. Yes, we can.
 
-An optional `topicdatamap` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
+An optional `datamap` in our configuration file defines the name of a function we provide, also in the configuration file, which accomplishes that.
 
 ```ini
 [owntracks/jane/phone]
@@ -2021,6 +2021,43 @@ passed the message _topic_, its _data_ and an optional _srv_ object. This functi
 should return a _dict_ (or _None_) of data which is merged into the whole
 list of transformation data. This expands on the two other transformation functions
 to make topic and the message's payload available simultaneously.
+
+
+### Using transformation data in other contexts ###
+
+Beside using the transformation data dictionary in `format` to create custom outgoing messages,
+it can be used in other contexts as well. Let's have a look at different ways this can be
+used throughout _mqttwarn_.
+
+#### Topic targets ####
+
+By incorporating transformation data into topic targets, we can make _mqttwarn_ dispatch
+messages dynamically based on the values of the transformation data dictionary.
+
+To get an idea about how this works, let's define a placeholder variable inside the
+`targets` directive of a topic section in the `mqttwarn.ini` configuration file:
+
+    [topic-targets-dynamic]
+    topic   = test/topic-targets-dynamic
+    format  = Something {loglevel} happened! {message}
+    targets = log:{loglevel}
+
+When sending this value through a JSON encoded message or by computing it
+through the `datamap` or `alldata` transformation machinery, it will get
+interpolated into the designated topic target. Example:
+
+    mosquitto_pub -t test/topic-targets-dynamic -m '{"loglevel": "crit", "message": "Nur Döner macht schöner!"}'
+
+This will issue the following message into the log file:
+
+    2016-02-14 18:09:34,822 CRITICAL [log] Something crit happened! Nur Döner macht schöner!
+
+While this little example might feel artificial, there are more meaningful
+use cases like determining the recipient address of `smtp` or `xmpp` receivers
+through information from topic names or message payloads.
+Please have a look at [Incorporate topic names into topic targets](https://github.com/jpmens/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets)
+for a more sensible example.
+
 
 ### Filtering notifications ###
 

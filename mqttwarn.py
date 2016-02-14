@@ -6,6 +6,7 @@ import logging
 import signal
 import sys
 import time
+import types
 from datetime import datetime
 try:
     import json
@@ -433,12 +434,13 @@ def get_all_data(section, topic, data):
     return None
 
 class Job(object):
-    def __init__(self, prio, service, section, topic, payload, target):
+    def __init__(self, prio, service, section, topic, payload, data, target):
         self.prio       = prio
         self.service    = service
         self.section    = section
         self.topic      = topic
-        self.payload    = payload
+        self.payload    = payload       # raw payload
+        self.data       = data          # decoded payload
         self.target     = target
 
         logging.debug("New `%s:%s' job: %s" % (service, target, topic))
@@ -541,6 +543,9 @@ def send_to_targets(section, topic, payload):
         logging.warn("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
         return
 
+    # decode raw payload into transformation data
+    data = decode_payload(section, topic, payload)
+
     dispatcher_dict = cf.getdict(section, 'targets')
     if type(dispatcher_dict) == dict:
         def get_key(item):
@@ -577,6 +582,9 @@ def send_to_targets(section, topic, payload):
             cleanup(0)
             return
 
+    # interpolate transformation data values into topic targets
+    targetlist = [t.format(**data) for t in targetlist]
+
     for t in targetlist:
         logging.debug("Message on %s going to %s" % (topic, t))
         # Each target is either "service" or "service:target"
@@ -592,9 +600,10 @@ def send_to_targets(section, topic, payload):
                 logging.warn("Invalid target %s - should be 'service:target'" % (t))
                 continue
 
+        # skip targets with invalid services
         if not service in service_plugins:
             logging.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
-            return
+            continue
 
         sendtos = None
         if target is None:
@@ -603,7 +612,7 @@ def send_to_targets(section, topic, payload):
             sendtos = [target]
 
         for sendto in sendtos:
-            job = Job(1, service, section, topic, payload, sendto)
+            job = Job(1, service, section, topic, payload, data, sendto)
             q_in.put(job)
 
 def builtin_transform_data(topic, payload):
@@ -693,6 +702,39 @@ def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
     else:
         return it.result
 
+def decode_payload(section, topic, payload):
+    """
+    Decode message payload through transformation machinery.
+    """
+
+    transform_data = builtin_transform_data(topic, payload)
+
+    topic_data = get_topic_data(section, topic)
+    if topic_data is not None and type(topic_data) == dict:
+        transform_data = dict(transform_data.items() + topic_data.items())
+
+    # The dict returned is completely merged into transformation data
+    # The difference between this and `get_topic_data()' is that this
+    # function obtains the topic string as well as the payload and any
+    # existing transformation data, and it can do 'things' with all.
+    # This is the way it should originally have been, but I can no
+    # longer fix the original ... (legacy)
+
+    all_data = get_all_data(section, topic, transform_data)
+    if all_data is not None and type(all_data) == dict:
+        transform_data = dict(transform_data.items() + all_data.items())
+
+    # Attempt to decode the payload from JSON. If it's possible, add
+    # the JSON keys into item to pass to the plugin, and create the
+    # outgoing (i.e. transformed) message.
+    try:
+        payload_data = json.loads(payload)
+        transform_data = dict(transform_data.items() + payload_data.items())
+    except Exception as ex:
+        logging.warn("Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+
+    return transform_data
+
 def processor():
     """
     Queue runner. Pull a job from the queue, find the module in charge
@@ -705,56 +747,43 @@ def processor():
         service = job.service
         section = job.section
         target  = job.target
+        topic   = job.topic
 
         logging.debug("Processor is handling: `%s' for %s" % (service, target))
 
-        item = {}
+        # sanity checks
+        # if service configuration or targets can not be obtained successfully,
+        # log a sensible error message, fail the job and carry on with the next job
         try:
-            item = {
-                'service'       : service,
-                'section'       : section,
-                'target'        : target,
-                'config'        : get_service_config(service),
-                'addrs'         : get_service_targets(service)[target],
-                'topic'         : job.topic,
-                'payload'       : job.payload,
-                'data'          : None,
-                'title'         : None,
-                'image'         : None,
-                'message'       : None,
-                'priority'      : None
-            }
+            service_config  = get_service_config(service)
+            service_targets = get_service_targets(service)
+
+            if target not in service_targets:
+                error_message = "Invalid configuration: topic {topic} points to " \
+                                "non-existing target {target} in service {service}".format(**locals())
+                raise KeyError(error_message)
+
         except Exception, e:
-            logging.error("Cannot handle service=%s, target=%s: %s" % (service, target, str(e)))
+            logging.error("Cannot handle service=%s, target=%s: %s" % (service, target, repr(e)))
             q_in.task_done()
-            return
+            continue
 
-        transform_data = builtin_transform_data(job.topic, job.payload)
+        item = {
+            'service'       : service,
+            'section'       : section,
+            'target'        : target,
+            'config'        : service_config,
+            'addrs'         : service_targets[target],
+            'topic'         : topic,
+            'payload'       : job.payload,
+            'data'          : None,
+            'title'         : None,
+            'image'         : None,
+            'message'       : None,
+            'priority'      : None
+        }
 
-        topic_data = get_topic_data(job.section, job.topic)
-        if topic_data is not None and type(topic_data) == dict:
-            transform_data = dict(transform_data.items() + topic_data.items())
-
-        # The dict returned is completely merged into transformation data
-        # The difference bewteen this and `get_topic_data()' is that this
-        # function obtains the topic string as well as the payload and any
-        # existing transformation data, and it can do 'things' with all.
-        # This is the way it should originally have been, but I can no
-        # longer fix the original ... (legacy)
-
-        all_data = get_all_data(job.section, job.topic, transform_data)
-        if all_data is not None and type(all_data) == dict:
-            transform_data = dict(transform_data.items() + all_data.items())
-
-        # Attempt to decode the payload from JSON. If it's possible, add
-        # the JSON keys into item to pass to the plugin, and create the
-        # outgoing (i.e. transformed) message.
-        try:
-            payload_data = json.loads(job.payload)
-            transform_data = dict(transform_data.items() + payload_data.items())
-        except:
-            pass
-
+        transform_data = job.data
         item['data'] = dict(transform_data.items())
 
         item['title'] = xform(get_config(section, 'title'), SCRIPTNAME, transform_data)
