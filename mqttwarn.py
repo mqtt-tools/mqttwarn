@@ -583,7 +583,17 @@ def send_to_targets(section, topic, payload):
             return
 
     # interpolate transformation data values into topic targets
-    targetlist = [t.format(**data) for t in targetlist]
+    # be graceful if interpolation fails, but log a meaningful message
+    targetlist_resolved = []
+    for target in targetlist:
+        try:
+            target = target.format(**data)
+            targetlist_resolved.append(target)
+        except Exception as ex:
+            error = repr(ex)
+            logging.error('Cannot interpolate transformation data into topic target "{target}": {error}. ' \
+                          'section={section}, topic={topic}, payload={payload}, data={data}'.format(**locals()))
+    targetlist = targetlist_resolved
 
     for t in targetlist:
         logging.debug("Message on %s going to %s" % (topic, t))
