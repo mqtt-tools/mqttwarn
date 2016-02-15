@@ -216,6 +216,24 @@ class Config(RawConfigParser):
 
         return val
 
+    def topic_target_list(self, name, topic, data):
+        """
+        Attempt to invoke function `name' loaded from the
+        `functions' Python package for computing dynamic
+        topic subscription targets.
+        Pass MQTT topic and transformation data.
+        """
+
+        val = None
+
+        try:
+            func = getattr(__import__(cf.functions, fromlist=[name]), name)
+            val = func(topic=topic, data=data, srv=srv)
+        except:
+            raise
+
+        return val
+
     def filter(self, name, topic, payload):
         ''' Attempt to invoke function `name' from the `functions'
             package. Return that function's True/False '''
@@ -433,6 +451,18 @@ def get_all_data(section, topic, data):
             logging.warn("Cannot invoke alldata function %s defined in %s: %s" % (name, section, str(e)))
     return None
 
+def get_topic_targets(section, topic, data):
+    """
+    Topic targets function invoker.
+    """
+    if cf.has_option(section, 'targets'):
+        name = get_function_name(cf.get(section, 'targets'))
+        try:
+            return cf.topic_target_list(name, topic, data)
+        except Exception, e:
+            logging.warn("Cannot invoke topic targets function %s defined in %s: %s" % (name, section, str(e)))
+    return None
+
 class Job(object):
     def __init__(self, prio, service, section, topic, payload, data, target):
         self.prio       = prio
@@ -547,7 +577,12 @@ def send_to_targets(section, topic, payload):
     data = decode_payload(section, topic, payload)
 
     dispatcher_dict = cf.getdict(section, 'targets')
-    if type(dispatcher_dict) == dict:
+    function_name = get_function_name(get_config(section, 'targets'))
+
+    if function_name is not None:
+        targetlist = get_topic_targets(section, topic, data)
+
+    elif type(dispatcher_dict) == dict:
         def get_key(item):
             # precede a key with the number of topic levels and then use reverse alphabetic sort order
             # '+' is after '#' in ascii table

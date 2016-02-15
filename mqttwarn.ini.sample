@@ -50,6 +50,9 @@ targets = log:error, file:mqttwarn
 targets = log:info
 format = u'{name}: {number} => {_dthhmm}'
 
+[hello/2]
+targets = TopicTargetList()
+
 [owntracks-location]
 topic = owntracks/+/+
 targets = log:info, file:f01
