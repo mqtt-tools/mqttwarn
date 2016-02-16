@@ -36,6 +36,7 @@ targets = {
     
 [config:log]
 targets = {
+    'debug'  : [ 'debug' ],
     'info'   : [ 'info' ],
     'warn'   : [ 'warn' ],
     'crit'   : [ 'crit' ],
@@ -76,3 +77,11 @@ targets = foo:bar, log:baz
 topic   = test/topic-targets-dynamic
 format  = Something {loglevel} happened! {message}
 targets = log:{loglevel}
+
+[topic-targets-func]
+; use functions for computing topic targets, example:
+; mosquitto_pub -t test/topic-targets-func -m '{"condition": "sunny", "remark": "This should go to a file"}'
+; mosquitto_pub -t test/topic-targets-func -m '{"condition": "rainy", "remark": "This should go to the log"}'
+topic   = test/topic-targets-func
+format  = Weather conditions changed: It's {condition}. Remark: {remark}
+targets = TopicTargetList()
