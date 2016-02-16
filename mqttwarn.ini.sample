@@ -62,3 +62,17 @@ targets = log:info, file:f01
 datamap = OwnTracksTopic2Data()
 filter  = OwnTracksBattFilter()
 format  = {username}'s phone battery is getting low ({batt}%)
+
+[robustness-1]
+; even if "foo" is considered an invalid service or
+; "log:baz" is considered an invalid service target,
+; mqttwarn should keep calm and carry on
+topic   = test/robustness-1
+targets = foo:bar, log:baz
+
+[topic-targets-dynamic]
+; interpolate transformation data values into topic target, example:
+; mosquitto_pub -t test/topic-targets-dynamic -m '{"loglevel": "crit", "message": "Nur Döner macht schöner!"}'
+topic   = test/topic-targets-dynamic
+format  = Something {loglevel} happened! {message}
+targets = log:{loglevel}
