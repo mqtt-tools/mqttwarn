@@ -1493,10 +1493,12 @@ the notifications to. To obtain this you need  to follow the instructions at
 ```ini
 [config:pushbullet]
 targets = {
-                   # API KEY                  device ID
-    'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy' ]
+                   # API KEY                  device ID,    recipient_type
+    'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy',     'tttt' ]
     }
 ```
+
+where the optional _recipient_type_ could be one of `device_iden` (default), `email`, `channel` or `client`.
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
