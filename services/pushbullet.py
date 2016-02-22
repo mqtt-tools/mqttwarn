@@ -22,11 +22,15 @@ def plugin(srv, item):
         srv.logging.warn("pushbullet is not installed")
         return False
 
+	recipient_type = "device_iden"
     try:
         apikey, device_id = item.addrs
     except:
-        srv.logging.warn("pushbullet target is incorrectly configured")
-        return False
+		try:
+			apikey, device_id, recipient_type = item.addrs
+		except:
+			srv.logging.warn("pushbullet target is incorrectly configured")
+			return False
 
     text = item.message
     title = item.get('title', srv.SCRIPTNAME)
@@ -34,7 +38,7 @@ def plugin(srv, item):
     try:
         srv.logging.debug("Sending pushbullet notification to %s..." % (item.target))
         pb = PushBullet(apikey)
-        pb.pushNote(device_id, title, text)
+        pb.pushNote(device_id, title, text, recipient_type)
         srv.logging.debug("Successfully sent pushbullet notification")
     except Exception, e:
         srv.logging.warning("Cannot notify pushbullet: %s" % (str(e)))
