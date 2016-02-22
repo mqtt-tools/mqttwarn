@@ -26,11 +26,11 @@ def plugin(srv, item):
     try:
         apikey, device_id = item.addrs
     except:
-		try:
-			apikey, device_id, recipient_type = item.addrs
-		except:
-			srv.logging.warn("pushbullet target is incorrectly configured")
-			return False
+        try:
+            apikey, device_id, recipient_type = item.addrs
+        except:
+            srv.logging.warn("pushbullet target is incorrectly configured")
+            return False
 
     text = item.message
     title = item.get('title', srv.SCRIPTNAME)
