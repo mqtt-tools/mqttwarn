@@ -88,3 +88,9 @@ targets = log:{loglevel}
 topic   = test/topic-targets-func
 format  = Weather conditions changed: It's {condition}. Remark: {remark}
 targets = TopicTargetList()
+
+[cron]
+; Demonstrate periodic task feature.
+; Define a function for publishing your public ip address to the MQTT bus each minute.
+; mosquitto_sub -t 'test/ip/#' -v
+publish_public_ip_address = 60; now=true
