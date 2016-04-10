@@ -276,7 +276,7 @@ class PeriodicThread(object):
         By default run callback. Override it if you want to use inheritance
         """
         if self.callback is not None:
-            self.callback(srv)
+            self.callback(srv, *self.args, **self.kwargs)
 
     def _run(self):
         """
@@ -295,7 +295,7 @@ class PeriodicThread(object):
         """
         Schedules next Timer run
         """
-        self.current_timer = threading.Timer(self.period, self._run, *self.args, **self.kwargs)
+        self.current_timer = threading.Timer(self.period, self._run)
         if self.name:
             self.current_timer.name = self.name
         self.current_timer.start()
