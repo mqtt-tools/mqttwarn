@@ -254,9 +254,10 @@ class PeriodicThread(object):
     Python periodic Thread using Timer with instant cancellation
     """
 
-    def __init__(self, callback=None, period=1, name=None, srv=None, *args, **kwargs):
+    def __init__(self, callback=None, period=1, name=None, srv=None, now=False, *args, **kwargs):
         self.name = name
         self.srv = srv
+        self.now = now
         self.args = args
         self.kwargs = kwargs
         self.callback = callback
@@ -269,6 +270,12 @@ class PeriodicThread(object):
         """
         Mimics Thread standard start method
         """
+
+        # Schedule periodic task to run right now
+        if self.now == True:
+            self.run()
+
+        # Schedule periodic task with designated interval
         self.schedule_timer()
 
     def run(self):
@@ -276,7 +283,7 @@ class PeriodicThread(object):
         By default run callback. Override it if you want to use inheritance
         """
         if self.callback is not None:
-            self.callback(srv)
+            self.callback(srv, *self.args, **self.kwargs)
 
     def _run(self):
         """
@@ -295,7 +302,7 @@ class PeriodicThread(object):
         """
         Schedules next Timer run
         """
-        self.current_timer = threading.Timer(self.period, self._run, *self.args, **self.kwargs)
+        self.current_timer = threading.Timer(self.period, self._run)
         if self.name:
             self.current_timer.name = self.name
         self.current_timer.start()
@@ -411,6 +418,40 @@ def get_config(section, name):
     if cf.has_option(section, name):
         value = cf.get(section, name)
     return value
+
+def asbool(obj):
+    """
+    Shamelessly stolen from beaker.converters
+    # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
+    # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+    """
+    if isinstance(obj, basestring):
+        obj = obj.strip().lower()
+        if obj in ['true', 'yes', 'on', 'y', 't', '1']:
+            return True
+        elif obj in ['false', 'no', 'off', 'n', 'f', '0']:
+            return False
+        else:
+            raise ValueError(
+                "String is not true/false: %r" % obj)
+    return bool(obj)
+
+def parse_cron_options(argstring):
+    """
+    Parse periodic task options.
+    Obtains configuration value, returns dictionary.
+
+    Example::
+
+        my_periodic_task = 60; now=true
+
+    """
+    parts = argstring.split(';')
+    options = {'interval': float(parts[0].strip())}
+    for part in parts[1:]:
+        name, value = part.split('=')
+        options[name.strip()] = value.strip()
+    return options
 
 def is_filtered(section, topic, payload):
     if cf.has_option(section, 'filter'):
@@ -969,8 +1010,11 @@ def connect():
         for name, val in cf.items('cron'):
             try:
                 func = getattr(__import__(cf.functions, fromlist=[name]), name)
-                interval = float(val)
-                ptlist[name] = PeriodicThread(func, interval, srv=srv)
+                cron_options = parse_cron_options(val)
+                interval = cron_options['interval']
+                logging.debug('Scheduling function "{name}" as periodic task ' \
+                              'to run each {interval} seconds via [cron] section'.format(name=name, interval=interval))
+                ptlist[name] = PeriodicThread(callback=func, period=interval, name=name, srv=srv, now=asbool(cron_options.get('now')))
                 ptlist[name].start()
             except AttributeError:
                 logging.error("[cron] section has function [%s] specified, but that's not defined" % name)

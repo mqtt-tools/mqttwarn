@@ -2174,6 +2174,15 @@ to the `srv` object (which was described earlier).
 
 Function names are to be specified in lower-case characters.
 
+If you want to run the custom function immediately after starting mqttwarn
+instead of waiting for the interval to elapse, you might want to configure:
+
+```ini
+[cron]
+pinger = 10.5; now=true
+```
+
+
 
 ## Examples ##
 

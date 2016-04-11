@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# mqttwarn example function extensions
 import time
 
 try:
@@ -64,3 +66,24 @@ def TopicTargetList(topic=None, data=None, srv=None):
             targets.append('log:warn')
 
     return targets
+
+def publish_public_ip_address(srv=None):
+    """
+    Custom function used as a periodic task for publishing your public ip address to the MQTT bus.
+    Obtains service object.
+    Returns None.
+    """
+
+    import socket
+    import requests
+
+    hostname = socket.gethostname()
+    ip_address = requests.get('https://httpbin.org/ip').json().get('origin')
+
+    if srv is not None:
+
+        # optional debug logger
+        srv.logging.debug('Publishing public ip address "{ip_address}" of host "{hostname}"'.format(**locals()))
+
+        # publish ip address to mqtt
+        srv.mqttc.publish('test/ip/{hostname}'.format(**locals()), ip_address)
