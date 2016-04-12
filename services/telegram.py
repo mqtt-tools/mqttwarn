@@ -19,12 +19,15 @@ def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     token = item.config['token']
+    if 'parse_mode' in item.config:
+        parse_mode = item.config['parse_mode']
     tg_contact = item.addrs[0]
 
     class TelegramAPI():
-        def __init__(self, token):
+        def __init__(self, token, parse_mode=None):
             self.token = token
             self.disable_notification = False
+            self.parse_mode = parse_mode
             self.tg_url_bot_general = "https://api.telegram.org/bot"
 
         def http_get(self, url):
@@ -80,7 +83,8 @@ def plugin(srv, item):
             :return: Boolean
             """
             url = self.tg_url_bot_general + self.token + "/sendMessage"
-            params = {"chat_id": chat_id, "text": message, "disable_notification": self.disable_notification}
+            params = {"chat_id": chat_id, "text": message,
+                      "parse_mode": self.parse_mode, "disable_notification": self.disable_notification}
             srv.logging.debug("Trying to /sendMessage: {url}".format(url=url))
             srv.logging.debug("post params: " + str(params))
             res = requests.post(url, params=params)
@@ -93,7 +97,7 @@ def plugin(srv, item):
                 return answer_json
 
     try:
-        tg = TelegramAPI(token)
+        tg = TelegramAPI(token, parse_mode)
         uid = tg.get_uid(tg_contact)
         if uid == 0:
             srv.logging.warn("Cannot get chat_id for user %s" % tg_contact)

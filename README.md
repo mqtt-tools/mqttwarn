@@ -1677,11 +1677,14 @@ Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
 
 This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. First set up a Bot and obtain its authentication token which you add to _mqttwarn_'s configuration. You'll also need to start a chat with this bot so it can be able to communicate with particular user.
 
+Optional you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
+
 Configure the `telegram` service:
 
 ```ini
 [config:telegram]
 timeout = 60
+parse_mode = 'Markdown'
 token = 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 targets = {
    #        First Name or @username
