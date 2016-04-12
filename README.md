@@ -50,6 +50,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [sqlite](#sqlite)
 * [smtp](#smtp)
 * [syslog](#syslog)
+* [telegram](#telegram)
 * [thingspeak](#thingspeak)
 * [twilio](#twilio)
 * [twitter](#twitter)
@@ -1671,6 +1672,27 @@ Where `priority` can be between -2 and 5 and maps to `syslog` levels by;
 ```
 Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
 ```
+
+### `telegram`
+
+This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. First set up a Bot and obtain its authentication token which you add to _mqttwarn_'s configuration. You'll also need a _chat_id_ to talk to a particular user. This seems to be the hardest thing to obtain; what we did is to talk once to our bot (from within Telegram) and then get the messages with this _curl_ invocation; the sender's _id_ is shown within the returned JSON:
+
+```bash
+curl 'https://api.telegram.org/botnnnnnnnnn:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getUpdates'
+```
+
+Configure the `telegram` service:
+
+```ini
+[config:telegram]
+timeout = 60
+targets = {
+   #        chat_id,      token
+   'j01' : ['nnnnnnnnn', 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' ],
+}
+```
+
+![Telegram](assets/telegram.png)
 
 ### `thingspeak`
 
