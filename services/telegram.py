@@ -94,11 +94,10 @@ def plugin(srv, item):
 
     try:
         tg = TelegramAPI(token)
-        # uid = tg.get_uid(tg_contact)
-        # if uid == 0:
-        #     srv.logging.warn("Cannot get chat_id for user %s" % tg_contact)
-        #     return False
-        uid = tg_contact
+        uid = tg.get_uid(tg_contact)
+        if uid == 0:
+            srv.logging.warn("Cannot get chat_id for user %s" % tg_contact)
+            return False
         reply = tg.send_message(uid, item.message)
         srv.logging.debug("Telegram reply: %s" % reply)
         if 'ok' in reply and reply['ok']:

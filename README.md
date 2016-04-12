@@ -1684,13 +1684,13 @@ Configure the `telegram` service:
 timeout = 60
 token = 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 targets = {
-   #        First Name or @username,      token
+   #        First Name or @username
    'j01' : [ 'First Name' ],
    'j02' : [ '@username' ]
 }
 ```
 Possible issue:
-    Current realisation uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but call return only last 100 messages.
+    Current realisation uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but this call returns only last 100 messages.
 
 ![Telegram](assets/telegram.png)
 
