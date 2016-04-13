@@ -1675,22 +1675,25 @@ Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
 
 ### `telegram`
 
-This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. First set up a Bot and obtain its authentication token which you add to _mqttwarn_'s configuration. You'll also need a _chat_id_ to talk to a particular user. This seems to be the hardest thing to obtain; what we did is to talk once to our bot (from within Telegram) and then get the messages with this _curl_ invocation; the sender's _id_ is shown within the returned JSON:
+This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. First set up a Bot and obtain its authentication token which you add to _mqttwarn_'s configuration. You'll also need to start a chat with this bot so it can be able to communicate with particular user.
 
-```bash
-curl 'https://api.telegram.org/botnnnnnnnnn:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/getUpdates'
-```
+Optional you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
 
 Configure the `telegram` service:
 
 ```ini
 [config:telegram]
 timeout = 60
+parse_mode = 'Markdown'
+token = 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 targets = {
-   #        chat_id,      token
-   'j01' : ['nnnnnnnnn', 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' ],
+   #        First Name or @username
+   'j01' : [ 'First Name' ],
+   'j02' : [ '@username' ]
 }
 ```
+Possible issue:
+    Current realisation uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but this call returns only last 100 messages.
 
 ![Telegram](assets/telegram.png)
 
