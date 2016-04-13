@@ -60,13 +60,13 @@ def plugin(srv, item):
             uid = 0
             srv.logging.debug("Getting uid from /getUpdates...")
             updates = self.get_updates()
+            if name.startswith('@'):
+                name = name[1:]
+                name_type = 'username'
+            else:
+                name_type = 'first_name'
             for msg in updates["result"]:
                 chat = msg["message"]["chat"]
-                srv.logging.debug(chat)
-                if name.startswith('@'):
-                    name_type = 'username'
-                else:
-                    name_type = 'first_name'
                 if name_type in chat:
                     if chat[name_type] == name:
                         uid = chat["id"]
