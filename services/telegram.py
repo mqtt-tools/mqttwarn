@@ -44,7 +44,7 @@ def plugin(srv, item):
             url = self.tg_url_bot_general + self.token + "/getUpdates"
             srv.logging.debug(url)
             updates = self.http_get(url)
-            #rv.logging.debug("Content of /getUpdates: %s" % updates)
+            #srv.logging.debug("Content of /getUpdates: %s" % updates)
             if not updates["ok"]:
                 srv.logging.warn(updates)
                 return False
