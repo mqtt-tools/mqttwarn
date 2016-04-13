@@ -48,6 +48,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [rrdtool](#rrdtool)
 * [slack](#slack)
 * [sqlite](#sqlite)
+* [sqlite_json2cols](#sqlite_json2cols)
 * [smtp](#smtp)
 * [syslog](#syslog)
 * [telegram](#telegram)
@@ -672,7 +673,7 @@ Each target has two parameters:
 ```ini
 [config:gss2]
 client_secrets_filename = client_secrets.json
-oauth2_code = 
+oauth2_code =
 oauth2_storage_filename = oauth2.store
 targets = {
     # spreadsheet_url                                          # worksheet_name
@@ -1613,6 +1614,40 @@ targets = {
   }
 ```
 
+### `sqlite_json2cols`
+
+The `sqlite_json2cols` plugin creates a table in the database file specified in the targets
+and creates a schema based on the JSON payload.
+It will create a column for each JSON entry and rudimentary try to determine its datatype on creation (Float or Char).
+
+As an example, publishing this JSON payload:
+
+```
+mosquitto_pub -t test/hello -m '{ "name" : "Thor", "Father" : 'Odin', "Age" : 30 }'
+```
+
+A table as stated in the configuration will be created on the fly with the following structure and content:
+
+```
++------+--------+------+
+| name | Father | Age  |
++------+--------+------+
+| Thor | Odin   | 30.0 |
++------+--------+------+
+```
+No table is created if the table name already exists.
+
+ _mqttwarn_
+commits messages routed to such a target immediately.
+
+```ini
+[config:sqlite_json2cols]
+targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
+  }
+```
+
 ### `smtp`
 
 The `smtp` service basically implements an MQTT to SMTP gateway which needs
@@ -1712,7 +1747,7 @@ targets = {
 ```
 Using  builddata=true you can build an update with multiple fields in 1 update. Using this function no direct update. Only with the next update without builddata=true all entries are send (e.g. when multiple sensors are updating diferent topics, then you can do the build the data and submit when the last sensor is sending the data)
 
-note: use the field as per the example, (lower case, `'field1'` with the last digit being the field number ) 
+note: use the field as per the example, (lower case, `'field1'` with the last digit being the field number )
 
 ### `twilio`
 
