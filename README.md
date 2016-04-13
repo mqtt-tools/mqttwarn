@@ -1675,9 +1675,9 @@ Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
 
 ### `telegram`
 
-This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. First set up a Bot and obtain its authentication token which you add to _mqttwarn_'s configuration. You'll also need to start a chat with this bot so it can be able to communicate with particular user.
+This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. First set up a Bot and obtain its authentication token which you add to _mqttwarn_'s configuration. You'll also need to start a chat with this bot so it's able to communicate with particular user.
 
-Optional you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
+Optionally you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
 
 Configure the `telegram` service:
 
@@ -1693,7 +1693,8 @@ targets = {
 }
 ```
 Possible issue:
-    Current realisation uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but this call returns only last 100 messages.
+
+* Current implementation uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_.
 
 ![Telegram](assets/telegram.png)
 
