@@ -14,11 +14,11 @@ def plugin(srv, item):
     data = {'Message': item.message.encode('utf-8'),
             'Origin': item.title,
             'Timeout': item.config.get('timeout', 5),
-	    'Address': item.addrs[1],
-	    'Progress': -1
+            'Address': item.addrs[1],
+            'Progress': -1
             }
     if item.image != None:
-	data['Image'] = item.image
+        data['Image'] = item.image
 
     http_handler = httplib.HTTPConnection(item.addrs[0])
 

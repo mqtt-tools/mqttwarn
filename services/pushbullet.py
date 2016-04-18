@@ -22,7 +22,7 @@ def plugin(srv, item):
         srv.logging.warn("pushbullet is not installed")
         return False
 
-	recipient_type = "device_iden"
+    recipient_type = "device_iden"
     try:
         apikey, device_id = item.addrs
     except:

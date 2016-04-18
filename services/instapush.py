@@ -45,11 +45,11 @@ def plugin(srv, item):
 
         connection = opener.open(request,timeout=5)
 
-	reply = str(connection.read())
-	srv.logging.info("Server reply: %s" % reply)
+        reply = str(connection.read())
+        srv.logging.info("Server reply: %s" % reply)
 
         r = json.loads(reply)
-	srv.logging.info("%s: %s" % (item.target, r['msg']))
+        srv.logging.info("%s: %s" % (item.target, r['msg']))
 
         return not r['error']
 
