@@ -825,7 +825,7 @@ def decode_payload(section, topic, payload):
         payload_data = json.loads(payload)
         transform_data = dict(transform_data.items() + payload_data.items())
     except Exception as ex:
-        logging.warn("Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+        logging.debug("Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
 
     return transform_data
 
