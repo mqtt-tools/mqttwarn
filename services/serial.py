@@ -18,7 +18,7 @@ def plugin(srv, item):
 
     # addrs is a list[] associated with a particular target.
     # While it may contain more than one item (e.g. pushover)
-    # the `file' service carries one only, i.e. a path name
+    # the `serial' service carries one two, i.e. a com name and baudrate
     try:
         comName = item.addrs[0].format(**item.data).encode('utf-8')
         comBaudRate = int(item.addrs[1])
@@ -30,12 +30,14 @@ def plugin(srv, item):
     # else the original payload
     text = item.message
 
-    # If format specifies the hex keyword try to transform bytes from hex
+    # If message specifies the hex keyword try to transform bytes from hex
+	# else send string as it is
     test = text[:5]
     if test == ":HEX:":
         text = bytes(bytearray.fromhex(text[5:]))
 
-    if type(config) == dict and 'append_newline' in config and config['append_newline']:
+	# Append newline if config option is set
+	if type(config) == dict and 'append_newline' in config and config['append_newline']:
         text = text + "\n"
 
     try:
@@ -43,6 +45,7 @@ def plugin(srv, item):
             _serialport.is_open
             srv.logging.debug("%s already open", comName)
         except:
+			#Open port for first use
             srv.logging.debug("Open %s with %d baud", comName,comBaudRate)
             _serialport = serial.serial_for_url(comName)
             _serialport.baudrate = comBaudRate 
