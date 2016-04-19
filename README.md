@@ -1588,10 +1588,12 @@ The `serial` plugin sends out received messages to the serial port. Message payl
 [config:serial]
 append_newline = False
 targets = {
-    'serialport1'  : ['hwgrep:///dev/ttyUSB0',  '115200'],
-    'some-device' : ['hwgrep://COM3', '9600']
+    'serialport1'  : ['/dev/ttyUSB0',  '115200'],
+    'some-device' : ['socket://192.168.1.100:2323', '9600']
     }
 ```
+First parameter in target config can be a portname or an [url handler](https://pythonhosted.org/pyserial/url_handlers.html).
+Second parameter is the baudrate for the port.
 If `append_newline` is True, a newline character is unconditionally appended to the string written to the serialport. 
 
 Requires the pyserial bindings available with `pip install pyserial`.

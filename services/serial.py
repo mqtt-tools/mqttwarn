@@ -31,13 +31,13 @@ def plugin(srv, item):
     text = item.message
 
     # If message specifies the hex keyword try to transform bytes from hex
-	# else send string as it is
+    # else send string as it is
     test = text[:5]
     if test == ":HEX:":
         text = bytes(bytearray.fromhex(text[5:]))
 
-	# Append newline if config option is set
-	if type(config) == dict and 'append_newline' in config and config['append_newline']:
+    # Append newline if config option is set
+    if type(config) == dict and 'append_newline' in config and config['append_newline']:
         text = text + "\n"
 
     try:
@@ -45,7 +45,7 @@ def plugin(srv, item):
             _serialport.is_open
             srv.logging.debug("%s already open", comName)
         except:
-			#Open port for first use
+            #Open port for first use
             srv.logging.debug("Open %s with %d baud", comName,comBaudRate)
             _serialport = serial.serial_for_url(comName)
             _serialport.baudrate = comBaudRate 
