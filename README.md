@@ -46,6 +46,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [pushover](#pushover)
 * [redispub](#redispub)
 * [rrdtool](#rrdtool)
+* [serial](#serial)
 * [slack](#slack)
 * [sqlite](#sqlite)
 * [sqlite_json2cols](#sqlite_json2cols)
@@ -1578,6 +1579,22 @@ targets = {
 [rrdpython's API](http://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html) expects strings and/or list of strings as parameters to the functions. Thus a list for a target simply contains the command line arguments for `rrdtool update`. The plugin will embed the message as final argument `N:<message>`.
 
 Requires the rrdtool bindings available with `pip install rrdtool`.
+
+### `serial`
+
+The `serial` plugin sends out received messages to the serial port. Message payload can be binary data, string or json.
+
+```ini
+[config:serial]
+append_newline = False
+targets = {
+    'serialport1'  : ['hwgrep:///dev/ttyUSB0',  '115200'],
+    'some-device' : ['hwgrep://COM3', '9600']
+    }
+```
+If `append_newline` is True, a newline character is unconditionally appended to the string written to the serialport. 
+
+Requires the pyserial bindings available with `pip install pyserial`.
 
 ### `slack`
 
