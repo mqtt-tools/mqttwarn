@@ -7,8 +7,10 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import serial
 
-def plugin(srv, item):
+_serialport = None
 
+def plugin(srv, item):
+    global _serialport
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     # item.config is brought in from the configuration file
@@ -37,12 +39,20 @@ def plugin(srv, item):
         text = text + "\n"
 
     try:
-        ser = serial.Serial(comName, comBaudRate)
-        if ser.is_open:
-            ser.write(text)
-            ser.close
+        try:
+            _serialport.is_open
+            srv.logging.debug("%s already open", comName)
+        except:
+            srv.logging.debug("Open %s with %d baud", comName,comBaudRate)
+            _serialport = serial.serial_for_url(comName)
+            _serialport.baudrate = comBaudRate 
+
+        if _serialport.is_open:
+            _serialport.write(text)
+
     except SerialException, e:
         srv.logging.warning("Cannot write to com port `%s': %s" % (comName, str(e)))
         return False
 
     return True
+
