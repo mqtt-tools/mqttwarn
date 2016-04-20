@@ -6,10 +6,10 @@ __copyright__ = 'Copyright 2016 Ben Jones'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 import requests
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import logging
+
+# disable info logging in requests module (e.g. connection pool message for every post request)
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 def plugin(srv, item):
     ''' addrs: (measurement) '''
