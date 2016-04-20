@@ -22,6 +22,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss](#gss)
 * [gss2](#gss2)
 * [http](#http)
+* [influxdb](#influxdb)
 * [instapush](#instapush)
 * [ionic](#ionic)
 * [irccat](#irccat)
@@ -784,6 +785,36 @@ targets = {
 ```
 
 ![ionic](assets/ionic.png)
+
+### `influxdb`
+
+This service provides a way for forwarding data to the time series database [InfluxDB](https://influxdata.com/) (v9+).
+
+You will need to install an instance of InfluxDB (v9+) and create a new user. Then create a new database and give your user write permissions to that database.
+
+You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database. 
+
+Each time a value is received for an InfluxDB target, the value is sent to the configured *measurement* with a *topic* tag matching the MQTT topic the data arrived on.
+
+The topic name is normalised by replacing `/` with `_`. So a value arriving on `sensor/kitchen/temperature` would be published to InfluxDB with a tag of `topic=sensor_kitchen_temperature`.
+
+This allows you to setup measurements with multiple time series streams, or have a separate measurement for each stream. 
+
+Following is an ini example, showing the various connection properties for the InfluxDB database, and some example target configs;
+
+```ini
+[config:influxdb]
+host      = 'influxdbhost'
+port      = 8086
+username  = 'username'
+password  = 'password'
+database  = 'mqttwarn'
+targets = {
+                          # measurement
+    'humidity'         : [ 'humidity' ],
+    'temperature'      : [ 'temperature' ]
+    }
+```
 
 ### `instapush`
 
