@@ -32,7 +32,7 @@ def plugin(srv, item):
         
         if username is None:
             r = requests.post(url, data=data)
-        elif:
+        else:
             r = requests.post(url, data=data, auth=(username, password))
         
         # success
