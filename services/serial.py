@@ -43,6 +43,10 @@ def plugin(srv, item):
     try:
         try:
             _serialport.is_open
+            if callable(getattr(_serialport, "is_open", None)):
+                _serialport.is_open
+            else:
+                _serialport.isOpen
             srv.logging.debug("%s already open", comName)
         except:
             #Open port for first use
