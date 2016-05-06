@@ -553,7 +553,8 @@ def on_connect(mosq, userdata, result_code):
             mqttc.subscribe(str(topic), qos)
             subscribed.append(topic)
 
-        mqttc.publish(cf.lwt, LWTALIVE, qos=0, retain=True)
+        if cf.lwt is not None:
+            mqttc.publish(cf.lwt, LWTALIVE, qos=0, retain=True)
 
     elif result_code == 1:
         logging.info("Connection refused - unacceptable protocol version")
@@ -978,8 +979,9 @@ def connect():
         mqttc.username_pw_set(cf.username, cf.password)
 
     # set the lwt before connecting
-    logging.debug("Setting LWT to %s..." % (cf.lwt))
-    mqttc.will_set(cf.lwt, payload=LWTDEAD, qos=0, retain=True)
+    if cf.lwt is not None:
+        logging.debug("Setting LWT to %s..." % (cf.lwt))
+        mqttc.will_set(cf.lwt, payload=LWTDEAD, qos=0, retain=True)
 
     # Delays will be: 3, 6, 12, 24, 30, 30, ...
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
@@ -1047,7 +1049,8 @@ def cleanup(signum=None, frame=None):
         ptlist[ptname].cancel()
 
     logging.debug("Disconnecting from MQTT broker...")
-    mqttc.publish(cf.lwt, LWTDEAD, qos=0, retain=True)
+    if cf.lwt is not None:
+        mqttc.publish(cf.lwt, LWTDEAD, qos=0, retain=True)
     mqttc.loop_stop()
     mqttc.disconnect()
 

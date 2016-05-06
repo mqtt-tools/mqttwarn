@@ -825,15 +825,19 @@ You should first create an application and respective event following the [tutor
 
 Afterward you will find your Application ID and Application Secret in the "Basic Info" of your application.
 
-Each target corresponds to an event in your instapush application, you can define as many trackers as you wish as long as it's a JSON object.
+Each _mqttwarn_ target corresponds to an event in your Instapush application.
 
-for the ini example I've setup:
+The "trackers" in Instapush correspond to JSON values in the _mqttwarn_ `config:instapush` section or from the message payload. You can define as many trackers as you wish.
+
+Consider the following event created in Instapush:
 
 | Field          | Value                |
 | -------------- | -------------------- |
 | `Event title`  | alerts               |
 | `Trackers`     | object, action       |
 | `Push Message` | {object} just {action} |
+
+To always send the same `object` and `action` tracker values, set them as constants in the event of the target:
 
 ```ini
 [config:instapush]
@@ -847,7 +851,7 @@ targets = {
 
 ![instapush](assets/instapush.png)
 
-Note: if your "targets" has a list with only 1 element, that will be considered the "event" and the "trackers" will be the mqtt payload
+To send tracker values based on the message payload, leave out the the tracker element of the target definition in the `config:instapush` section: If your target is a list with only 1 element, that element will be considered the "event" and the "trackers" will be taken from the mqtt payload, which must have all tracker fields present.
 
 ### `irccat`
 
