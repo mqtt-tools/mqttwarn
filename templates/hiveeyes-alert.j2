@@ -1,0 +1,15 @@
+{#
+    Hiveeyes alert template
+#}
+Alarm from beehive {{node}}.
+
+{% print '-' * 42 %}
+
+Network..............: {{ network }}
+Gateway..............: {{ gateway }}
+Node.................: {{ node }}
+Timestamp............: {{ _dtiso }}
+Original payload.....: {{ payload }}
+Current data.........: {{ current }}
+History data.........: {{ history }}
+{% print '-' * 42 %}
