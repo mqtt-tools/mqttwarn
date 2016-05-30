@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # mqttwarn example configuration file "mqttwarn.ini"
 
+; ------------------------------------------
+;             Base configuration
+; ------------------------------------------
+
 [defaults]
 hostname     = 'localhost'  ; default
 port         = 1883
@@ -50,9 +54,19 @@ targets = {
 [failover]
 targets = log:error, file:mqttwarn
 
+
+; ------------------------------------------
+;                  Basic
+; ------------------------------------------
+
 [hello/1]
 targets = log:info
 format = u'{name}: {number} => {_dthhmm}'
+
+
+; ------------------------------------------
+;                OwnTracks
+; ------------------------------------------
 
 [owntracks-location]
 topic = owntracks/+/+
@@ -66,6 +80,11 @@ targets = log:info, file:f01
 datamap = OwnTracksTopic2Data()
 filter  = OwnTracksBattFilter()
 format  = {username}'s phone battery is getting low ({batt}%)
+
+
+; ------------------------------------------
+;              Dynamic targets
+; ------------------------------------------
 
 [robustness-1]
 ; even if "foo" is considered an invalid service or
@@ -88,6 +107,11 @@ targets = log:{loglevel}
 topic   = test/topic-targets-func
 format  = Weather conditions changed: It's {condition}. Remark: {remark}
 targets = TopicTargetList()
+
+
+; ------------------------------------------
+;              Periodic tasks
+; ------------------------------------------
 
 [cron]
 ; Demonstrate periodic task feature.
