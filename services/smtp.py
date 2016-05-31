@@ -9,6 +9,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 def plugin(srv, item):
+    """Send a message to SMTP recipient(s)."""
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
@@ -26,8 +27,13 @@ def plugin(srv, item):
     msg['From']         = sender
     msg['X-Mailer']     = srv.SCRIPTNAME
 
+    if not smtp_addresses:
+        srv.logging.warn("Skipped sending SMTP notification to %s, "
+                         "no addresses configured: %s" % (item.target, smtp_addresses))
+        return False
+
     try:
-        srv.logging.debug("Sending SMTP notification to %s [%s]..." % (item.target, smtp_addresses))
+        srv.logging.debug("Sending SMTP notification to %s, addresses: %s" % (item.target, smtp_addresses))
         server = smtplib.SMTP(server)
         server.set_debuglevel(0)
         server.ehlo()
@@ -39,7 +45,8 @@ def plugin(srv, item):
         server.quit()
         srv.logging.debug("Successfully sent SMTP notification")
     except Exception, e:
-        srv.logging.warn("Error sending notification to SMTP recipient %s [%s]: %s" % (item.target, smtp_addresses, str(e)))
+        srv.logging.warn("Error sending notification to SMTP recipient %s, addresses: %s. "
+                         "Exception: %s" % (item.target, smtp_addresses, str(e)))
         return False
 
     return True

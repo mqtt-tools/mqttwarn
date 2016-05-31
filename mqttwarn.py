@@ -86,6 +86,8 @@ class Config(RawConfigParser):
         self.loglevel     = 'DEBUG'
 
         self.functions    = None
+        self.num_workers  = 1
+
         self.directory    = '.'
         self.ca_certs     = None
         self.tls_version  = None
@@ -333,17 +335,21 @@ LOGFILE   = cf.logfile
 LOGFORMAT = cf.logformat
 
 # initialise logging
-logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
+# Send log messages to sys.stderr by configuring "logfile = stream://sys.stderr"
+if LOGFILE.startswith('stream://'):
+    LOGFILE = LOGFILE.replace('stream://', '')
+    logging.basicConfig(stream=eval(LOGFILE), level=LOGLEVEL, format=LOGFORMAT)
+# Send log messages to file by configuring "logfile = 'mqttwarn.log'"
+else:
+    logging.basicConfig(filename=LOGFILE, level=LOGLEVEL, format=LOGFORMAT)
 logging.info("Starting %s" % SCRIPTNAME)
-logging.info("INFO MODE")
-logging.debug("DEBUG MODE")
+logging.info("Log level is %s" % logging.getLevelName(LOGLEVEL))
 
 # initialise MQTT broker connection
 mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession, protocol=cf.protocol)
 
 # initialise processor queue
 q_in = Queue.Queue(maxsize=0)
-num_workers = 1
 exit_flag = False
 
 ptlist = {}         # List of PeriodicThread() objects
@@ -769,7 +775,7 @@ def xform(function, orig_value, transform_data):
         try:
             res = function.format(**transform_data).encode('utf-8')
         except Exception, e:
-            pass
+            logging.warning("Cannot format message: %s" % e)
 
     if type(res) == str:
         res = res.replace("\\n", "\n")
@@ -830,21 +836,22 @@ def decode_payload(section, topic, payload):
 
     return transform_data
 
-def processor():
+def processor(worker_id=None):
     """
     Queue runner. Pull a job from the queue, find the module in charge
     of handling the service, and invoke the module's plugin to do so.
     """
 
     while not exit_flag:
-        job = q_in.get(15)
+        logging.debug('Job queue has %s items to process' % q_in.qsize())
+        job = q_in.get()
 
         service = job.service
         section = job.section
         target  = job.target
         topic   = job.topic
 
-        logging.debug("Processor is handling: `%s' for %s" % (service, target))
+        logging.debug("Processor #%s is handling: `%s' for %s" % (worker_id, service, target))
 
         # sanity checks
         # if service configuration or targets can not be obtained successfully,
@@ -999,8 +1006,9 @@ def connect():
         sys.exit(2)
 
     # Launch worker threads to operate on queue
-    for i in range(num_workers):
-        t = threading.Thread(target=processor)
+    logging.info('Starting %s worker threads' % cf.num_workers)
+    for i in range(cf.num_workers):
+        t = threading.Thread(target=processor, kwargs={'worker_id': i})
         t.daemon = True
         t.start()
 
@@ -1022,28 +1030,26 @@ def connect():
                 logging.error("[cron] section has function [%s] specified, but that's not defined" % name)
                 continue
 
+    while not exit_flag:
+        reconnect_interval = 5
 
-
-    while True:
         try:
             mqttc.loop_forever()
         except socket.error:
-            logging.info("MQTT server disconnected; sleeping")
-            time.sleep(5)
+            pass
         except:
             # FIXME: add logging with trace
             raise
+
+        if not exit_flag:
+            logging.warning("MQTT server disconnected, trying to reconnect each %s seconds" % reconnect_interval)
+            time.sleep(reconnect_interval)
 
 def cleanup(signum=None, frame=None):
     """
     Signal handler to ensure we disconnect cleanly
     in the event of a SIGTERM or SIGINT.
     """
-
-    global exit_flag
-
-    exit_flag = True
-
     for ptname in ptlist:
         logging.debug("Cancel %s timer" % ptname)
         ptlist[ptname].cancel()
@@ -1056,6 +1062,10 @@ def cleanup(signum=None, frame=None):
 
     logging.info("Waiting for queue to drain")
     q_in.join()
+
+    # Send exit signal to subsystems _after_ queue was drained
+    global exit_flag
+    exit_flag = True
 
     logging.debug("Exiting on signal %d", signum)
     sys.exit(signum)
