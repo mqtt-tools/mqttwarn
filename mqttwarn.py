@@ -358,9 +358,19 @@ ptlist = {}         # List of PeriodicThread() objects
 # and its global instantiation
 class Service(object):
     def __init__(self, mqttc, logging):
+
+        # Reference to MQTT client object
         self.mqttc    = mqttc
+
+        # Reference to all mqttwarn globals, for using its machinery from plugins
+        self.mwcore   = globals()
+
+        # Reference to logging object
         self.logging  = logging
+
+        # Name of self ("mqttwarn", mostly)
         self.SCRIPTNAME = SCRIPTNAME
+
 srv = Service(None, None)
 
 service_plugins = {}
