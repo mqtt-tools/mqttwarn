@@ -29,7 +29,7 @@ def plugin(srv, item):
 
     if not smtp_addresses:
         srv.logging.warn("Skipped sending SMTP notification to %s, "
-                         "no addresses configured: %s" % (item.target, smtp_addresses))
+                         "no addresses configured" % (item.target))
         return False
 
     try:

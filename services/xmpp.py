@@ -19,7 +19,7 @@ def plugin(srv, item):
 
     if not xmpp_addresses:
         srv.logging.warn("Skipped sending XMPP notification to %s, "
-                         "no addresses configured: %s" % (item.target, xmpp_addresses))
+                         "no addresses configured" % (item.target))
         return False
 
     try:
