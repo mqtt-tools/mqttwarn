@@ -15,10 +15,14 @@ def plugin(srv, item):
     user=item.config["user"]
     pwd=item.config["pass"]
     command = item.addrs[0]
-    args=[ quote(v) for v  in json.loads(item.payload)["args"] ] #escape the shell args
-    args=tuple(args)
 
-    command = command % args
+    args=json.loads(item.payload)["args"]
+    if type(args) is list:
+        args=[ quote(v) for v  in args ] #escape the shell args
+    elif type(args) is str or type(args) is unicode:
+        args=quote(args)
+
+    command = command % tuple(args)
 
     ssh = paramiko.SSHClient()
     ssh.load_system_host_keys()
