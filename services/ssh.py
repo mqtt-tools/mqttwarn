@@ -14,7 +14,11 @@ def plugin(srv, item):
     port=item.config["port"]
     user=item.config["user"]
     pwd=item.config["pass"]
-    command=item.message
+    command = item.addrs[0]
+    args=[ quote(v) for v  in json.loads(item.payload)["args"] ] #escape the shell args
+    args=tuple(args)
+
+    command = command % args
 
     ssh = paramiko.SSHClient()
     ssh.load_system_host_keys()
@@ -26,7 +30,7 @@ def plugin(srv, item):
 
         #for line in stdout:
         #    srv.logging.warning('... ' + line.strip('\n'))
-	#Not really sure about what to do with output
+       #Not really sure about what to do with output
 
     except Exception, e:
         srv.logging.warning("Cannot run command %s on host %s" % (command, host))

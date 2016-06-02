@@ -1740,12 +1740,23 @@ port  = 22
 user  = 'username'
 pass  = 'password'
 targets = {
-    's01'     : [ 'command' ],
+		's01'    : [ 'command with one substitution %s' ],
+		's02'    : [ 'command with two substitutions %s__%s' ]
     }
+
+[ssh/+]
+format = {args}
+targets = ssh:s01
+
+[dualssh/+]
+format = {args}
+targets = ssh:s02
 ```
 
-Targets may contain ONE command (although you can run multiple commands
-by separating them with a semicolon).
+Targets may contain ONE command.
+
+`mosquitto_pub -t dualssh/test -m '{ "args" : ["test","test2"] }'`
+
 
 ### `syslog`
 
