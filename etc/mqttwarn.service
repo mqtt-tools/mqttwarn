@@ -22,6 +22,7 @@
 #   useradd --create-home --shell /bin/bash mqttwarn
 #   cp etc/mqttwarn.default /etc/default/mqttwarn
 #   cp etc/mqttwarn.service /usr/lib/systemd/system/
+#   cp etc/mqttwarn.logrotate /etc/logrotate.d/mqttwarn
 #   mkdir /var/log/mqttwarn; chown mqttwarn:mqttwarn /var/log/mqttwarn
 #   systemctl enable mqttwarn
 #
