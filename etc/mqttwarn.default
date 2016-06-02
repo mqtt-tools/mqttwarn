@@ -1,2 +1,7 @@
+# For systemd-based systems (used by mqttwarn.service)
+MQTTWARNINI="/etc/mqttwarn/mqttwarn.ini"
+MQTTWARN_OPTIONS=""
+
+# For init-based systems (used by mqttwarn.init)
 START_DAEMON=true
 VERBOSE=true

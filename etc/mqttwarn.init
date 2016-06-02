@@ -49,7 +49,7 @@ do_start()
 	start-stop-daemon -b --start --quiet -m --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
 		|| return 1
 	start-stop-daemon -b --start --quiet -m --pidfile $PIDFILE --exec $DAEMON -- \
-		$OPTIONS \
+		$MQTTWARN_OPTIONS \
 		|| return 2
 }
 
