@@ -2425,6 +2425,11 @@ You'll need at least the following components:
 
 I recommend you use [Supervisor](http://jpmens.net/2014/02/13/in-my-toolbox-supervisord/) for running this.
 
+Alternatively, a systemd-based installation using a Python virtualenv might be handy,
+see [systemd unit configuration file for mqttwarn](https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service)
+for step-by-step instructions about doing this.
+
+
 ## Press
 
 * [MQTTwarn: Ein Rundum-Sorglos-Notifier](http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312), article in German at JAXenter.
