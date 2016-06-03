@@ -52,6 +52,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [sqlite](#sqlite)
 * [sqlite_json2cols](#sqlite_json2cols)
 * [smtp](#smtp)
+* [ssh](#ssh)
 * [syslog](#syslog)
 * [telegram](#telegram)
 * [thingspeak](#thingspeak)
@@ -1726,6 +1727,36 @@ recipients get the message.
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | e-mail subject. (dflt: `mqttwarn notification`) |
+
+### `ssh`
+
+The `ssh` service can run commands over ssh with a specified user/password.
+The output is ignored for now.
+
+```ini
+[config:ssh]
+host  = '192.168.1.1'
+port  = 22
+user  = 'username'
+pass  = 'password'
+targets = {
+		's01'    : [ 'command with one substitution %s' ],
+		's02'    : [ 'command with two substitutions %s__%s' ]
+    }
+
+[ssh/+]
+format = {args}
+targets = ssh:s01
+
+[dualssh/+]
+format = {args}
+targets = ssh:s02
+```
+
+Targets may contain ONE command.
+
+`mosquitto_pub -t dualssh/test -m '{ "args" : ["test","test2"] }'`
+
 
 ### `syslog`
 
