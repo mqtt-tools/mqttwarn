@@ -54,7 +54,7 @@ def plugin(srv, item):
     elif type(args) is str or type(args) is unicode:
         args=(quote(args),)
 
-    command = command % tuple(args)
+    command = command % args
 
     ssh = paramiko.SSHClient()
     ssh.load_system_host_keys()
