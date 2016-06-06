@@ -1730,7 +1730,14 @@ recipients get the message.
 
 ### `ssh`
 
-The `ssh` service can run commands over ssh with a specified user/password.
+The `ssh` service can run commands over ssh.
+If both user and password are defined in the config, they will be used to connect to the host.
+If both user and password are *not* defined in the config, the service will parse the user's
+ssh config file to see which key (IdentityFile) to use; it will also look for User and Port
+in this file.
+
+If using a key, only the host is *required*.
+
 The output is ignored for now.
 
 ```ini
