@@ -1,0 +1,11 @@
+/var/log/mqttwarn/*.log {
+    rotate 7
+    daily
+    compress
+    size 2M
+    nocreate
+    missingok
+    postrotate
+        /bin/systemctl restart mqttwarn
+    endscript
+}

@@ -1740,6 +1740,8 @@ If using a key, only the host is *required*.
 
 The output is ignored for now.
 
+Note: using this module lets you specify a username and a password which can be used to login to the target system. As such, your `mqttwarn.ini` configuration file should be well protected from prying eyes! (This applies generally, for other target specifications with credentials as well.)
+
 ```ini
 [config:ssh]
 host  = '192.168.1.1'
@@ -2429,6 +2431,11 @@ You'll need at least the following components:
 4. Launch `mqttwarn.py`
 
 I recommend you use [Supervisor](http://jpmens.net/2014/02/13/in-my-toolbox-supervisord/) for running this.
+
+Alternatively, a systemd-based installation using a Python virtualenv might be handy,
+see [systemd unit configuration file for mqttwarn](https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service)
+for step-by-step instructions about doing this.
+
 
 ## Press
 

@@ -1,0 +1,73 @@
+# ----------------------------------------------
+#  systemd unit configuration file for mqttwarn
+# ----------------------------------------------
+#
+# Intro
+# -----
+# This systemd script assumes you are running mqttwarn
+# from /opt/mqttwarn using a Python virtualenv inside.
+#
+# Setup
+# -----
+# Basic setup::
+#
+#   cd /opt
+#   git clone https://github.com/jpmens/mqttwarn
+#   cd mqttwarn
+#   virtualenv .venv27
+#   ./.venv27/bin/pip install paho-mqtt==1.1
+#
+# Prepare and enable the systemd service::
+#
+#   useradd --create-home --shell /bin/bash mqttwarn
+#   cp etc/mqttwarn.default /etc/default/mqttwarn
+#   cp etc/mqttwarn.service /usr/lib/systemd/system/
+#   cp etc/mqttwarn.logrotate /etc/logrotate.d/mqttwarn
+#   mkdir /var/log/mqttwarn; chown mqttwarn:mqttwarn /var/log/mqttwarn
+#   systemctl enable mqttwarn
+#
+# Configuration
+# -------------
+# The configuration file is located at /etc/mqttwarn/mqttwarn.ini,
+# but the default setting can be changed by amending the
+# MQTTWARNINI environment variable defined in /etc/default/mqttwarn.
+#
+# Setup example configuration::
+#
+#   mkdir /etc/mqttwarn
+#   cp mqttwarn.ini.sample /etc/mqttwarn/mqttwarn.ini
+#
+# Start
+# -----
+# ::
+#
+#   systemctl start mqttwarn
+#
+# Appendix
+# --------
+# For installing further Python modules into the virtualenv
+# of the mqttwarn installation by using pip, just issue e.g.::
+#
+#   /opt/mqttwarn/.venv27/bin/pip install xmpppy==0.5.0rc1 jinja2==2.8
+#
+
+[Unit]
+Description=mqttwarn pluggable mqtt notification service
+Documentation=https://github.com/jpmens/mqttwarn
+After=network.target
+
+[Service]
+User=mqttwarn
+Group=mqttwarn
+LimitNOFILE=65536
+Environment='STDOUT=/var/log/mqttwarn/mqttwarn.log'
+Environment='STDERR=/var/log/mqttwarn/mqttwarn.log'
+EnvironmentFile=-/etc/default/mqttwarn
+WorkingDirectory=/opt/mqttwarn
+ExecStart=/bin/sh -c "/opt/mqttwarn/.venv27/bin/python /opt/mqttwarn/mqttwarn.py ${MQTTWARN_OPTIONS} >>${STDOUT} 2>>${STDERR}"
+KillMode=control-group
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=mqttwarn.service

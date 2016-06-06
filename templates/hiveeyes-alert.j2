@@ -1,7 +1,7 @@
 {#
     Hiveeyes alert template
 #}
-Alarm from beehive {{node}}.
+Alarm from beehive "{{node}}".
 {{description}}
 
 {% print '-' * 42 %}
@@ -9,8 +9,14 @@ Alarm from beehive {{node}}.
 Network..............: {{ network }}
 Gateway..............: {{ gateway }}
 Node.................: {{ node }}
-Timestamp............: {{ _dtiso }}
-Original payload.....: {{ payload }}
-Current data.........: {{ current }}
-History data.........: {{ history }}
+Timestamp UTC........: {{ _dtiso }}
+Current data.........: {{ pformat(history['current'], width=120) }}
+Previous data........: {{ pformat(history['previous'], width=120) }}
 {% print '-' * 42 %}
+
+Current fragment.....: {{ pformat(fragments['current'], width=120) }}
+Previous fragment....: {{ pformat(fragments['previous'], width=120) }}
+Original payload.....: {{ payload }}
+{% print '-' * 42 %}
+
+Grafana dashboard....: https://swarm.hiveeyes.org/grafana/dashboard/db/{{ dashboard }}
