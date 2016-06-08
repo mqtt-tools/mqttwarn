@@ -901,7 +901,11 @@ def processor(worker_id=None):
         item['title'] = xform(get_config(section, 'title'), SCRIPTNAME, transform_data)
         item['image'] = xform(get_config(section, 'image'), '', transform_data)
         item['message'] = xform(get_config(section, 'format'), job.payload, transform_data)
-        item['priority'] = int(xform(get_config(section, 'priority'), 0, transform_data))
+
+        try:
+            item['priority'] = int(xform(get_config(section, 'priority'), 0, transform_data))
+        except Exception, e:
+            logging.warn("Failed to determine the priority: %s" % (str(e)))
 
         if HAVE_JINJA is True:
             template = get_config(section, 'template')
