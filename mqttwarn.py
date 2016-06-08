@@ -905,7 +905,8 @@ def processor(worker_id=None):
         try:
             item['priority'] = int(xform(get_config(section, 'priority'), 0, transform_data))
         except Exception, e:
-            logging.warn("Failed to determine the priority: %s" % (str(e)))
+            item['priority'] = 0
+            logging.warn("Failed to determine the priority, defaulting to zero: %s" % (str(e)))
 
         if HAVE_JINJA is True:
             template = get_config(section, 'template')
