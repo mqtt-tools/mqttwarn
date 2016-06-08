@@ -1730,10 +1730,17 @@ recipients get the message.
 
 ### `ssh`
 
-The `ssh` service can run commands over SSH with a specified user/password.
+The `ssh` service can run commands over ssh.
+If both user and password are defined in the config, they will be used to connect to the host.
+If both user and password are *not* defined in the config, the service will parse the user's
+ssh config file to see which key (IdentityFile) to use; it will also look for User and Port
+in this file.
+
+If using a key, only the host is *required*.
+
 The output is ignored for now.
 
-Note: using this module requires specifying a username and a password which can be used to login to the target system. As such, your `mqttwarn.ini` configuration file should be well protected from prying eyes! (This applies generally, for other target specifications with credentials as well.)
+Note: using this module lets you specify a username and a password which can be used to login to the target system. As such, your `mqttwarn.ini` configuration file should be well protected from prying eyes! (This applies generally, for other target specifications with credentials as well.)
 
 ```ini
 [config:ssh]
