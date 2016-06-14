@@ -773,7 +773,7 @@ directly from the transformation data.
 
 ### `icinga2`
 
-This service is for the REST API in [Icinga2](https://www.icinga.org/products/icinga-2/).
+This service is for the REST API in [Icinga2](https://www.icinga.org/products/icinga-2/). Icinga2 is an open source monitoring solution.
 
 Using this service JSON payloads can be sent to your Icinga2 server to indicate host/service states or passive check updates.
 
