@@ -22,6 +22,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss](#gss)
 * [gss2](#gss2)
 * [http](#http)
+* [icinga2] (#icinga2)
 * [influxdb](#influxdb)
 * [instapush](#instapush)
 * [ionic](#ionic)
@@ -768,6 +769,55 @@ Note that transforms in parameters must be quoted strings:
 As a special case, if the quoted parameter starts with an `@` character (e.g.
 `'@name'`, it will not be formatted via `.format()`; instead, `name` is taken
 directly from the transformation data.
+
+
+### `icinga2`
+
+This service is for the REST API in [Icinga2](https://www.icinga.org/products/icinga-2/). Icinga2 is an open source monitoring solution forked from [Nagios](https://www.nagios.org/).
+
+Using this service JSON payloads can be sent to your Icinga2 server to indicate host/service states or passive check updates.
+
+By default the service will POST a `process-check-result` to your Icinga2 server with the following payload;
+
+```
+payload  = {
+    'service'       = 'service-name',
+    'check_source'  = 'check-source',
+    'exit_status'   = priority,
+    'plugin_output' = message
+    }
+```
+
+Where the `service-name` and `check-source` come from the service config (see below), the priority is the standard `mqttwarn` priority, either hard coded or derived via a _function_, and the message is the payload arriving on the MQTT topic.
+
+However it is possible to create your own payload by adding a custom format function where you can specify a dict of key/value pairs and these will be used to update the payload sent to Icinga2.
+
+For example we can add a custom function which returns;
+
+```
+def icinga2_format(data, srv):
+    icinga2_payload = {
+        'exit_status'  : 0,
+        'plugin_output': "OK: my-service is publishing",
+        'service'      : "my-host!my-service",
+        }
+
+    return json.dumps(icinga2_payload)
+```
+
+This allows you to manipulate the status, output and service name by parsing topic names and message payloads.
+
+```ini
+[config:icinga2]
+host     = 'https://icingahost'
+port     = 5665
+username = 'api-username'
+password = 'api-password'
+targets  = {
+    'anyname'   : [ 'service-name', 'check-source' ],
+    'passive'   : [ 'passive', 'mqttwarn' ],
+    }
+```
 
 ### `ionic`
 
