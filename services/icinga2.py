@@ -48,8 +48,7 @@ def plugin(srv, item):
     # update our payload with any JSON data in the mesage
     try:
         payload.update(json.loads(item.message))
-    except Exception, e:
-        srv.logging.error(str(e))
+    except Exception:
         pass
 
     # request parameters
