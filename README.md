@@ -790,6 +790,8 @@ payload  = {
 
 Where the `service-name` and `check-source` come from the service config (see below), the priority is the standard `mqttwarn` priority, either hard coded or derived via a _function_, and the message is the payload arriving on the MQTT topic.
 
+NOTE: `service-name` should be in the Icinga2 format for describing a service (`<host>!<service>`), e.g. `my-host.com!ping4`.
+
 However it is possible to create your own payload by adding a custom format function where you can specify a dict of key/value pairs and these will be used to update the payload sent to Icinga2.
 
 For example we can add a custom function which returns;
@@ -799,7 +801,7 @@ def icinga2_format(data, srv):
     icinga2_payload = {
         'exit_status'  : 0,
         'plugin_output': "OK: my-service is publishing",
-        'service'      : "my-host!my-service",
+        'service'      : "my-host.com!my-service",
         }
 
     return json.dumps(icinga2_payload)
@@ -814,8 +816,8 @@ port     = 5665
 username = 'api-username'
 password = 'api-password'
 targets  = {
-    'anyname'   : [ 'service-name', 'check-source' ],
-    'passive'   : [ 'passive', 'mqttwarn' ],
+    'anyname'        : [ 'service-name',        'check-source' ],
+    'myhost-passive' : [ 'my-host.com!passive', 'mqttwarn' ],
     }
 ```
 
