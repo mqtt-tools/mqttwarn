@@ -781,16 +781,16 @@ By default the service will POST a `process-check-result` to your Icinga2 server
 
 ```
 payload  = {
-    'service'       = 'service-name',
-    'check_source'  = 'check-source',
-    'exit_status'   = priority,
-    'plugin_output' = message
+    'service'       : 'host-name!service-name',
+    'check_source'  : 'check-source',
+    'exit_status'   : priority,
+    'plugin_output' : message
     }
 ```
 
-Where the `service-name` and `check-source` come from the service config (see below), the priority is the standard `mqttwarn` priority, either hard coded or derived via a _function_, and the message is the payload arriving on the MQTT topic.
+Where the `host-name`, `service-name` and `check-source` come from the service config (see below), the priority is the standard `mqttwarn` priority, either hard coded or derived via a _function_, and the message is the payload arriving on the MQTT topic.
 
-NOTE: `service-name` should be in the Icinga2 format for describing a service (`<host>!<service>`), e.g. `my-host.com!ping4`.
+NOTE: if `service-name` is None in the target config the payload will include `'host' : 'host-name'` instead of the `'service'` entry, and can be used for host checks.
 
 However it is possible to create your own payload by adding a custom format function where you can specify a dict of key/value pairs and these will be used to update the payload sent to Icinga2.
 
@@ -801,7 +801,7 @@ def icinga2_format(data, srv):
     icinga2_payload = {
         'exit_status'  : 0,
         'plugin_output': "OK: my-service is publishing",
-        'service'      : "my-host.com!my-service",
+        'service'      : "host.com!my-service",
         }
 
     return json.dumps(icinga2_payload)
@@ -816,8 +816,9 @@ port     = 5665
 username = 'api-username'
 password = 'api-password'
 targets  = {
-    'anyname'        : [ 'service-name',        'check-source' ],
-    'myhost-passive' : [ 'my-host.com!passive', 'mqttwarn' ],
+                        # host-name   service-name  check-source
+    'host-check '    : [ 'host.com',  None,         'mqttwarn' ],
+    'service-check ' : [ 'host.com',  'passive',    'mqttwarn' ],
     }
 ```
 

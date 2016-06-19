@@ -25,24 +25,31 @@ def plugin(srv, item):
         srv.logging.error("Missing module: requests")
         return False
 
-    host         = item.config['host']
-    port         = item.config['port']
-    username     = item.config['username']
-    password     = item.config['password']
+    host          = item.config['host']
+    port          = item.config['port']
+    username      = item.config['username']
+    password      = item.config['password']
 
-    # 'service' should be '<host.name>!<service.name>'
     # e.g. example.com!ping4
-    service      = item.addrs[0]
-    check_source = item.addrs[1]
+    check_host    = item.addrs[0]
+    check_service = item.addrs[1]
+    check_source  = item.addrs[2]
+
+    if check_service is None:
+        check_type   = 'host'
+        check_target = check_host
+    else:
+        check_type   = 'service'
+        check_target = '{0}!{1}'.format(check_host, check_service)
 
     if check_source is None:
         check_source = 'mqttwarn'
 
     payload = {
-        'service'       : service,
-        'check_source'  : check_source,
         'exit_status'   : item.priority,
-        'plugin_output' : item.message
+        'plugin_output' : item.message,
+        'check_source'  : check_source,
+        check_type      : check_target,
         }
 
     # update our payload with any JSON data in the mesage
