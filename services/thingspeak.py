@@ -48,7 +48,7 @@ def plugin(srv, item):
     try:
         http_handler.request("POST", "/update",
                          headers={'Content-type': "application/x-www-form-urlencoded"},
-                         body=urlencode(data)
+                         body=urlencode(sorted(data.items()))
                          )
     except (SSLError, HTTPException), e:
         srv.logging.warn("Thingspeak update failed: %s" % str(e))
