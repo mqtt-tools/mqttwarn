@@ -22,6 +22,8 @@ def plugin(srv, item):
         srv.logging.error("Module target is incorrectly configured")
         return False
 
+    host = item.config.get('host', 'MQTT_BUS')
+
     client = item.data.get('client', None)
     if client is None:
         srv.logging.warn("No client in item; ignoring")
@@ -43,7 +45,7 @@ def plugin(srv, item):
         try:
             # Add LLD for the client host to Zabbix
             sender = ZabbixSender.ZabbixSender(trapper, server_port = int(port))
-            sender.AddData(host='MQTT_BUS', key='mqtt.discovery', value=lld_payload)
+            sender.AddData(host=host, key='mqtt.discovery', value=lld_payload)
             res = sender.Send()
             sender.ClearData()
 
