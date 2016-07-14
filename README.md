@@ -1768,6 +1768,8 @@ sender  =  "MQTTwarn <jpm@localhost>"
 username  =  None
 password  =  None
 starttls  =  False
+# Optional send msg as html or only plain text
+htmlmsg   =  False
 targets = {
     'localj'     : [ 'jpm@localhost' ],
     'special'    : [ 'ben@gmail', 'suzie@example.net' ]

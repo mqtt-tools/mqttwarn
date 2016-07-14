@@ -7,6 +7,8 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 def plugin(srv, item):
     """Send a message to SMTP recipient(s)."""
@@ -21,7 +23,12 @@ def plugin(srv, item):
     username    = item.config['username']
     password    = item.config['password']
 
-    msg = MIMEText(item.message)
+    if 'htmlmsg' in item.config:
+        msg = MIMEMultipart('alternative')
+        msg.attach(MIMEText(item.message, 'plain'))
+        msg.attach(MIMEText(item.message, 'html'))
+    else:
+        msg = MIMEText(item.message, 'plain')
     msg['Subject']      = item.get('title', "%s notification" % (srv.SCRIPTNAME))
     msg['To']           = ", ".join(smtp_addresses)
     msg['From']         = sender
