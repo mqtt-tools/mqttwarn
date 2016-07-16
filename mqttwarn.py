@@ -908,6 +908,9 @@ def processor(worker_id=None):
             item['priority'] = 0
             logging.warn("Failed to determine the priority, defaulting to zero: %s" % (str(e)))
 
+        if HAVE_JINJA is False and get_config(section, 'template'):
+            logging.warn("Templating not possible because Jinja2 is not installed")
+
         if HAVE_JINJA is True:
             template = get_config(section, 'template')
             if template is not None:
