@@ -17,6 +17,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
+* [execute](#execute)
 * [file](#file)
 * [freeswitch](#freeswitch)
 * [gss](#gss)
@@ -556,6 +557,27 @@ targets = {
     'solar'  : [ 1, 'solar' ]
     }
 ```
+
+### `execute`
+
+The `execute` target launches the specified program and its arguments. It is similar
+to `pipe` but it doesn't open a pipe to the program.
+Example use cases are f.e. IoT buttons which publish a message when they are pushed
+and the execute an external program. It is also a light version of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
+
+```ini
+[config:execute]
+targets = {
+             # argv0 .....
+   'touch' : [ 'touch', '/tmp/executed' ]
+   }
+```
+
+To pass the published data (text) to the command, use `[TEXT]` which then gets replaced.
+This can also be configured with the `text_replace` parameter.
+
+Note, that for each message targetted to the `execute` service, a new process is
+spawned (fork/exec), so it is quite "expensive".
 
 ### `file`
 
