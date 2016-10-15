@@ -1717,14 +1717,20 @@ The `slack` plugin posts messages to channels in or users of the [slack.com](htt
 [config:slack]
 token = 'xxxx-1234567890-1234567890-1234567890-1234a1'
 targets = {
-              #  #channel/@user   username, icon
-   'jpmens'  : [ '@jpmens',       "Alerter",   ':door:' ],
-   'general'  : [ '#general',     "mqttwarn",   ':syringe:' ],
+             #   #channel/@user   username,    icon,        as_user
+   'jpmens'  : [ '@jpmens',       "Alerter",   ':door:'             ],
+   'general' : [ '#general',      "mqttwarn",  ':syringe:'          ],
+   'test'    : [ '#test',         "BotUser",   ':unused:',  True    ]
   }
 ```
 
 Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
 addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
+
+Optionally, a target can define the message to get posted as a user, per 
+[Slack Authorship documentation](https://api.slack.com/methods/chat.postMessage#authorship).
+Note that posting as a user in a channel is only possible, if the user has 
+joined the channel.
 
 ![Slack](assets/slack.png)
 

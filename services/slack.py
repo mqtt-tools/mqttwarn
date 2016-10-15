@@ -25,9 +25,9 @@ def plugin(srv, item):
         return False
 
     try:
-        channel, username, icon = item.addrs
-    except:
-        srv.logging.error("Incorrect target configuration")
+        channel, username, icon, as_user = ( item.addrs + [False] )[:4]
+    except Exception, e:
+        srv.logging.error("Incorrect target configuration for target=%s: %s", item.target, str(e))
         return False
 
     # If the incoming payload has been transformed, use that,
@@ -36,9 +36,9 @@ def plugin(srv, item):
 
     try:
         slack = Slacker(token)
-        slack.chat.post_message(channel, text, username=username, icon_emoji=icon)
+        slack.chat.post_message(channel, text, as_user=as_user, username=username, icon_emoji=icon)
     except Exception, e:
-        srv.logging.warning("Cannot post to slack: %s" % (str(e)))
+        srv.logging.warning("Cannot post to slack %s: %s" % (channel, str(e)))
         return False
 
     return True
