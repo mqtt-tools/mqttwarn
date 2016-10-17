@@ -27,6 +27,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [influxdb](#influxdb)
 * [instapush](#instapush)
 * [ionic](#ionic)
+* [iothub](#iothub)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
@@ -861,6 +862,32 @@ targets = {
 ```
 
 ![ionic](assets/ionic.png)
+
+### `iothub`
+
+This service is for [Microsoft Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/).
+The configuration requires a hostname for the IoT Hub, all other service configuration options are optional.
+Each target defines which device to impersonate when sending the message.
+
+```ini
+[config:iothub]
+hostname = '<name>.azure-devices.net'
+# protocol = 'AMQP'/'MQTT'/'HTTP' # Optional, default is AMQP
+# message_timeout = 10000 # Optional, default is not to expire
+# timeout = 10 # Optional, for HTTP transport only
+# minimum_polling_time = 9 # Optional, for HTTP transport only
+targets = {
+               # device id   # device key
+    'test' : [ 'pi',         'uN...6w=' ]
+  }
+```
+
+Note that the actual message delivery is done asynchronously, meaning that
+successful processing is no quarantee for actual delivery. In the case of an
+error occurring, an error message should eventually appear in the log.
+
+Requires:
+* [Microsoft Azure IoT device SDK for Python](https://github.com/Azure/azure-iot-sdks/tree/master/python/device)
 
 ### `influxdb`
 
