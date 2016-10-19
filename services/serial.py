@@ -42,7 +42,6 @@ def plugin(srv, item):
 
     try:
         try:
-            _serialport.is_open
             if callable(getattr(_serialport, "is_open", None)):
                 _serialport.is_open
             else:
@@ -50,12 +49,11 @@ def plugin(srv, item):
             srv.logging.debug("%s already open", comName)
         except:
             #Open port for first use
-            srv.logging.debug("Open %s with %d baud", comName,comBaudRate)
+            srv.logging.debug("Open %s with %d baud", comName, comBaudRate)
             _serialport = serial.serial_for_url(comName)
             _serialport.baudrate = comBaudRate 
 
-        if _serialport.is_open:
-            _serialport.write(text)
+        _serialport.write(text)
 
     except SerialException, e:
         srv.logging.warning("Cannot write to com port `%s': %s" % (comName, str(e)))
