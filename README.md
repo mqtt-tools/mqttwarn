@@ -1944,14 +1944,17 @@ The `thingspeak` service publishes data to thingspeak.com using the thingspeak A
 ```ini
 [config:thingspeak]
 targets = {
-                     #API WRITE KEY     field     optional builddata=true/false        
-    'field1'   : [ 'XXYYZZXXYYZZXXYY' ,'field1' , 'true' ],
-    'field2'   : [ 'XXYYZZXXYYZZXXYY' ,'field2' ]
+                   #API WRITE KEY       field      optional builddata=true/false
+    'field1'   : [ 'XXYYZZXXYYZZXXYY', 'field1' , 'true' ],
+    'field2'   : [ 'XXYYZZXXYYZZXXYY', 'field2' ],
+    'composite': [ 'XXYYZZXXYYZZXXYY', [ 'temp', 'hum' ] ]
   }
 ```
-Using  builddata=true you can build an update with multiple fields in 1 update. Using this function no direct update. Only with the next update without builddata=true all entries are send (e.g. when multiple sensors are updating diferent topics, then you can do the build the data and submit when the last sensor is sending the data)
+Using `builddata=true` you can build an update with multiple fields in one update. Using this function no direct update. Only with the next update without builddata=true all entries are send (e.g. when multiple sensors are updating diferent topics, then you can do the build the data and submit when the last sensor is sending the data).
 
-note: use the field as per the example, (lower case, `'field1'` with the last digit being the field number )
+Supply an ordered list of message data field names to extract several values from a single message (e.g. `{ "temp": 10, "hum": 77 }`). Values will be assigned to field1, field2, etc in order.
+
+Note: Use the field as per the example (lower case, `'field1'` with the last digit being the field number).
 
 ### `twilio`
 

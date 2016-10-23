@@ -16,7 +16,6 @@ def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     build = ""
-    title = item.get('title', srv.SCRIPTNAME)
     message = item.message
 
     try:
@@ -31,19 +30,29 @@ def plugin(srv, item):
         srv.logging.warn("thingspeak target is incorrectly configured")
         return False
 
+    if isinstance(field_id, basestring):
+        # field_id is an actual thingspeak field
+        builddata.update({field_id: message.encode('utf-8')})
+    else:
+        # field_id is an ordered list of parsed message data field names
+        try:
+            for n, f in enumerate(field_id):
+                field = "field%s" % (n+1)
+                value = ("{%s}" % f).format(**item.data).encode('utf-8')
+                builddata.update({field: value})
+        except Exception, e:
+            srv.logging.warn("unable to extract fields or values, skipping: %s / %s: %s", field_id, message, str(e))
+            return False
+
     if build == "true":
-        builddata.update ({field_id: message.encode('utf-8')})
         srv.logging.debug("thingspeak content building. Update %s to '%s' stored for later submission." , field_id, message.encode('utf-8'))
         return True
 
-    http_handler = HTTPSConnection("api.thingspeak.com")
+    data = {'api_key': apikey}
+    data.update(builddata)
+    builddata.clear()
 
-    data = {'api_key': apikey,
-            field_id: message.encode('utf-8')
-            }
-    if len (builddata) > 0:
-        data.update (builddata)
-        builddata.clear()
+    http_handler = HTTPSConnection("api.thingspeak.com")
 
     try:
         http_handler.request("POST", "/update",
