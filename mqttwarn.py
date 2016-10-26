@@ -184,7 +184,7 @@ class Config(RawConfigParser):
         d = None
         if self.has_section(section):
             d = dict((key, self.g(section, key))
-                for (key) in self.options(section) if key not in ['targets'])
+                for (key) in self.options(section) if key not in ['targets', 'module'])
         return d
 
     def datamap(self, name, topic):
@@ -953,16 +953,7 @@ def load_module(path):
 
 def load_services(services):
     for service in services:
-        modulefile = 'services/%s.py' % service
-
         service_plugins[service] = {}
-
-        try:
-            service_plugins[service]['module'] = load_module(modulefile)
-            logging.debug("Service %s loaded" % (service))
-        except Exception, e:
-            logging.error("Can't load %s service (%s): %s" % (service, modulefile, str(e)))
-            sys.exit(1)
 
         try:
             service_config = cf.config('config:' + service)
@@ -971,6 +962,16 @@ def load_services(services):
             sys.exit(1)
 
         service_plugins[service]['config'] = service_config
+
+        module = service_config.get('module', service)
+        modulefile = 'services/%s.py' % module
+
+        try:
+            service_plugins[service]['module'] = load_module(modulefile)
+            logging.debug("Service %s loaded" % (service))
+        except Exception, e:
+            logging.error("Can't load %s service (%s): %s" % (service, modulefile, str(e)))
+            sys.exit(1)
 
 def connect():
     """
