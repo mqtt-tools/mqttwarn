@@ -191,7 +191,7 @@ The `functions` option specifies the path to a Python file containing functions 
 
 ### `launch`
 
-In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_) you want to be able to use in target definitions.
+In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions. 
 
 ## The `[config:xxx]` sections
 
@@ -200,7 +200,8 @@ has a mandatory option called `targets`, which is a dictionary of target names, 
 pointing to an array of "addresses". Address formats depend on the particular service.
 
 A service section may have an option called `module`, which refers to the name
-of the actual service module to use. As such, a service called `filetruncate`
+of the actual service module to use. A service called `filetruncate` - and 
+referenced as such in the `launch` option -
 may have `module = file`, in which case the service works like a regular `file`
 service, with its own distinct set of service options. It is thus possible to
 have several different service configurations for the same underlying service,
