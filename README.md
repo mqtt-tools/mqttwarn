@@ -191,13 +191,48 @@ The `functions` option specifies the path to a Python file containing functions 
 
 ### `launch`
 
-In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_) you want to be able to use in target definitions.
+In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions. 
 
 ## The `[config:xxx]` sections
 
 Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
 has a mandatory option called `targets`, which is a dictionary of target names, each
 pointing to an array of "addresses". Address formats depend on the particular service.
+
+A service section may have an option called `module`, which refers to the name
+of the actual service module to use. A service called `filetruncate` - and 
+referenced as such in the `launch` option -
+may have `module = file`, in which case the service works like a regular `file`
+service, with its own distinct set of service options. It is thus possible to
+have several different service configurations for the same underlying service,
+with different configurations, e.g. one for files that should have notifications
+appended, and one for files that should get truncated before writes.
+
+As an example for `module` consider this INI file in which we want two services of type log. We actually _launch_ an `xxxlog` (which doesn't physically exist), but due to the `module=log` setting in its configuration it is instantiated:
+
+```ini
+[defaults]
+hostname  = 'localhost'  ; default
+port      = 1883
+
+launch	 = log, xxxlog
+
+[config:log]
+targets = {
+    'debug'  : [ 'debug' ],
+  }
+
+[config:xxxlog]
+# Note how the xxxlog is instantiated from log and both must be launched
+module = log
+targets = {
+    'debug'  : [ 'debug' ],
+  }
+
+
+[topic/1]
+targets = log:debug, xxxlog:debug
+```
 
 ## The `[failover]` section
 
@@ -309,7 +344,7 @@ The path to the configuration file (which must be valid Python) is obtained from
 
 ## Configuration of service plugins
 
-Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:_service_]`, where _service_ is the name of the service. This section _may_ have some settings which are required for a particular service. One mandatory option is called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
+Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:xxx]`, where `xxx` is the name of the service. This section _may_ have some settings which are required for a particular service, and all services have an rarely used option called `module` (see [The config:xxx sections](#the-configxxx-sections)) and one mandatory option called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
 
