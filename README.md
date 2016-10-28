@@ -208,6 +208,32 @@ have several different service configurations for the same underlying service,
 with different configurations, e.g. one for files that should have notifications
 appended, and one for files that should get truncated before writes.
 
+As an example for `module` consider this INI file in which we want two services of type log. We actually _launch_ an `xxxlog` (which doesn't physically exist), but due to the `module=log` setting in its configuration it is instantiated:
+
+```ini
+[defaults]
+hostname  = 'localhost'  ; default
+port      = 1883
+
+launch	 = log, xxxlog
+
+[config:log]
+targets = {
+    'debug'  : [ 'debug' ],
+  }
+
+[config:xxxlog]
+# Note how the xxxlog is instantiated from log and both must be launched
+module = log
+targets = {
+    'debug'  : [ 'debug' ],
+  }
+
+
+[topic/1]
+targets = log:debug, xxxlog:debug
+```
+
 ## The `[failover]` section
 
 There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection.
