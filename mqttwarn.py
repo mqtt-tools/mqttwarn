@@ -955,15 +955,14 @@ def load_services(services):
     for service in services:
         service_plugins[service] = {}
 
-        try:
-            service_config = cf.config('config:' + service)
-        except Exception, e:
-            logging.error("Service `%s' has no config section: %s" % (service, str(e)))
+        service_config = cf.config('config:' + service)
+        if service_config is None:
+            logging.error("Service `%s' has no config section" % service)
             sys.exit(1)
 
         service_plugins[service]['config'] = service_config
 
-        module = service_config.get('module', service)
+        module = cf.g('config:' + service, 'module', service)
         modulefile = 'services/%s.py' % module
 
         try:
