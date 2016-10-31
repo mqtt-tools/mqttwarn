@@ -90,6 +90,7 @@ def plugin(srv, item):
             if params is not None:
                 if tojson is not None:
                     encoded_params = json.dumps(params)
+                    request.add_header('Content-Type', 'application/json')
                 else:
                     encoded_params = urllib.urlencode(params)
             else:

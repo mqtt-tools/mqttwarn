@@ -804,7 +804,7 @@ Each target has five parameters:
 2. The URL, which is transformed if possible (transformation errors are ignored)
 3. `None` or a dict of parameters. Each individual parameter value is transformed.
 4. `None` or a list of username/password e.g. `( 'username', 'password')`
-5. `None` or True to force the transformation of the third parameter to a json object
+5. `None` or True to force the transformation of the third parameter to a json object and to send the HTTP header `Content-Type` with a value of `application/json` when using `post`
 
 ```ini
 [config:http]
