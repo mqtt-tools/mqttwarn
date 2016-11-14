@@ -635,7 +635,7 @@ targets = {
 
 Requires:
 * A Facebook account
-* [python-fbchat](https://github.com/bear/python-twitter)
+* [python-fbchat](https://github.com/yakhira/fbchat)
 
 ### `file`
 
