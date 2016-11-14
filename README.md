@@ -615,6 +615,28 @@ This can also be configured with the `text_replace` parameter.
 Note, that for each message targetted to the `execute` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
 
+### `fbchat`
+
+Notification of one [Facebook](http://facebook.com) account requires an account.
+For now, this is only done for messaging from one accout to another.
+
+Upon configuring this service's targets, make sure the three (3) elements of the
+list are in the order specified!
+
+```ini
+[config:fbchat]
+targets = {
+  'janejol'   :  [ 'vvvvvvvvvvvvvvvvvvvvvv',                              # username sending message
+                   'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # username's password (sending message)
+                   'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'  # destination account (receiving message)
+                  ]
+   }
+```
+
+Requires:
+* A Facebook account
+* [python-fbchat](https://github.com/bear/python-twitter)
+
 ### `file`
 
 The `file` service can be used for logging incoming topics, archiving, etc. Each message is written to a path specified in the targets list. Note that files are opened for appending and then closed on each notification.
