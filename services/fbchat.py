@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
-__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__author__    = 'Przemek Anuszek <przemas75()gmail.com>'
+__copyright__ = 'Copyright 2016 Przemek Anuszek'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 import fbchat
