@@ -2610,6 +2610,7 @@ for step-by-step instructions about doing this.
 ## Press
 
 * [MQTTwarn: Ein Rundum-Sorglos-Notifier](http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312), article in German at JAXenter.
+* [Schwarmalarm using mqttwarn](https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html)
 
   [OwnTracks]: http://owntracks.org
   [Jinja2]: http://jinja.pocoo.org/docs/templates/
