@@ -54,6 +54,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [slack](#slack)
 * [sqlite](#sqlite)
 * [sqlite_json2cols](#sqlite_json2cols)
+* [sqlite_timestamp](#sqlite_timestamp)
 * [smtp](#smtp)
 * [ssh](#ssh)
 * [syslog](#syslog)
@@ -1862,6 +1863,19 @@ commits messages routed to such a target immediately.
 
 ```ini
 [config:sqlite_json2cols]
+targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
+  }
+```
+
+### `sqlite_timestamp`
+
+The `sqlite_timestamp` plugin works just like the 'sqlite' plugin, but it creates 3 columns: id, payload and timestamp.
+The id is the table index and the timestamp is the insertion date and time in seconds.
+
+```ini
+[config:sqlite_timestamp]
 targets = {
                    #path        #tablename
   'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
