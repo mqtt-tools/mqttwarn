@@ -24,12 +24,12 @@ def plugin(srv, item):
 
     # check for target level tokens (which have preference)
     try:
-        if len(item.addrs) == 4:
-            token, channel, username, icon = item.addrs
+        if len(item.addrs) == 5:
+            token, channel, username, icon, as_user = ( item.addrs + [False] )[:5]
         else:
-            channel, username, icon = item.addrs
+            channel, username, icon, as_user = ( item.addrs + [False] )[:4]
     except:
-        srv.logging.error("Incorrect target configuration")
+        srv.logging.error("Incorrect target configuration for target=%s: %s", item.target, str(e))
         return False
 
     # if no token then fail
@@ -43,9 +43,9 @@ def plugin(srv, item):
 
     try:
         slack = Slacker(token)
-        slack.chat.post_message(channel, text, username=username, icon_emoji=icon)
+        slack.chat.post_message(channel, text, as_user=as_user, username=username, icon_emoji=icon)
     except Exception, e:
-        srv.logging.warning("Cannot post to slack: %s" % (str(e)))
+        srv.logging.warning("Cannot post to slack %s: %s" % (channel, str(e)))
         return False
 
     return True

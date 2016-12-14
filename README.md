@@ -27,6 +27,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [influxdb](#influxdb)
 * [instapush](#instapush)
 * [ionic](#ionic)
+* [iothub](#iothub)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
@@ -53,6 +54,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [slack](#slack)
 * [sqlite](#sqlite)
 * [sqlite_json2cols](#sqlite_json2cols)
+* [sqlite_timestamp](#sqlite_timestamp)
 * [smtp](#smtp)
 * [ssh](#ssh)
 * [syslog](#syslog)
@@ -190,13 +192,48 @@ The `functions` option specifies the path to a Python file containing functions 
 
 ### `launch`
 
-In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_) you want to be able to use in target definitions.
+In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions. 
 
 ## The `[config:xxx]` sections
 
 Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
 has a mandatory option called `targets`, which is a dictionary of target names, each
 pointing to an array of "addresses". Address formats depend on the particular service.
+
+A service section may have an option called `module`, which refers to the name
+of the actual service module to use. A service called `filetruncate` - and 
+referenced as such in the `launch` option -
+may have `module = file`, in which case the service works like a regular `file`
+service, with its own distinct set of service options. It is thus possible to
+have several different service configurations for the same underlying service,
+with different configurations, e.g. one for files that should have notifications
+appended, and one for files that should get truncated before writes.
+
+As an example for `module` consider this INI file in which we want two services of type log. We actually _launch_ an `xxxlog` (which doesn't physically exist), but due to the `module=log` setting in its configuration it is instantiated:
+
+```ini
+[defaults]
+hostname  = 'localhost'  ; default
+port      = 1883
+
+launch	 = log, xxxlog
+
+[config:log]
+targets = {
+    'debug'  : [ 'debug' ],
+  }
+
+[config:xxxlog]
+# Note how the xxxlog is instantiated from log and both must be launched
+module = log
+targets = {
+    'debug'  : [ 'debug' ],
+  }
+
+
+[topic/1]
+targets = log:debug, xxxlog:debug
+```
 
 ## The `[failover]` section
 
@@ -308,7 +345,7 @@ The path to the configuration file (which must be valid Python) is obtained from
 
 ## Configuration of service plugins
 
-Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:_service_]`, where _service_ is the name of the service. This section _may_ have some settings which are required for a particular service. One mandatory option is called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
+Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:xxx]`, where `xxx` is the name of the service. This section _may_ have some settings which are required for a particular service, and all services have an rarely used option called `module` (see [The config:xxx sections](#the-configxxx-sections)) and one mandatory option called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
 
@@ -579,6 +616,28 @@ This can also be configured with the `text_replace` parameter.
 Note, that for each message targetted to the `execute` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
 
+### `fbchat`
+
+Notification of one [Facebook](http://facebook.com) account requires an account.
+For now, this is only done for messaging from one accout to another.
+
+Upon configuring this service's targets, make sure the three (3) elements of the
+list are in the order specified!
+
+```ini
+[config:fbchat]
+targets = {
+  'janejol'   :  [ 'vvvvvvvvvvvvvvvvvvvvvv',                              # username sending message
+                   'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # username's password (sending message)
+                   'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'  # destination account (receiving message)
+                  ]
+   }
+```
+
+Requires:
+* A Facebook account
+* [python-fbchat](https://github.com/yakhira/fbchat)
+
 ### `file`
 
 The `file` service can be used for logging incoming topics, archiving, etc. Each message is written to a path specified in the targets list. Note that files are opened for appending and then closed on each notification.
@@ -768,7 +827,7 @@ Each target has five parameters:
 2. The URL, which is transformed if possible (transformation errors are ignored)
 3. `None` or a dict of parameters. Each individual parameter value is transformed.
 4. `None` or a list of username/password e.g. `( 'username', 'password')`
-5. `None` or True to force the transformation of the third parameter to a json object
+5. `None` or True to force the transformation of the third parameter to a json object and to send the HTTP header `Content-Type` with a value of `application/json` when using `post`
 
 ```ini
 [config:http]
@@ -861,6 +920,32 @@ targets = {
 ```
 
 ![ionic](assets/ionic.png)
+
+### `iothub`
+
+This service is for [Microsoft Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/).
+The configuration requires a hostname for the IoT Hub, all other service configuration options are optional.
+Each target defines which device to impersonate when sending the message.
+
+```ini
+[config:iothub]
+hostname = '<name>.azure-devices.net'
+# protocol = 'AMQP'/'MQTT'/'HTTP' # Optional, default is AMQP
+# message_timeout = 10000 # Optional, default is not to expire
+# timeout = 10 # Optional, for HTTP transport only
+# minimum_polling_time = 9 # Optional, for HTTP transport only
+targets = {
+               # device id   # device key
+    'test' : [ 'pi',         'uN...6w=' ]
+  }
+```
+
+Note that the actual message delivery is done asynchronously, meaning that
+successful processing is no quarantee for actual delivery. In the case of an
+error occurring, an error message should eventually appear in the log.
+
+Requires:
+* [Microsoft Azure IoT device SDK for Python](https://github.com/Azure/azure-iot-sdks/tree/master/python/device)
 
 ### `influxdb`
 
@@ -1717,17 +1802,23 @@ The `slack` plugin posts messages to channels in or users of the [slack.com](htt
 [config:slack]
 token = 'xxxx-1234567890-1234567890-1234567890-1234a1'
 targets = {
-                #   [token,] #channel/@user, username, icon
-   'jpmens'     : [ '@jpmens',      "Alerter",   ':door:' ],
-   'general'    : [ '#general',     "mqttwarn",  ':syringe:' ],
+                #   [token,] #channel/@user, username, icon, as_user
+   'jpmens'     : [ '@jpmens',   "Alerter",   ':door:'          ],
+   'general'    : [ '#general',  "mqttwarn",  ':syringe:'       ],
+   'test'       : [ '#test',     "BotUser",   ':unused:',  True ],
    'second-acc' : [ 'xxxx-9999999-9999999-99999999', '#general',     "test",   ':house:' ],
   }
 ```
 
+The service level `token` is optional, but if missing each target must have a `token` defined.
+
 Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
 addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
 
-The service level `token` is optional, but if missing each target must have a `token` defined.
+Optionally, a target can define the message to get posted as a user, per 
+[Slack Authorship documentation](https://api.slack.com/methods/chat.postMessage#authorship).
+Note that posting as a user in a channel is only possible, if the user has 
+joined the channel.
 
 ![Slack](assets/slack.png)
 
@@ -1775,6 +1866,19 @@ commits messages routed to such a target immediately.
 
 ```ini
 [config:sqlite_json2cols]
+targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
+  }
+```
+
+### `sqlite_timestamp`
+
+The `sqlite_timestamp` plugin works just like the 'sqlite' plugin, but it creates 3 columns: id, payload and timestamp.
+The id is the table index and the timestamp is the insertion date and time in seconds.
+
+```ini
+[config:sqlite_timestamp]
 targets = {
                    #path        #tablename
   'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
@@ -1914,14 +2018,17 @@ The `thingspeak` service publishes data to thingspeak.com using the thingspeak A
 ```ini
 [config:thingspeak]
 targets = {
-                     #API WRITE KEY     field     optional builddata=true/false        
-    'field1'   : [ 'XXYYZZXXYYZZXXYY' ,'field1' , 'true' ],
-    'field2'   : [ 'XXYYZZXXYYZZXXYY' ,'field2' ]
+                   #API WRITE KEY       field      optional builddata=true/false
+    'field1'   : [ 'XXYYZZXXYYZZXXYY', 'field1' , 'true' ],
+    'field2'   : [ 'XXYYZZXXYYZZXXYY', 'field2' ],
+    'composite': [ 'XXYYZZXXYYZZXXYY', [ 'temp', 'hum' ] ]
   }
 ```
-Using  builddata=true you can build an update with multiple fields in 1 update. Using this function no direct update. Only with the next update without builddata=true all entries are send (e.g. when multiple sensors are updating diferent topics, then you can do the build the data and submit when the last sensor is sending the data)
+Using `builddata=true` you can build an update with multiple fields in one update. Using this function no direct update. Only with the next update without builddata=true all entries are send (e.g. when multiple sensors are updating diferent topics, then you can do the build the data and submit when the last sensor is sending the data).
 
-note: use the field as per the example, (lower case, `'field1'` with the last digit being the field number )
+Supply an ordered list of message data field names to extract several values from a single message (e.g. `{ "temp": 10, "hum": 77 }`). Values will be assigned to field1, field2, etc in order.
+
+Note: Use the field as per the example (lower case, `'field1'` with the last digit being the field number).
 
 ### `twilio`
 
@@ -2520,6 +2627,7 @@ for step-by-step instructions about doing this.
 ## Press
 
 * [MQTTwarn: Ein Rundum-Sorglos-Notifier](http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312), article in German at JAXenter.
+* [Schwarmalarm using mqttwarn](https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html)
 
   [OwnTracks]: http://owntracks.org
   [Jinja2]: http://jinja.pocoo.org/docs/templates/
