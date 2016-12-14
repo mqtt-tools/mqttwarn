@@ -1802,11 +1802,11 @@ The `slack` plugin posts messages to channels in or users of the [slack.com](htt
 [config:slack]
 token = 'xxxx-1234567890-1234567890-1234567890-1234a1'
 targets = {
-                #   [token,] #channel/@user, username, icon, as_user
+                #   [token,] #channel/@user, username, icon, [as_user]
    'jpmens'     : [ '@jpmens',   "Alerter",   ':door:'          ],
    'general'    : [ '#general',  "mqttwarn",  ':syringe:'       ],
    'test'       : [ '#test',     "BotUser",   ':unused:',  True ],
-   'second-acc' : [ 'xxxx-9999999-9999999-99999999', '#general',     "test",   ':house:' ],
+   'second-acc' : [ 'xxxx-9999999-9999999-99999999', '#general', "test", ':house:' ],
   }
 ```
 
