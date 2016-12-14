@@ -19,18 +19,25 @@ def plugin(srv, item):
         srv.logging.error("slacker module missing")
         return False
 
+    # check for service level token
     token = item.config.get('token')
-    if token is None:
-        srv.logging.error("No token found for slack")
-        return False
 
+    # check for target level tokens (which have preference)
     try:
-        channel, username, icon = item.addrs
+        if len(item.addrs) == 4:
+            token, channel, username, icon = item.addrs
+        else:
+            channel, username, icon = item.addrs
     except:
         srv.logging.error("Incorrect target configuration")
         return False
 
-    # If the incoming payload has been transformed, use that,
+    # if no token then fail
+    if token is None:
+        srv.logging.error("No token found for slack")
+        return False
+
+    # if the incoming payload has been transformed, use that,
     # else the original payload
     text = item.message
 
