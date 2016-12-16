@@ -1802,12 +1802,15 @@ The `slack` plugin posts messages to channels in or users of the [slack.com](htt
 [config:slack]
 token = 'xxxx-1234567890-1234567890-1234567890-1234a1'
 targets = {
-             #   #channel/@user   username,    icon,        as_user
-   'jpmens'  : [ '@jpmens',       "Alerter",   ':door:'             ],
-   'general' : [ '#general',      "mqttwarn",  ':syringe:'          ],
-   'test'    : [ '#test',         "BotUser",   ':unused:',  True    ]
+                #   [token,] #channel/@user, username, icon, [as_user]
+   'jpmens'     : [ '@jpmens',   "Alerter",   ':door:'          ],
+   'general'    : [ '#general',  "mqttwarn",  ':syringe:'       ],
+   'test'       : [ '#test',     "BotUser",   ':unused:',  True ],
+   'second-acc' : [ 'xxxx-9999999-9999999-99999999', '#general', "test", ':house:' ],
   }
 ```
+
+The service level `token` is optional, but if missing each target must have a `token` defined.
 
 Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
 addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
