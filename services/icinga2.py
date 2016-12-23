@@ -30,6 +30,12 @@ def plugin(srv, item):
     username      = item.config['username']
     password      = item.config['password']
 
+    # optional ca-cert (usually self-signed cert installed by icinga2)
+    if 'cacert' in item.config:
+        cacert    = item.config['cacert']
+    else:
+        cacert    = None
+
     # e.g. example.com!ping4
     check_host    = item.addrs[0]
     check_service = item.addrs[1]
@@ -66,9 +72,11 @@ def plugin(srv, item):
     kwargs = {
         "headers" : headers,
         "auth"    : HTTPBasicAuth(username, password),
-        "verify"  : False,
         "json"    : payload
         }
+
+    if cacert:
+        kwargs[ "verify" ] = cacert
 
     try:
         url = "%s:%d/v1/actions/process-check-result" % (host, port)
