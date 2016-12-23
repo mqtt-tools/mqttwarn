@@ -896,12 +896,15 @@ host     = 'https://icingahost'
 port     = 5665
 username = 'api-username'
 password = 'api-password'
+cacert   = '<path-to-ca-cert>'
 targets  = {
                         # host-name   service-name  check-source
     'host-check '    : [ 'host.com',  None,         'mqttwarn' ],
     'service-check ' : [ 'host.com',  'passive',    'mqttwarn' ],
     }
 ```
+
+NOTE: `cacert` is optional but since `icinga2` is typically installed with a self-signed certificate specifying the `icinga2` ca-cert will stop a load of TLS certificate warnings when connecting to the REST API.
 
 ### `ionic`
 
