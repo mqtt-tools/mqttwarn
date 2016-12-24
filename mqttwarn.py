@@ -106,6 +106,10 @@ class Config(RawConfigParser):
             self.tls = True
 
         if self.tls_version is not None:
+            if self.tls_version == 'tlsv1_2':
+                self.tls_version = ssl.PROTOCOL_TLSv1_2
+            if self.tls_version == 'tlsv1_1':
+                self.tls_version = ssl.PROTOCOL_TLSv1_1
             if self.tls_version == 'tlsv1':
                 self.tls_version = ssl.PROTOCOL_TLSv1
             if self.tls_version == 'sslv3':
