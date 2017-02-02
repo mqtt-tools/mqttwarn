@@ -54,9 +54,12 @@ def plugin(srv, item):
         def get_uid(self, name):
             """
             Get chat_id for specific user
-            :param name: First Name or @username of user
+            :param name: First Name or @username of user or #chat_id
             :return: string
             """
+            if name.startswith('#'):
+                #chat_id was specified in mqttwarn.ini
+                return name[1:]
             uid = 0
             srv.logging.debug("Getting uid from /getUpdates...")
             updates = self.get_updates()
