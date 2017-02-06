@@ -25,9 +25,13 @@ def plugin(srv, item):
         xbmcusername = item.addrs[1]
         xbmcpassword = item.addrs[2]
 
-    title    = item.title
-    message  = item.message
-    image    = item.image
+    jmessage = json.loads(item.message)
+    title   = jmessage['title']
+    message = jmessage['message']
+    if jmessage.has_key('image'):
+        image = jmessage['image']
+    else:
+        image = ''
 
     jsonparams = {
         "jsonrpc" : "2.0",
