@@ -48,6 +48,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [pushalot](#pushalot)
 * [pushbullet](#pushbullet)
 * [pushover](#pushover)
+* [pushsafer](#pushsafer)
 * [redispub](#redispub)
 * [rrdtool](#rrdtool)
 * [serial](#serial)
@@ -1746,6 +1747,36 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 
 Requires:
 * a [pushover.net](https://pushover.net/) account
+
+### `pushsafer`
+
+This service is for [Pushsafer](https://www.pushsafer.com), an app for iOS, Android and Windows 10.
+In order to receive pushsafer notifications you need what is called a _private or alias key_:
+
+```ini
+[config:pushsafer]
+targets = {
+    'nagios'     : ['privatekey', 'Device ID', 'Icon', 'Sound', 'Vibration', 'URL', 'Url Title', 'Time2Live'],
+    'tracking'   : ['aliaskey1'],
+    'extraphone' : ['aliaskey2', '', '', '', '', '', '', '60'],
+	'warnme'     : ['aliaskey3', '', '', '', '', '', '', '60']
+    }
+```
+
+This defines targets (`nagios`, `alerts`, etc.) which are directed to the
+configured _private or alias key_ combinations. This in turn enables you to
+notify, say, one or more of your devices as well as one for your spouse. 
+For a list of available icons, sounds and other params see the
+[Pushsafer API](https://www.pushsafer.com/en/pushapi).
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: pushsafer dflt) |
+
+![pushsafer on iOS](assets/pushsafer.jpg)
+
+Requires:
+* a [pushsafer.com](https://www.pushsafer.com/) account
 
 ### `redispub`
 
