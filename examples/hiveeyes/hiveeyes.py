@@ -22,8 +22,8 @@ from collections import deque, defaultdict
 #
 # Trigger an alarm by simulating a weight loss event::
 #
-#   echo '{"wght2": 43.0}' | mosquitto_pub -t hiveeyes/demo/area-42/beehive-1/message-json -l
-#   echo '{"wght2": 42.0}' | mosquitto_pub -t hiveeyes/demo/area-42/beehive-1/message-json -l
+#   echo '{"wght2": 43.0}' | mosquitto_pub -t hiveeyes/demo/area-42/beehive-1/data.json -l
+#   echo '{"wght2": 42.0}' | mosquitto_pub -t hiveeyes/demo/area-42/beehive-1/data.json -l
 
 
 # ------------------------------------------
@@ -115,7 +115,7 @@ def hiveeyes_more_data(topic, data, srv):
     Add more data to transformation data object, used later when formatting the outgoing message.
     """
 
-    if not topic.endswith('message-json'):
+    if not (topic.endswith('data.json') or topic.endswith('message-json')):
         return
 
     message = data['payload']
@@ -183,7 +183,7 @@ def hiveeyes_schwarmalarm_filter(topic, message):
     Also, perform data-loss bookkeeping.
     """
 
-    if not topic.endswith('message-json'):
+    if not (topic.endswith('data.json') or topic.endswith('message-json')):
         return True
 
     # Decode message (redundant with "hiveeyes_more_data")
@@ -297,7 +297,7 @@ def hiveeyes_dataloss_monitor(srv):
                 data = {'description': 'Detected data loss.'}
                 send_to_targets(
                     section = 'hiveeyes-schwarmalarm',
-                    topic   = '{origin}/message-json'.format(origin=origin),
+                    topic   = '{origin}/notification.json'.format(origin=origin),
                     payload = json.dumps(data))
 
         else:

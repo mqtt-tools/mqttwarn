@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # mqttwarn example function extensions
 import time
+import copy
 
 try:
     import json
@@ -22,6 +23,9 @@ def OwnTracksTopic2Data(topic):
 
 def OwnTracksConvert(data):
     if type(data) == dict:
+        # Better safe than sorry: Clone transformation dictionary to prevent leaking local modifications
+        # See also https://github.com/jpmens/mqttwarn/issues/219#issuecomment-271815495
+        data = copy.copy(data)
         tst = data.get('tst', int(time.time()))
         data['tst'] = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(int(tst)))
         # Remove these elements to eliminate warnings
@@ -37,7 +41,7 @@ def OwnTracksBattFilter(topic, message):
     if 'batt' in data:
         if data['batt'] is not None:
             return int(data['batt']) > 20
-    
+
     return True     # Suppress message because no 'batt'
 
 def TopicTargetList(topic=None, data=None, srv=None):
