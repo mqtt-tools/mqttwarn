@@ -24,6 +24,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss2](#gss2)
 * [http](#http)
 * [icinga2] (#icinga2)
+* [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [instapush](#instapush)
 * [ionic](#ionic)
@@ -193,7 +194,7 @@ The `functions` option specifies the path to a Python file containing functions 
 
 ### `launch`
 
-In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions. 
+In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions.
 
 ## The `[config:xxx]` sections
 
@@ -202,7 +203,7 @@ has a mandatory option called `targets`, which is a dictionary of target names, 
 pointing to an array of "addresses". Address formats depend on the particular service.
 
 A service section may have an option called `module`, which refers to the name
-of the actual service module to use. A service called `filetruncate` - and 
+of the actual service module to use. A service called `filetruncate` - and
 referenced as such in the `launch` option -
 may have `module = file`, in which case the service works like a regular `file`
 service, with its own distinct set of service options. It is thus possible to
@@ -907,6 +908,17 @@ targets  = {
 
 NOTE: `cacert` is optional but since `icinga2` is typically installed with a self-signed certificate specifying the `icinga2` ca-cert will stop a load of TLS certificate warnings when connecting to the REST API.
 
+### 'ifttt'
+
+this service is for [ifttt maker applet](https://ifttt.com/maker_webhooks) to send the message as a payload in value1. For example, to get notifications on your mobile devices.
+
+```ini
+[config:ifttt]
+targets = {
+    'warnme'   : [ '<api key>', '<event webhook>' ]
+  }
+```
+
 ### `ionic`
 
 This service is for [Ionic](http://ionicframework.com/). Ionic framework allows easy development of HTML5 hybrid mobile apps. This service can be used for pushing notifications to ionic hybrid apps (android, ios, ...). Please read following for more details on ionic:
@@ -957,13 +969,13 @@ This service provides a way for forwarding data to the time series database [Inf
 
 You will need to install an instance of InfluxDB (v9+) and create a new user. Then create a new database and give your user write permissions to that database.
 
-You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database. 
+You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database.
 
 Each time a value is received for an InfluxDB target, the value is sent to the configured *measurement* with a *topic* tag matching the MQTT topic the data arrived on.
 
 The topic name is normalised by replacing `/` with `_`. So a value arriving on `sensor/kitchen/temperature` would be published to InfluxDB with a tag of `topic=sensor_kitchen_temperature`.
 
-This allows you to setup measurements with multiple time series streams, or have a separate measurement for each stream. 
+This allows you to setup measurements with multiple time series streams, or have a separate measurement for each stream.
 
 Following is an ini example, showing the various connection properties for the InfluxDB database, and some example target configs;
 
@@ -1765,7 +1777,7 @@ targets = {
 
 This defines targets (`nagios`, `alerts`, etc.) which are directed to the
 configured _private or alias key_ combinations. This in turn enables you to
-notify, say, one or more of your devices as well as one for your spouse. 
+notify, say, one or more of your devices as well as one for your spouse.
 For a list of available icons, sounds and other params see the
 [Pushsafer API](https://www.pushsafer.com/en/pushapi).
 
@@ -1824,7 +1836,7 @@ targets = {
 ```
 First parameter in target config can be a portname or an [url handler](https://pythonhosted.org/pyserial/url_handlers.html).
 Second parameter is the baudrate for the port.
-If `append_newline` is True, a newline character is unconditionally appended to the string written to the serialport. 
+If `append_newline` is True, a newline character is unconditionally appended to the string written to the serialport.
 
 Requires the pyserial bindings available with `pip install pyserial`.
 
@@ -1849,9 +1861,9 @@ The service level `token` is optional, but if missing each target must have a `t
 Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
 addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
 
-Optionally, a target can define the message to get posted as a user, per 
+Optionally, a target can define the message to get posted as a user, per
 [Slack Authorship documentation](https://api.slack.com/methods/chat.postMessage#authorship).
-Note that posting as a user in a channel is only possible, if the user has 
+Note that posting as a user in a channel is only possible, if the user has
 joined the channel.
 
 ![Slack](assets/slack.png)
