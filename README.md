@@ -23,7 +23,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss](#gss)
 * [gss2](#gss2)
 * [http](#http)
-* [icinga2] (#icinga2)
+* [icinga2](#icinga2)
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [instapush](#instapush)
