@@ -66,6 +66,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [tootpaste](#tootpaste)
 * [twilio](#twilio)
 * [twitter](#twitter)
+* [winnotify](#winnotify)
 * [xbmc](#xbmc)
 * [xmpp](#xmpp)
 * [xively](#xively)
@@ -2153,6 +2154,32 @@ Requires:
 * A Twitter account
 * app keys for Twitter, from [apps.twitter.com](https://apps.twitter.com)
 * [python-twitter](https://github.com/bear/python-twitter)
+
+### `winnotify`
+
+The `winnotify` service is a _very_ basic notification bubble. It's meant to serve the same purpose as the "linuxnotify" service.
+It is only tested with Windows 7. 
+
+![winnotify](assets/winnotify.png)
+
+Requirements:
+* pythonnet
+
+Example usage in the .ini:  
+```ini
+[config:winnotify]
+targets = {
+	'normal' : [ 'None' ],
+	'info'   : [ 'Info' ],
+	'warn'   : [ 'Warning' ],
+	'err'	 : [ 'Error' ]
+	}
+
+[calls/#]
+targets = winnotify:normal
+format = {calleridname} ({callerid}) is calling {dnid}
+
+```
 
 ### `xbmc`
 
