@@ -14,6 +14,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [apns](#apns)
 * [asterisk](#asterisk)
 * [carbon](#carbon)
+* [celery](#celery)
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
@@ -483,6 +484,32 @@ In other words, the following payloads are valid:
 room.living 15				metric name and value
 room.living 15 1405014635		metric name, value, and timestamp
 ```
+
+### `celery`
+
+The `celery` service sends messages to celery which celery workers can consume.
+
+```ini
+[config:celery]
+broker_url = 'redis://localhost:6379/5'
+app_name = 'celery'
+celery_serializer = 'json'
+targets = {
+   'hello': [
+      {
+        'task': 'myapp.hello',
+        'message_format': 'json'
+        }
+      ],
+  }
+
+[hello/#]
+targets = celery:hello
+```
+Broker url can be any broker supported by celery. Celery serializer is usually json or pickle. Json is recommended for security.
+Targets are selected by task name. Message_format can be either "json" or "text". If it is json, the message will be sent as a json payload rather than a string.
+In this configuration, all messages that match hello/ will be sent to the celery task "myapp.hello". The first argument of the celery task will be the message from mqtt.
+
 
 ### `dbus`
 
