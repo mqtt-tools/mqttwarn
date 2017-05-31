@@ -24,7 +24,7 @@ def plugin(srv, item):
 
     measurement = item.addrs[0]
     tag         = "topic=" + item.topic.replace('/', '_')
-    value       = item.payload
+    value       = item.message
     
     try:
         url = "http://%s:%d/write?db=%s" % (host, port, database)
