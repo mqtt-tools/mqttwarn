@@ -2067,7 +2067,11 @@ This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. Fi
 
 Optionally you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
 
-Configure the `telegram` service:
+If you have the `chatId` you can specify the telegram service to use the chatId directly. Warning, this will need to be the case for all notifiers!
+
+Quickest way to get the `chatid` is by visiting this url (insert your api key): https://api.telegram.org/botYOUR_API_TOKEN/getUpdates and getting the id from the "from" section.
+
+Configure the `telegram` service WITHOUT chatId:
 
 ```ini
 [config:telegram]
@@ -2080,9 +2084,22 @@ targets = {
    'j02' : [ '@username' ]
 }
 ```
+Configure the `telegram` service WITH chatid:
+```ini
+[config:telegram]
+timeout = 60
+parse_mode = 'Markdown'
+token = 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+use_chat_id = True
+targets = {
+    #       chatId (in quotes)
+    'j01' : ['123456789']
+}
+```
+
 Possible issue:
 
-* Current implementation uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_.
+* Current implementation, WITHOUT specifying `chatid` yourself, uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_.
 
 ![Telegram](assets/telegram.png)
 
