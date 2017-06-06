@@ -2067,7 +2067,7 @@ This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. Fi
 
 Optionally you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
 
-If you have the `chatId` you can specify the telegram service to use the chatId directly. Warning, this will need to be the case for all notifiers!
+If you have the `chatId` you can specify the telegram service to use the chatId directly. Warning, this will need to be the case for all the targets in this notifier!
 
 Quickest way to get the `chatid` is by visiting this url (insert your api key): https://api.telegram.org/botYOUR_API_TOKEN/getUpdates and getting the id from the "from" section.
 
