@@ -14,6 +14,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [apns](#apns)
 * [asterisk](#asterisk)
 * [carbon](#carbon)
+* [celery](#celery)
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
@@ -23,7 +24,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss](#gss)
 * [gss2](#gss2)
 * [http](#http)
-* [icinga2] (#icinga2)
+* [icinga2](#icinga2)
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [instapush](#instapush)
@@ -32,6 +33,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
+* mastodon (see tootpaste)
 * [mqtt](#mqtt)
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
@@ -62,6 +64,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [syslog](#syslog)
 * [telegram](#telegram)
 * [thingspeak](#thingspeak)
+* [tootpaste](#tootpaste)
 * [twilio](#twilio)
 * [twitter](#twitter)
 * [xbmc](#xbmc)
@@ -481,6 +484,32 @@ In other words, the following payloads are valid:
 room.living 15				metric name and value
 room.living 15 1405014635		metric name, value, and timestamp
 ```
+
+### `celery`
+
+The `celery` service sends messages to celery which celery workers can consume.
+
+```ini
+[config:celery]
+broker_url = 'redis://localhost:6379/5'
+app_name = 'celery'
+celery_serializer = 'json'
+targets = {
+   'hello': [
+      {
+        'task': 'myapp.hello',
+        'message_format': 'json'
+        }
+      ],
+  }
+
+[hello/#]
+targets = celery:hello
+```
+Broker url can be any broker supported by celery. Celery serializer is usually json or pickle. Json is recommended for security.
+Targets are selected by task name. Message_format can be either "json" or "text". If it is json, the message will be sent as a json payload rather than a string.
+In this configuration, all messages that match hello/ will be sent to the celery task "myapp.hello". The first argument of the celery task will be the message from mqtt.
+
 
 ### `dbus`
 
@@ -2075,6 +2104,39 @@ Using `builddata=true` you can build an update with multiple fields in one updat
 Supply an ordered list of message data field names to extract several values from a single message (e.g. `{ "temp": 10, "hum": 77 }`). Values will be assigned to field1, field2, etc in order.
 
 Note: Use the field as per the example (lower case, `'field1'` with the last digit being the field number).
+
+### `tootpaste`
+
+The `tootpaste` service is for posting to the [Mastodon social network](https://mastodon.social/about).
+
+```ini
+[config:tootpaste]
+targets = {
+             # clientcreds, usercreds, base_url
+    'uno'  : [ 'a.client',  'a.user', 'https://masto.io' ],
+  }
+```
+
+The specified `clientcreds` and `usercreds` are paths to files created with the service, as follows:
+
+```
+python services/tootpaste.py 'https://masto.io' 'jane@example.org' 'xafa5280890' warnme su03-a.client su03-a.user
+```
+
+The arguments, in order:
+
+1. base URL (e.g. `https://mastodon.social`)
+2. your e-mail address
+3. the password corresponding to the e-mail address
+4. the client name (name of the posting program)
+5. the clientcreds file
+6. the usercreds file.
+
+The two last files are created and should be protected from prying eyes.
+
+![tootpaste (Mastodon)](assets/tootpaste.png)
+
+`tootpaste` requires a `pip install Mastodon.py` ([Mastodon.py](https://github.com/halcy/Mastodon.py)).
 
 ### `twilio`
 

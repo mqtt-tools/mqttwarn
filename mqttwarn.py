@@ -741,6 +741,7 @@ def builtin_transform_data(topic, payload):
     tdata['payload']    = payload
     tdata['_dtepoch']   = int(time.time())          # 1392628581
     tdata['_dtiso']     = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ") # 2014-02-17T10:38:43.910691Z
+    tdata['_ltiso']     = datetime.now().isoformat() #local time in iso format
     tdata['_dthhmm']    = dt.strftime('%H:%M')      # 10:16
     tdata['_dthhmmss']  = dt.strftime('%H:%M:%S')   # hhmmss=10:16:21
 
