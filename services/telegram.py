@@ -19,6 +19,10 @@ def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     token = item.config['token']
+    if 'use_chat_id' in item.config:
+        useChatId = int(item.config.get('use_chat_id', 0))
+    else:
+        useChatId = False
     if 'parse_mode' in item.config:
         parse_mode = item.config['parse_mode']
     tg_contact = item.addrs[0]
@@ -98,7 +102,11 @@ def plugin(srv, item):
 
     try:
         tg = TelegramAPI(token, parse_mode)
-        uid = tg.get_uid(tg_contact)
+        if useChatId:
+            srv.logging.debug("Setting chatid directly to %s" % tg_contact)
+            uid = int(tg_contact)
+        else:
+            uid = tg.get_uid(tg_contact)
         if uid == 0:
             srv.logging.warn("Cannot get chat_id for user %s" % tg_contact)
             return False
