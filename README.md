@@ -1519,9 +1519,11 @@ Requires:
 
 * Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | application title (dflt: topic name)   |
+| Topic option  |  M/O   | Description                                     |
+| ------------- | :----: | ----------------------------------------------- |
+| `title`       |   O    | application title (dflt: topic name)            |
+
+It `url` is defined in items.data, it's value is passed to the notification, so that the URL is opened when the notification is clicked.
 
 ![osxnotify](assets/osxnotify.jpg)
 
