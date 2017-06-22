@@ -19,7 +19,13 @@ def plugin(srv, item):
         # addrs is a list[] associated with a particular target.
         # it can contain an arbitrary amount of entries that are just
         # passed along to rrdtool
-        rrdtool.update(item.addrs, "N:" + text)
+        # mofified by otfdr @ github to accept abitray arguments with
+        # the payload and to not always add the 'N' in front
+        # 2017-06-05 - fix/enhancement for https://github.com/jpmens/mqttwarn/issues/248
+        if re.match( "^\d+$", text ):
+                rrdtool.update(item.addrs, "N:" + text)
+        else:
+                rrdtool.update(item.addrs + text.split())
     except Exception, e:
         srv.logging.warning("Cannot call rrdtool")
         return False
