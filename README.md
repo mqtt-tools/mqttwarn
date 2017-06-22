@@ -1523,7 +1523,7 @@ Requires:
 | ------------- | :----: | ----------------------------------------------- |
 | `title`       |   O    | application title (dflt: topic name)            |
 
-It `url` is defined in items.data, it's value is passed to the notification, so that the URL is opened when the notification is clicked.
+If `url` is defined in items.data, its value is passed to the notification, so that the URL is opened when the notification is clicked.
 
 ![osxnotify](assets/osxnotify.jpg)
 
