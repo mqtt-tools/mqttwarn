@@ -15,8 +15,14 @@ def plugin(srv, item):
     text = item.message
     application_name = item.get('title', item.topic)
 
+    # If item.data contains a URL field, use it as a target for the notification
+    url = None
+    extra_data = item.data
+    if extra_data is not None:
+        url = extra_data.get('url', None)
+
     try:
-        Notifier.notify(text,  title=application_name)
+        Notifier.notify(text,  title=application_name, open=url)
     except Exception, e:
         srv.logging.warning("Cannot invoke Notifier to osx: %s" % (str(e)))
         return False

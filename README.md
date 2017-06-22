@@ -14,6 +14,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [apns](#apns)
 * [asterisk](#asterisk)
 * [carbon](#carbon)
+* [celery](#celery)
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
@@ -23,7 +24,8 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss](#gss)
 * [gss2](#gss2)
 * [http](#http)
-* [icinga2] (#icinga2)
+* [icinga2](#icinga2)
+* [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [instapush](#instapush)
 * [ionic](#ionic)
@@ -31,6 +33,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
+* mastodon (see tootpaste)
 * [mqtt](#mqtt)
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
@@ -48,6 +51,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [pushalot](#pushalot)
 * [pushbullet](#pushbullet)
 * [pushover](#pushover)
+* [pushsafer](#pushsafer)
 * [redispub](#redispub)
 * [rrdtool](#rrdtool)
 * [serial](#serial)
@@ -60,6 +64,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [syslog](#syslog)
 * [telegram](#telegram)
 * [thingspeak](#thingspeak)
+* [tootpaste](#tootpaste)
 * [twilio](#twilio)
 * [twitter](#twitter)
 * [xbmc](#xbmc)
@@ -192,7 +197,7 @@ The `functions` option specifies the path to a Python file containing functions 
 
 ### `launch`
 
-In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions. 
+In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions.
 
 ## The `[config:xxx]` sections
 
@@ -201,7 +206,7 @@ has a mandatory option called `targets`, which is a dictionary of target names, 
 pointing to an array of "addresses". Address formats depend on the particular service.
 
 A service section may have an option called `module`, which refers to the name
-of the actual service module to use. A service called `filetruncate` - and 
+of the actual service module to use. A service called `filetruncate` - and
 referenced as such in the `launch` option -
 may have `module = file`, in which case the service works like a regular `file`
 service, with its own distinct set of service options. It is thus possible to
@@ -479,6 +484,32 @@ In other words, the following payloads are valid:
 room.living 15				metric name and value
 room.living 15 1405014635		metric name, value, and timestamp
 ```
+
+### `celery`
+
+The `celery` service sends messages to celery which celery workers can consume.
+
+```ini
+[config:celery]
+broker_url = 'redis://localhost:6379/5'
+app_name = 'celery'
+celery_serializer = 'json'
+targets = {
+   'hello': [
+      {
+        'task': 'myapp.hello',
+        'message_format': 'json'
+        }
+      ],
+  }
+
+[hello/#]
+targets = celery:hello
+```
+Broker url can be any broker supported by celery. Celery serializer is usually json or pickle. Json is recommended for security.
+Targets are selected by task name. Message_format can be either "json" or "text". If it is json, the message will be sent as a json payload rather than a string.
+In this configuration, all messages that match hello/ will be sent to the celery task "myapp.hello". The first argument of the celery task will be the message from mqtt.
+
 
 ### `dbus`
 
@@ -906,6 +937,17 @@ targets  = {
 
 NOTE: `cacert` is optional but since `icinga2` is typically installed with a self-signed certificate specifying the `icinga2` ca-cert will stop a load of TLS certificate warnings when connecting to the REST API.
 
+### 'ifttt'
+
+this service is for [ifttt maker applet](https://ifttt.com/maker_webhooks) to send the message as a payload in value1. For example, to get notifications on your mobile devices.
+
+```ini
+[config:ifttt]
+targets = {
+    'warnme'   : [ '<api key>', '<event webhook>' ]
+  }
+```
+
 ### `ionic`
 
 This service is for [Ionic](http://ionicframework.com/). Ionic framework allows easy development of HTML5 hybrid mobile apps. This service can be used for pushing notifications to ionic hybrid apps (android, ios, ...). Please read following for more details on ionic:
@@ -956,13 +998,13 @@ This service provides a way for forwarding data to the time series database [Inf
 
 You will need to install an instance of InfluxDB (v9+) and create a new user. Then create a new database and give your user write permissions to that database.
 
-You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database. 
+You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database.
 
 Each time a value is received for an InfluxDB target, the value is sent to the configured *measurement* with a *topic* tag matching the MQTT topic the data arrived on.
 
 The topic name is normalised by replacing `/` with `_`. So a value arriving on `sensor/kitchen/temperature` would be published to InfluxDB with a tag of `topic=sensor_kitchen_temperature`.
 
-This allows you to setup measurements with multiple time series streams, or have a separate measurement for each stream. 
+This allows you to setup measurements with multiple time series streams, or have a separate measurement for each stream.
 
 Following is an ini example, showing the various connection properties for the InfluxDB database, and some example target configs;
 
@@ -1475,11 +1517,13 @@ Requires:
 
 ### `osxnotify`
 
-* Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
+* Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.6.1.zip` into a directory `vendor/`.
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | application title (dflt: topic name)   |
+| Topic option  |  M/O   | Description                                     |
+| ------------- | :----: | ----------------------------------------------- |
+| `title`       |   O    | application title (dflt: topic name)            |
+
+If `url` is defined in `items.data`, its value is passed to the notification, so that the URL is opened in the system's default Web browser when the notification is clicked. (The notification itself has no visual indication that such is possible.)
 
 ![osxnotify](assets/osxnotify.jpg)
 
@@ -1532,7 +1576,7 @@ targets = {
     }
 ```
 
-![osxnotify](assets/pastebin.png)
+![pastebin](assets/pastebin.png)
 
 Requires:
 * An account at [Pastebin](http://pastebin.com)
@@ -1747,6 +1791,36 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 Requires:
 * a [pushover.net](https://pushover.net/) account
 
+### `pushsafer`
+
+This service is for [Pushsafer](https://www.pushsafer.com), an app for iOS, Android and Windows 10.
+In order to receive pushsafer notifications you need what is called a _private or alias key_:
+
+```ini
+[config:pushsafer]
+targets = {
+    'nagios'     : ['privatekey', 'Device ID', 'Icon', 'Sound', 'Vibration', 'URL', 'Url Title', 'Time2Live'],
+    'tracking'   : ['aliaskey1'],
+    'extraphone' : ['aliaskey2', '', '', '', '', '', '', '60'],
+	'warnme'     : ['aliaskey3', '', '', '', '', '', '', '60']
+    }
+```
+
+This defines targets (`nagios`, `alerts`, etc.) which are directed to the
+configured _private or alias key_ combinations. This in turn enables you to
+notify, say, one or more of your devices as well as one for your spouse.
+For a list of available icons, sounds and other params see the
+[Pushsafer API](https://www.pushsafer.com/en/pushapi).
+
+| Topic option  |  M/O   | Description                            |
+| ------------- | :----: | -------------------------------------- |
+| `title`       |   O    | application title (dflt: pushsafer dflt) |
+
+![pushsafer on iOS](assets/pushsafer.jpg)
+
+Requires:
+* a [pushsafer.com](https://www.pushsafer.com/) account
+
 ### `redispub`
 
 The `redispub` plugin publishes to a Redis channel.
@@ -1793,7 +1867,7 @@ targets = {
 ```
 First parameter in target config can be a portname or an [url handler](https://pythonhosted.org/pyserial/url_handlers.html).
 Second parameter is the baudrate for the port.
-If `append_newline` is True, a newline character is unconditionally appended to the string written to the serialport. 
+If `append_newline` is True, a newline character is unconditionally appended to the string written to the serialport.
 
 Requires the pyserial bindings available with `pip install pyserial`.
 
@@ -1818,9 +1892,9 @@ The service level `token` is optional, but if missing each target must have a `t
 Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
 addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
 
-Optionally, a target can define the message to get posted as a user, per 
+Optionally, a target can define the message to get posted as a user, per
 [Slack Authorship documentation](https://api.slack.com/methods/chat.postMessage#authorship).
-Note that posting as a user in a channel is only possible, if the user has 
+Note that posting as a user in a channel is only possible, if the user has
 joined the channel.
 
 ![Slack](assets/slack.png)
@@ -1995,7 +2069,11 @@ This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. Fi
 
 Optionally you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
 
-Configure the `telegram` service:
+If you have the `chatId` you can specify the telegram service to use the chatId directly. Warning, this will need to be the case for all the targets in this notifier!
+
+Quickest way to get the `chatid` is by visiting this url (insert your api key): https://api.telegram.org/botYOUR_API_TOKEN/getUpdates and getting the id from the "from" section.
+
+Configure the `telegram` service WITHOUT chatId:
 
 ```ini
 [config:telegram]
@@ -2009,9 +2087,22 @@ targets = {
    'j03' : [ '#chat_id' ]
 }
 ```
+Configure the `telegram` service WITH chatid:
+```ini
+[config:telegram]
+timeout = 60
+parse_mode = 'Markdown'
+token = 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+use_chat_id = True
+targets = {
+    #       chatId (in quotes)
+    'j01' : ['123456789']
+}
+```
+
 Possible issue:
 
-* If First name or @username was specified as target, plugin will call [getUpdates](https://core.telegram.org/bots/api#getupdates) to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_. If chat_id is known, it can be set as target using # sign.
+* If First name or @username was specified as target, plugin will call [getUpdates](https://core.telegram.org/bots/api#getupdates) to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_. If chat_id is known, it can be set as target using `#` sign.
 
 ![Telegram](assets/telegram.png)
 
@@ -2033,6 +2124,39 @@ Using `builddata=true` you can build an update with multiple fields in one updat
 Supply an ordered list of message data field names to extract several values from a single message (e.g. `{ "temp": 10, "hum": 77 }`). Values will be assigned to field1, field2, etc in order.
 
 Note: Use the field as per the example (lower case, `'field1'` with the last digit being the field number).
+
+### `tootpaste`
+
+The `tootpaste` service is for posting to the [Mastodon social network](https://mastodon.social/about).
+
+```ini
+[config:tootpaste]
+targets = {
+             # clientcreds, usercreds, base_url
+    'uno'  : [ 'a.client',  'a.user', 'https://masto.io' ],
+  }
+```
+
+The specified `clientcreds` and `usercreds` are paths to files created with the service, as follows:
+
+```
+python services/tootpaste.py 'https://masto.io' 'jane@example.org' 'xafa5280890' warnme su03-a.client su03-a.user
+```
+
+The arguments, in order:
+
+1. base URL (e.g. `https://mastodon.social`)
+2. your e-mail address
+3. the password corresponding to the e-mail address
+4. the client name (name of the posting program)
+5. the clientcreds file
+6. the usercreds file.
+
+The two last files are created and should be protected from prying eyes.
+
+![tootpaste (Mastodon)](assets/tootpaste.png)
+
+`tootpaste` requires a `pip install Mastodon.py` ([Mastodon.py](https://github.com/halcy/Mastodon.py)).
 
 ### `twilio`
 
