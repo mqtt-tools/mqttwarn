@@ -2081,9 +2081,10 @@ timeout = 60
 parse_mode = 'Markdown'
 token = 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 targets = {
-   #        First Name or @username
+   #        First Name or @username or #chat_id
    'j01' : [ 'First Name' ],
-   'j02' : [ '@username' ]
+   'j02' : [ '@username' ],
+   'j03' : [ '#chat_id' ]
 }
 ```
 Configure the `telegram` service WITH chatid:
@@ -2101,7 +2102,7 @@ targets = {
 
 Possible issue:
 
-* Current implementation, WITHOUT specifying `chatid` yourself, uses [getUpdates](https://core.telegram.org/bots/api#getupdates) call to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_.
+* If First name or @username was specified as target, plugin will call [getUpdates](https://core.telegram.org/bots/api#getupdates) to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_. If chat_id is known, it can be set as target using `#` sign.
 
 ![Telegram](assets/telegram.png)
 
