@@ -1517,13 +1517,13 @@ Requires:
 
 ### `osxnotify`
 
-* Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.4.2.zip` into a directory `vendor/`.
+* Requires Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán. Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.6.1.zip` into a directory `vendor/`.
 
 | Topic option  |  M/O   | Description                                     |
 | ------------- | :----: | ----------------------------------------------- |
 | `title`       |   O    | application title (dflt: topic name)            |
 
-If `url` is defined in items.data, its value is passed to the notification, so that the URL is opened when the notification is clicked.
+If `url` is defined in `items.data`, its value is passed to the notification, so that the URL is opened in the system's default Web browser when the notification is clicked. (The notification itself has no visual indication that such is possible.)
 
 ![osxnotify](assets/osxnotify.jpg)
 
@@ -1576,7 +1576,7 @@ targets = {
     }
 ```
 
-![osxnotify](assets/pastebin.png)
+![pastebin](assets/pastebin.png)
 
 Requires:
 * An account at [Pastebin](http://pastebin.com)
