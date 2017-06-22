@@ -1847,7 +1847,20 @@ targets = {
     }
 ```
 
-[rrdpython's API](http://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html) expects strings and/or list of strings as parameters to the functions. Thus a list for a target simply contains the command line arguments for `rrdtool update`. The plugin will embed the message as final argument `N:<message>`.
+[rrdpython's API](http://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html) expects strings and/or list of strings as parameters to the functions. Thus a list for a target simply contains the command line arguments for `rrdtool update`. The plugin will embed the message as final argument `N:<message>`, if the message is an integer number. Otherwise, it will break up the message into single words and append this list to the list supplied by the target. This leaves it to your descretion _where_ to put arguments and even - with the right data mapping and extraction in place - allows for something like
+
+```ini
+[config:rrdtool]
+targets = {
+        'battsensor': [ ],
+        }
+...
+[datalog-battery-log]
+topic = datalog/sensors/batt/+
+targets = log:info,rrdtool:battsensor
+datamap = ...
+format = /srv/rrd/sensors/{sensor_id}.rrd -t batt {ts}:{batt}
+```
 
 Requires the rrdtool bindings available with `pip install rrdtool`.
 
