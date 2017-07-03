@@ -542,7 +542,7 @@ class Job(object):
         return cmp(self.prio, other.prio)
 
 # MQTT broker callbacks
-def on_connect(mosq, userdata, result_code):
+def on_connect(mosq, userdata, flags, result_code):
     """
     Handle connections (or failures) to the broker.
     This is called after the client has received a CONNACK message
