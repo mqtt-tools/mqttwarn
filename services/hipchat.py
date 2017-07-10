@@ -41,7 +41,7 @@ def plugin(srv, item):
 	request = urllib2.Request(url, headers=headers, data=datastr)
         resp = urllib2.urlopen(request, timeout=timeout)
         data = resp.read()
-        print "POST returns ", data
+
     except Exception, e:
             srv.logging.warn("Cannot POST %s: %s" % (url, str(e)))
             return False
