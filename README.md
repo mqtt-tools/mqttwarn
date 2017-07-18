@@ -1612,7 +1612,7 @@ Requires:
 
 The `pipe` target launches the specified program and its arguments and pipes the
 (possibly formatted) message to the program's _stdin_. If the message doesn't have
-a training newline (`\n`), _mqttwarn_ appends one.
+a trailing newline (`\n`), _mqttwarn_ appends one.
 
 ```ini
 [config:pipe]
