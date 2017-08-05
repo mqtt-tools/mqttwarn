@@ -742,6 +742,14 @@ Requires
 
 The `boxcar` service will use the boxcar notification service to send messages.  It was one of the first IOS notification services..
 
+The paylod (message) of the mqtt topic, can use the "|" seperator to contain a notification title, a long message and a url.  
+Urls can go in the long message with an <a href> tag.  Most other html tags will work also.
+To get the message to open a url, use the 3rd section for a url.
+
+Eg:
+ 'testing a message|this one contains a title and long message <a href="http://www.google.co.nz">Link</a>|http://www.google.co.nz'
+
+ Will have a title of "testing a message", and a long text of "this one contains a title and long message Link" (which link being a hyper link.  It will also have a redirection button to the google home page.
 
 
 ```ini
@@ -753,7 +761,7 @@ targets  = {
           }
 ```
 
-* 'source' is the name of where the message should come from, ie OpenHAB as a source, GPSGate as a source.
+* 'source' is the name of where the message should come from, ie OpenHAB as a source, GPSGate as a source.  These can be filtered in boxcar
 * 'recipient key' is a users key for receiving a mesage.  See http://help.boxcar.io/support/solutions/articles/6000015725-how-to-get-my-boxcar-access-token-
 * 'icon url' is an image url, must be publically available.
 * 'sound' is the name of a sound file.  

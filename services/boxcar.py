@@ -25,9 +25,24 @@ def plugin(srv, item):
     srv.logging.debug(boxcar_keys)
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s loaded api: %s", __file__, item.service, item.target,boxcar_keys[0])
     
-    text = item.message[0:138]
+    message = item.message.split("|")
+    title = message[0]
+    longmessage = ""
+
+    if len(message) > 1:
+        longmessage = message[1]
+    else:
+         srv.logging.debug("No long message")
+
+    openurl = ""
+    if len(message) > 2:
+        openurl = message[2]
+    else:
+        srv.logging.debug("No url")
+    
+
     try:
-        srv.logging.debug("Sending notification to %s..." % (item.target))
+        srv.logging.debug("Sending notification to %s... with title:%s and long message: %s " % (item.target, title,longmessage))
         #boxcar_api.broadcast(from_screen_name=item.target,
         #    message=text,
         #    source_url='https://github.com/markcaudill/boxcar',
@@ -41,12 +56,13 @@ def plugin(srv, item):
         params = urlencode(
             {
   	        'user_credentials': boxcar_keys[0],
-            'notification[title]': item.target,
+            'notification[title]': title,
             'notification[source_name]': item.target,
             'notification[icon_url]' : boxcar_keys[1],
 
-            'notification[long_message]': text,
-            'notification[sound]': boxcar_keys[2]
+            'notification[long_message]': longmessage,
+            'notification[sound]': boxcar_keys[2],
+            'notification[open_url]' : openurl
             }
         )
   
