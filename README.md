@@ -738,6 +738,65 @@ Requires
 * [Asterisk](http://www.asterisk.org/) with configured AMI interface (manager.conf)
 * pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2)
 
+## `boxcar`
+
+The `boxcar` service will use the boxcar notification service to send messages.  It was one of the first IOS notification services..
+
+
+
+```ini
+[config:boxcar]
+targets  = {
+    'source'    : ['recipient key',
+				   'icon url',
+				   'sound']
+          }
+```
+
+'source' is the name of where the message should come from, ie OpenHAB as a source, GPSGate as a source.
+'recipient key' is a users key for receiving a mesage.  See http://help.boxcar.io/support/solutions/articles/6000015725-how-to-get-my-boxcar-access-token-
+'icon url' is an image url, must be publically available.
+'sound' is the name of a sound file.  
+
+Here is the list of sound you can use in the notifications you send to your account:
+
+beep-crisp
+beep-soft
+bell-modern
+bell-one-tone
+bell-simple
+bell-triple
+bird-1
+bird-2
+boing
+cash
+clanging
+detonator-charge
+digital-alarm
+done
+echo
+flourish
+harp
+light
+magic-chime
+magic-coin
+notifier-1
+notifier-2
+notifier-3
+orchestral-long
+orchestral-short
+score
+success
+up
+The special sound "no-sound" forces the notification to be silent, no matter what are defined in the general settings.
+
+
+Requires
+
+* urllib
+* ssl 
+* httplib
+
 ### `gss`
 
 The `gss` service interacts directly with a Google Docs Spreadsheet. Each message can be written to a row in a selected worksheet.
