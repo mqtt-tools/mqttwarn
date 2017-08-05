@@ -13,7 +13,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
-* [boxcar] (#boxcar)
+* [boxcar](#boxcar)
 * [carbon](#carbon)
 * [celery](#celery)
 * [dbus](#dbus)
@@ -753,43 +753,43 @@ targets  = {
           }
 ```
 
-'source' is the name of where the message should come from, ie OpenHAB as a source, GPSGate as a source.
-'recipient key' is a users key for receiving a mesage.  See http://help.boxcar.io/support/solutions/articles/6000015725-how-to-get-my-boxcar-access-token-
-'icon url' is an image url, must be publically available.
-'sound' is the name of a sound file.  
+* 'source' is the name of where the message should come from, ie OpenHAB as a source, GPSGate as a source.
+* 'recipient key' is a users key for receiving a mesage.  See http://help.boxcar.io/support/solutions/articles/6000015725-how-to-get-my-boxcar-access-token-
+* 'icon url' is an image url, must be publically available.
+* 'sound' is the name of a sound file.  
 
 Here is the list of sound you can use in the notifications you send to your account:
 
-beep-crisp
-beep-soft
-bell-modern
-bell-one-tone
-bell-simple
-bell-triple
-bird-1
-bird-2
-boing
-cash
-clanging
-detonator-charge
-digital-alarm
-done
-echo
-flourish
-harp
-light
-magic-chime
-magic-coin
-notifier-1
-notifier-2
-notifier-3
-orchestral-long
-orchestral-short
-score
-success
-up
-The special sound "no-sound" forces the notification to be silent, no matter what are defined in the general settings.
+* beep-crisp
+* beep-soft
+* bell-modern
+* bell-one-tone
+* bell-simple
+* bell-triple
+* bird-1
+* bird-2
+* boing
+* cash
+* clanging
+* detonator-charge
+* digital-alarm
+* done
+* echo
+* flourish
+* harp
+* light
+* magic-chime
+* magic-coin
+* notifier-1
+* notifier-2
+* notifier-3
+* orchestral-long
+* orchestral-short
+* score
+* success
+* up
 
+The special sound "no-sound" forces the notification to be silent, no matter what are defined in the general settings.
 
 Requires
 
