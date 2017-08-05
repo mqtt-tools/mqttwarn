@@ -13,6 +13,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
+* [boxcar] (#boxcar)
 * [carbon](#carbon)
 * [celery](#celery)
 * [dbus](#dbus)
