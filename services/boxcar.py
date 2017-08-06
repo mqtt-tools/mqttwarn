@@ -5,7 +5,6 @@ __author__    = 'David Cole <psyciknz()andc.nz>'
 __copyright__ = 'Copyright 2017 David Cole'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
-import boxcar       # pip install python-boxcar
 from httplib import HTTPSConnection, HTTPException
 import ssl
 import urllib
