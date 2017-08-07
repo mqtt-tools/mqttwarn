@@ -742,7 +742,7 @@ Requires
 
 The `boxcar` service will use the boxcar notification service to send messages.  It was one of the first IOS notification services..
 
-The paylod (message) of the mqtt topic, can use the "|" seperator to contain a notification title, a long message and a url.  
+The payload  of the MQTT message, can use the "|" seperator to contain a notification title, a long message and a url.  
 Urls can go in the long message with an <a href> tag.  Most other html tags will work also.
 To get the message to open a url, use the 3rd section for a url.
 
