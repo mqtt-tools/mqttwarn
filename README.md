@@ -13,6 +13,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
+* [boxcar](#boxcar)
 * [carbon](#carbon)
 * [celery](#celery)
 * [dbus](#dbus)
@@ -736,6 +737,73 @@ Requires
 
 * [Asterisk](http://www.asterisk.org/) with configured AMI interface (manager.conf)
 * pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2)
+
+## `boxcar`
+
+The `boxcar` service will use the boxcar notification service to send messages.  It was one of the first IOS notification services..
+
+The payload  of the MQTT message, can use the "|" seperator to contain a notification title, a long message and a url.  
+Urls can go in the long message with an <a href> tag.  Most other html tags will work also.
+To get the message to open a url, use the 3rd section for a url.
+
+Eg:
+ 'testing a message|this one contains a title and long message <a href="http://www.google.co.nz">Link</a>|http://www.google.co.nz'
+
+ Will have a title of "testing a message", and a long text of "this one contains a title and long message Link" (which link being a hyper link.  It will also have a redirection button to the google home page.
+
+
+```ini
+[config:boxcar]
+targets  = {
+    'source'    : ['recipient key',
+				   'icon url',
+				   'sound']
+          }
+```
+
+* 'source' is the name of where the message should come from, ie OpenHAB as a source, GPSGate as a source.  These can be filtered in boxcar
+* 'recipient key' is a users key for receiving a mesage.  See http://help.boxcar.io/support/solutions/articles/6000015725-how-to-get-my-boxcar-access-token-
+* 'icon url' is an image url, must be publically available.
+* 'sound' is the name of a sound file.  
+
+Here is the list of sound you can use in the notifications you send to your account:
+
+* beep-crisp
+* beep-soft
+* bell-modern
+* bell-one-tone
+* bell-simple
+* bell-triple
+* bird-1
+* bird-2
+* boing
+* cash
+* clanging
+* detonator-charge
+* digital-alarm
+* done
+* echo
+* flourish
+* harp
+* light
+* magic-chime
+* magic-coin
+* notifier-1
+* notifier-2
+* notifier-3
+* orchestral-long
+* orchestral-short
+* score
+* success
+* up
+
+The special sound "no-sound" forces the notification to be silent, no matter what are defined in the general settings.
+
+Requires
+
+* urllib
+* ssl 
+* httplib
 
 ### `gss`
 

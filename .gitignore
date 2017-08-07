@@ -15,3 +15,7 @@ pastebin.py
 *.sln
 *.suo
 *.pyproj
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+f.01
+.vs/VSWorkspaceState.json
