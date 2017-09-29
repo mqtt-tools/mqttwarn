@@ -1637,8 +1637,8 @@ user  =  'jane'
 pass  =  'secret'
 dbname  =  'test'
 targets = {
-          # tablename  #fallbackcolumn
- 'pg'   : [ 'names',   'message'            ]
+          # tablename  # fallbackcolumn  # schema
+ 'pg'   : [ 'names',   'message',	 'schema' ]
   }
 ```
 
