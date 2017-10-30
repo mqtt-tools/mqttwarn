@@ -19,6 +19,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
 * [execute](#execute)
+* [facebook messanger](#fbchat)
 * [file](#file)
 * [freeswitch](#freeswitch)
 * [gss](#gss)
