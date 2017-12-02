@@ -68,6 +68,9 @@ def plugin(srv, item):
         fallback_col : text
        }
 
+    if fallback_col == 'NOP':
+        del(col_data['fallback_col'])
+
     if item.data is not None:
         for key in item.data.keys():
             try:

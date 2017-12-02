@@ -1252,7 +1252,7 @@ user  =  'jane'
 pass  =  'secret'
 dbname  =  'test'
 targets = {
-          # tablename  #fallbackcolumn
+          # tablename  #fallbackcolumn ('NOP' to disable)
  'm2'   : [ 'names',   'full'            ]
   }
 ```
@@ -1280,8 +1280,9 @@ This will result in the two columns `id` and `name` being populated:
 ```
 
 The target contains a so-called _fallback column_ into which _mqttwarn_ adds
-the "rest of" the payload for all columns not targeted with JSON data. I'll now
-add our fallback column to the schema:
+the "rest of" the payload for all columns not targeted with JSON data unless that
+is explicitly configured as `NOP` in the service in which case extra data is discarded.
+I'll now add our fallback column to the schema:
 
 ```mysql
 ALTER TABLE names ADD full TEXT;
