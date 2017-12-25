@@ -605,7 +605,10 @@ def on_message(mosq, userdata, msg):
     Message received from the broker
     """
     topic = msg.topic
-    payload = str(msg.payload)
+    try:
+        payload = msg.payload.decode('utf-8')
+    except UnicodeEncodeError:
+        payload = msg.payload
     logging.debug("Message received on %s: %s" % (topic, payload))
 
     if msg.retain == 1:
@@ -849,7 +852,7 @@ def decode_payload(section, topic, payload):
         payload_data = json.loads(payload)
         transform_data = dict(transform_data.items() + payload_data.items())
     except Exception as ex:
-        logging.debug("Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+        logging.debug(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
 
     return transform_data
 
