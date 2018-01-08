@@ -2392,6 +2392,31 @@ item = {
 
 ## Advanced features
 
+### JSON output serialization
+
+When receiving JSON data like `{"data": {"humidity": 62.18}}`, you might
+want to extract values using the `format` mechanism before forwarding
+it to other data sinks, like
+
+```ini
+format = "{data}"
+```
+
+However, the outcome will be the string-serialized form of the Python
+representation: `{u'humidity': 62.18}`, which could not be what you
+want if your data sink is expecting JSON format again.
+
+To achieve this, you should use appropriate type coercion before
+formatting, like
+
+```ini
+format = "{data!j}"
+```
+
+This will serialize the formatted data to JSON format appropriately,
+so the outcome will be `{"humidity": 62.18}`.
+
+
 ### Transformation data
 
 _mqttwarn_ can transform an incoming message before passing it to a plugin service.
