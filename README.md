@@ -164,7 +164,7 @@ loglevel     = DEBUG
 
 ; path to file containing self-defined functions for formatmap, alldata, and datamap
 ; omit the '.py' extension
-functions = 'myfuncs'
+functions = 'myfuncs.py'
 
 ; name the service providers you will be using.
 launch   = file, log, osxnotify, mysql, smtp
@@ -195,7 +195,7 @@ tls_insecure = False
 
 ### `functions`
 
-The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). Do not specify the `.py` extension to the path name you configure here.
+The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
 
 ### `launch`
 
