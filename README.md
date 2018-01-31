@@ -36,6 +36,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [linuxnotify](#linuxnotify)
 * [log](#log)
 * mastodon (see tootpaste)
+* [mattermost](#mattermost)
 * [mqtt](#mqtt)
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
@@ -1136,6 +1137,46 @@ targets = {
     'error'  : [ 'error' ]
   }
 ```
+
+### `mattermost`
+
+The `mattermost` service sends messages to a private [Mattermost](https://about.mattermost.com/) instance using _incoming Webhooks_. 
+
+Consider the following configuration:
+
+* `hook_url` is the URL of the incoming Webhook
+* `channel` is the name of the channel
+* `username` (can be None)  specifies the user name as which mqttwarn will post if the Mattermost administrator has allowed override
+* `icon_url` is the URL to an icon (can be None, and if not must be resolvable to Mattermost)
+
+```ini
+[config:mattermost]
+targets = {
+                 # hook_url, 	channel, 	username, 	icon_url
+    'jpt'	: [ 'http://localhost:8065/hooks/s9x9x8xywjgw9x9x8xyqiujcyo',
+    			'town-square',
+			'mqttwarn-jpt',
+			'http://192.168.1.130/~jpm/ninja.png' ],
+    'vehicles'	: [ 'http://127.0.0.1:8065/hooks/a87x8we4wjgwfxmuh7j9x9x8xy',
+    			'town-square',
+			'owntracks',
+			'http://example.org/owntracks.png' ],
+  }
+
+[osx/json]
+targets = mattermost:jpt
+format = I'll have a {fruit} if it costs {price}
+
+[owntracks/+/+]
+title = Owntracks position
+targets = mattermost:vehicles
+```
+
+This will, with appropriate JSON paylods, produce the following posts in Mattermost.
+
+![mattermost](assets/mattermost.png)
+
+Note how this service attempts to format incoming JSON as a Markdown table.
 
 ### `mqtt`
 
