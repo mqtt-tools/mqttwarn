@@ -54,7 +54,7 @@ def plugin(srv, item):
             s = s + "| {0:<{kw}}  | {1:<{vw}} |\n".format(key, j[key], kw=keylen, vw=vallen)
         text = s
     except Exception as e:
-        srv.logging.warning("not JSON; proceeding with text")
+        srv.logging.debug("not JSON; proceeding with text")
         pass
 
 
