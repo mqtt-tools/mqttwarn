@@ -24,6 +24,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [freeswitch](#freeswitch)
 * [gss](#gss)
 * [gss2](#gss2)
+* [hangbot](#hangbot)
 * [hipchat](#hipchat)
 * [http](#http)
 * [icinga2](#icinga2)
@@ -779,7 +780,6 @@ Requires:
 * [gdata-python-client](https://code.google.com/p/gdata-python-client/)
 
 
-
 ### `gss2`
 
 The `gss2` service interacts directly with a Google Docs Spreadsheet. Each message can be written to a row in a selected worksheet.
@@ -849,6 +849,18 @@ Requires:
 * [gspread](https://github.com/burnash/gspread)
   (`pip install gspread`)
 
+### `hangbot`
+
+The hangbot service allows messages to be forwarded to a Google Hangouts account using hangoutsbot api plugin.
+https://github.com/hangoutsbot/hangoutsbot/wiki/API-Plugin
+
+```ini
+[config:hangbot]
+targets = {
+		 #URL		 #PORT	 #ApiKey	#Conversation ID
+   'conv1'   : ['ServerAddress', 'Port', 'xxxxxxxxxxx', 'xxxxxxxxxxxxxxxxxxxx']
+  }
+```
 
 ### `hipchat`
 
