@@ -25,6 +25,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [gss](#gss)
 * [gss2](#gss2)
 * [hipchat](#hipchat)
+* [hangbot](#hangbot)
 * [http](#http)
 * [icinga2](#icinga2)
 * [ifttt](#ifttt)
@@ -873,6 +874,19 @@ The available colors for the background of the message are: "yellow", "green", "
 The notify parameter (True or False) trigger a user notification (change the tab color, play a sound, notify mobile phones, etc). 
 
 ![Hipchat](assets/hipchat.png)
+
+### `hangbot`
+
+The hangbot service allows messages to be forwarded to a Google Hangouts account using hangoutsbot api plugin.
+https://github.com/hangoutsbot/hangoutsbot/wiki/API-Plugin
+
+```ini
+[config:hangbot]
+targets = {
+		 #URL		 #PORT	 #ApiKey	#Conversation ID
+   'conv1'   : ['ServerAddress', 'Port', 'xxxxxxxxxxx', 'xxxxxxxxxxxxxxxxxxxx']
+  }
+```
 
 ### `http`
 
