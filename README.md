@@ -13,6 +13,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
+* [autoremote](#autoremote)
 * [carbon](#carbon)
 * [celery](#celery)
 * [dbus](#dbus)
@@ -446,6 +447,26 @@ would thus emit the APNS notification to the specified device.
 
 
 Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
+
+### `autoremote`
+
+The `autoremote` service forwards messages from desired topics to autoremote clients.
+```ini
+
+[config:autoremote]
+targets = {
+	'conv2' : [ 'ApiKey', 'Password', 'Target', 'Group', 'TTL' ]
+  }
+
+[autoremote/user]
+targets = autoremote:conv2
+```
+
+Any messages published to autoremote/user would be sent the autoremote client
+designated to the ApiKey provided. The "sender" variable of autoremote is equal to
+the topic address. 
+
+https://joaoapps.com/autoremote/
 
 ### `carbon`
 
