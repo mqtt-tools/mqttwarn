@@ -456,15 +456,14 @@ The `autoremote` service forwards messages from desired topics to autoremote cli
 [config:autoremote]
 targets = {
 	'conv2' : [ 'ApiKey', 'Password', 'Target', 'Group', 'TTL' ]
-
   }
 
-[autoremote/client]
+[autoremote/user]
 targets = autoremote:conv2
 ```
 
-Any messages published to autoremote/client would be sent the autoremote client
-designated to the ApiKey provided. The Sender field of autoremote is provided by 
+Any messages published to autoremote/user would be sent the autoremote client
+designated to the ApiKey provided. The "sender" variable of autoremote is equal to
 the topic address. 
 
 https://joaoapps.com/autoremote/
