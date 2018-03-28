@@ -2672,7 +2672,7 @@ for a more sensible example.
 
 A notification can be filtered (or suppressed) using a custom function.
 
-An optional `filter` in our configuration file, defines the name of a function we provide. The function is provided in an other file, as specified by the functions directive in the configuration file.
+An optional `filter` in our configuration file, defines the name of a function we provide. The function is provided in another file, as specified by the functions directive in the configuration file.
 
 ```ini
 filter = owntracks_filter()
