@@ -166,7 +166,6 @@ logfile   = 'mqttwarn.log'
 loglevel     = DEBUG
 
 ; path to file containing self-defined functions for formatmap, alldata, and datamap
-; omit the '.py' extension
 functions = 'myfuncs.py'
 
 ; name the service providers you will be using.
@@ -2673,7 +2672,7 @@ for a more sensible example.
 
 A notification can be filtered (or suppressed) using a custom function.
 
-An optional `filter` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
+An optional `filter` in our configuration file, defines the name of a function we provide. The function is provided in another file, as specified by the functions directive in the configuration file.
 
 ```ini
 filter = owntracks_filter()
@@ -2688,7 +2687,7 @@ def owntracks_filter(topic, message):
     return message.find('event') == -1
 ```
 
-This filter will suppress any messages that do not contain the `event` token.
+This filter will suppress any messages that do not contain the `event` token.  This filter goes in the file specified by the functions directive.
 
 ### Templates ###
 
