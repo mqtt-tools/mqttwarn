@@ -23,6 +23,7 @@ def plugin(srv, item):
         return False
 
     host = item.config.get('host', 'MQTT_BUS')
+    discovery_key = item.config.get('discovery_key', 'mqtt.discovery')
 
     client = item.data.get('client', None)
     if client is None:
@@ -45,7 +46,7 @@ def plugin(srv, item):
         try:
             # Add LLD for the client host to Zabbix
             sender = ZabbixSender.ZabbixSender(trapper, server_port = int(port))
-            sender.AddData(host=host, key='mqtt.discovery', value=lld_payload)
+            sender.AddData(host=host, key=discovery_key, value=lld_payload)
             res = sender.Send()
             sender.ClearData()
 

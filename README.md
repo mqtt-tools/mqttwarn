@@ -463,7 +463,7 @@ targets = autoremote:conv2
 
 Any messages published to autoremote/user would be sent the autoremote client
 designated to the ApiKey provided. The "sender" variable of autoremote is equal to
-the topic address. 
+the topic address.
 
 https://joaoapps.com/autoremote/
 
@@ -902,7 +902,7 @@ targets = {
 
 The available colors for the background of the message are: "yellow", "green", "red", "purple", "gray" or if you feel lucky "random"
 
-The notify parameter (True or False) trigger a user notification (change the tab color, play a sound, notify mobile phones, etc). 
+The notify parameter (True or False) trigger a user notification (change the tab color, play a sound, notify mobile phones, etc).
 
 ![Hipchat](assets/hipchat.png)
 
@@ -1172,7 +1172,7 @@ targets = {
 
 ### `mattermost`
 
-The `mattermost` service sends messages to a private [Mattermost](https://about.mattermost.com/) instance using _incoming Webhooks_. 
+The `mattermost` service sends messages to a private [Mattermost](https://about.mattermost.com/) instance using _incoming Webhooks_.
 
 Consider the following configuration:
 
@@ -2390,10 +2390,20 @@ The `zabbix` service serves two purposes:
 
 ![Zabbix](assets/zabbix.png)
 
+To create an appropriate discovery host, in Zabbix:
+- Configuration->Hosts->Create host (`mqttwarn01`)
+- Configuration->Discovery->Create discovery rule
+  - Name: `MQTTwarn` (any suitable name)
+  - Type: `Zabbix trapper`
+  - Key: `mqtt.discovery` (this must match the configured `discovery_key`, which defaults to `mqtt.discovery`)
+  - Allowed hosts: `192.168.1.130,127.0.0.1` (example)
+
 The target and topic configuration look like this:
 
 ```ini
 [config:zabbix]
+host = "mqttwarn01"  # an existing host configured in Zabbix
+discovery_key = "mqtt.discovery"
 targets = {
             # Trapper address   port
     't1'  : [ '172.16.153.110', 10051 ],
@@ -2428,10 +2438,29 @@ def ZabbixData(topic, data, srv=None):
     status_key = None
 
     parts = topic.split('/')
+
+    ''' What we call 'client' is in fact a "Zabbix Host", i.e. the name of a
+        host configured with items; it it not the name/address of the machine on
+        which Zabbix server runs. So, in the UI: Configuration -> Create host '''
+
     client = parts[2]
 
     if topic.startswith('zabbix/clients/'):
         status_key = 'host.up'
+
+    ''' This "key" is actually an LLD item which we've pre-created in the Zabbix
+        UI. Configuration->Hosts->Discovery->Item prototypes->Create item prototype
+	   Name: MW client $1
+	   Type: Zabbix trapper
+	   Key: mqttwarn.id[{#MQTTHOST}]
+	   Type: text (can be any suitable type)
+
+	Publishing a value with
+	$ mosquitto_pub -t zabbix/item/mqttwarn01/mqttwarn.id[m02] -m 'stormy'
+	will mean that we'll use the client "mqttwarn01" (see previously) and
+	the item named "mqttwarn.id[m02]" which is the name of a previously
+	discovered item.
+    '''
 
     if topic.startswith('zabbix/item/'):
         key = parts[3]
