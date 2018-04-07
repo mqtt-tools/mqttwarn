@@ -3,9 +3,17 @@
 
 # The code for pushover() between cuts was written by Mike Matz and
 # gracefully swiped from https://github.com/pix0r/pushover
+#
+# 2018-04-07 - Updated by psyciknz to add the image upload function
+#              as supported by pushover
+#            - changed from urllib2 to requests for the loading of images
+#              from a json payload via the "imageurl" attribute or by decoding
+#              a base64 encoded image in the the "image" attribute.
+#            - text to accompany the image comes from the "message" attribute
+#              of the json payload.
 
-import urllib
-import urllib2
+import base64
+import requests
 import urlparse
 import json
 import os
@@ -14,19 +22,29 @@ PUSHOVER_API = "https://api.pushover.net/1/"
 
 class PushoverError(Exception): pass
 
-def pushover(**kwargs):
-    assert 'message' in kwargs
+def pushover(message, user, token, params, filepayload=None):
 
-    if not 'token' in kwargs:
-        kwargs['token'] = os.environ['PUSHOVER_TOKEN']
-    if not 'user' in kwargs:
-        kwargs['user'] = os.environ['PUSHOVER_USER']
+    if token is None:
+        params['token'] = os.environ['PUSHOVER_TOKEN']
+    else:
+        params['token'] = token
+    #params['token'] = token
+
+    #if user is None:
+    #    params=['user'] = os.environ['PUSHOVER_USER']
+    #else:
+    #    params['user'] = user
+    params["user"] = user
+
+    params["message"] = message
 
     url = urlparse.urljoin(PUSHOVER_API, "messages.json")
-    data = urllib.urlencode(kwargs)
-    req = urllib2.Request(url, data)
-    response = urllib2.urlopen(req, timeout=3)
-    output = response.read()
+
+    if filepayload is None:
+        r = requests.post(url,data=params, headers={'User-Agent': 'Python'})
+    else:
+        r = requests.post(url,data=params, files=filepayload, headers={'User-Agent': 'Python'})
+    output = r.text
     data = json.loads(output)
 
     if data['status'] != 1:
@@ -77,9 +95,37 @@ def plugin(srv, item):
     if callback is not None:
         params['callback'] = callback
 
+    srv.logging.debug("=================Starting Image processing")
+
+    filepayload=None
+    try:
+        srv.logging.debug("Loading mesasgejson")
+
+        messagejson = json.loads(message)
+        srv.logging.debug("Mesasgejson loaded, looking for imageurl")
+
+        if 'imageurl' in messagejson:
+            srv.logging.debug("Image url is in json object %s" % messagejson["imageurl"])
+            filepayload = { "attachment": ("image.jpg",requests.get(messagejson["imageurl"], stream=True).raw, "image/jpeg") }
+            message = messagejson["message"]
+        elif 'image' in messagejson:
+            srv.logging.debug("Image is in json object %s" % messagejson["image"])
+            filepayload = { "attachment": ("image.jpg",base64.decodestring(messagejson["image"]), "image/jpeg") }
+            message = messagejson["message"]
+        else:
+            srv.logging.debug("No image could be found")
+
+
+
+    except Exception, e:
+        srv.logging.warn("Error sending pushover notification to %s [%s]: %s" % (item.target, params, str(e)))
+        pass
+
+
     try:
         srv.logging.debug("Sending pushover notification to %s [%s]..." % (item.target, params))
-        pushover(message=message, user=userkey, token=appkey, **params)
+        srv.logging.debug("Sending pushover notification to %s [%s]..." % (item.target, message))
+        pushover(message, userkey, appkey,params,filepayload=filepayload)
         srv.logging.debug("Successfully sent pushover notification")
     except Exception, e:
         srv.logging.warn("Error sending pushover notification to %s [%s]: %s" % (item.target, params, str(e)))
