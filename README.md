@@ -1890,16 +1890,16 @@ to the service including 1 or 2 image types and an accompanying message.
 
 ```json
  {
-    'message': 'text message to post',
-    'image': 'base64 encoded image file'
+    "message": "text message to post",
+    "image": "base64 encoded image file"
  }
 ```
 
 or
 ```json
  {
-    'message': 'text message to post',
-    'imageurl': 'full http url of an image to download and include'
+    "message": "text message to post",
+    "imageurl": "full http url of an image to download and include"
  }
 ```
 
