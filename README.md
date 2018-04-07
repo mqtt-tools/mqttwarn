@@ -1888,16 +1888,20 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 The pushover servive will accept either a simple mqtt message and post that to pushover.  Or a json pauload can be passed
 to the service including 1 or 2 image types and an accompanying message.
 
-```{
-    "message": "text message to post",
-	"image": "base64 encoded image file"
-}```
+```json
+ {
+    'message': 'text message to post',
+    'image': 'base64 encoded image file'
+ }
+```
 
 or
-```{
-    "message": "text message to post",
-	"imageurl": "full http url of an image to download and include"
-}```
+```json
+ {
+    'message': 'text message to post',
+    'imageurl': 'full http url of an image to download and include'
+ }
+```
 
 There is an example of a format method that will introduce an image url from a particular mqtt topic.
 
