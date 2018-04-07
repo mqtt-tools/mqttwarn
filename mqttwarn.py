@@ -8,6 +8,7 @@ import signal
 import sys
 import time
 import types
+import string
 from datetime import datetime
 try:
     import json
@@ -398,6 +399,28 @@ class Struct:
             item[k] = v
         return item
 
+class Formatter(string.Formatter):
+    """
+    A custom string formatter. See also:
+    - https://docs.python.org/2/library/string.html#format-string-syntax
+    - https://docs.python.org/2/library/string.html#custom-string-formatting
+    """
+
+    def convert_field(self, value, conversion):
+        """
+        The conversion field causes a type coercion before formatting.
+        By default, two conversion flags are supported: '!s' which calls
+        str() on the value, and '!r' which calls repr().
+
+        This also adds the '!j' conversion flag, which serializes the
+        value to JSON format.
+
+        See also https://github.com/jpmens/mqttwarn/issues/146.
+        """
+        if conversion == 'j':
+            value = json.dumps(value)
+        return value
+
 def render_template(filename, data):
     text = None
     if HAVE_JINJA is True:
@@ -605,7 +628,10 @@ def on_message(mosq, userdata, msg):
     Message received from the broker
     """
     topic = msg.topic
-    payload = str(msg.payload)
+    try:
+        payload = msg.payload.decode('utf-8')
+    except UnicodeEncodeError:
+        payload = msg.payload
     logging.debug("Message received on %s: %s" % (topic, payload))
 
     if msg.retain == 1:
@@ -789,7 +815,7 @@ def xform(function, orig_value, transform_data):
                 logging.warn("Cannot invoke %s(): %s" % (function_name, str(e)))
 
         try:
-            res = function.format(**transform_data).encode('utf-8')
+            res = Formatter().format(function, **transform_data).encode('utf-8')
         except Exception, e:
             logging.warning("Cannot format message: %s" % e)
 
@@ -845,10 +871,11 @@ def decode_payload(section, topic, payload):
     # the JSON keys into item to pass to the plugin, and create the
     # outgoing (i.e. transformed) message.
     try:
+        payload = payload.rstrip("\0")
         payload_data = json.loads(payload)
         transform_data = dict(transform_data.items() + payload_data.items())
     except Exception as ex:
-        logging.debug("Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+        logging.debug(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
 
     return transform_data
 

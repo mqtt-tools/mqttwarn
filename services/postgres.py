@@ -15,7 +15,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 # pass    = 'password'
 # dbname  = 'databasename'
 # targets = { 
-#    'target1': ['table1', 'fallbackcol1']
+#    'target1': ['table1', 'fallbackcol1', 'schema']
 #  }
 
 
@@ -23,14 +23,18 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 import psycopg2 # http://initd.org/psycopg/
 import sys
 
-def add_row(cursor, tablename, rowdict):
+def add_row(cursor, tablename, rowdict, schema):
     # XXX tablename not sanitized
     # XXX test for allowed keys is case-sensitive
 
     unknown_keys = None
 
     # filter out keys that are not column names
-    cursor.execute("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS where table_name = '%s'" % tablename)
+    cursor.execute(
+        "SELECT column_name \
+        FROM INFORMATION_SCHEMA.COLUMNS \
+        where table_schema = '%s' AND table_name = '%s'" % (
+        schema, tablename))
     allowed_keys = set(row[0] for row in cursor.fetchall())
     keys = allowed_keys.intersection(rowdict)
 
@@ -40,8 +44,8 @@ def add_row(cursor, tablename, rowdict):
     columns = ", ".join(keys)
     values_template = ", ".join(["%s"] * len(keys))
 
-    sql = "insert into %s (%s) values (%s)" % (
-        tablename, columns, values_template)
+    sql = "insert into %s.%s (%s) values (%s)" % (
+        schema, tablename, columns, values_template)
     values = tuple(rowdict[key] for key in keys)
     cursor.execute(sql, values)
 
@@ -60,6 +64,10 @@ def plugin(srv, item):
     try:
         table_name = item.addrs[0].format(**item.data).encode('utf-8')
         fallback_col = item.addrs[1].format(**item.data).encode('utf-8')
+        try:
+            schema = item.addrs[2].format(**item.data).encode('utf-8')
+        except:
+            schema = 'public'
     except:        
         srv.logging.warn("postgres target incorrectly configured")
         return False
@@ -91,7 +99,7 @@ def plugin(srv, item):
                 col_data[key] = item.data[key]
 
     try:
-        unknown_keys = add_row(cursor, table_name, col_data)
+        unknown_keys = add_row(cursor, table_name, col_data, schema)
         if unknown_keys is not None:
             srv.logging.debug("Skipping unused keys %s" % ",".join(unknown_keys))
         conn.commit()

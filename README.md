@@ -13,16 +13,19 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
+* [autoremote](#autoremote)
 * [carbon](#carbon)
 * [celery](#celery)
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
 * [execute](#execute)
+* [facebook messenger](#fbchat)
 * [file](#file)
 * [freeswitch](#freeswitch)
 * [gss](#gss)
 * [gss2](#gss2)
+* [hangbot](#hangbot)
 * [hipchat](#hipchat)
 * [http](#http)
 * [icinga2](#icinga2)
@@ -35,6 +38,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [linuxnotify](#linuxnotify)
 * [log](#log)
 * mastodon (see tootpaste)
+* [mattermost](#mattermost)
 * [mqtt](#mqtt)
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
@@ -162,8 +166,7 @@ logfile   = 'mqttwarn.log'
 loglevel     = DEBUG
 
 ; path to file containing self-defined functions for formatmap, alldata, and datamap
-; omit the '.py' extension
-functions = 'myfuncs'
+functions = 'myfuncs.py'
 
 ; name the service providers you will be using.
 launch   = file, log, osxnotify, mysql, smtp
@@ -194,7 +197,7 @@ tls_insecure = False
 
 ### `functions`
 
-The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). Do not specify the `.py` extension to the path name you configure here.
+The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
 
 ### `launch`
 
@@ -443,6 +446,26 @@ would thus emit the APNS notification to the specified device.
 
 
 Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
+
+### `autoremote`
+
+The `autoremote` service forwards messages from desired topics to autoremote clients.
+```ini
+
+[config:autoremote]
+targets = {
+	'conv2' : [ 'ApiKey', 'Password', 'Target', 'Group', 'TTL' ]
+  }
+
+[autoremote/user]
+targets = autoremote:conv2
+```
+
+Any messages published to autoremote/user would be sent the autoremote client
+designated to the ApiKey provided. The "sender" variable of autoremote is equal to
+the topic address.
+
+https://joaoapps.com/autoremote/
 
 ### `carbon`
 
@@ -777,7 +800,6 @@ Requires:
 * [gdata-python-client](https://code.google.com/p/gdata-python-client/)
 
 
-
 ### `gss2`
 
 The `gss2` service interacts directly with a Google Docs Spreadsheet. Each message can be written to a row in a selected worksheet.
@@ -847,6 +869,18 @@ Requires:
 * [gspread](https://github.com/burnash/gspread)
   (`pip install gspread`)
 
+### `hangbot`
+
+The hangbot service allows messages to be forwarded to a Google Hangouts account using hangoutsbot api plugin.
+https://github.com/hangoutsbot/hangoutsbot/wiki/API-Plugin
+
+```ini
+[config:hangbot]
+targets = {
+		 #URL		 #PORT	 #ApiKey	#Conversation ID
+   'conv1'   : ['ServerAddress', 'Port', 'xxxxxxxxxxx', 'xxxxxxxxxxxxxxxxxxxx']
+  }
+```
 
 ### `hipchat`
 
@@ -868,7 +902,7 @@ targets = {
 
 The available colors for the background of the message are: "yellow", "green", "red", "purple", "gray" or if you feel lucky "random"
 
-The notify parameter (True or False) trigger a user notification (change the tab color, play a sound, notify mobile phones, etc). 
+The notify parameter (True or False) trigger a user notification (change the tab color, play a sound, notify mobile phones, etc).
 
 ![Hipchat](assets/hipchat.png)
 
@@ -1136,6 +1170,46 @@ targets = {
   }
 ```
 
+### `mattermost`
+
+The `mattermost` service sends messages to a private [Mattermost](https://about.mattermost.com/) instance using _incoming Webhooks_.
+
+Consider the following configuration:
+
+* `hook_url` is the URL of the incoming Webhook
+* `channel` is the name of the channel
+* `username` (can be None)  specifies the user name as which mqttwarn will post if the Mattermost administrator has allowed override
+* `icon_url` is the URL to an icon (can be None, and if not must be resolvable to Mattermost)
+
+```ini
+[config:mattermost]
+targets = {
+                 # hook_url, 	channel, 	username, 	icon_url
+    'jpt'	: [ 'http://localhost:8065/hooks/s9x9x8xywjgw9x9x8xyqiujcyo',
+    			'town-square',
+			'mqttwarn-jpt',
+			'http://192.168.1.130/~jpm/ninja.png' ],
+    'vehicles'	: [ 'http://127.0.0.1:8065/hooks/a87x8we4wjgwfxmuh7j9x9x8xy',
+    			'town-square',
+			'owntracks',
+			'http://example.org/owntracks.png' ],
+  }
+
+[osx/json]
+targets = mattermost:jpt
+format = I'll have a {fruit} if it costs {price}
+
+[owntracks/+/+]
+title = Owntracks position
+targets = mattermost:vehicles
+```
+
+This will, with appropriate JSON paylods, produce the following posts in Mattermost.
+
+![mattermost](assets/mattermost.png)
+
+Note how this service attempts to format incoming JSON as a Markdown table.
+
 ### `mqtt`
 
 The `mqtt` service fires off a publish on a topic, creating a new connection
@@ -1251,7 +1325,7 @@ user  =  'jane'
 pass  =  'secret'
 dbname  =  'test'
 targets = {
-          # tablename  #fallbackcolumn
+          # tablename  #fallbackcolumn ('NOP' to disable)
  'm2'   : [ 'names',   'full'            ]
   }
 ```
@@ -1279,8 +1353,9 @@ This will result in the two columns `id` and `name` being populated:
 ```
 
 The target contains a so-called _fallback column_ into which _mqttwarn_ adds
-the "rest of" the payload for all columns not targeted with JSON data. I'll now
-add our fallback column to the schema:
+the "rest of" the payload for all columns not targeted with JSON data unless that
+is explicitly configured as `NOP` in the service in which case extra data is discarded.
+I'll now add our fallback column to the schema:
 
 ```mysql
 ALTER TABLE names ADD full TEXT;
@@ -1637,8 +1712,8 @@ user  =  'jane'
 pass  =  'secret'
 dbname  =  'test'
 targets = {
-          # tablename  #fallbackcolumn
- 'pg'   : [ 'names',   'message'            ]
+          # tablename  # fallbackcolumn  # schema
+ 'pg'   : [ 'names',   'message',	 'schema' ]
   }
 ```
 
@@ -2331,10 +2406,20 @@ The `zabbix` service serves two purposes:
 
 ![Zabbix](assets/zabbix.png)
 
+To create an appropriate discovery host, in Zabbix:
+- Configuration->Hosts->Create host (`mqttwarn01`)
+- Configuration->Discovery->Create discovery rule
+  - Name: `MQTTwarn` (any suitable name)
+  - Type: `Zabbix trapper`
+  - Key: `mqtt.discovery` (this must match the configured `discovery_key`, which defaults to `mqtt.discovery`)
+  - Allowed hosts: `192.168.1.130,127.0.0.1` (example)
+
 The target and topic configuration look like this:
 
 ```ini
 [config:zabbix]
+host = "mqttwarn01"  # an existing host configured in Zabbix
+discovery_key = "mqtt.discovery"
 targets = {
             # Trapper address   port
     't1'  : [ '172.16.153.110', 10051 ],
@@ -2369,10 +2454,29 @@ def ZabbixData(topic, data, srv=None):
     status_key = None
 
     parts = topic.split('/')
+
+    ''' What we call 'client' is in fact a "Zabbix Host", i.e. the name of a
+        host configured with items; it it not the name/address of the machine on
+        which Zabbix server runs. So, in the UI: Configuration -> Create host '''
+
     client = parts[2]
 
     if topic.startswith('zabbix/clients/'):
         status_key = 'host.up'
+
+    ''' This "key" is actually an LLD item which we've pre-created in the Zabbix
+        UI. Configuration->Hosts->Discovery->Item prototypes->Create item prototype
+	   Name: MW client $1
+	   Type: Zabbix trapper
+	   Key: mqttwarn.id[{#MQTTHOST}]
+	   Type: text (can be any suitable type)
+
+	Publishing a value with
+	$ mosquitto_pub -t zabbix/item/mqttwarn01/mqttwarn.id[m02] -m 'stormy'
+	will mean that we'll use the client "mqttwarn01" (see previously) and
+	the item named "mqttwarn.id[m02]" which is the name of a previously
+	discovered item.
+    '''
 
     if topic.startswith('zabbix/item/'):
         key = parts[3]
@@ -2405,6 +2509,31 @@ item = {
 ```
 
 ## Advanced features
+
+### JSON output serialization
+
+When receiving JSON data like `{"data": {"humidity": 62.18}}`, you might
+want to extract values using the `format` mechanism before forwarding
+it to other data sinks, like
+
+```ini
+format = "{data}"
+```
+
+However, the outcome will be the string-serialized form of the Python
+representation: `{u'humidity': 62.18}`, which could not be what you
+want if your data sink is expecting JSON format again.
+
+To achieve this, you should use appropriate type coercion before
+formatting, like
+
+```ini
+format = "{data!j}"
+```
+
+This will serialize the formatted data to JSON format appropriately,
+so the outcome will be `{"humidity": 62.18}`.
+
 
 ### Transformation data
 
@@ -2588,7 +2717,7 @@ for a more sensible example.
 
 A notification can be filtered (or suppressed) using a custom function.
 
-An optional `filter` in our configuration file, defines the name of a function we provide, also in the configuration file, which accomplishes that.
+An optional `filter` in our configuration file, defines the name of a function we provide. The function is provided in another file, as specified by the functions directive in the configuration file.
 
 ```ini
 filter = owntracks_filter()
@@ -2603,7 +2732,7 @@ def owntracks_filter(topic, message):
     return message.find('event') == -1
 ```
 
-This filter will suppress any messages that do not contain the `event` token.
+This filter will suppress any messages that do not contain the `event` token.  This filter goes in the file specified by the functions directive.
 
 
 

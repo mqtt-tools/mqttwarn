@@ -49,6 +49,8 @@ def plugin(srv, item):
                 value = parts[1]
                 tics = int(parts[2])
 
+    if metric_name.startswith('.'):     # omit dot there caused by useless leading slash in topic
+        metric_name = metric_name[1:]
     carbon_msg = "%s %s %d" % (metric_name, value, tics)
     srv.logging.debug("Sending to carbon: %s" % (carbon_msg))
     carbon_msg = carbon_msg + "\n"
