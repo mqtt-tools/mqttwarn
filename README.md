@@ -1885,9 +1885,10 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
 
-The pushover servive will accept either a simple mqtt message and post that to pushover.  Or a json pauload can be passed
-to the service including 1 or 2 image types and an accompanying message.
+The pushover service will accept either a simple mqtt message and post that to pushover, or a json payload can be passed
+to the service including 1 of 2 image types and an accompanying message.
 
+The following payload is for a base 64 encoded image.
 ```json
  {
     "message": "text message to post",
@@ -1895,15 +1896,13 @@ to the service including 1 or 2 image types and an accompanying message.
  }
 ```
 
-or
+or the following payload will download an image from an http service.  This must be accessible to the mqttwarn service.
 ```json
  {
     "message": "text message to post",
     "imageurl": "full http url of an image to download and include"
  }
 ```
-
-There is an example of a format method that will introduce an image url from a particular mqtt topic.
 
 ![pushover on iOS](assets/pushover.png)
 

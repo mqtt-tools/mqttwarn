@@ -28,14 +28,12 @@ def pushover(message, user, token, params, filepayload=None):
         params['token'] = os.environ['PUSHOVER_TOKEN']
     else:
         params['token'] = token
-    #params['token'] = token
 
-    #if user is None:
-    #    params=['user'] = os.environ['PUSHOVER_USER']
-    #else:
-    #    params['user'] = user
-    params["user"] = user
-
+    if user is None:
+        params=['user'] = os.environ['PUSHOVER_USER']
+    else:
+        params['user'] = user
+    
     params["message"] = message
 
     url = urlparse.urljoin(PUSHOVER_API, "messages.json")
@@ -43,7 +41,7 @@ def pushover(message, user, token, params, filepayload=None):
     if filepayload is None:
         r = requests.post(url,data=params, headers={'User-Agent': 'Python'})
     else:
-        r = requests.post(url,data=params, files=filepayload, headers={'User-Agent': 'Python'})
+        r = requests.post(url,data=params, files=filepayload, headers={'User-Agent': 'mqttwarn'})
     output = r.text
     data = json.loads(output)
 
@@ -95,36 +93,32 @@ def plugin(srv, item):
     if callback is not None:
         params['callback'] = callback
 
-    srv.logging.debug("=================Starting Image processing")
-
     filepayload=None
     try:
         srv.logging.debug("Loading mesasgejson")
 
         messagejson = json.loads(message)
-        srv.logging.debug("Mesasgejson loaded, looking for imageurl")
-
+        message = messagejson["message"]
         if 'imageurl' in messagejson:
             srv.logging.debug("Image url is in json object %s" % messagejson["imageurl"])
             filepayload = { "attachment": ("image.jpg",requests.get(messagejson["imageurl"], stream=True).raw, "image/jpeg") }
-            message = messagejson["message"]
         elif 'image' in messagejson:
             srv.logging.debug("Image is in json object %s" % messagejson["image"])
             filepayload = { "attachment": ("image.jpg",base64.decodestring(messagejson["image"]), "image/jpeg") }
-            message = messagejson["message"]
         else:
-            srv.logging.debug("No image could be found")
+            srv.logging.debug("No image could be found,")
+			
 
-
-
-    except Exception, e:
-        srv.logging.warn("Error sending pushover notification to %s [%s]: %s" % (item.target, params, str(e)))
-        pass
+    except JSONDecodeError, jsone:
+        srv.logging.error("Error decoding json message when processing images %s [%s]: %s" % (item.target, params, str(jsone)))
+        return False
+	except Exception, e:
+	    srv.logging.error("Error parsing json parameters in sending pushover images to %s [%s]: %s" % (item.target, params, str(e)))
+        return False
 
 
     try:
-        srv.logging.debug("Sending pushover notification to %s [%s]..." % (item.target, params))
-        srv.logging.debug("Sending pushover notification to %s [%s]..." % (item.target, message))
+        srv.logging.debug("Sending pushover notification to %s." % item.target)
         pushover(message, userkey, appkey,params,filepayload=filepayload)
         srv.logging.debug("Successfully sent pushover notification")
     except Exception, e:

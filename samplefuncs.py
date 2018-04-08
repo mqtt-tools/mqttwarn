@@ -70,47 +70,6 @@ def TopicTargetList(topic=None, data=None, srv=None):
             targets.append('log:warn')
 
     return targets
-
-def PushoverAddImageUrl(data=None, srv=None):
-    #formatting method to create a new payload for the pushpver service
-	#which will use zone information from the mqtt topic and utilise an image
-	#url to post an image when a particular mqtt message is found.
-	
-    text = "unknown"
-    if data is not None and type(data) == dict:
-       data = copy.copy(data)
-       if srv is not None:
-          srv.logging.debug('Data retrieved and is in dict format')
-          srv.logging.debug(data)
-       text = data['payload']  
-       topic = data['topic']
-    else:
-       if srv is not None:
-           srv.logging.debug('Data retrieved and is in message format')
-       if data is not None:
-           text = data
-
-    parts = topic.split('/')
-    zone = parts[2]
-
-    if srv is not None:
-       srv.logging.debug('Topic {0} and so zone is {1}'.format(topic,zone))
-
-    if zone == 'artbitary mqtt parm':
-	   #url from dlink camera, replace with 
-       url = "http://192.168.0.100/image.jpg"
-    
-	
-    payload = {
-         'message':  'ALERT {0} being Opened/Closed'.format(zone),
-         'imageurl': url
-    }
-
-    if srv is not None:
-        srv.logging.debug('New payload constructed:')
-        srv.logging.debug(json.dumps(payload))
-
-    return json.dumps(payload)
 	
 def publish_public_ip_address(srv=None):
     """
