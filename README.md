@@ -1885,6 +1885,35 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
 
+The pushover service will accept a payload with either a simple text message, or a json payload which contains
+a `message` and either an `imageurl` or `imagebase64` encoded image.
+
+The following payloads are valid;
+
+```
+Simple text message
+```
+
+```json
+{
+    "message": "Message only, with no image"
+}
+```
+
+```json
+ {
+    "message": "Message with base64 encoded image",
+    "image": "<base64 encoded image>"
+ }
+```
+
+```json
+ {
+    "message": "Message with image downloaded from URL",
+    "imageurl": "<image url>"
+ }
+```
+
 ![pushover on iOS](assets/pushover.png)
 
 Requires:
