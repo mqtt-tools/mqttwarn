@@ -1903,7 +1903,7 @@ Simple text message
 ```json
  {
     "message": "Message with base64 encoded image",
-    "image": "<base64 encoded image>"
+    "imagebase64": "<base64 encoded image>"
  }
 ```
 
