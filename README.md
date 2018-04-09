@@ -2737,8 +2737,6 @@ def owntracks_filter(topic, message):
 
 This filter will suppress any messages that do not contain the `event` token.  This filter goes in the file specified by the functions directive.
 
-
-
 ### Templates ###
 
 Instead of formatting output with the `format` specification as described above,

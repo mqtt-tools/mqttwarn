@@ -70,7 +70,7 @@ def TopicTargetList(topic=None, data=None, srv=None):
             targets.append('log:warn')
 
     return targets
-	
+
 def publish_public_ip_address(srv=None):
     """
     Custom function used as a periodic task for publishing your public ip address to the MQTT bus.

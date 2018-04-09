@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
+__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+
 # The code for pushover() between cuts was written by Mike Matz and
 # gracefully swiped from https://github.com/pix0r/pushover
 #
@@ -22,51 +26,36 @@ PUSHOVER_API = "https://api.pushover.net/1/"
 
 class PushoverError(Exception): pass
 
-def pushover(message, user, token, params, filepayload=None):
+def pushover(image, **kwargs):
+    assert 'message' in kwargs
 
-    if token is None:
-        params['token'] = os.environ['PUSHOVER_TOKEN']
-    else:
-        params['token'] = token
-
-    if user is None:
-        params['user'] = os.environ['PUSHOVER_USER']
-    else:
-        params['user'] = user
-
-    params["message"] = message
+    if not 'token' in kwargs:
+        kwargs['token'] = os.environ['PUSHOVER_TOKEN']
+    if not 'user' in kwargs:
+        kwargs['user'] = os.environ['PUSHOVER_USER']
 
     url = urlparse.urljoin(PUSHOVER_API, "messages.json")
+    headers = { 'User-Agent': 'mqttwarn' }
 
-    if filepayload is None:
-        r = requests.post(url,data=params, headers={'User-Agent': 'mqttwarn'})
+    if image:
+        attachment = { "attachment": ( "image.jpg", image, "image/jpeg" )}
+        r = requests.post(url, data=kwargs, files=attachment, headers=headers)
     else:
-        r = requests.post(url,data=params, files=filepayload, headers={'User-Agent': 'mqttwarn'})
-    output = r.text
-    data = json.loads(output)
+        r = requests.post(url, data=kwargs, headers=headers)
 
-    if data['status'] != 1:
+    if r.json()['status'] != 1:
         raise PushoverError(output)
-
-__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
-__copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 def plugin(srv, item):
 
-    message  = item.message
     addrs    = item.addrs
     title    = item.title
     priority = item.priority
-
 
     # optional callback URL
     callback = item.config.get('callback', None)
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
-
-
-    #srv.logging.debug("*** MODULE=%s: item details=%s", __file__, item)
 
     # addrs is an array with two or three elements:
     # 0 is the user key
@@ -81,7 +70,7 @@ def plugin(srv, item):
         return False
 
     params = {
-            'retry' : 60,
+            'retry'  : 60,
             'expire' : 3600,
         }
 
@@ -97,33 +86,30 @@ def plugin(srv, item):
     if callback is not None:
         params['callback'] = callback
 
-    filepayload=None
-    srv.logging.debug("Testing for image parameters for pushover image support")
-    data = item.data
+    # check if the message has been decoded from a JSON payload
+    if 'message' in item.data:
+        params['message'] = item.data['message']
+    else:
+        params['message'] = item.message
+
+    # check if there is an image contained in a JSON payload
+    # (support either an image URL or base64 encoded image)
+    image = None
+    if 'imageurl' in item.data:
+        imageurl = item.data['imageurl']
+        srv.logging.debug("Image url detected - %s" % imageurl)
+        image = requests.get(imageurl, stream=True).raw
+    elif 'imagebase64' in item.data:
+        imagebase64 = item.data['imagebase64']
+        srv.logging.debug("Image (base64 encoded) detected")
+        image = base64.decodestring(imagebase64)
 
     try:
-        if 'imageurl' in data:
-           srv.logging.debug("Image url is in json object %s" % data['imageurl'])
-           filepayload = { "attachment": ("image.jpg",requests.get(data['imageurl'], stream=True).raw, "image/jpeg") }
-           message = data['message']
-        elif 'image' in item.data:
-           srv.logging.debug("Image is in json base64 object")
-           message = data['message']
-           filepayload = { "attachment": ("image.jpg",base64.decodestring(data['image']), "image/jpeg") }
-        else:
-           srv.logging.debug("No image could be found, just a simple text notification.")
-
-    except Exception, e:
-        srv.logging.debug("Error found")
-        srv.logging.warn("Error parsing json parameters in sending pushover images to %s [%s]: %s" % (item.target, params, e.message))
-        return False
-
-    try:
-        srv.logging.debug("Sending pushover notification to %s." % item.target)
-        pushover(message, userkey, appkey,params,filepayload=filepayload)
+        srv.logging.debug("Sending pushover notification to %s [%s]...." % (item.target, params))
+        pushover(image=image, user=userkey, token=appkey, **params)
         srv.logging.debug("Successfully sent pushover notification")
     except Exception, e:
-        srv.logging.warn("Error sending pushover notification to %s [%s]: %s" % (item.target, params, str(e)))
+        srv.logging.warn("Error sending pushover notification: %s" % (str(e)))
         return False
 
     return True
