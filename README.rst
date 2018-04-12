@@ -31,10 +31,9 @@ Create virtualenv and install mqttwarn in development mode::
 
 Production
 ==========
-Todo::
+Synopsis::
 
-    pip install --upgrade --editable https://github.com/jpmens/mqttwarn/archive/develop.tar.gz [xmpp]
-    pip install --upgrade --find-links https://github.com/jpmens/mqttwarn/archive/develop.tar.gz mqttwarn[xmpp]
+    pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz' mqttwarn[xmpp]
 
 
 *****
@@ -44,4 +43,3 @@ Usage
 
     export MQTTWARNINI=mqttwarn.ini.sample
     mqttwarn
-
