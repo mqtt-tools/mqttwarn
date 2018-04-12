@@ -5,8 +5,14 @@ mqttwarn changelog
 
 in progress
 ===========
-- Add required modules for all services to "setup.py"
 
+
+.. _mqttwarn-0.8.1:
+
+2018-04-12 0.8.1
+================
+- Add required modules for all services to "setup.py"
+- Fix setup documentation
 
 .. _mqttwarn-0.8.0:
 

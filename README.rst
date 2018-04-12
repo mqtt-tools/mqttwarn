@@ -15,11 +15,11 @@ Setup
 *****
 Synopsis::
 
-    pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz#egg=mqttwarn' mqttwarn[xmpp]
+    pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz#egg=mqttwarn[xmpp]'
 
 You can also add support for multiple services, all at once::
 
-    pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz#egg=mqttwarn' mqttwarn[asterisk,nsca,osxnotify,tootpaste,xmpp]
+    pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz#egg=mqttwarn[asterisk,nsca,osxnotify,tootpaste,xmpp]'
 
 
 *****
