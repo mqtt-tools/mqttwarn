@@ -1797,7 +1797,12 @@ targets = {
 ![Prowl](assets/prowl.jpg)
 
 Requires:
-* [prowlpy](https://github.com/jacobb/prowlpy)
+* [prowlpy](https://github.com/jacobb/prowlpy). Setup:
+
+```
+pip install --upgrade 'https://github.com/jacobb/prowlpy/archive/master.tar.gz#egg=prowlpy'
+```
+
 
 ### `pushalot`
 This service is for [pushalot](http://www.pushalot.com), which is a notifier app for Windows Phone and Windows8.

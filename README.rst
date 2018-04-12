@@ -17,6 +17,10 @@ Synopsis::
 
     pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz' mqttwarn[xmpp]
 
+You can also add support for multiple services, all at once::
+
+    pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz' mqttwarn[asterisk,nsca,osxnotify,tootpaste,xmpp]
+
 
 *****
 Usage
@@ -65,3 +69,7 @@ Install mqttwarn in development mode::
 Install extras::
 
     pip install -e.[xmpp]
+
+You can also add multiple extras, all at once::
+
+    pip install -e.[asterisk,nsca,osxnotify,tootpaste,xmpp]

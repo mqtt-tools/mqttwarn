@@ -40,9 +40,57 @@ extras = {
     'iothub': [
         'iothub-client==1.1.2.0',
     ],
-
-    # FIXME: Fill in the gaps!
-
+    'mysql': [
+        'mysql',
+    ],
+    'nma': [
+        'PyNMA==1.0',
+    ],
+    'nsca': [
+        'pynsca==1.6',
+    ],
+    'osxnotify': [
+        'pync==1.6.1',
+    ],
+    'pastebinpub': [
+        'Pastebin==1.1.2',
+    ],
+    'postgres': [
+        'psycopg2==2.7.4',
+    ],
+    'prowl': [
+        'prowlpy>=0.52',
+    ],
+    'pushbullet': [
+        'PushbulletPythonLibrary==2.3',
+    ],
+    'redispub': [
+        'redis==2.10.6',
+    ],
+    'rrdtool': [
+        'rrdtool==0.1.12',
+    ],
+    'serial': [
+        'pyserial==3.4',
+    ],
+    'slack': [
+        'slacker==0.9.65',
+    ],
+    'ssh': [
+        'paramiko==2.4.1',
+    ],
+    'tootpaste': [
+        'Mastodon.py==1.2.2',
+    ],
+    'twilio': [
+        'twilio==6.11.0',
+    ],
+    'twitter': [
+        'python-twitter==3.4.1',
+    ],
+    'xively': [
+        'xively-python',
+    ],
     'xmpp': [
         'xmpppy==0.5.0rc1',
     ],
@@ -109,6 +157,7 @@ setup(name='mqttwarn',
       install_requires=requires,
       extras_require=extras,
       dependency_links=[
+          'https://github.com/jacobb/prowlpy/archive/master.tar.gz#egg=prowlpy'
       ],
       entry_points={
           'console_scripts': [
