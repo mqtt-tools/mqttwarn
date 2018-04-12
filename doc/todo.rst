@@ -7,6 +7,7 @@ mqttwarn todo
 - [x] Put example "mqttwarn.ini" into resources folder of module namespace, add "mqttwarn make-config" command to dump it to stdout
 - [o] How to address "samplefuncs.py" in relation to "mqttwarn.ini"?
 
+- [o] Add Makefile for releasing and documentation building
 - [o] Adapt configuration for Supervisor and systemd
 - [o] Move the /examples folder into /mqttwarn/examples?
 - [o] Where to put /templates and /vendor?
