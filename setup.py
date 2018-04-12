@@ -7,6 +7,7 @@ requires = [
     'paho-mqtt==1.2',               # 1.3.1
     'jinja2==2.8',
     'attrs==17.4.0',
+    'docopt==0.6.2',
     'requests==2.18.4',
 ]
 

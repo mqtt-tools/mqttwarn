@@ -5,6 +5,7 @@ import re
 import imp
 import json
 import string
+import pkg_resources
 
 try:
     import hashlib
@@ -161,3 +162,8 @@ def load_function(name=None, filepath=None):
         mod_inst = getattr(py_mod, name)
 
     return mod_inst
+
+
+def get_resource_content(package, filename):
+    with pkg_resources.resource_stream(package, filename) as stream:
+        return stream.read()

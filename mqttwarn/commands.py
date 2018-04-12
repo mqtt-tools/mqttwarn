@@ -5,13 +5,52 @@ import sys
 import signal
 import logging
 
+from docopt import docopt
+
+from mqttwarn import __version__
 from mqttwarn.configuration import Config
 from mqttwarn.core import bootstrap, connect, cleanup
+from mqttwarn.util import get_resource_content
 
 logger = logging.getLogger(__name__)
 
+APP_NAME = 'mqttwarn'
 
 def run():
+    """
+    Usage:
+      {program} [make-config]
+      {program} [make-samplefuncs]
+      {program} --version
+      {program} (-h | --help)
+
+    Configuration file options:
+      make-config               Will dump configuration file content to STDOUT,
+                                suitable for redirecting into a configuration file.
+
+    Miscellaneous options:
+      --version                 Show version information
+      -h --help                 Show this screen
+
+    """
+
+    # Use generic commandline options schema and amend with current program name
+    commandline_schema = run.__doc__.format(program=APP_NAME)
+
+    # Read commandline options
+    options = docopt(commandline_schema, version=APP_NAME + ' ' + __version__)
+
+
+    if options['make-config']:
+        payload = get_resource_content('mqttwarn.examples', 'basic/mqttwarn.ini')
+        print(payload)
+        sys.exit()
+
+    if options['make-samplefuncs']:
+        payload = get_resource_content('mqttwarn.examples', 'basic/samplefuncs.py')
+        print(payload)
+        sys.exit()
+
     # Script name (without extension) used as last resort fallback for config/logfile names
     scriptname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 

@@ -41,5 +41,20 @@ Usage
 *****
 ::
 
+    # Create configuration file
+    mqttwarn make-config > mqttwarn.ini
+
+    # Create file for custom functions
+    mqttwarn make-samplefuncs > samplefuncs.py
+
+    # Run mqttwarn
+    mqttwarn
+
+
+To supply a different configuration file, use::
+
+    # Define configuration file
     export MQTTWARNINI=mqttwarn.ini.sample
+
+    # Run mqttwarn
     mqttwarn
