@@ -13,6 +13,8 @@ in progress
 ================
 - Add required modules for all services to "setup.py"
 - Fix setup documentation
+- Add MANIFEST.in file
+
 
 .. _mqttwarn-0.8.0:
 
