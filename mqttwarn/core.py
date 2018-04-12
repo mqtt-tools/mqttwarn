@@ -9,6 +9,7 @@ import logging
 import threading
 import Queue
 from datetime import datetime
+from pkg_resources import resource_filename
 
 import paho.mqtt.client as paho
 
@@ -538,7 +539,7 @@ def load_services(services):
         service_plugins[service]['config'] = service_config
 
         module = cf.g('config:' + service, 'module', service)
-        modulefile = 'services/%s.py' % module
+        modulefile = resource_filename('mqttwarn.services', module + '.py')
 
         try:
             service_plugins[service]['module'] = load_module(modulefile)
