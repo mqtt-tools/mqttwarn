@@ -75,6 +75,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [xbmc](#xbmc)
 * [xmpp](#xmpp)
 * [xively](#xively)
+* [websocket](#websocket)
 * [zabbix](#zabbix)
 
 ![definition by Google](assets/mqttwarn.png)
@@ -2409,6 +2410,22 @@ mosquitto_pub -t "osx/json" -m '{"temperature":15,"waterlevel":100,"humidity":35
 Requires:
 * [Xively](http://xively.com) account with an already existing Feed
 * [xively-python](https://github.com/xively/xively-python) - pip install xively-python
+
+### `websocket`
+
+The websocket service can be used to send data to a websocket server defined by its uri. `ws://` or `wss://` schemas
+are supported.
+
+```ini
+[config:websocket]
+targets = {
+        # targetid        : [ 'wsuri']
+        'wssserver' : [ 'ws://localhost/ws' ],
+ 
+```
+
+Requires:
+* [websocket-client](https://pypi.python.org/pypi/websocket-client/) - pip install websocket-client
 
 ### `zabbix`
 
