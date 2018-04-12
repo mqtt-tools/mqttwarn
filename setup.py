@@ -88,6 +88,9 @@ extras = {
     'twitter': [
         'python-twitter==3.4.1',
     ],
+    'websocket': [
+        'websocket-client==0.47.0',
+    ],
     'xively': [
         'xively-python',
     ],
