@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Add required modules for all services to "setup.py"
 
 
 .. _mqttwarn-0.8.0:

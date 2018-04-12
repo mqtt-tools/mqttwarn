@@ -11,6 +11,7 @@ mqttwarn todo
 - [o] Adapt configuration for Supervisor and systemd
 - [o] Move the /examples folder into /mqttwarn/examples?
 - [o] Where to put /templates and /vendor?
+- [o] Check the zabbix and other modules
 
 - [o] Translate documentation into reStructuredText format, render using Sphinx and publish using readthedocs.org
 - [o] Add Python 3 compatibility
