@@ -72,6 +72,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [tootpaste](#tootpaste)
 * [twilio](#twilio)
 * [twitter](#twitter)
+* [websocket](#websocket)
 * [xbmc](#xbmc)
 * [xmpp](#xmpp)
 * [xively](#xively)
@@ -2341,6 +2342,22 @@ Requires:
 * A Twitter account
 * app keys for Twitter, from [apps.twitter.com](https://apps.twitter.com)
 * [python-twitter](https://github.com/bear/python-twitter)
+
+### `websocket`
+
+The websocket service can be used to send data to a websocket server defined by its uri. `ws://` or `wss://` schemas
+are supported.
+
+```ini
+[config:websocket]
+targets = {
+        # targetid        : [ 'wsuri']
+        'wssserver' : [ 'ws://localhost/ws' ],
+} 
+```
+
+Requires:
+* [websocket-client](https://pypi.python.org/pypi/websocket-client/) - pip install websocket-client
 
 ### `xbmc`
 
