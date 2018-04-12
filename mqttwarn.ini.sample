@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
+# (c) 2014-2018 The mqttwarn developers
+#
 # mqttwarn example configuration file "mqttwarn.ini"
+#
 
 ; ------------------------------------------
 ;             Base configuration
 ; ------------------------------------------
 
 [defaults]
+
+
+; ----
+; MQTT
+; ----
+
 hostname     = 'localhost'  ; default
 port         = 1883
 username     = None
@@ -19,18 +28,37 @@ cleansession = False
 # MQTTv311 = 4
 protocol     = 3
 
-; logging
-logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
-logfile   = 'mqttwarn.log'
+
+; -------
+; Logging
+; -------
+
+; Send log output to STDERR
+logfile   = 'stream://sys.stderr'
+
+; Send log output to file
+;logfile   = 'mqttwarn.log'
 
 ; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
 loglevel  = DEBUG
+
+;logformat = '%(asctime)-15s %(levelname)-8s [%(name)-25s] %(message)s'
+
+
+; --------
+; Services
+; --------
 
 ; path to file containing self-defined functions for formatmap and datamap
 functions = 'samplefuncs.py'
 
 ; name the service providers you will be using.
 launch    = file, log
+
+
+; -------
+; Targets
+; -------
 
 [config:file]
 append_newline = True
@@ -52,6 +80,7 @@ targets = {
 ; special config for 'failover' events
 [failover]
 targets = log:error, file:mqttwarn
+
 
 
 ; ------------------------------------------

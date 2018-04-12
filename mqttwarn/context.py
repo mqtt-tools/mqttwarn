@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 
 @attr.s
 class RuntimeContext(object):
+    """
+    This carries runtime information and provides the core
+    with essential methods for accessing the configuration
+    and for invoking parts of the transformation machinery.
+    """
 
     config = attr.ib()
     invoker = attr.ib()
@@ -93,16 +98,24 @@ class RuntimeContext(object):
 
 @attr.s
 class FunctionInvoker(object):
+    """
+    This helps the ``RuntimeContext`` to dynamically invoke
+    functions from a configured Python source code file.
+    """
 
     config = attr.ib()
     srv = attr.ib()
 
     def datamap(self, name, topic):
-        ''' Attempt to invoke function `name' loaded from the
-            `functions' Python package '''
+        """
+        Invoke function "name" loaded from the "functions" Python module.
+
+        :param name:    Function name to invoke
+        :param topic:   Topic to pass to the invoked function
+        :return:        Return value of function invocation
+        """
 
         val = None
-
         try:
             func = load_function(name=name, filepath=self.config.functions)
             try:
@@ -115,11 +128,16 @@ class FunctionInvoker(object):
         return val
 
     def alldata(self, name, topic, data):
-        ''' Attempt to invoke function `name' loaded from the
-            `functions' Python package '''
+        """
+        Invoke function "name" loaded from the "functions" Python module.
+
+        :param name:    Function name to invoke
+        :param topic:   Topic to pass to the invoked function
+        :param data:    Data to pass to the invoked function
+        :return:        Return value of function invocation
+        """
 
         val = None
-
         try:
             func = load_function(name=name, filepath=self.config.functions)
             val = func(topic, data, self.srv)
@@ -130,14 +148,17 @@ class FunctionInvoker(object):
 
     def topic_target_list(self, name, topic, data):
         """
-        Attempt to invoke function `name' loaded from the
-        `functions' Python package for computing dynamic
-        topic subscription targets.
-        Pass MQTT topic and transformation data.
+        Invoke function "name" loaded from the "functions" Python module.
+        Computes dynamic topic subscription targets.
+        Obtains MQTT topic and transformation data.
+
+        :param name:    Function name to invoke
+        :param topic:   Topic to pass to the invoked function
+        :param data:    Data to pass to the invoked function
+        :return:        Return value of function invocation
         """
 
         val = None
-
         try:
             func = load_function(name=name, filepath=self.config.functions)
             val = func(topic=topic, data=data, srv=self.srv)
@@ -147,8 +168,15 @@ class FunctionInvoker(object):
         return val
 
     def filter(self, name, topic, payload):
-        ''' Attempt to invoke function `name' from the `functions'
-            package. Return that function's True/False '''
+        """
+        Invoke function "name" loaded from the "functions" Python module.
+        Return that function's True/False.
+
+        :param name:    Function name to invoke
+        :param topic:   Topic to pass to the invoked function
+        :param payload: Payload to pass to the invoked function
+        :return:        Return value of function invocation
+        """
 
         rc = False
         try:
