@@ -7,6 +7,7 @@ in progress
 ===========
 - Move all services into module namespace
 - Fix PeriodicThread
+- Add "requests" module as a core requirement to "setup.py" as it is a common module used by many services
 
 
 .. _mqttwarn-0.7.0:
