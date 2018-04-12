@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Add .bumpversion.cfg and Makefile to ease release cutting
 
 
 .. _mqttwarn-0.8.1:
