@@ -12,6 +12,37 @@ requires = [
 ]
 
 extras = {
+    'amqp': [
+        'puka==0.0.7',
+    ],
+    'apns': [
+        'apns==2.0.1',
+    ],
+    'asterisk': [
+        'pyst2==0.5.0',
+    ],
+    'celery': [
+        'celery',
+    ],
+    'dnsupdate': [
+        'dnspython==1.15.0',
+    ],
+    'fbchat': [
+        'fbchat==1.3.6',
+    ],
+    'gss': [
+        'gdata==2.0.18',
+    ],
+    'gss2': [
+        'gspread==2.1.1',
+        'oauth2client==4.1.2',
+    ],
+    'iothub': [
+        'iothub-client==1.1.2.0',
+    ],
+
+    # FIXME: Fill in the gaps!
+
     'xmpp': [
         'xmpppy==0.5.0rc1',
     ],

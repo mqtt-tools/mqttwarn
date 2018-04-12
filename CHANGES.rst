@@ -10,6 +10,7 @@ in progress
 - Add "requests" module as a core requirement to "setup.py" as it is a common module used by many services
 - Add commands "mqttwarn make-config" and "mqttwarn make-samplefuncs"
   for generating a mqttwarn.ini or a samplefuncs.py, respectively.
+- Add more modules to "extras" requirements section in "setup.py"
 
 
 .. _mqttwarn-0.7.0:
