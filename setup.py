@@ -97,7 +97,7 @@ extras = {
 }
 
 setup(name='mqttwarn',
-      version='0.8.0',
+      version='0.8.1',
       description='mqttwarn - subscribe to MQTT topics and notify pluggable services',
       long_description='mqttwarn subscribes to any number of MQTT topics and publishes received payloads to one or more '
                        'notification services after optionally applying sophisticated transformations.',
