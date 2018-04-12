@@ -17,7 +17,7 @@ from mqttwarn.context import RuntimeContext, FunctionInvoker
 from mqttwarn.cron import PeriodicThread
 from mqttwarn.util import \
     load_function, load_module, timeout, \
-    parse_cron_options, sanitize_function_name, Struct, Formatter
+    parse_cron_options, sanitize_function_name, Struct, Formatter, asbool
 
 try:
     import json
