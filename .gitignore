@@ -1,6 +1,7 @@
 .DS_Store
 /.idea
 /.venv*
+/dist
 *.pyc
 *.egg-info
 *.sln
