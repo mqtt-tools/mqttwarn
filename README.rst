@@ -13,24 +13,6 @@ notification services after optionally applying sophisticated transformations.
 *****
 Setup
 *****
-
-Development
-===========
-Get hold of the sources::
-
-    git clone https://github.com/jpmens/mqttwarn
-    cd mqttwarn
-    git checkout develop
-
-Create virtualenv and install mqttwarn in development mode::
-
-    virtualenv .venv27
-    source .venv27/bin/activate
-    python setup.py develop
-
-
-Production
-==========
 Synopsis::
 
     pip install --upgrade 'https://github.com/jpmens/mqttwarn/archive/develop.tar.gz' mqttwarn[xmpp]
@@ -58,3 +40,28 @@ To supply a different configuration file, use::
 
     # Run mqttwarn
     mqttwarn
+
+
+*******
+Hacking
+*******
+For hacking on mqttwarn, please install it in development mode.
+
+Get hold of the sources::
+
+    git clone https://github.com/jpmens/mqttwarn
+    cd mqttwarn
+    git checkout develop
+
+Create virtualenv::
+
+    virtualenv .venv27
+    source .venv27/bin/activate
+
+Install mqttwarn in development mode::
+
+    python setup.py develop
+
+Install extras::
+
+    pip install -e.[xmpp]
