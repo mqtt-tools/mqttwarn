@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2018 The mqttwarn developers
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -30,17 +31,18 @@ class PeriodicThread(object):
 
         # Schedule periodic task to run right now
         if self.now == True:
-            self.run()
+            self._run()
 
         # Schedule periodic task with designated interval
-        self.schedule_timer()
+        else:
+            self.schedule_timer()
 
     def run(self):
         """
         By default run callback. Override it if you want to use inheritance
         """
         if self.callback is not None:
-            self.callback(srv, *self.args, **self.kwargs)
+            self.callback(self.srv, *self.args, **self.kwargs)
 
     def _run(self):
         """

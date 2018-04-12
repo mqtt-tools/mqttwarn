@@ -6,6 +6,7 @@ mqttwarn changelog
 in progress
 ===========
 - Move all services into module namespace
+- Fix PeriodicThread
 
 
 .. _mqttwarn-0.7.0:
