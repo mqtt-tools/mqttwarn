@@ -655,3 +655,39 @@ def bootstrap(config=None, scriptname=None):
     context = RuntimeContext(config=config, invoker=invoker)
     cf = config
     SCRIPTNAME = scriptname
+
+
+def run_plugin(config=None, name=None, data=None):
+    """
+    Run service plugins directly without the
+    dispatching and transformation machinery.
+
+    On the one hand, this might look like a bit of a hack.
+    On the other hand, it shows very clearly how some of
+    the innards of mqttwarn interact so it might also please
+    newcomers as a "learning the guts of mqttwarn" example.
+
+    :param config: The configuration object
+    :param name:   The name of the service plugin, e.g. "log" or "file"
+    :param data:   The data to be converged into an appropriate item Struct object instance
+    """
+
+    # Bootstrap mqttwarn core
+    bootstrap(config=config)
+
+    # Load designated service plugins
+    load_services([name])
+    service_logger_name = 'mqttwarn.services.{}'.format(name)
+    srv = make_service(mqttc=None, name=service_logger_name)
+
+    # Build a mimikry item instance for feeding to the service plugin
+    item = Struct(**data)
+    item.config = config
+    item.service = srv
+    item.target = 'mqttwarn'
+    item.data = {}        # FIXME
+
+    # Launch plugin
+    module = service_plugins[name]['module']
+    response = module.plugin(srv, item)
+    logger.info('Plugin response: {}'.format(response))

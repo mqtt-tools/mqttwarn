@@ -102,6 +102,21 @@ To supply a different configuration file, use::
     mqttwarn
 
 
+Running notification plugins
+============================
+For debugging or other purposes, you might want to directly run a notification plugin
+without the dispatching and transformation machinery of *mqttwarn*. We have you covered, just try this::
+
+    # Launch "log" service plugin
+    mqttwarn --plugin=log --data='{"message": "Hello world", "addrs": ["crit"]}'
+
+    # Launch "file" service plugin
+    mqttwarn --plugin=file --data='{"message": "Hello world\n", "addrs": ["/tmp/mqttwarn.err"]}'
+
+
+Please note this feature is a work in progress, so expect there to be dragons.
+
+
 Running as system daemon
 ========================
 - I recommend you use Supervisor_ for running this, see also `supervisor.ini`_.

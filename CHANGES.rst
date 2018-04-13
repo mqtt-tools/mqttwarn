@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Add mechanism to run a notification service plugin interactively from the command line
 
 
 .. _mqttwarn-0.9.0:

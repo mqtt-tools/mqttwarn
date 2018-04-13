@@ -2,6 +2,7 @@
 # (c) 2014-2018 The mqttwarn developers
 import os
 import sys
+import json
 import signal
 import logging
 
@@ -9,7 +10,7 @@ from docopt import docopt
 
 from mqttwarn import __version__
 from mqttwarn.configuration import Config
-from mqttwarn.core import bootstrap, connect, cleanup
+from mqttwarn.core import bootstrap, connect, cleanup, run_plugin
 from mqttwarn.util import get_resource_content
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ def run():
     Usage:
       {program} [make-config]
       {program} [make-samplefuncs]
+      {program} [--plugin=] [--data=]
       {program} --version
       {program} (-h | --help)
 
@@ -44,12 +46,40 @@ def run():
     if options['make-config']:
         payload = get_resource_content('mqttwarn.examples', 'basic/mqttwarn.ini')
         print(payload)
-        sys.exit()
 
-    if options['make-samplefuncs']:
+    elif options['make-samplefuncs']:
         payload = get_resource_content('mqttwarn.examples', 'basic/samplefuncs.py')
         print(payload)
-        sys.exit()
+
+    elif options['--plugin'] and options['--data']:
+
+        # Decode arguments
+        plugin = options['--plugin']
+        data = json.loads(options['--data'])
+
+        # Launch service plugin in standalone mode
+        launch_plugin_standalone(plugin, data)
+
+
+    # Run mqttwarn in service mode when no command line arguments are given
+    else:
+        run_mqttwarn()
+
+
+def launch_plugin_standalone(plugin, data):
+    # Load configuration file
+    scriptname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+    config = load_configuration(name=scriptname)
+
+    # Setup logging
+    setup_logging(config)
+    logger.info('Running service plugin "{}" with data "{}"'.format(plugin, data))
+
+    # Launch service plugin
+    run_plugin(config=config, name=plugin, data=data)
+
+
+def run_mqttwarn():
 
     # Script name (without extension) used as last resort fallback for config/logfile names
     scriptname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
