@@ -128,8 +128,8 @@ Running as system daemon
 .. _mqttwarn.service: https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service
 
 
-Runnin in a development sandbox
-===============================
+Running in a development sandbox
+================================
 For hacking_ on mqttwarn, please install it in development mode.
 
 .. _hacking: https://github.com/jpmens/mqttwarn/blob/develop/doc/hacking.rst

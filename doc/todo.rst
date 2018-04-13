@@ -13,14 +13,35 @@ Goals for 0.15.0
       add "mqttwarn make-config" and "mqttwarn make-samplefuncs"  commands to dump them to stdout
 - [x] Add Makefile for releasing and documentation building
 - [o] Refactor contents from "examples", "templates" and "vendor" folders
-    - [o] Integrate templates into basic example?
-    - [o] Move the whole /examples folder into /mqttwarn/examples?
-    - [o] Where to put /templates and /vendor?
+      - [o] Refactor ``examples/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
+      - [o] Refactor ``examples/zabbix/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
+      - [o] Refactor ``vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
+      - [o] The path to the "templates" folder must be specified using command line argument or environment variable.
+            Otherwise, look nearby the configuration file /path/to/mqttwarn.ini, so use /path/to/templates.
+      - [o] Integrate existing template .j2 files into example folder?
+      - [o] Move the whole /examples folder into /mqttwarn/examples?
 - [o] How to address "samplefuncs.py" in relation to "mqttwarn.ini"? E.g. if the mqttwarn configuration file
       would be ``/etc/mqttwarn/acme.ini``, should this load ``/etc/mqttwarn/samplefuncs.py`` or use the current
       working directory for that? Or even both!?
+- [o] Refactor the ``mqttwarn make-config|make-samplefuncs`` machinery into a ``mqttwarn init``-style thing. Proposal::
+
+      # Create folder .mqttwarn with minimal configuration (config.ini, custom.py)
+      mqttwarn init
+
+      # Create folder .mqttwarn with configuration from named preset "hiveeyes" (hiveeyes.ini, hiveeyes.py, hiveeyes-alert.j2)
+      mqttwarn init --preset=hiveeyes
+
+      # Create folder .mqttwarn with configuration from named preset "homie" (homie.ini, homie.py)
+      mqttwarn init --preset=homie
+
+- [o] When running the mqttwarn daemon and no configuration file is given,
+      use configuration from the ".mqttwarn" folder in the current working directory.
+      When doing so, also use ".mqttwarn/templates" as the default templates folder.
+
+- [o] Verify that "functions" still accepts file names as well as dotted module names
 - [o] Adapt configuration for Supervisor and systemd
-- [o] Check the zabbix and other modules
+- [o] Improve documentation: Add a complete roundtrip example involving ``mosquitto_pub``
+- [o] Improve documentation: Add "credits" section. At least add the author of Mosquitto.
 - [o] Release on PyPI
 
 
@@ -37,6 +58,7 @@ Goals for 1.0.0
 ***************
 Goals for 2.0.0
 ***************
+- [o] Idea: What if we could reuse the notification plugins in the context of a ``heronotify`` entrypoint?
 - [o] Idea: It would be cool if mqttwarn could offer some kind of plugin autoconfiguration mechanism similar
       to [Munin](http://munin-monitoring.org/)'s
       [autoconf](http://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#autoconf) and

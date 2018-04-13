@@ -5,8 +5,15 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+.. _mqttwarn-0.10.0:
+
+2018-04-13 0.10.0
+=================
 - Add mechanism to run a notification service plugin interactively from the command line
 - Attempt to fix #307 re. logging to the configuration .ini file. Thanks, Dan!
+
 
 .. _mqttwarn-0.9.0:
 
