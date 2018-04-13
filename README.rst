@@ -28,6 +28,11 @@ Note
 This README is a stub for spawning the revamped documentation of the upcoming mqttwarn 1.0.0,
 so it is to be considered as a work in progress. You are welcome to participate!
 
+We outlined the tasks for the next releases at todo_.
+They will be progressively transferred into GitHub issues.
+
+.. _todo: https://github.com/jpmens/mqttwarn/blob/develop/doc/todo.rst
+
 
 *****
 About
@@ -47,10 +52,11 @@ Examples
 - Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.
 
 
-***************
-Service plugins
-***************
-*mqttwarn* comes with over 70 service plugins and is very open to further contributions, enjoy the
+*********************
+Notification services
+*********************
+*mqttwarn* comes with over **70 notification handler plugins** for a wide range
+of notification services and is very open to further contributions, enjoy the
 `alphabetical list of plugins <https://github.com/jpmens/mqttwarn/blob/develop/README.md>`_.
 
 
@@ -106,6 +112,14 @@ Running as system daemon
 .. _mqttwarn.service: https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service
 
 
+Runnin in a development sandbox
+===============================
+For hacking_ on mqttwarn, please install it in development mode.
+
+.. _hacking: https://github.com/jpmens/mqttwarn/blob/develop/doc/hacking.rst
+
+
+
 *******************
 Project information
 *******************
@@ -147,9 +161,15 @@ Notes
 
 Press
 =====
-
 * The article `MQTTwarn: Ein Rundum-Sorglos-Notifier`_ in German at JAXenter.
-* `Schwarmalarm using mqttwarn`_
+* The folks of the Berlin-based beekeeper collective Hiveeyes_ are monitoring their beehives and use *mqttwarn*
+  as a building block for their alert notification system, enjoy reading `Schwarmalarm using mqttwarn`_.
 
 .. _MQTTwarn\: Ein Rundum-Sorglos-Notifier: https://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312
+.. _Hiveeyes: https://hiveeyes.org/
 .. _Schwarmalarm using mqttwarn: https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
+
+
+----
+
+Have fun!
