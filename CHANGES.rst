@@ -5,16 +5,21 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+.. _mqttwarn-0.9.0:
+
+2018-04-13 0.9.0
+================
 - Add .bumpversion.cfg and Makefile to ease release cutting
 - Move "websocket" service plugin (#305) into module namespace
-- Improve README
-- Update documentation
 - Refactor two more functions into ``class RuntimeContext``
 - Improve error handling: Add the ``exception_traceback()`` primitive to add
   full stacktrace information to log messages. When applied at all important
   places across the board where we do catch-all style exception handling,
   this will improve the experience when working on custom solutions with
   *mqttwarn* to a huge extent.
+- Improve documentation
 
 
 .. _mqttwarn-0.8.1:
