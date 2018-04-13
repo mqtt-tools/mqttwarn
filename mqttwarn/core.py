@@ -17,7 +17,7 @@ from mqttwarn.context import RuntimeContext, FunctionInvoker
 from mqttwarn.cron import PeriodicThread
 from mqttwarn.util import \
     load_function, load_module, timeout, \
-    parse_cron_options, sanitize_function_name, Struct, Formatter, asbool
+    parse_cron_options, sanitize_function_name, Struct, Formatter, asbool, exception_traceback
 
 try:
     import json
@@ -437,8 +437,8 @@ def processor(worker_id=None):
                                 "non-existing target {target} in service {service}".format(**locals())
                 raise KeyError(error_message)
 
-        except Exception, e:
-            logger.error("Cannot handle service=%s, target=%s: %s" % (service, target, repr(e)))
+        except Exception as ex:
+            logger.error("Cannot handle service=%s, target=%s: %s\n%s" % (service, target, ex, exception_traceback()))
             q_in.task_done()
             continue
 
