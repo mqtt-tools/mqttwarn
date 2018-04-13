@@ -113,7 +113,7 @@ def load_configuration(configfile=None, name=None):
     defaults = {
         'clientid': name,
         'lwt': 'clients/{}'.format(name),
-        'logfile': os.getenv(name.upper() + 'INI', name + '.ini'),
+        'logfile': os.getenv(name.upper() + 'LOG', name + '.log'),
     }
 
     return Config(configfile, defaults=defaults)
