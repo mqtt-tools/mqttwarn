@@ -105,7 +105,8 @@ To supply a different configuration file, use::
 Running notification plugins
 ============================
 For debugging or other purposes, you might want to directly run a notification plugin
-without the dispatching and transformation machinery of *mqttwarn*. We have you covered, just try this::
+without the dispatching and transformation machinery of *mqttwarn*.
+We have you covered, just try this to launch the plugin standalone by passing essential information using JSON::
 
     # Launch "log" service plugin
     mqttwarn --plugin=log --data='{"message": "Hello world", "addrs": ["crit"]}'
