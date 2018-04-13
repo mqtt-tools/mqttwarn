@@ -316,7 +316,7 @@ def send_to_targets(section, topic, payload):
 
         sendtos = None
         if target is None:
-            sendtos = get_service_targets(service)
+            sendtos = context.get_service_targets(service)
         else:
             sendtos = [target]
 
@@ -341,28 +341,6 @@ def builtin_transform_data(topic, payload):
     tdata['_dthhmmss']  = dt.strftime('%H:%M:%S')   # hhmmss=10:16:21
 
     return tdata
-
-
-def get_service_config(service):
-    config = cf.config('config:' + service)
-    if config is None:
-        return {}
-    return dict(config)
-
-
-def get_service_targets(service):
-    try:
-        targets = cf.getdict('config:' + service, 'targets')
-        if type(targets) != dict:
-            logger.error("No targets for service `%s'" % service)
-            cleanup(0)
-    except:
-        logger.error("No targets for service `%s'" % service)
-        cleanup(0)
-
-    if targets is None:
-        return {}
-    return dict(targets)
 
 
 def xform(function, orig_value, transform_data):
@@ -447,12 +425,12 @@ def processor(worker_id=None):
 
         logger.debug("Processor #%s is handling: `%s' for %s" % (worker_id, service, target))
 
-        # sanity checks
-        # if service configuration or targets can not be obtained successfully,
-        # log a sensible error message, fail the job and carry on with the next job
+        # Sanity checks.
+        # If service configuration or targets can not be obtained successfully,
+        # log a sensible error message, fail the job and carry on with the next job.
         try:
-            service_config  = get_service_config(service)
-            service_targets = get_service_targets(service)
+            service_config  = context.get_service_config(service)
+            service_targets = context.get_service_targets(service)
 
             if target not in service_targets:
                 error_message = "Invalid configuration: topic {topic} points to " \

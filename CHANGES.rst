@@ -9,6 +9,7 @@ in progress
 - Move "websocket" service plugin (#305) into module namespace
 - Improve README
 - Update documentation
+- Refactor two more functions into ``class RuntimeContext``
 
 
 .. _mqttwarn-0.8.1:

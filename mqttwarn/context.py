@@ -94,6 +94,24 @@ class RuntimeContext(object):
                              'defined in section "{section}": {error}'.format(**locals()))
         return None
 
+    def get_service_config(self, service):
+        config = self.config.config('config:' + service)
+        if config is None:
+            return {}
+        return dict(config)
+
+    def get_service_targets(self, service):
+        try:
+            targets = self.config.getdict('config:' + service, 'targets')
+            if type(targets) != dict:
+                logger.error("No targets for service `%s'" % service)
+        except:
+            logger.error("No targets for service `%s'" % service)
+
+        if targets is None:
+            return {}
+
+        return dict(targets)
 
 
 @attr.s
