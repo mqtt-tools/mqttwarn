@@ -94,3 +94,5 @@ def plugin(srv, item):
     conn.close()
 
     return True
+
+# vim: tabstop=4 expandtab
