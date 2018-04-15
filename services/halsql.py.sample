@@ -1,0 +1,79 @@
+[defaults]
+hostname  = 'localhost'
+port      = 1883
+loglevel  = DEBUG
+
+launch	 = halsql
+
+functions = 'halacsfuncs.py'
+
+[config:halsql]
+host  =  'localhost'
+port  =  3306
+user  =  'root'
+pass  =  '123'
+dbname  =  'test'
+targets = {
+		 't1'   : [ 'test',
+							{
+							  'Time': 'mezo1',
+							  'Power': 'mezo2',
+							},
+							{
+							  'mezo3' : 'bojler_power'
+							}
+				  ],
+		 't2'   : [ 'test',
+							{
+							  'Time': 'mezo1',
+							  'Current': 'mezo2',
+							},
+							{
+							  'mezo3' : 'bojler_current'
+							}
+				  ],
+		 't3'   : [ 'test',
+							{
+							  'Time': 'mezo1',
+							  'Voltage': 'mezo2',
+							},
+							{
+							  'mezo3' : 'bojler_voltage'
+							}
+				  ],
+		 't4'   : [ 'test',
+							{
+							  'Time': 'mezo1',
+							  'Factor': 'mezo2',
+							},
+							{
+							  'mezo3' : 'bojler_factor'
+							}
+				  ],
+		 't5'   : [ 'test',
+							{
+							  'Time': 'mezo1',
+							  'Total': 'mezo2',
+							},
+							{
+							  'mezo3' : 'bojler_total'
+							}
+				  ],
+		 't6'   : [ 'test',
+							{
+							  'Time': 'mezo1',
+							  'POWER_BIN': 'mezo2',
+							},
+							{
+							  'mezo3' : 'bojler_enabled'
+							}
+				  ]
+  }
+
+[tele/+/SENSOR]
+targets = halsql:t1, halsql:t2, halsql:t3, halsql:t4, halsql:t5
+alldata = powerBinFunc()
+
+[tele/+/STATE]
+targets = halsql:t6
+alldata = powerBinFunc()
