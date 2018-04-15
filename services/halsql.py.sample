@@ -16,56 +16,56 @@ dbname  =  'test'
 targets = {
 		 't1'   : [ 'test',
 							{
-							  'Time': 'mezo1',
-							  'Power': 'mezo2',
+							  'Time': 'timestamp',
+							  'Power': 'value',
 							},
 							{
-							  'mezo3' : 'bojler_power'
+							  'description' : 'bojler_power'
 							}
 				  ],
 		 't2'   : [ 'test',
 							{
-							  'Time': 'mezo1',
-							  'Current': 'mezo2',
+							  'Time': 'timestamp',
+							  'Current': 'value',
 							},
 							{
-							  'mezo3' : 'bojler_current'
+							  'description' : 'bojler_current'
 							}
 				  ],
 		 't3'   : [ 'test',
 							{
-							  'Time': 'mezo1',
-							  'Voltage': 'mezo2',
+							  'Time': 'timestamp',
+							  'Voltage': 'value',
 							},
 							{
-							  'mezo3' : 'bojler_voltage'
+							  'description' : 'bojler_voltage'
 							}
 				  ],
 		 't4'   : [ 'test',
 							{
-							  'Time': 'mezo1',
-							  'Factor': 'mezo2',
+							  'Time': 'timestamp',
+							  'Factor': 'value',
 							},
 							{
-							  'mezo3' : 'bojler_factor'
+							  'description' : 'bojler_factor'
 							}
 				  ],
 		 't5'   : [ 'test',
 							{
-							  'Time': 'mezo1',
-							  'Total': 'mezo2',
+							  'Time': 'timestamp',
+							  'Total': 'value',
 							},
 							{
-							  'mezo3' : 'bojler_total'
+							  'description' : 'bojler_total'
 							}
 				  ],
 		 't6'   : [ 'test',
 							{
-							  'Time': 'mezo1',
-							  'POWER_BIN': 'mezo2',
+							  'Time': 'timestamp',
+							  'POWER_BIN': 'value',
 							},
 							{
-							  'mezo3' : 'bojler_enabled'
+							  'description' : 'bojler_enabled'
 							}
 				  ]
   }
