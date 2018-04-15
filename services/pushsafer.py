@@ -40,16 +40,16 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
     
-	# based on the Pushsafer API (https://www.pushsafer.com/en/pushapi)
+    # based on the Pushsafer API (https://www.pushsafer.com/en/pushapi)
     # addrs is an array with two or three elements:
     # 0 is the private or alias key
     # 1 (if present) is the Pushsafer device or device group id where the message is to be sent
-	# 2 (if present) is the Pushsafer icon to display in the message
+    # 2 (if present) is the Pushsafer icon to display in the message
     # 3 (if present) is the Pushsafer sound to play for the message
-	# 4 (if present) is the Pushsafer vibration for the message
-	# 5 (if present) is the Pushsafer URL or URL Scheme
-	# 6 (if present) is the Pushsafer Title of URL
-	# 7 (if present) is the Pushsafer Time in minutes, after which message automatically gets purged
+    # 4 (if present) is the Pushsafer vibration for the message
+    # 5 (if present) is the Pushsafer URL or URL Scheme
+    # 6 (if present) is the Pushsafer Title of URL
+    # 7 (if present) is the Pushsafer Time in minutes, after which message automatically gets purged
 
     try:
         appkey  = addrs[0]
@@ -63,23 +63,23 @@ def plugin(srv, item):
 
     if len(addrs) > 1:
         params['d'] = addrs[1]
-		
-	if len(addrs) > 2:
+
+    if len(addrs) > 2:
         params['i'] = addrs[2]
-		
-	if len(addrs) > 3:
+
+    if len(addrs) > 3:
         params['s'] = addrs[3]
-		
-	if len(addrs) > 3:
+
+    if len(addrs) > 3:
         params['v'] = addrs[4]
-		
-	if len(addrs) > 4:
+
+    if len(addrs) > 4:
         params['u'] = addrs[5]
-		
-	if len(addrs) > 5:
+
+    if len(addrs) > 5:
         params['ut'] = addrs[6]
-		
-	if len(addrs) > 6:
+
+    if len(addrs) > 6:
         params['l'] = addrs[7]
 
     if title is not None:
