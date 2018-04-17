@@ -1530,7 +1530,7 @@ def powerBinFunc(topic, data, srv=None):
 Example MQTT message:
 
 ```
-17:08:45 MQT: tele/bojler/SENSOR = {"Time":"2018-04-15T17:08:45","ENERGY":{"Total":320.144,"Yesterday":5.105,"Today":1.881,"Period":0,"Power":2,"Factor":0.07,"Voltage":234,"Current":0.128}}
+17:08:45 MQT: tele/bojler/SENSOR = {"Time":"2018-04-15T17:08:45","ENERGY":{"Total":320.144,"Yesterday":5.105,"Today":1.881,"Period":0,"Power":17.15,"Factor":0.07,"Voltage":234,"Current":0.128}}
 ```
 
 Example MySQL records:
@@ -1539,7 +1539,7 @@ Example MySQL records:
 +------------+-----------+----------------+
 | timestamp  | value     | description    |
 +------------+-----------+----------------+
-| 1523804801 |  17.15000 | heater_power   |
+| 1523804925 |  17.15000 | heater_power   |
 +------------+-----------+----------------+
 ```
 
