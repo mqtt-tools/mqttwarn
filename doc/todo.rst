@@ -48,6 +48,7 @@ Goals for 0.15.0
 ***************
 Goals for 1.0.0
 ***************
+- [o] Make mqttwarn completely unicode-safe
 - [o] Make "mqttwarn --plugin=log --data=" obtain JSON data from STDIN
 - [o] Translate documentation into reStructuredText format,
       render it using Sphinx and optionally publish to readthedocs.org.
@@ -89,6 +90,9 @@ Goals for 2.0.0
             ...
             """
             return snippet
+- [o] Think about adding further support for plugins, e.g. for provisioning databases appropriately, see also
+      https://github.com/jpmens/mqttwarn/issues/283
+- [o] Configuration and source tree file watcher like ``pserve ... --reload``
 
 
 *************
