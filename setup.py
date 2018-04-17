@@ -4,6 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 requires = [
+    'six==1.11.0',
     'paho-mqtt==1.2',               # 1.3.1
     'jinja2==2.8',
     'attrs==17.4.0',
