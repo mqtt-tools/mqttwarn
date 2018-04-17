@@ -1451,7 +1451,7 @@ At this point, if the payload format changes, the tables are not modified and da
 ### `mysql_remap`
 This service was originally designed to transform and store [SonOff](https://www.itead.cc/sonoff-pow.html) telemetry messages into a MySQL database, where database doen't need to have columns with same name as values in the MQTT messages.
 
-My new service (called halsql) inserts new record into MySQL.
+My new service (called mysql_remap) inserts new record into MySQL.
 This is a generic service, however, I designed it to colelct telemetry data from my SonOff POW devices.
 This service can add static values (like the source/meaning of the data; e.g. 'bojler_enabled') and can remap keys (e.g. current power consumption data comes as 'current' but stored in DB as 'value').
 
@@ -1467,11 +1467,11 @@ hostname  = 'localhost'
 port      = 1883
 loglevel  = DEBUG
 
-launch   = halsql
+launch   = mysql_remap
 
 #functions = 'funcs.py'
 
-[config:halsql]
+[config:mysql_remap]
 host  =  'localhost'
 port  =  3306
 user  =  'root'
@@ -1490,7 +1490,7 @@ targets = {
          }
 
 [tele/+/SENSOR]
-targets = halsql:t1
+targets = mysql_remap:t1
 #alldata = powerBinFunc()
 ```
 
