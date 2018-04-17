@@ -7,8 +7,14 @@ in progress
 ===========
 
 
+.. _mqttwarn-0.10.1:
+
+2018-04-17 0.10.1
+=================
 - Use EPL 2.0 license as recently approved by @pypa and @jpmens
 - Add missing dependency to the "six" package
+
+
 .. _mqttwarn-0.10.0:
 
 2018-04-13 0.10.0
