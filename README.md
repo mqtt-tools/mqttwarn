@@ -43,6 +43,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
 * [mysql_dynamic](#mysql_dynamic)
+* [mysql_remap](#mysql_remap)
 * [mythtv](#mythtv)
 * [nma](#nma)
 * [nntp](#nntp)
