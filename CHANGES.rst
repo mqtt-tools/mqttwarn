@@ -7,6 +7,7 @@ in progress
 ===========
 
 
+- Use EPL 2.0 license as recently approved by @pypa and @jpmens
 .. _mqttwarn-0.10.0:
 
 2018-04-13 0.10.0

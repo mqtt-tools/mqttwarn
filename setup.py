@@ -116,10 +116,7 @@ setup(name='mqttwarn',
         "Intended Audience :: Science/Research",
         "Intended Audience :: System Administrators",
         "Intended Audience :: Telecommunications Industry",
-        # The EPL 2.0 license isn't approved by the OSI yet,
-        # at least its not available at https://pypi.python.org/pypi?%3Aaction=list_classifiers.
-        # In the meanwhile, we will use EPL 1.0 here.
-        "License :: OSI Approved :: Eclipse Public License 1.0 (EPL-1.0)",
+        "License :: OSI Approved :: Eclipse Public License 2.0 (EPL-2.0)",
         "Operating System :: POSIX",
         "Operating System :: Unix",
         "Operating System :: MacOS",
