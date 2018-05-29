@@ -43,6 +43,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
 * [mysql_dynamic](#mysql_dynamic)
+* [mysql_remap](#mysql_remap)
 * [mythtv](#mythtv)
 * [nma](#nma)
 * [nntp](#nntp)
@@ -1446,6 +1447,101 @@ Requires:
 Limitations:
 
 At this point, if the payload format changes, the tables are not modified and data may fail to be stored. Also, there is no fallback table or column like the case of the MySQL plugin.
+
+### `mysql_remap`
+This service was originally designed to transform and store [SonOff](https://www.itead.cc/sonoff-pow.html) telemetry messages into a MySQL database, where database doen't need to have columns with same name as values in the MQTT messages.
+
+My new service (called mysql_remap) inserts new record into MySQL.
+This is a generic service, however, I designed it to colelct telemetry data from my SonOff POW devices.
+This service can add static values (like the source/meaning of the data; e.g. 'bojler_enabled') and can remap keys (e.g. current power consumption data comes as 'current' but stored in DB as 'value').
+
+Example configuration:
+
+In the below configuration 'test' is the name of the table, 'Time' is a key comes from the MQTT message what will be renamed to 'timestamp' when service insert the data intothe table. If a message key isn't named here it won't be inserted into the database even it is in the message.
+
+'description' is a column name in the database table and 'heater_power' is a constant to make filtering possible later on by SQL querys. You can add zero or more from these.
+
+```ini
+[defaults]
+hostname  = 'localhost'
+port      = 1883
+loglevel  = DEBUG
+
+launch   = mysql_remap
+
+#functions = 'funcs.py'
+
+[config:mysql_remap]
+host  =  'localhost'
+port  =  3306
+user  =  'root'
+pass  =  '123'
+dbname  =  'test'
+targets = {
+         't1'   : [ 'test',
+                            {
+                              'Time': 'timestamp',
+                              'Power': 'value'
+                            },
+                            {
+                              'description' : 'heater_power'
+                            }
+                  ]
+         }
+
+[tele/+/SENSOR]
+targets = mysql_remap:t1
+#alldata = powerBinFunc()
+```
+
+You can also do some further transformation on the message before insert it into the databse using by the two uncommented lines above and the below function (need to copy it into funcs.py).
+
+This below example convert reveived data and time information itno unix timestam format and replace "ON" and "OFF" values to 1 and 0 numbers.
+
+```
+# -*- coding: utf-8 -*-
+import time
+import copy
+import ast
+from datetime import datetime
+
+def powerBinFunc(topic, data, srv=None):
+    # parse json payload (the message)
+    payload = ast.literal_eval(data["payload"])
+
+    # Override default time format
+    dt = datetime.strptime(payload["Time"], '%Y-%m-%dT%H:%M:%S')
+    ts = time.mktime(dt.timetuple())
+    ret = dict( payload = dict( Time = ts ))
+
+    # Check power state key
+    if "POWER" in payload:
+        if payload["POWER"] == "ON":
+            ret["POWER_BIN"] = 1
+        else:
+            ret["POWER_BIN"] = 0
+
+    return ret
+
+# vim: tabstop=4 expandtab
+```
+
+
+Example MQTT message:
+
+```
+17:08:45 MQT: tele/bojler/SENSOR = {"Time":"2018-04-15T17:08:45","ENERGY":{"Total":320.144,"Yesterday":5.105,"Today":1.881,"Period":0,"Power":17.15,"Factor":0.07,"Voltage":234,"Current":0.128}}
+```
+
+Example MySQL records:
+
+```
++------------+-----------+----------------+
+| timestamp  | value     | description    |
++------------+-----------+----------------+
+| 1523804925 |  17.15000 | heater_power   |
++------------+-----------+----------------+
+```
 
 ### `mythtv`
 
