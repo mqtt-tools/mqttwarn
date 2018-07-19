@@ -30,6 +30,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Using functions to replace incoming payloads](#using-functions-to-replace-incoming-payloads)
     + [Incorporating topic names into transformation data](#incorporating-topic-names-into-transformation-data)
     + [Merging more data](#merging-more-data)
+    + [Accessing Nested JSON Nodes](#accessing-nested-json-nodes)
     + [Using transformation data in other contexts](#using-transformation-data-in-other-contexts)
       - [Topic targets](#topic-targets)
     + [Filtering notifications](#filtering-notifications)
@@ -2856,6 +2857,69 @@ passed the message _topic_, its _data_ and an optional _srv_ object. This functi
 should return a _dict_ (or _None_) of data which is merged into the whole
 list of transformation data. This expands on the two other transformation functions
 to make topic and the message's payload available simultaneously.
+
+
+### Accessing Nested JSON Nodes ###
+
+Within templates and formats, you can refer only to the top-level names of an incoming JSON message. 
+To do otherwise currently requires an `alldata` function,
+which returns a new message to completely replace the old one.
+  
+For example, say you are receiving messages from a temperature sensor 
+running [Tasmota](https://github.com/arendst/Sonoff-Tasmota/),
+and you wish to convert them into [InfluxDB line format](https://docs.influxdata.com/influxdb/v1.6/write_protocols/line_protocol_tutorial/).
+
+The [JSON](https://github.com/arendst/Sonoff-Tasmota/wiki/JSON-Status-Responses#ds18b20) will look like this:
+```
+{
+    "Time": "2018.02.01 21:29:40",
+    "DS18B20": {
+      "Temperature": 19.7
+    },
+    "TempUnit": "C"
+},
+```
+
+`Temperature` cannot be referenced directly within a `format`.  Instead the following code will extract the nested value, and will also convert
+the timestamp into a different format:
+```
+import ast
+import time
+from datetime import datetime
+
+def standard_values(topic, payload):
+    ts = datetime.strptime(payload["Time"], "%Y.%m.%d %H:%M:%S")
+    millis = long(time.mktime(ts.timetuple()) * 1000)
+    return dict( Topic = topic, Timestamp = millis )
+
+def ds18b20_values(topic, data, srv=None):
+    payload = ast.literal_eval(data["payload"])
+    d = standard_values(topic, payload)
+    d.update(Temperature = payload["DS18B20"]["Temperature"])
+    return d
+
+```
+
+Apply it to a topic in `mqttwarn.ini`:
+```
+[tasmota/temp/ds/+]
+targets = log:info
+alldata = ds18b20_values()
+format  = mqttwarn,Topic={Topic} Temperature={Temperature} {Timestamp}
+```
+
+Which results in:
+```
+2018-07-19 22:00:24,452 DEBUG [mqttwarn] Message received on tasmota/temp/ds/1: { "Time": "2018.02.01 22:48:39", "DS18B20": { "Temperature": 19.7 }, "TempUnit": "C" }
+2018-07-19 22:00:24,453 DEBUG [mqttwarn] Section [tasmota/temp/ds/+] matches message on tasmota/temp/ds/1. Processing...
+2018-07-19 22:00:24,459 DEBUG [mqttwarn] Message on tasmota/temp/ds/1 going to log:info
+2018-07-19 22:00:24,459 DEBUG [mqttwarn] New `log:info' job: tasmota/temp/ds/1
+2018-07-19 22:00:24,459 DEBUG [mqttwarn] Processor #0 is handling: `log' for info
+2018-07-19 22:00:24,460 DEBUG [log] *** MODULE=services/log.pyc: service=log, target=info
+2018-07-19 22:00:24,460 INFO  [log] mqttwarn,Topic=tasmota/temp/ds/1 Temperature=19.7 1517525319000
+```
+
+
 
 
 ### Using transformation data in other contexts ###
