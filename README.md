@@ -2861,15 +2861,18 @@ to make topic and the message's payload available simultaneously.
 
 ### Accessing Nested JSON Nodes ###
 
-Within templates and formats, you can refer only to the top-level names of an incoming JSON message. 
-To do otherwise currently requires an `alldata` function,
-which returns a new message to completely replace the old one.
-  
-For example, say you are receiving messages from a temperature sensor 
-running [Tasmota](https://github.com/arendst/Sonoff-Tasmota/),
-and you wish to convert them into [InfluxDB line format](https://docs.influxdata.com/influxdb/v1.6/write_protocols/line_protocol_tutorial/).
+Within templates and formats, you can refer only to the top-level names of an incoming JSON message,
+which significantly limits the kinds of messages `mqttwarn` can process. A [solution is in the works](https://github.com/jpmens/mqttwarn/issues/303)
+for this, but in the meantime you can use an `alldata` function to transform the JSON into something 
+`mqttwarn` _can_ process.
 
-The [JSON](https://github.com/arendst/Sonoff-Tasmota/wiki/JSON-Status-Responses#ds18b20) will look like this:
+The trick is to build a new JSON message with _only_ top-level values, specifically the values you need.
+ 
+For example, say we are receiving messages from a temperature sensor 
+running [Tasmota](https://github.com/arendst/Sonoff-Tasmota/),
+and we wish to convert them into [InfluxDB line format](https://docs.influxdata.com/influxdb/v1.6/write_protocols/line_protocol_tutorial/).
+
+The incoming [JSON](https://github.com/arendst/Sonoff-Tasmota/wiki/JSON-Status-Responses#ds18b20) will look like this:
 ```
 {
     "Time": "2018.02.01 21:29:40",
@@ -2880,24 +2883,31 @@ The [JSON](https://github.com/arendst/Sonoff-Tasmota/wiki/JSON-Status-Responses#
 },
 ```
 
-`Temperature` cannot be referenced directly within a `format`.  Instead the following code will extract the nested value, and will also convert
-the timestamp into a different format:
+Since `Temperature` cannot be referenced directly within a `format`, we need to make it a top-level value. 
+While we're at it, we can change the date to milliseconds since the epoch, and include the topic:
+```
+{
+    "Topic": "tasmota/temp/ds/1", 
+    "Timestamp": 1517525319000, 
+    "Temperature": 19.7
+}
+```
+
+This can be accomplished with the following function: 
 ```
 import ast
+import logging
 import time
 from datetime import datetime
 
-def standard_values(topic, payload):
-    ts = datetime.strptime(payload["Time"], "%Y.%m.%d %H:%M:%S")
-    millis = long(time.mktime(ts.timetuple()) * 1000)
-    return dict( Topic = topic, Timestamp = millis )
-
 def ds18b20_values(topic, data, srv=None):
     payload = ast.literal_eval(data["payload"])
-    d = standard_values(topic, payload)
-    d.update(Temperature = payload["DS18B20"]["Temperature"])
+    ts = datetime.strptime(payload["Time"], "%Y.%m.%d %H:%M:%S")
+    millis = long(time.mktime(ts.timetuple()) * 1000)
+    temp = payload["DS18B20"]["Temperature"]
+    d = dict( Topic = topic, Timestamp = millis, Temperature = temp )
+    logging.debug(d)
     return d
-
 ```
 
 Apply it to a topic in `mqttwarn.ini`:
@@ -2905,18 +2915,19 @@ Apply it to a topic in `mqttwarn.ini`:
 [tasmota/temp/ds/+]
 targets = log:info
 alldata = ds18b20_values()
-format  = mqttwarn,Topic={Topic} Temperature={Temperature} {Timestamp}
+format  = weather,Topic={Topic} Temperature={Temperature} {Timestamp}
 ```
 
 Which results in:
 ```
 2018-07-19 22:00:24,452 DEBUG [mqttwarn] Message received on tasmota/temp/ds/1: { "Time": "2018.02.01 22:48:39", "DS18B20": { "Temperature": 19.7 }, "TempUnit": "C" }
 2018-07-19 22:00:24,453 DEBUG [mqttwarn] Section [tasmota/temp/ds/+] matches message on tasmota/temp/ds/1. Processing...
+2018-07-19 22:00:24,457 DEBUG [funcs] {'Topic': u'tasmota/temp/ds/1', 'Timestamp': 1517525319000L, 'Temperature': 19.7}
 2018-07-19 22:00:24,459 DEBUG [mqttwarn] Message on tasmota/temp/ds/1 going to log:info
 2018-07-19 22:00:24,459 DEBUG [mqttwarn] New `log:info' job: tasmota/temp/ds/1
 2018-07-19 22:00:24,459 DEBUG [mqttwarn] Processor #0 is handling: `log' for info
 2018-07-19 22:00:24,460 DEBUG [log] *** MODULE=services/log.pyc: service=log, target=info
-2018-07-19 22:00:24,460 INFO  [log] mqttwarn,Topic=tasmota/temp/ds/1 Temperature=19.7 1517525319000
+2018-07-19 22:00:24,460 INFO  [log] weather,Topic=tasmota/temp/ds/1 Temperature=19.7 1517525319000
 ```
 
 
