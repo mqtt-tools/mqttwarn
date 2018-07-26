@@ -925,6 +925,7 @@ def processor(worker_id=None):
             'title'         : None,
             'image'         : None,
             'message'       : None,
+            'device'        : None,
             'priority'      : None
         }
 
@@ -934,6 +935,7 @@ def processor(worker_id=None):
         item['title'] = xform(get_config(section, 'title'), SCRIPTNAME, transform_data)
         item['image'] = xform(get_config(section, 'image'), '', transform_data)
         item['message'] = xform(get_config(section, 'format'), job.payload, transform_data)
+        item['device'] = xform(get_config(section, 'device'), job.payload, transform_data)
 
         try:
             item['priority'] = int(xform(get_config(section, 'priority'), 0, transform_data))

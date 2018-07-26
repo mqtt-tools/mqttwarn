@@ -291,6 +291,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   | `datamap`     |   O    | function name parse topic name to dict         |
   | `alldata`     |   O    | function to merge topic, and payload with more |
   | `format`      |   O    | function or string format for output           |
+  | `device`      |   O    | used by certain targets (see below). Usually a string |
   | `priority`    |   O    | used by certain targets (see below). May be func()  |
   | `title`       |   O    | used by certain targets (see below). May be func()  |
   | `image`       |   O    | used by certain targets (see below). May be func()  |
@@ -1980,6 +1981,7 @@ and one or more _application keys_ which you configure in the targets definition
 ```ini
 [config:pushover]
 callback = None
+device = cellphone1,cellphone2
 targets = {
     'nagios'     : ['userkey1', 'appkey1', 'sound1'],
     'alerts'     : ['userkey2', 'appkey2'],
@@ -2000,6 +2002,7 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
+| `device`      |   O    | device. device names separated by comma. Omit to notify all devices. |
 
 The pushover service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.

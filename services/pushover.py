@@ -51,6 +51,7 @@ def plugin(srv, item):
     addrs    = item.addrs
     title    = item.title
     priority = item.priority
+    device   = item.device
 
     # optional callback URL
     callback = item.config.get('callback', None)
@@ -82,6 +83,9 @@ def plugin(srv, item):
 
     if priority is not None:
         params['priority'] = priority
+
+    if device is not None:
+        params['device'] = device
 
     if callback is not None:
         params['callback'] = callback
