@@ -291,7 +291,6 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   | `datamap`     |   O    | function name parse topic name to dict         |
   | `alldata`     |   O    | function to merge topic, and payload with more |
   | `format`      |   O    | function or string format for output           |
-  | `device`      |   O    | used by certain targets (see below). Usually a string |
   | `priority`    |   O    | used by certain targets (see below). May be func()  |
   | `title`       |   O    | used by certain targets (see below). May be func()  |
   | `image`       |   O    | used by certain targets (see below). May be func()  |
@@ -1985,7 +1984,7 @@ device = cellphone1,cellphone2
 targets = {
     'nagios'     : ['userkey1', 'appkey1', 'sound1'],
     'alerts'     : ['userkey2', 'appkey2'],
-    'tracking'   : ['userkey1', 'appkey2', 'sound3'],
+    'tracking'   : ['userkey1', 'appkey2', None, 'cellphone1,cellphone2'],
     'extraphone' : ['userkey2', 'appkey3']
     }
 ```
@@ -1996,13 +1995,15 @@ notify, say, one or more of your devices as well as one for your spouse. As you
 can see in the example, you can even specify an optional sound to be played for
 the individual users. For a list of available sounds see the [Pushover API List](https://pushover.net/api#sounds).
 
+You can also specify the devices that should be notified, this is a comma-separated list.
+If you want to specify custom devices but don't want to specify a custom sound, you have to pass None for the sound.
+
 NOTE: `callback` is an optional URL for pushover to [ack messages](https://pushover.net/api#receipt).
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
-| `device`      |   O    | device. device names separated by comma. Omit to notify all devices. |
 
 The pushover service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.
