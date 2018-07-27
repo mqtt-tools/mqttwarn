@@ -16,10 +16,6 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Requirements](#requirements)
     + [Installation](#installation)
     + [Configuration](#configuration)
-      - [The `[defaults]` section](#the-defaults-section)
-      - [The `[config:xxx]` sections](#the-configxxx-sections)
-      - [The `[failover]` section](#the-failover-section)
-      - [The `[__topic__]` sections](#the-__topic__-sections)
   * [Supported Notification Services](#supported-notification-services)
     + [Configuration of service plugins](#configuration-of-service-plugins)
     + [Creating Custom Service Plugins](#creating-custom-service-plugins)
@@ -32,17 +28,20 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Merging more data](#merging-more-data)
     + [Accessing Nested JSON Nodes](#accessing-nested-json-nodes)
     + [Using transformation data in other contexts](#using-transformation-data-in-other-contexts)
-      - [Topic targets](#topic-targets)
     + [Filtering notifications](#filtering-notifications)
     + [Templates](#templates)
     + [Periodic tasks](#periodic-tasks)
+  * [Running with Docker](#running-with-docker)
+    + [Run the Image](#run-the-image)
+    + [Build the image](#build-the-image)
+    + [Deploy the Image (Administrators Only)](#deploy-the-image-administrators-only)
   * [Examples](#examples)
     + [Low battery notifications](#low-battery-notifications)
     + [Producing JSON](#producing-json)
   * [Notes](#notes)
-  * [Press](#press)  
+  * [Press](#press)
   
-  
+      
   ## Getting started
   
   ### Requirements
@@ -3077,6 +3076,172 @@ instead of waiting for the interval to elapse, you might want to configure:
 ```ini
 [cron]
 pinger = 10.5; now=true
+```
+
+
+## Running with Docker
+
+If you would rather use `mqttwarn` without installing Python
+and the required libraries, you can run it as a [Docker container](https://www.docker.com/).
+You need to install only the Docker executable.
+
+### Run the Image
+
+You can run the image as a service, i.e. in the background, or you can 
+run it interactively, perhaps to help diagnose a problem.
+
+Note that you can run a local copy of the image, if you've built one (see below), 
+by replacing `jpmens/mqttwarn` with `mqttwarn-local` in the following examples.
+
+#### As a Service
+
+This is the typical way of running `mqttwarn`.
+
+From the folder containing your `mqttwarn.ini` file:
+
+```
+docker run -d --rm --name mqttwarn \
+    -v $PWD:/opt/mqttwarn/conf \
+    jpmens/mqttwarn
+```
+
+To stop the container:
+```
+docker stop mqttwarn
+```
+
+#### Interactively
+
+If you want to experiment with your configuration, or to diagnose
+a problem, it can be simpler to restart the Python script,
+rather than to restart the Docker container.
+
+From the folder containing your `mqttwarn.ini` file:
+
+```
+docker run -it --rm \
+    -v $PWD:/opt/mqttwarn/conf \
+    --entrypoint bash \
+    jpmens/mqttwarn
+```
+ 
+To start the application: 
+```
+python mqttwarn.py
+```
+
+`Ctrl-C` will stop it. You can start and stop it as often as you like, here, probably editing the `.ini` file as you go.
+
+`Ctrl-D` or `exit` will stop the container. 
+
+
+
+#### Options
+
+##### Configuration Location
+
+You can of course run the Docker image from anywhere if you 
+specify a full path to the configuration file:
+```
+     -v /full/path/to/folder:/opt/mqttwarn/conf
+```
+
+##### Functions
+If you have one or more files of Python functions in the same folder
+as your `.ini` file, then prefix
+ the filenames in `.ini` file with a folder:
+```
+functions = 'functions/funcs.py'
+```
+Then add this argument to `docker run`:
+```
+    -v $PWD:/opt/mqttwarn/functions
+```
+
+##### Log file
+
+By default the log file will be created inside the container.
+If you would like instead log to a file on the host, add this to your
+`mqttwarn.ini` file:
+```
+logfile = 'log/mqttwarn.log'
+```
+Add this argument to `docker run`
+```
+    -v $PWD:/opt/mqttwarn/log
+```
+`mqttwarn.log` will be created in your current folder,
+and appended to
+each time the container is executed. You can delete the file
+between executions.
+
+
+##### If your MQTT Broker is Also Running in Docker on the Same Host
+
+If you give the MQTT broker container a name, then you can 
+refer to it by name rather than by
+IP address.  For instance, if it's named `mosquitto` 
+ put this in your `mqttwarn.ini` file:
+```
+hostname  = 'mosquitto'
+```
+Then add this argument to `docker run`:
+```
+    --link mosquitto
+```
+
+##### A full example
+
+If you have your `.ini` and Python files in your current directory,
+this will run `mqttwarn` and place the log file in the current directory:
+```
+docker run -d --rm --name mqttwarn \
+    -v $PWD:/opt/mqttwarn/conf \
+    -v $PWD:/opt/mqttwarn/functions \
+    -v $PWD:/opt/mqttwarn/log \
+    --link mosquitto \
+    jpmens/mqttwarn
+```
+
+
+
+### Build the image
+
+If you are making any changes to the `mqttwarn` application or to
+the `Dockerfile`, you can build a local image from the files on your drive
+(not from the files on Github).
+
+Execute the following from the root of the project :
+
+```
+docker build -t mqttwarn-local .
+```
+
+You can then edit any files and rebuild the image as many times as you need. 
+You don't need to commit any changes.
+
+The name `mqttwarn-local` is not meaningful, other than
+making it obvious when you run it that you are using your
+own personal image.  It will be renamed when it is published.
+
+### Deploy the Image (Administrators Only)
+
+Only do this when you have a clean checkout from `master`:
+```
+docker login
+```
+
+Set the version accordingly:
+```
+docker tag mqttwarn-local jpmens/mqttwarn:0.10.1
+docker push jpmens/mqttwarn:0.10.1
+```
+
+If this is the latest version, tag it as such (which will untag
+the previous latest version):
+```
+docker tag mqttwarn-local jpmens/mqttwarn:latest
+docker push jpmens/mqttwarn:latest
 ```
 
 
