@@ -74,8 +74,11 @@ def plugin(srv, item):
             'expire' : 3600,
         }
 
-    if len(addrs) > 2:
+    if len(addrs) > 2 and addrs[2]:
         params['sound'] = addrs[2]
+
+    if len(addrs) > 3:
+        params['sound'] = addrs[3]
 
     if title is not None:
         params['title'] = title

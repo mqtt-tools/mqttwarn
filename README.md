@@ -1979,10 +1979,11 @@ and one or more _application keys_ which you configure in the targets definition
 ```ini
 [config:pushover]
 callback = None
+device = cellphone1,cellphone2
 targets = {
     'nagios'     : ['userkey1', 'appkey1', 'sound1'],
     'alerts'     : ['userkey2', 'appkey2'],
-    'tracking'   : ['userkey1', 'appkey2', 'sound3'],
+    'tracking'   : ['userkey1', 'appkey2', None, 'cellphone1,cellphone2'],
     'extraphone' : ['userkey2', 'appkey3']
     }
 ```
@@ -1992,6 +1993,9 @@ configured _user key_ and _app key_ combinations. This in turn enables you to
 notify, say, one or more of your devices as well as one for your spouse. As you
 can see in the example, you can even specify an optional sound to be played for
 the individual users. For a list of available sounds see the [Pushover API List](https://pushover.net/api#sounds).
+
+You can also specify the devices that should be notified, this is a comma-separated list of device names specified as a single string.
+If you want to specify custom devices but don't want to specify a custom sound, you have to pass None for the sound.
 
 NOTE: `callback` is an optional URL for pushover to [ack messages](https://pushover.net/api#receipt).
 
