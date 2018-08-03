@@ -3101,8 +3101,9 @@ You need to install only the Docker executable.
 You can run the image as a service, i.e. in the background, or you can 
 run it interactively, perhaps to help diagnose a problem.
 
-Note that you can run a local copy of the image, if you've built one (see below), 
-by replacing `jpmens/mqttwarn` with `mqttwarn-local` in the following examples.
+Note that until the official image is published to Docker Hub,
+you will need to build a local copy of the image (see [below](#build-the-image))
+before you can run it.
 
 #### As a Service
 
@@ -3113,7 +3114,7 @@ From the folder containing your `mqttwarn.ini` file:
 ```
 docker run -d --rm --name mqttwarn \
     -v $PWD:/opt/mqttwarn/conf \
-    jpmens/mqttwarn
+    mqttwarn-local
 ```
 
 To stop the container:
@@ -3133,7 +3134,7 @@ From the folder containing your `mqttwarn.ini` file:
 docker run -it --rm \
     -v $PWD:/opt/mqttwarn/conf \
     --entrypoint bash \
-    jpmens/mqttwarn
+    mqttwarn-local
 ```
  
 To start the application: 
@@ -3211,7 +3212,7 @@ docker run -d --rm --name mqttwarn \
     -v $PWD:/opt/mqttwarn/functions \
     -v $PWD:/opt/mqttwarn/log \
     --link mosquitto \
-    jpmens/mqttwarn
+    mqttwarn-local
 ```
 
 
