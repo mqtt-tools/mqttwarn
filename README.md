@@ -1107,6 +1107,7 @@ targets = {
 Individual targets can override the default measurement, retention policy, and/or precision:
 
 ```ini
+[config:influxdb]
 host      = 'influxdbhost'
 port      = 8086
 username  = 'username'
