@@ -1076,7 +1076,7 @@ This service provides a way for forwarding data to the time series database [Inf
 
 You will need to install an instance of InfluxDB (v9+) and create a new user. Then create a new database and give your user write permissions to that database.
 
-You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database.
+You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database.  Individual targets can override the default measurement, retention policy, and/or precision.
 
 Each time a value is received for an InfluxDB target, the value is sent to the configured *measurement* with a *topic* tag matching the MQTT topic the data arrived on.
 
@@ -1084,7 +1084,7 @@ The topic name is normalised by replacing `/` with `_`. So a value arriving on `
 
 This allows you to setup measurements with multiple time series streams, or have a separate measurement for each stream.
 
-Following is an ini example, showing the various connection properties for the InfluxDB database, and some example target configs;
+Following is an ini example, showing the various connection properties for the InfluxDB database, and some example target configs.  Retention Policy (rp) and Precision are optional; the default InfluxDB retention policy (autogen) and precision (ns [nanosecond]) will be used if not specified.
 
 ```ini
 [config:influxdb]
@@ -1093,12 +1093,67 @@ port      = 8086
 username  = 'username'
 password  = 'password'
 database  = 'mqttwarn'
+# Retention Policy: optional (default: autogen)
+rp        = 'retentionpolicy'
+# Precision: optional (default: ns)
+precision = 's'    # { ns, u, ms, s, m, h }
 targets = {
                           # measurement
     'humidity'         : [ 'humidity' ],
     'temperature'      : [ 'temperature' ]
     }
 ```
+
+Individual targets can override the default measurement, retention policy, and/or precision:
+
+```ini
+host      = 'influxdbhost'
+port      = 8086
+username  = 'username'
+password  = 'password'
+database  = 'mqttwarn'
+rp        = 'retentionpolicy'
+precision = 'ns'    # { ns, u, ms, s, m, h }
+targets = {
+                       # measurement (use database, rp, aprecision specified above)
+    'temperature'   : [ 'temperature' ],
+                       # measurement,    database,   rp,     precision
+    'disk'          : [ 'disk',          'servers',  'rp',   'h' ]
+                       # measurement,    database   (default rp & precision)
+    'cpu'           : [ 'cpu',           'servers' ],
+                       # use default rp, but override database & precision:
+    'alpha'         : [ 'alpha',         'metrics',  '',    's' ]
+    }
+```
+
+InfluxDB tags and fields can be specified per topic using transformations. The format string should not contain quotes, and should follow these examples. Note that tag set (if any) should be listed first, comma-separated and without spaces, followed by whitespace and then the field set (required, if format is used).
+
+```ini
+[topic/one]
+format = tagkey1=tagvalue1,tagkey2=tagvalue2  field=value
+[topic/two]
+format = field=value
+```
+
+The 'topic' tag is always set as described above.
+
+Messages received matching the following config: ...
+
+```ini
+[environment/temperature/basement]
+targets = influxdb:temperature
+format = room=basement,entity=sensor2 temperature={payload}
+```
+
+... will be stored as:
+
+```
+time         entity   room      temperature  topic
+----         ------   ----      -----------  -----
+{timestamp}  sensor2  basement  47.5         environment_temperature_basement
+```
+
+
 
 ### `instapush`
 
