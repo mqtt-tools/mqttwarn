@@ -1149,6 +1149,7 @@ format = room=basement,entity=sensor2 temperature={payload}
 ... will be stored as:
 
 ```
+             (tag)    (tag)     (field)      (tag)
 time         entity   room      temperature  topic
 ----         ------   ----      -----------  -----
 {timestamp}  sensor2  basement  47.5         environment_temperature_basement
