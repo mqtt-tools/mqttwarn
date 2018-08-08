@@ -1116,7 +1116,7 @@ database  = 'mqttwarn'
 rp        = 'retentionpolicy'
 precision = 'ns'    # { ns, u, ms, s, m, h }
 targets = {
-                       # measurement (use database, rp, aprecision specified above)
+                       # measurement (use database, rp, and precision specified above)
     'temperature'   : [ 'temperature' ],
                        # measurement,    database,   rp,     precision
     'disk'          : [ 'disk',          'servers',  'rp',   'h' ]
