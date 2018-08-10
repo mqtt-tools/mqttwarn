@@ -25,11 +25,38 @@ def plugin(srv, item):
     measurement = item.addrs[0]
     tag         = "topic=" + item.topic.replace('/', '_')
     value       = item.message
-    
+
+    # retention policy - "&rp=" is valid in the url, so default=''
+    rp          = item.config.get('rp', '')
+    # precision=[ns,u,ms,s,m,h] - optional, default=nanosecond
+    precision   = item.config.get('precision', 'ns')
+
+    # allow overrides per target
+    # 'target'  = [ 'measurement', 'database',    'rp', 'precision' ]
+    if (len(item.addrs) > 1):
+        database = item.addrs[1] or database
+        if (len(item.addrs) > 2):
+            rp = item.addrs[2] or rp
+            if (len(item.addrs) > 3):
+                precision = item.addrs[3] or precision
+
     try:
-        url = "http://%s:%d/write?db=%s" % (host, port, database)
-        data = measurement + ',' + tag + ' value=' + value
-        
+        url = "http://%s:%d/write?db=%s&rp=%s&precision=%s" % (host, port, database, rp, precision)
+
+        # influxdb line protocol:
+        # measurement,tagKey1=tagVal1,tagKey2=tagVal2 field1=value1 field2=value2
+
+        # if no format has been set, default to "value={payload}""
+        if item.message == item.payload:
+            data = measurement + ',' + tag + ' value=' + value
+        else:
+            # sample format in .ini file; no quotes:
+            # format = host=server1,location=rack1 cpu={payload}
+            data = measurement + ',' + tag + ',' + item.message
+
+        srv.logging.debug(url)
+        srv.logging.debug(data)
+
         if username is None:
             r = requests.post(url, data=data)
         else:
