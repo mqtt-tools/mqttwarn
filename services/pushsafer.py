@@ -87,19 +87,19 @@ def plugin(srv, item):
         params['l'] = addrs[7]
 
     if len(addrs) > 7:
-        params['l'] = addrs[8]
+        params['pr'] = addrs[8]
 
     if len(addrs) > 8:
-        params['pr'] = addrs[9]
+        params['re'] = addrs[9]
 
     if len(addrs) > 9:
-        params['re'] = addrs[10]
+        params['ex'] = addrs[10]
 
     if len(addrs) > 10:
-        params['ex'] = addrs[11]
-        
+        params['a'] = addrs[11]
+
     if title is not None:
-        params['a'] = title
+        params['t'] = title
 
     try:
         srv.logging.debug("Sending pushsafer notification to %s [%s]..." % (item.target, params))
