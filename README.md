@@ -245,7 +245,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   to subscribe to. _mqttwarn_ handles each message received on this subscription
   by handing it off to one or more service targets.
   
-  Section names must be unique, and must specify the topic to be processed. If the section block does not have a `topic` option,
+  Section names must be unique and must specify the name of the topic to be processed. If the section block does not have a `topic` option,
   then the section name will be used.
 
   Consider the following example:
@@ -266,9 +266,9 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   at `my/special` will be stored in a `mysql` target and will be logged at level "INFO".  Messages received
   at `another/topic` (not at `my/other/special`) will be logged at level "DEBUG".
   
-  When a message is received at a topic with more than one matching section, then it will be
-  directed to the targets in all matching sections.  It's recommended you explicitly provide `topic` options to
-  all such sections for consistency.
+  When a message is received at a topic with more than one matching section it will be
+  directed to the targets in all matching sections.  For consistency, it's a good practice
+  to explicitly provide `topic` options to all such sections.
   
   Targets can be also defined as a dictionary containing the pairs of topic and targets. In that case message matching the section can be dispatched in more flexible ways to selected targets. Consider the following example:
   
