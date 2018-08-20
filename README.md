@@ -245,7 +245,10 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   to subscribe to. _mqttwarn_ handles each message received on this subscription
   by handing it off to one or more service targets.
   
-  The section name is the topic name (can be overridden using the `topic` option). Consider the following example:
+  Section names must be unique, and must specify the topic to be processed. If the section block does not have a `topic` option,
+  then the section name will be used.
+
+  Consider the following example:
   
   ```ini
   [icinga/+/+]
@@ -253,11 +256,19 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   [my/special]
   targets = mysql:m1, log:info
+
+  [my/other/special]
+  topic = another/topic
+  targets = log:debug
   ```
   
-  MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received at `my/special` will be stored in a `mysql` target and will be `log`ged at level "INFO".
+  MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received
+  at `my/special` will be stored in a `mysql` target and will be logged at level "INFO".  Messages received
+  at `another/topic` (not at `my/other/special`) will be logged at level "DEBUG".
   
-  If more then one section is matching the topic then message will be handled to targets in all matching sections.
+  When a message is received at a topic with more than one matching section, then it will be
+  directed to the targets in all matching sections.  It's recommended you explicitly provide `topic` options to
+  all such sections for consistency.
   
   Targets can be also defined as a dictionary containing the pairs of topic and targets. In that case message matching the section can be dispatched in more flexible ways to selected targets. Consider the following example:
   
