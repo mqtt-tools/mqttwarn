@@ -3042,24 +3042,37 @@ for a more sensible example.
 
 ### Filtering notifications ###
 
-A notification can be filtered (or suppressed) using a custom function.
+A notification can be filtered (or suppressed, or ignored) using a custom function.
 
-An optional `filter` in our configuration file, defines the name of a function we provide. The function is provided in another file, as specified by the functions directive in the configuration file.
+An optional `filter` setting in a section block defines the name of a Python function provided in file specified by the `functions` directive.
 
 ```ini
+[owntracks/#/phone]
 filter = owntracks_filter()
 ```
 
-This specifies that when a message for the defined topic `owntracks/jane/phone` is processed, our function `owntracks_filter()` should be invoked to parse that. The filter function should return `True` if the message should be suppressed, or `False` if the message should be processed. (As usual, topic names may contain MQTT wildcards.)
+This example specifies that when a message for the defined topic `owntracks/jane/phone` is received, the function `owntracks_filter()` should be invoked to determine whether
+or not to process the message.
 
-The function we define to do that is:
+The filter function should return `True` if the message should be suppressed, or `False` if the message should be processed.
+It should have the following signature:
 
+```python
+def owntracks_filter(topic, message, section, srv):
+    return message.find('event') == -1
+```
+
+The following, with fewer arguments, is also acceptable, but the above is preferred.
 ```python
 def owntracks_filter(topic, message):
     return message.find('event') == -1
 ```
 
-This filter will suppress any messages that do not contain the `event` token.  This filter goes in the file specified by the functions directive.
+These functions will return `True` for messages that do not contain the `event` token, and thus suppress those messages.
+
+Note that the `topic` parameter will be the name of the specific topic (e.g. `owntracks/jane/phone`) that the message
+was received on.  The name of the section (e.g. `owntracks/#/phone`) will be the `section` argument.
+
 
 ### Templates ###
 
