@@ -242,14 +242,17 @@ class Config(RawConfigParser):
 
         return val
 
-    def filter(self, name, topic, payload):
+    def filter(self, name, topic, payload, section=None):
         ''' Attempt to invoke function `name' from the `functions'
             package. Return that function's True/False '''
 
         rc = False
         try:
             func = load_function(name)
-            rc = func(topic, payload)
+            try:
+                rc = func(topic, payload, section, srv)  # new version
+            except TypeError:
+                rc = func(topic, payload)                # legacy signature
         except:
             raise
 
@@ -501,7 +504,7 @@ def is_filtered(section, topic, payload):
     if cf.has_option(section, 'filter'):
         filterfunc = get_function_name( cf.get(section, 'filter') )
         try:
-            return cf.filter(filterfunc, topic, payload)
+            return cf.filter(filterfunc, topic, payload, section)
         except Exception, e:
             logging.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, str(e)))
     return False
