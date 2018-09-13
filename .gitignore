@@ -7,3 +7,6 @@
 *.sln
 *.suo
 *.pyproj
+.pytest_cache
+.pytest_results
+.coverage

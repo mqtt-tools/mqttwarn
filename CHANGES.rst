@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Add foundation for unit tests based on pytest
 
 
 .. _mqttwarn-0.10.1:

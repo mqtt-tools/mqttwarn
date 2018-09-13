@@ -98,6 +98,11 @@ extras = {
     'xmpp': [
         'xmpppy==0.5.0rc1',
     ],
+    'test': [
+        'pytest==3.8.0',
+        'pytest-cov==2.6.0',
+        'lovely.testlayers>=0.7.1',
+    ],
 }
 
 setup(name='mqttwarn',
@@ -154,9 +159,10 @@ setup(name='mqttwarn',
         ],
       },
       zip_safe=False,
-      test_suite='mqttwarn.test',
+      test_suite='tests',
       install_requires=requires,
       extras_require=extras,
+      tests_require=extras['test'],
       dependency_links=[
           'https://github.com/jacobb/prowlpy/archive/master.tar.gz#egg=prowlpy'
       ],
