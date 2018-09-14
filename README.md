@@ -19,18 +19,12 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Supported Notification Services](#supported-notification-services)
     + [Configuration of service plugins](#configuration-of-service-plugins)
     + [Creating Custom Service Plugins](#creating-custom-service-plugins)
-  * [Transformation](#transformation)
-  * [Advanced features](#advanced-features)
-    + [JSON output serialization](#json-output-serialization)
-    + [Transformation data](#transformation-data)
-    + [Using functions to replace incoming payloads](#using-functions-to-replace-incoming-payloads)
-    + [Incorporating topic names into transformation data](#incorporating-topic-names-into-transformation-data)
-    + [Merging more data](#merging-more-data)
-    + [Accessing Nested JSON Nodes](#accessing-nested-json-nodes)
-    + [Using transformation data in other contexts](#using-transformation-data-in-other-contexts)
-    + [Filtering notifications](#filtering-notifications)
+  * [Outboound messages](#outbound-messages)
+    + [Basic message forwarding](#basic-message-forwarding)
+    + [Using inbound JSON](#using-inbound-json)
+    + [Using custom functions](#using-custom-functions)
     + [Templates](#templates)
-    + [Periodic tasks](#periodic-tasks)
+  * [Periodic tasks](#periodic-tasks)
   * [Running with Docker](#running-with-docker)
     + [Run the Image](#run-the-image)
     + [Build the image](#build-the-image)
@@ -2724,7 +2718,7 @@ item = {
 }
 ```
 
-## The outbound message
+## Outbound messages
 
 ### Basic message forwarding
 
@@ -3156,7 +3150,7 @@ amount of text (`file`, `smtp`, and `nntp` come to mind).
 Use of this feature requires [Jinja2], but you don't have to install it if you don't need
 templating.
 
-### Periodic tasks ###
+## Periodic tasks
 
 _mqttwarn_ can use functions you define in the file specified `[defaults]` section
 to periodically do whatever you want, for example, publish an MQTT message. There
