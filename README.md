@@ -20,8 +20,8 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Configuration of service plugins](#configuration-of-service-plugins)
     + [Creating Custom Service Plugins](#creating-custom-service-plugins)
   * [Outboound messages](#outbound-messages)
-    + [Basic message forwarding](#basic-message-forwarding)
-    + [Using inbound JSON](#using-inbound-json)
+    + [Message forwarding](#message-forwarding)
+    + [Using inbound JSON](#using-inboound-json)
     + [Using custom functions](#using-custom-functions)
     + [Templates](#templates)
   * [Periodic tasks](#periodic-tasks)
@@ -2720,9 +2720,14 @@ item = {
 
 ## Outbound messages
 
-### Basic message forwarding
+### Message forwarding
 
-To simply forward an incoming MQTT message, you don't need to do anything other than configure the target. Add a topic section to your `mqttwarn.ini`, by simply naming it after the topic you wish to have forwarded, and within define a `targets` property. The payload of the inbound message will then be forwarded to the defined service plugin, wether it simply says "ON", or contains a large JSON dictionary.
+To simply forward an incoming MQTT message, you don't need to do anything other than configure the target. Add a topic section to your `mqttwarn.ini`, by simply naming it after the topic you wish to have forwarded, and within define the `targets`. The payload of the inbound message will then be forwarded to the defined service plugin, wether it simply says "ON", or contains a large JSON dictionary.
+
+[office/ups]
+targets = log:debug
+
+This example shows how to have messages received on the MQTT topic `office/ups`, saved into the `mqttwarn.log` file with a `debug` label. This of course assumes that you have configured the log section the way described [above](#the-configxxx-sections). 
 
 But mqttwarn provides several options to create a different outbound message, allowing you for example to make your outbound message more human-readable. 
 
@@ -2831,15 +2836,13 @@ A topic section in the INI file can have properties set as per the table at the 
 
 Both the `datamap` and the `alldata` properties in a topic section can call a function which returns a [dictionary](https://docs.python.org/2/tutorial/datastructures.html#dictionaries). The keys in this dictionary can be used when describing the outbound `title` and `format` properties of the same topic section.
 
-A function called using the `datamap` property, gets access to the `topic` string and the `service` object. Functions called using the `alldata` property, get access to the `data` dictionary in addition to that. It's not clear to me why both of these exist, as `alldata` seems to be the more extensive environment to use. 
-
 - `topic`: again, seems superfluous, as `data['topic']` contains the same value
 - `data`: provides access to some information of the inbound MQTT transmission, [more detail here](https://github.com/jpmens/mqttwarn#transformation-data)
 - `service`: could not find any documentation, but reading the code this provides access to the instance of the `paho.mqtt.client.Client` object (which provides a plethora of properties and methods), to the `mqttwarn` logging setup, to the Python `globals()` method and all that entails, and to the name of the script. 
 
 #### Filter functions
 
-I believe a function called from the `filter` property in a topic section needs to return `False` to stop the outbound notification. It has access to the `topic` and the `message` strings of the inbound MQTT transmission. 
+A function called from the `filter` property in a topic section needs to return `False` to stop the outbound notification. It has access to the `topic` and the `message` strings of the inbound MQTT transmission. 
 
 #### Output functions
 
