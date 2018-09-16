@@ -19,18 +19,12 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Supported Notification Services](#supported-notification-services)
     + [Configuration of service plugins](#configuration-of-service-plugins)
     + [Creating Custom Service Plugins](#creating-custom-service-plugins)
-  * [Transformation](#transformation)
-  * [Advanced features](#advanced-features)
-    + [JSON output serialization](#json-output-serialization)
-    + [Transformation data](#transformation-data)
-    + [Using functions to replace incoming payloads](#using-functions-to-replace-incoming-payloads)
-    + [Incorporating topic names into transformation data](#incorporating-topic-names-into-transformation-data)
-    + [Merging more data](#merging-more-data)
-    + [Accessing Nested JSON Nodes](#accessing-nested-json-nodes)
-    + [Using transformation data in other contexts](#using-transformation-data-in-other-contexts)
-    + [Filtering notifications](#filtering-notifications)
+  * [Outboound messages](#outbound-messages)
+    + [Message forwarding](#message-forwarding)
+    + [Transforming inbound JSON](#transforming-inboound-json)
+    + [Custom functions](#custom-functions)
     + [Templates](#templates)
-    + [Periodic tasks](#periodic-tasks)
+  * [Periodic tasks](#periodic-tasks)
   * [Running with Docker](#running-with-docker)
     + [Run the Image](#run-the-image)
     + [Build the image](#build-the-image)
@@ -2724,7 +2718,41 @@ item = {
 }
 ```
 
-## Transformation
+## Outbound messages
+
+### Message forwarding
+
+To simply forward an incoming MQTT message, you don't need to do anything other than configure the target. Add a topic section to your `mqttwarn.ini`, by simply naming it after the topic you wish to have forwarded, and within define the `targets`. The payload of the inbound message will then be forwarded to the defined service plugin, wether it simply says "ON", or contains a large JSON dictionary.
+
+[office/ups]
+targets = log:debug
+
+This example shows how to have messages received on the MQTT topic `office/ups`, saved into the `mqttwarn.log` file with a `debug` label. This of course assumes that you have configured the log section the way described [above](#the-configxxx-sections). 
+
+But mqttwarn provides several options to create a different outbound message, allowing you for example to make your outbound message more human-readable. 
+
+The title and format directives define the title and the body of the outbound message. Here, you can turn an MQTT payload that simply states "ON", into a friendlier version. 
+
+```
+[office/ups]
+title = Office UPS
+format = The office UPS is {payload}
+```
+
+Notice that the original MQTT payload is referenced, so that if the UPS is switched off and sends out a corresponding MQTT message, the outbound message will state the same. The information that is available to you in creating the outbound message, is called the transformation data. The very basic set of transformation data is the following : 
+
+```python
+{
+  'topic'         : topic name
+  'payload'       : topic payload
+  '_dtepoch'      : epoch time                  # 1392628581
+  '_dtiso'        : ISO date (UTC)              # 2014-02-17T10:38:43.910691Z
+  '_dthhmm'       : timestamp HH:MM (local)     # 10:16
+  '_dthhmmss'     : timestamp HH:MM:SS (local)  # 10:16:21
+}
+```
+
+### Transforming inbound JSON
 
 In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you do do the following:
 
@@ -2759,13 +2787,7 @@ You associate MQTT topic branches to applications in the configuration file (cop
 See details in the config sample for how to configure this script.
 The path to the configuration file (which must be valid Python) is obtained from the `MQTTWARNINI` environment variable which defaults to `mqttwarn.ini` in the current directory.
 
-
-
-## Advanced features
-
-### JSON output serialization
-
-When receiving JSON data like `{"data": {"humidity": 62.18}}`, you might
+Even more advanced, when receiving JSON data like `{"data": {"humidity": 62.18}}`, you might
 want to extract values using the `format` mechanism before forwarding
 it to other data sinks, like
 
@@ -2787,38 +2809,50 @@ format = "{data!j}"
 This will serialize the formatted data to JSON format appropriately,
 so the outcome will be `{"humidity": 62.18}`.
 
+#### Nested JSON
 
-### Transformation data
+Within templates and formats, you can refer only to the top-level names of an incoming JSON message,
+which significantly limits the kinds of messages `mqttwarn` can process. A [solution is in the works](https://github.com/jpmens/mqttwarn/issues/303)
+for this, but in the meantime you can use an `alldata` function to transform the JSON into something 
+`mqttwarn` _can_ process.
 
-_mqttwarn_ can transform an incoming message before passing it to a plugin service.
-On each message, _mqttwarn_ attempts to decode the incoming payload from JSON. If
-this is possible, a dict with _transformation data_ is made available to the
-service plugins as `item.data`.
+The trick is to build a new JSON message with _only_ top-level values, specifically the values you need.
 
-This transformation data is initially set up with some built-in values, in addition
-to those decoded from the incoming JSON payload. The following built-in variables
-are defined in `item.data`:
+### Custom functions
 
-```python
-{
-  'topic'         : topic name
-  'payload'       : topic payload
-  '_dtepoch'      : epoch time                  # 1392628581
-  '_dtiso'        : ISO date (UTC)              # 2014-02-17T10:38:43.910691Z
-  '_dthhmm'       : timestamp HH:MM (local)     # 10:16
-  '_dthhmmss'     : timestamp HH:MM:SS (local)  # 10:16:21
-}
-```
+A topic section in the INI file can have properties set as per the table at the bottom of [this section](https://github.com/jpmens/mqttwarn#the-__topic__-sections). The `targets`, `topic` and `qos` properties can not be defined with a function. 
 
-Any of these values can be used in `format` to create custom outgoing
-messages.
+#### Topic-section properties that can call a custom function
 
-```ini
-format = I'll have a {fruit} if it costs {price} at {_dthhmm}
-```
+- `datamap` : dictionary, or a function that returns a dictionary
+- `alldata` : dictionary, or a function that returns a dictionary
+- `filter` : boolean, or a function that returns a boolean
+- `title` : string, or a function that returns a string
+- `format` : string, or a function that returns a string
+- `priority` : see below
+- `image` : see below
 
+#### Data mapping functions
 
-### Using functions to replace incoming payloads
+Both the `datamap` and the `alldata` properties in a topic section can call a function which returns a [dictionary](https://docs.python.org/2/tutorial/datastructures.html#dictionaries). The keys in this dictionary can be used when describing the outbound `title` and `format` properties of the same topic section.
+
+- `topic`: again, seems superfluous, as `data['topic']` contains the same value
+- `data`: provides access to some information of the inbound MQTT transmission, [more detail here](https://github.com/jpmens/mqttwarn#transformation-data)
+- `service`: could not find any documentation, but reading the code this provides access to the instance of the `paho.mqtt.client.Client` object (which provides a plethora of properties and methods), to the `mqttwarn` logging setup, to the Python `globals()` method and all that entails, and to the name of the script. 
+
+#### Filter functions
+
+A function called from the `filter` property in a topic section needs to return `False` to stop the outbound notification. It has access to the `topic` and the `message` strings of the inbound MQTT transmission. 
+
+#### Output functions
+
+Both the `title` and the `format` properties in the topic section can contain a string where `{bracketed}` references get resolved using the dictionary returned from a data mapping function. Or they can call a function that returns a string that may or may not contain such references. The functions called here do not have access to the actual dictionary returned from data mapping functions though.
+
+#### Examples
+
+Below are a number of example scenarios where custom functions are being used.
+
+##### Using functions to replace incoming payloads
 
 Consider the following configuration snippet in addition to the configuration
 of the `mqtt` service shown above:
@@ -2868,7 +2902,7 @@ def p01Format(data, srv):
 Be advised that if you MQTT publish back to the same topic which triggered the invocation
 of your function, you'll create an endless loop.
 
-### Incorporating topic names into transformation data
+##### Incorporating topic names into transformation data
 
 An MQTT topic branch name contains information you may want to use in transformations.
 As a rather extreme example, consider the [OwnTracks] program (the
@@ -2921,7 +2955,7 @@ the above PUBlish will be transformed into
 jane: leave => Home
 ```
 
-### Merging more data ###
+##### Merging more data ###
 
 The optional `alldata` function you write and configure on a per/topic basis, is
 passed the message _topic_, its _data_ and an optional _srv_ object. This function
@@ -2930,15 +2964,8 @@ list of transformation data. This expands on the two other transformation functi
 to make topic and the message's payload available simultaneously.
 
 
-### Accessing Nested JSON Nodes ###
+##### A custom function to convert nested JSON
 
-Within templates and formats, you can refer only to the top-level names of an incoming JSON message,
-which significantly limits the kinds of messages `mqttwarn` can process. A [solution is in the works](https://github.com/jpmens/mqttwarn/issues/303)
-for this, but in the meantime you can use an `alldata` function to transform the JSON into something 
-`mqttwarn` _can_ process.
-
-The trick is to build a new JSON message with _only_ top-level values, specifically the values you need.
- 
 For example, say we are receiving messages from a temperature sensor 
 running [Tasmota](https://github.com/arendst/Sonoff-Tasmota/),
 and we wish to convert them into [InfluxDB line format](https://docs.influxdata.com/influxdb/v1.6/write_protocols/line_protocol_tutorial/).
@@ -3001,16 +3028,7 @@ Which results in:
 2018-07-19 22:00:24,460 INFO  [log] weather,Topic=tasmota/temp/ds/1 Temperature=19.7 1517525319000
 ```
 
-
-
-
-### Using transformation data in other contexts ###
-
-Beside using the transformation data dictionary in `format` to create custom outgoing messages,
-it can be used in other contexts as well. Let's have a look at different ways this can be
-used throughout _mqttwarn_.
-
-#### Topic targets ####
+##### Topic targets
 
 By incorporating transformation data into topic targets, we can make _mqttwarn_ dispatch
 messages dynamically based on the values of the transformation data dictionary.
@@ -3040,7 +3058,7 @@ Please have a look at [Incorporate topic names into topic targets](https://githu
 for a more sensible example.
 
 
-### Filtering notifications ###
+##### Filtering notifications
 
 A notification can be filtered (or suppressed, or ignored) using a custom function.
 
@@ -3135,7 +3153,7 @@ amount of text (`file`, `smtp`, and `nntp` come to mind).
 Use of this feature requires [Jinja2], but you don't have to install it if you don't need
 templating.
 
-### Periodic tasks ###
+## Periodic tasks
 
 _mqttwarn_ can use functions you define in the file specified `[defaults]` section
 to periodically do whatever you want, for example, publish an MQTT message. There
