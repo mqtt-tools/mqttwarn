@@ -2752,7 +2752,7 @@ Notice that the original MQTT payload is referenced, so that if the UPS is switc
 }
 ```
 
-### Using inboound JSON
+### Transforming inbound JSON
 
 In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you do do the following:
 
@@ -2818,7 +2818,7 @@ for this, but in the meantime you can use an `alldata` function to transform the
 
 The trick is to build a new JSON message with _only_ top-level values, specifically the values you need.
 
-### Using custom functions
+### Custom functions
 
 A topic section in the INI file can have properties set as per the table at the bottom of [this section](https://github.com/jpmens/mqttwarn#the-__topic__-sections). The `targets`, `topic` and `qos` properties can not be defined with a function. 
 
