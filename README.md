@@ -340,7 +340,6 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [mysql_dynamic](#mysql_dynamic)
 * [mysql_remap](#mysql_remap)
 * [mythtv](#mythtv)
-* [nma](#nma)
 * [nntp](#nntp)
 * [nsca](#nsca)
 * [osxnotify](#osxnotify)
@@ -1643,30 +1642,6 @@ targets = {
 | `title`       |   O    | notification title (dflt: `mqttwarn`) |
 | `image`       |   O    | notification image URL                |
 
-
-### `nma`
-
-The `nma` service uses [NMA (Notify My Android)](http://www.notifymyandroid.com)
-to delivery notifications from _mqttwarn_ to your Android device.
-
-```ini
-[config:nma]
-targets = {
-                 # api key                                            app         event
-  'myapp'    : [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', "Nagios",  "Phone call" ]
-  }
-```
-
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `priority`    |   O    | priority. (dflt: 0)                    |
-
-![NMA](assets/nma.jpg)
-
-Requires:
-
-* A [Notify My Android(NMA)](http://www.notifymyandroid.com) account
-* [pynma](https://github.com/uskr/pynma). You don't have to install this -- just copy `pynma.py` to the _mqttwarn_ directory.
 
 ### `nntp`
 
