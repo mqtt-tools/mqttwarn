@@ -1432,10 +1432,10 @@ When a message is received, the  plugin will attempt to populate the following c
 - the 'fallback' column, as noted below
   - #TODO: how is this different from 'payload'?
 
-To be clear, there is no other way to configure the plugin to use different column names.  If you
+To be clear, there is no other way to configure this particular plugin to use different column names.  If you
  need such a capability (e.g. you want to a column called "receivedAt" to be filled with the timestamp)
  then you can use an `alldata` function to transform the incoming message into a JSON document with the
- desired node names.
+ desired node names.  Or you can try the [mysql_remap plugin](#mysql_remap) plugin, below.
 
 #### Setup
 
