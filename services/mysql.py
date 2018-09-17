@@ -9,7 +9,7 @@ import MySQLdb
 import sys
 
 # https://mail.python.org/pipermail/tutor/2010-December/080701.html
-def add_row(cursor, tablename, rowdict):
+def add_row(srv, cursor, tablename, rowdict):
     # XXX tablename not sanitized
     # XXX test for allowed keys is case-sensitive
 
@@ -26,9 +26,9 @@ def add_row(cursor, tablename, rowdict):
     columns = ", ".join(keys)
     values_template = ", ".join(["%s"] * len(keys))
 
-    sql = "insert into %s (%s) values (%s)" % (
-        tablename, columns, values_template)
+    sql = "insert into %s (%s) values (%s)" % (tablename, columns, values_template)
     values = tuple(rowdict[key] for key in keys)
+    srv.logging.debug("adding row with sql '%s' and values: %s", sql, str(values))
     cursor.execute(sql, values)
 
     return unknown_keys
@@ -42,6 +42,7 @@ def plugin(srv, item):
     user    = item.config.get('user')
     passwd  = item.config.get('pass')
     dbname  = item.config.get('dbname')
+    srv.logging.debug("Connecting to MySql host '%s' and database '%s' as user '%s'", host, dbname, user)
 
     try:
         table_name = item.addrs[0].format(**item.data).encode('utf-8')
@@ -79,7 +80,7 @@ def plugin(srv, item):
                 col_data[key] = item.data[key]
 
     try:
-        unknown_keys = add_row(cursor, table_name, col_data)
+        unknown_keys = add_row(srv, cursor, table_name, col_data)
         if unknown_keys is not None:
             srv.logging.debug("Skipping unused keys %s" % ",".join(unknown_keys))
         conn.commit()
