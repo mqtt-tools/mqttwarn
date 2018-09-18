@@ -1421,7 +1421,7 @@ If you added columns 'topic', 'payload' and '_dtiso' to the databse, then that s
 |   90 | Jane Jolie | { "name" : "Jane Jolie", "id" : 90, "number" : 17 } | 2018-09-17T20:20:31.889002Z | my/2  |
 +------+------------+-----------------------------------------------------+-----------------------------+-------+
 ```
-Here, the plugin pulled values for the new columns from standard mqttwarn meta-data.
+Here, the plugin pulled values for the new columns from standard mqttwarn metadata.
 
 When a message is received, the  plugin will attempt to populate the following column names:
 - root-level JSON nodes in the message
@@ -1444,8 +1444,8 @@ The MySQL plugin is one of the most complicated to set up.
 First it requires the [MySQLDb](http://mysql-python.sourceforge.net/) library to be installed, which is not trivial.
 - _Ubuntu 16.04:_
 ```
-    sudo apt-get install -y python-dev libmysqlclient-dev
-    sudo pip install MySQL-python
+sudo apt-get install -y python-dev libmysqlclient-dev
+®sudo pip install MySQL-python
 ```
 
 It then requires the following configuration section:
