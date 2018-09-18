@@ -1412,7 +1412,7 @@ the message '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }' on topic 'my/2
 
 The values for the 'id' and 'name' columns are assumed to be filled by the values of the JSON nodes with the same name.
 
-If you added columns 'topic', 'payload' and '_dtiso' to the databse, then that same message will add this row:
+If you added columns 'topic', 'payload' and '_dtiso' to the database, then that same message will add this row:
 
 ```mysql
 +------+------------+-----------------------------------------------------+-----------------------------+-------+
@@ -1445,7 +1445,7 @@ First it requires the [MySQLDb](http://mysql-python.sourceforge.net/) library to
 - _Ubuntu 16.04:_
 ```
 sudo apt-get install -y python-dev libmysqlclient-dev
-®sudo pip install MySQL-python
+sudo pip install MySQL-python
 ```
 
 It then requires the following configuration section:
