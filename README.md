@@ -1441,9 +1441,10 @@ To be clear, there is no other way to configure this particular plugin to use di
 
 The MySQL plugin is one of the most complicated to set up.
 
-First it requires the [MySQLDb](http://mysql-python.sourceforge.net/) library to be installed.
-- _Debian/Ubuntu_: `sudo apt-get install -y python-mysqldb`
-- TODO: do we have any others?
+First it requires the [MySQLDb](http://mysql-python.sourceforge.net/) library to be installed, which is not trivial.
+- _Ubuntu 16.04:_
+    sudo apt-get install -y python-dev libmysqlclient-dev
+    sudo pip install MySQL-python
 
 It then requires the following configuration section:
 
