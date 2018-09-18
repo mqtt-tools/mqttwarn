@@ -1591,7 +1591,7 @@ targets = mysql_remap:t1
 #alldata = powerBinFunc()
 ```
 
-You can also do some further transformation on the message before insert it into the databse using by the two uncommented lines above and the below function (need to copy it into funcs.py).
+You can also do some further transformation on the message before insert it into the database using by the two uncommented lines above and the below function (need to copy it into funcs.py).
 
 This below example convert reveived data and time information itno unix timestam format and replace "ON" and "OFF" values to 1 and 0 numbers.
 
