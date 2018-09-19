@@ -1430,7 +1430,6 @@ When a message is received, the  plugin will attempt to populate the following c
   - e.g. 'topic', 'payload' and '_dtiso' as above
   - note that these all must be VARCHAR columns; timestamp columns are [not yet supported](https://github.com/jpmens/mqttwarn/issues/334#issuecomment-422141808)
 - the 'fallback' column, as noted below
-  - #TODO: how is this different from 'payload'?
 
 To be clear, there is no other way to configure this particular plugin to use different column names.  If you
  need such a capability (e.g. you want to a column called "receivedAt" to be filled with the timestamp)
