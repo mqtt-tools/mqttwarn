@@ -1396,34 +1396,11 @@ string isn't available in the _data_, the message is _not_ published.
 
 ### `mysql`
 
-The MySQL plugin is one of the most complicated to set up. It requires the following configuration:
+The MySQL plugin will attempt to add a row for every message received on a given topic, automatically filling in
+ columns.
 
-```ini
-[config:mysql]
-host  =  'localhost'
-port  =  3306
-user  =  'jane'
-pass  =  'secret'
-dbname  =  'test'
-targets = {
-          # tablename  #fallbackcolumn ('NOP' to disable)
- 'm2'   : [ 'names',   'full'            ]
-  }
-```
-
-Suppose we create the following table for the target specified above:
-
-```
-CREATE TABLE names (id INTEGER, name VARCHAR(25));
-```
-
-and publish this JSON payload:
-
-```
-mosquitto_pub -t my/2 -m '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }'
-```
-
-This will result in the two columns `id` and `name` being populated:
+For instance, given a table created with `CREATE TABLE names (id INTEGER, name VARCHAR(25));` then
+the message '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }' on topic 'my/2' will be added to the table like this:
 
 ```mysql
 +------+------------+
@@ -1433,28 +1410,70 @@ This will result in the two columns `id` and `name` being populated:
 +------+------------+
 ```
 
+The values for the 'id' and 'name' columns are assumed to be filled by the values of the JSON nodes with the same name.
+
+If you added columns 'topic', 'payload' and '_dtiso' to the database, then that same message will add this row:
+
+```mysql
++------+------------+-----------------------------------------------------+-----------------------------+-------+
+| id   | name       | payload                                             | _dtiso                      | topic |
++------+------------+-----------------------------------------------------+-----------------------------+-------+
+|   90 | Jane Jolie | { "name" : "Jane Jolie", "id" : 90, "number" : 17 } | 2018-09-17T20:20:31.889002Z | my/2  |
++------+------------+-----------------------------------------------------+-----------------------------+-------+
+```
+Here, the plugin pulled values for the new columns from standard mqttwarn metadata.
+
+When a message is received, the  plugin will attempt to populate the following column names:
+- root-level JSON nodes in the message
+  - e.g. 'name' and 'id' above
+- ['transformation data' fields](https://github.com/jpmens/mqttwarn#outbound-messages) names
+  - e.g. 'topic', 'payload' and '_dtiso' as above
+  - note that these all must be VARCHAR columns; timestamp columns are [not yet supported](https://github.com/jpmens/mqttwarn/issues/334#issuecomment-422141808)
+- the 'fallback' column, as noted below
+  - #TODO: how is this different from 'payload'?
+
+To be clear, there is no other way to configure this particular plugin to use different column names.  If you
+ need such a capability (e.g. you want to a column called "receivedAt" to be filled with the timestamp)
+ then you can use an `alldata` function to transform the incoming message into a JSON document with the
+ desired node names.  Or you can try the [mysql_remap plugin](#mysql_remap) plugin, below.
+
+#### Setup
+
+The MySQL plugin is one of the most complicated to set up.
+
+First it requires the [MySQLDb](http://mysql-python.sourceforge.net/) library to be installed, which is not trivial.
+- _Ubuntu 16.04:_
+```
+sudo apt-get install -y python-dev libmysqlclient-dev
+sudo pip install MySQL-python
+```
+
+It then requires the following configuration section:
+
+```ini
+[config:mysql]
+host  =  'localhost'
+port  =  3306
+user  =  'jane'
+pass  =  'secret'
+dbname  =  'test'
+targets = {
+            # tablename  #fallbackcolumn ('NOP' to disable)
+ 'm2'   : [ 'names',     'full'            ]
+  }
+```
+
+Finally a topic section:
+```ini
+[names]
+topic = my/#
+targets = mysql:m2
+```
+
 The target contains a so-called _fallback column_ into which _mqttwarn_ adds
 the "rest of" the payload for all columns not targeted with JSON data unless that
 is explicitly configured as `NOP` in the service in which case extra data is discarded.
 I'll now add our fallback column to the schema:
-
-```mysql
-ALTER TABLE names ADD full TEXT;
-```
-
-Publishing the same payload again, will insert this row into the table:
-
-```mysql
-+------+------------+-----------------------------------------------------+
-| id   | name       | full                                                |
-+------+------------+-----------------------------------------------------+
-|   90 | Jane Jolie | NULL                                                |
-|   90 | Jane Jolie | { "name" : "Jane Jolie", "id" : 90, "number" : 17 } |
-+------+------------+-----------------------------------------------------+
-```
-
-As you can imagine, if we add a `number` column to the table, it too will be
-correctly populated with the value `17`.
 
 The payload of messages which do not contain valid JSON will be coped verbatim
 to the _fallback_ column:
@@ -1467,8 +1486,7 @@ to the _fallback_ column:
 +------+------+-------------+--------+
 ```
 
-You can add columns with the names of the built-in transformation types (e.g. `_dthhmmss`, see below)
-to have those values stored automatically.
+
 
 ### `mysql_dynamic`
 
@@ -1573,7 +1591,7 @@ targets = mysql_remap:t1
 #alldata = powerBinFunc()
 ```
 
-You can also do some further transformation on the message before insert it into the databse using by the two uncommented lines above and the below function (need to copy it into funcs.py).
+You can also do some further transformation on the message before insert it into the database using by the two uncommented lines above and the below function (need to copy it into funcs.py).
 
 This below example convert reveived data and time information itno unix timestam format and replace "ON" and "OFF" values to 1 and 0 numbers.
 
