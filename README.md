@@ -2828,9 +2828,9 @@ A topic section in the INI file can have properties set as per the table at the 
 
 Both the `datamap` and the `alldata` properties in a topic section can call a function which returns a [dictionary](https://docs.python.org/2/tutorial/datastructures.html#dictionaries). The keys in this dictionary can be used when describing the outbound `title` and `format` properties of the same topic section.
 
-- `topic`: again, seems superfluous, as `data['topic']` contains the same value
+- `topic`: contains the value in `data['topic']`
 - `data`: provides access to some information of the inbound MQTT transmission, [more detail here](https://github.com/jpmens/mqttwarn#transformation-data)
-- `service`: could not find any documentation, but reading the code this provides access to the instance of the `paho.mqtt.client.Client` object (which provides a plethora of properties and methods), to the `mqttwarn` logging setup, to the Python `globals()` method and all that entails, and to the name of the script. 
+- `service`: provides access to the instance of the `paho.mqtt.client.Client` object (which provides a plethora of properties and methods), to the `mqttwarn` logging setup, to the Python `globals()` method and all that entails, and to the name of the script. 
 
 #### Filter functions
 
