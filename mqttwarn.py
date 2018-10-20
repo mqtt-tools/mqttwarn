@@ -340,7 +340,10 @@ except Exception, e:
     sys.exit(2)
 
 LOGLEVEL  = cf.loglevelnumber
-LOGFILE   = cf.logfile
+
+# if MQTTWARNLOG env variable exists, use it; otherwise, use config file
+LOGFILE    = os.getenv(SCRIPTNAME.upper() + 'LOG', cf.logfile)
+
 LOGFORMAT = cf.logformat
 
 # initialise logging
