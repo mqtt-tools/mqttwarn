@@ -341,7 +341,7 @@ except Exception, e:
 
 LOGLEVEL  = cf.loglevelnumber
 
-# if MQTTWARNLOG env variable exists, use it; otherwise, use config file
+# if MQTTWARNLOG env variable exists, use it; otherwise, use 'logfile' option from mqttwarn.ini
 LOGFILE    = os.getenv(SCRIPTNAME.upper() + 'LOG', cf.logfile)
 
 LOGFORMAT = cf.logformat
