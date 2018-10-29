@@ -28,7 +28,6 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Running with Docker](#running-with-docker)
     + [Run the Image](#run-the-image)
     + [Build the image](#build-the-image)
-    + [Deploy the Image (Administrators Only)](#deploy-the-image-administrators-only)
   * [Examples](#examples)
     + [Low battery notifications](#low-battery-notifications)
     + [Producing JSON](#producing-json)
