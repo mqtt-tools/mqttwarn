@@ -3207,9 +3207,8 @@ You need to install only the Docker executable.
 You can run the image as a service, i.e. in the background, or you can 
 run it interactively, perhaps to help diagnose a problem.
 
-Note that until the official image is published to Docker Hub,
-you will need to build a local copy of the image (see [below](#build-the-image))
-before you can run it.
+Note that you can run a local copy of the image, if you've built one (see below),
+by replacing `jpmens/mqttwarn` with `mqttwarn-local` in the following examples.
 
 #### As a Service
 
@@ -3218,14 +3217,14 @@ This is the typical way of running `mqttwarn`.
 From the folder containing your `mqttwarn.ini` file:
 
 ```
-docker run -d --rm --name mqttwarn \
+$ docker run -d --rm --name mqttwarn \
     -v $PWD:/opt/mqttwarn/conf \
-    mqttwarn-local
+    jpmens/mqttwarn
 ```
 
 To stop the container:
 ```
-docker stop mqttwarn
+$ docker stop mqttwarn
 ```
 
 #### Interactively
@@ -3237,15 +3236,15 @@ rather than to restart the Docker container.
 From the folder containing your `mqttwarn.ini` file:
 
 ```
-docker run -it --rm \
+$ docker run -it --rm \
     -v $PWD:/opt/mqttwarn/conf \
     --entrypoint bash \
-    mqttwarn-local
+    jpmens/mqttwarn
 ```
  
-To start the application: 
+To start the application from within the container:
 ```
-python mqttwarn.py
+# python mqttwarn.py
 ```
 
 `Ctrl-C` will stop it. You can start and stop it as often as you like, here, probably editing the `.ini` file as you go.
@@ -3313,12 +3312,12 @@ Then add this argument to `docker run`:
 If you have your `.ini` and Python files in your current directory,
 this will run `mqttwarn` and place the log file in the current directory:
 ```
-docker run -d --rm --name mqttwarn \
+$ docker run -d --rm --name mqttwarn \
     -v $PWD:/opt/mqttwarn/conf \
     -v $PWD:/opt/mqttwarn/functions \
     -v $PWD:/opt/mqttwarn/log \
     --link mosquitto \
-    mqttwarn-local
+    jpmens/mqttwarn
 ```
 
 
@@ -3340,27 +3339,8 @@ You don't need to commit any changes.
 
 The name `mqttwarn-local` is not meaningful, other than
 making it obvious when you run it that you are using your
-own personal image.  It will be renamed when it is published.
-
-### Deploy the Image (Administrators Only)
-
-Only do this when you have a clean checkout from `master`:
-```
-docker login
-```
-
-Set the version accordingly:
-```
-docker tag mqttwarn-local jpmens/mqttwarn:0.10.1
-docker push jpmens/mqttwarn:0.10.1
-```
-
-If this is the latest version, tag it as such (which will untag
-the previous latest version):
-```
-docker tag mqttwarn-local jpmens/mqttwarn:latest
-docker push jpmens/mqttwarn:latest
-```
+own personal image.  You can use any name you like, but avoid
+`mqttwarn` otherwise it's easily confused with the official images.
 
 
 
