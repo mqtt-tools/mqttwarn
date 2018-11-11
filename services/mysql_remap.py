@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
-__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__author__    = 'Halacs <halacs87()gmail.com>'
+__copyright__ = 'Copyright 2018 Halacs'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
-import MySQLdb
+from collections import defaultdict
+import MySQLdb # apt-get install python-mysqldb
 import sys
 
 # https://mail.python.org/pipermail/tutor/2010-December/080701.html
@@ -28,10 +29,21 @@ def add_row(srv, cursor, tablename, rowdict):
 
     sql = "insert into %s (%s) values (%s)" % (tablename, columns, values_template)
     values = tuple(rowdict[key] for key in keys)
-    srv.logging.debug("adding row with sql '%s' and values: %s", sql, str(values))
     cursor.execute(sql, values)
 
     return unknown_keys
+
+def daraFv(srv, item, data, col_data, mapping):
+    if data is not None:
+        for key in data.keys():
+            if type(data[key]) is dict:
+                daraFv(srv, item, data[key], col_data, mapping)
+            else:
+                if key in mapping:
+                    try:
+                        col_data[mapping[key]] = data[key].format(**data).encode('utf-8')
+                    except Exception, e:
+                        col_data[mapping[key]] = data[key]
 
 def plugin(srv, item):
 
@@ -42,42 +54,30 @@ def plugin(srv, item):
     user    = item.config.get('user')
     passwd  = item.config.get('pass')
     dbname  = item.config.get('dbname')
-    srv.logging.debug("Connecting to MySql host '%s' and database '%s' as user '%s'", host, dbname, user)
 
     try:
         table_name = item.addrs[0].format(**item.data).encode('utf-8')
-        fallback_col = item.addrs[1].format(**item.data).encode('utf-8')
+        mapping = item.addrs[1]
+        static = item.addrs[2]
     except:
-        srv.logging.warn("mysql target incorrectly configured")
+        srv.logging.warn("halsql target incorrectly configured.")
         return False
 
     try:
-        conn = MySQLdb.connect(host=host,
-                    user=user,
-                    passwd=passwd,
-                    db=dbname)
+        conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=dbname)
         cursor = conn.cursor()
     except Exception, e:
         srv.logging.warn("Cannot connect to mysql: %s" % (str(e)))
         return False
 
-    text = item.message
+    col_data = {}
 
-    # Create new dict for column data. First add fallback column
-    # with full payload. Then attempt to use formatted JSON values
-    col_data = {
-        fallback_col : text
-       }
-
-    if fallback_col == 'NOP':
-        del(col_data['fallback_col'])
-
-    if item.data is not None:
-        for key in item.data.keys():
-            try:
-                col_data[key] = item.data[key].format(**item.data).encode('utf-8')
-            except Exception, e:
-                col_data[key] = item.data[key]
+    # dynamic data part: remapp keys comes from the message
+    daraFv(srv, item, item.data, col_data, mapping)
+    
+    # static data: add static key/value pairs to col_data
+    if static is not None:
+        col_data = dict(col_data.items() + static.items())
 
     try:
         unknown_keys = add_row(srv, cursor, table_name, col_data)
@@ -94,3 +94,5 @@ def plugin(srv, item):
     conn.close()
 
     return True
+
+# vim: tabstop=4 expandtab

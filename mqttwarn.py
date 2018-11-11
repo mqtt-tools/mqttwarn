@@ -8,6 +8,7 @@ import signal
 import sys
 import time
 import types
+import string
 from datetime import datetime
 try:
     import json
@@ -241,14 +242,17 @@ class Config(RawConfigParser):
 
         return val
 
-    def filter(self, name, topic, payload):
+    def filter(self, name, topic, payload, section=None):
         ''' Attempt to invoke function `name' from the `functions'
             package. Return that function's True/False '''
 
         rc = False
         try:
             func = load_function(name)
-            rc = func(topic, payload)
+            try:
+                rc = func(topic, payload, section, srv)  # new version
+            except TypeError:
+                rc = func(topic, payload)                # legacy signature
         except:
             raise
 
@@ -336,7 +340,10 @@ except Exception, e:
     sys.exit(2)
 
 LOGLEVEL  = cf.loglevelnumber
-LOGFILE   = cf.logfile
+
+# if MQTTWARNLOG env variable exists, use it; otherwise, use 'logfile' option from mqttwarn.ini
+LOGFILE    = os.getenv(SCRIPTNAME.upper() + 'LOG', cf.logfile)
+
 LOGFORMAT = cf.logformat
 
 # initialise logging
@@ -397,6 +404,28 @@ class Struct:
         for (k, v) in self.__dict__.iteritems():
             item[k] = v
         return item
+
+class Formatter(string.Formatter):
+    """
+    A custom string formatter. See also:
+    - https://docs.python.org/2/library/string.html#format-string-syntax
+    - https://docs.python.org/2/library/string.html#custom-string-formatting
+    """
+
+    def convert_field(self, value, conversion):
+        """
+        The conversion field causes a type coercion before formatting.
+        By default, two conversion flags are supported: '!s' which calls
+        str() on the value, and '!r' which calls repr().
+
+        This also adds the '!j' conversion flag, which serializes the
+        value to JSON format.
+
+        See also https://github.com/jpmens/mqttwarn/issues/146.
+        """
+        if conversion == 'j':
+            value = json.dumps(value)
+        return value
 
 def render_template(filename, data):
     text = None
@@ -478,7 +507,7 @@ def is_filtered(section, topic, payload):
     if cf.has_option(section, 'filter'):
         filterfunc = get_function_name( cf.get(section, 'filter') )
         try:
-            return cf.filter(filterfunc, topic, payload)
+            return cf.filter(filterfunc, topic, payload, section)
         except Exception, e:
             logging.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, str(e)))
     return False
@@ -605,7 +634,10 @@ def on_message(mosq, userdata, msg):
     Message received from the broker
     """
     topic = msg.topic
-    payload = str(msg.payload)
+    try:
+        payload = msg.payload.decode('utf-8')
+    except UnicodeEncodeError:
+        payload = msg.payload
     logging.debug("Message received on %s: %s" % (topic, payload))
 
     if msg.retain == 1:
@@ -789,7 +821,7 @@ def xform(function, orig_value, transform_data):
                 logging.warn("Cannot invoke %s(): %s" % (function_name, str(e)))
 
         try:
-            res = function.format(**transform_data).encode('utf-8')
+            res = Formatter().format(function, **transform_data).encode('utf-8')
         except Exception, e:
             logging.warning("Cannot format message: %s" % e)
 
@@ -845,10 +877,11 @@ def decode_payload(section, topic, payload):
     # the JSON keys into item to pass to the plugin, and create the
     # outgoing (i.e. transformed) message.
     try:
+        payload = payload.rstrip("\0")
         payload_data = json.loads(payload)
         transform_data = dict(transform_data.items() + payload_data.items())
     except Exception as ex:
-        logging.debug("Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+        logging.debug(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
 
     return transform_data
 

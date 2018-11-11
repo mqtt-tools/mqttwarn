@@ -47,7 +47,7 @@ def plugin(srv, item):
         if starttls:
             server.starttls()
         if username:
-            server.login(username, password)
+            server.login(str(username), str(password))
         server.sendmail(sender, smtp_addresses, msg.as_string())
         server.quit()
         srv.logging.debug("Successfully sent SMTP notification")
