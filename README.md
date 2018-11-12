@@ -2071,6 +2071,8 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 The pushover service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.
 
+Further, the imageurl payload, can have the addition parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
+
 The following payloads are valid;
 
 ```
@@ -2096,6 +2098,17 @@ Simple text message
     "imageurl": "<image url>"
  }
 ```
+
+```json
+ {
+    "message": "Message with image downloaded from URL: digest authentication",
+    "imageurl": "<image url>",
+    "auth": "digest",
+    "user": "myspecialuser",
+    "password": "myspecialpassword"
+ }
+```
+For the above example, I would only recommend this be used in a local MQTT server instance, as the password for your imaging device is being transmitted in the clear to mqttwarn.
 
 ![pushover on iOS](assets/pushover.png)
 
