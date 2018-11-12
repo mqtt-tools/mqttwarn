@@ -18,6 +18,8 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import base64
 import requests
+from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPDigestAuth
 import urlparse
 import json
 import os
@@ -101,7 +103,16 @@ def plugin(srv, item):
     if 'imageurl' in item.data:
         imageurl = item.data['imageurl']
         srv.logging.debug("Image url detected - %s" % imageurl)
-        image = requests.get(imageurl, stream=True).raw
+        if 'auth' in item.data:
+            authtype = item.data['auth']
+            authuser = item.data['user']
+            authpass = item.data['password']
+            if authtype == 'digest':
+                image = requests.get(imageurl, stream=True,auth=HTTPDigestAuth(authuser, authpass)).raw
+            else:
+                image = requests.get(imageurl, stream=True,auth=HTTPBasicAuth(authuser, authpass)).raw
+        else:
+            image = requests.get(imageurl, stream=True).raw
     elif 'imagebase64' in item.data:
         imagebase64 = item.data['imagebase64']
         srv.logging.debug("Image (base64 encoded) detected")
