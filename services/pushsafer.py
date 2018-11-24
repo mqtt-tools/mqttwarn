@@ -50,6 +50,10 @@ def plugin(srv, item):
     # 5 (if present) is the Pushsafer URL or URL Scheme
     # 6 (if present) is the Pushsafer Title of URL
     # 7 (if present) is the Pushsafer Time in minutes, after which message automatically gets purged
+    # 8 (if present) is the Pushsafer priority, integer -2, -1, 0, 1, 2
+    # 9 (if present) is the Pushsafer retry after which time (in secomds 60-10800) a message should resend
+    # 10 (if present) is the Pushsafer expire after which time (in secomds 60-10800) the retry should stopped
+    # 11 (if present) is the Pushsafer answer, 1 = Answer, 0 = no possibilty to answer
 
     try:
         appkey  = addrs[0]
@@ -81,6 +85,18 @@ def plugin(srv, item):
 
     if len(addrs) > 6:
         params['l'] = addrs[7]
+
+    if len(addrs) > 7:
+        params['pr'] = addrs[8]
+
+    if len(addrs) > 8:
+        params['re'] = addrs[9]
+
+    if len(addrs) > 9:
+        params['ex'] = addrs[10]
+
+    if len(addrs) > 10:
+        params['a'] = addrs[11]
 
     if title is not None:
         params['t'] = title
