@@ -33,94 +33,94 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Producing JSON](#producing-json)
   * [Notes](#notes)
   * [Press](#press)
-  
-      
+
+
   ## Getting started
-  
+
   ### Requirements
-  
+
   You'll need at least the following components:
-  
+
   * Python 2.x (tested with 2.6 and 2.7)
   * An MQTT broker (e.g. [Mosquitto](http://mosquitto.org))
   * The Paho Python module: `pip install paho-mqtt`
-  
+
   ### Installation
-  
+
   1. Clone this repository into a fresh directory.
   2. Copy `mqttwarn.ini.sample` to `mqttwarn.ini` and edit to your taste
   3. Install the prerequisite Python modules for the services you want to use
   4. Launch `mqttwarn.py`
-  
+
   I recommend you use [Supervisor](http://jpmens.net/2014/02/13/in-my-toolbox-supervisord/) for running this.
-  
+
   Alternatively, a systemd-based installation using a Python virtualenv might be handy,
   see [systemd unit configuration file for mqttwarn](https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service)
   for step-by-step instructions about doing this.
-  
+
   ### Configuration
-  
+
   I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
-  
+
   ```ini
   [defaults]
   hostname  = 'localhost'
   port      = 1883
-  
+
   ; name the service providers you will be using.
   launch	 = file, log
-  
+
   [config:file]
   append_newline = True
   targets = {
       'mylog'     : ['/tmp/mqtt.log']
       }
-  
+
   [config:log]
   targets = {
       'info'   : [ 'info' ]
     }
-  
+
   [test/+]
   targets = file:mylog, log:info
   ```
-  
+
   **Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
-  
+
   Launch `mqttwarn.py` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
-  
+
   ```
   mosquitto_pub -t test/1 -m "Hello"
   mosquitto_pub -t test/name -m '{ "name" : "Jane" }'
   ```
-  
+
   and our output file `/tmp/mqtt.log` should contain the payload of both messages:
-  
+
   ```shell
   Hello
   { "name" : "Jane" }
   ```
-  
+
   Both payloads where copied verbatim to the target.
-  
+
   Stop _mqttwarn_, and add the following line to the `[test/+]` section:
-  
+
   ```ini
   format  = -->{name}<--
   ```
-  
+
   What we are configuring _mqttwarn_ to do here, is to try and decode the incoming JSON payload and format the output in such a way as that the JSON `name` element is copied to the output (surrounded with a bit of sugar to illustrate the fact that we can output whatever text we want).
-  
+
   If you repeat the publish of the second message, you should see the following in your output file `/tmp/mqtt.log`:
-  
+
   ```
   -->Jane<--
   ```
-  
+
   #### The `[defaults]` section
-  
+
   Most of the options in the configuration file have sensible defaults, and/or ought to be self-explanatory:
-  
+
   ```ini
   [defaults]
   hostname     = 'localhost'         ; default
@@ -131,26 +131,26 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   lwt          = 'clients/mqttwarn'  ; lwt payload is '0' or '1'
   skipretained = True
   cleansession = False
-  
+
   ; logging
   logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
   logfile   = 'mqttwarn.log'
-  
+
   ; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
   loglevel     = DEBUG
-  
+
   ; path to file containing self-defined functions for formatmap, alldata, and datamap
   functions = 'myfuncs.py'
-  
+
   ; name the service providers you will be using.
   launch   = file, log, osxnotify, mysql, smtp
-  
+
   ; the directory to which we should cd after startup (default: ".")
   ; the cd is performed before loading service plugins, so it should
   ; contain a `services/' directory with the required service plugins.
   directory = /tmp/
-  
-  
+
+
   ; optional: TLS parameters. (Don't forget to set the port number for
   ; TLS (probably 8883).
   ; You will need to set at least `ca_certs' if you want TLS support
@@ -166,23 +166,23 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   keyfile = '/path/to/client.key'
   tls_version = 'tlsv1'
   tls_insecure = False
-  
+
   ```
-  
+
   ###### `functions`
-  
+
   The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
-  
+
   ###### `launch`
-  
+
   In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions.
-  
+
   #### The `[config:xxx]` sections
-  
+
   Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
   has a mandatory option called `targets`, which is a dictionary of target names, each
   pointing to an array of "addresses". Address formats depend on the particular service.
-  
+
   A service section may have an option called `module`, which refers to the name
   of the actual service module to use. A service called `filetruncate` - and
   referenced as such in the `launch` option -
@@ -191,62 +191,62 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   have several different service configurations for the same underlying service,
   with different configurations, e.g. one for files that should have notifications
   appended, and one for files that should get truncated before writes.
-  
+
   As an example for `module` consider this INI file in which we want two services of type log. We actually _launch_ an `xxxlog` (which doesn't physically exist), but due to the `module=log` setting in its configuration it is instantiated:
-  
+
   ```ini
   [defaults]
   hostname  = 'localhost'  ; default
   port      = 1883
-  
+
   launch	 = log, xxxlog
-  
+
   [config:log]
   targets = {
       'debug'  : [ 'debug' ],
     }
-  
+
   [config:xxxlog]
   # Note how the xxxlog is instantiated from log and both must be launched
   module = log
   targets = {
       'debug'  : [ 'debug' ],
     }
-  
-  
+
+
   [topic/1]
   targets = log:debug, xxxlog:debug
   ```
-  
+
   #### The `[failover]` section
-  
+
   There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection.
-  
+
   This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_.
-  
+
   Below is an example which will log any failover events to an error log, and display them on all XBMC targets:
-  
+
   ```ini
   [failover]
   targets  = log:error, xbmc
   title    = mqttwarn
   ```
-  
+
   #### The `[__topic__]` sections
-  
+
   All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topics
   to subscribe to. _mqttwarn_ handles each message received on this subscription
   by handing it off to one or more service targets.
-  
+
   Section names must be unique and must specify the name of the topic to be processed. If the section block does not have a `topic` option,
   then the section name will be used.
 
   Consider the following example:
-  
+
   ```ini
   [icinga/+/+]
   targets = log:info, file:f01, mysql:nagios
-  
+
   [my/special]
   targets = mysql:m1, log:info
 
@@ -254,17 +254,17 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   topic = another/topic
   targets = log:debug
   ```
-  
+
   MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received
   at `my/special` will be stored in a `mysql` target and will be logged at level "INFO".  Messages received
   at `another/topic` (not at `my/other/special`) will be logged at level "DEBUG".
-  
+
   When a message is received at a topic with more than one matching section it will be
   directed to the targets in all matching sections.  For consistency, it's a good practice
   to explicitly provide `topic` options to all such sections.
-  
+
   Targets can be also defined as a dictionary containing the pairs of topic and targets. In that case message matching the section can be dispatched in more flexible ways to selected targets. Consider the following example:
-  
+
   ```ini
   [#]
   targets = {
@@ -278,14 +278,14 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
       '/test/out/BR_ambient_power_sensor/state': 'file:8',
     }
   ```
-  
+
   With the message dispatching configuration the message is dispatched to the targets matching the most specific topic. If the message is received at `/test/out/FL_power_consumption/state` it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state` will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
   The dispatcher mechanism is always trying to find the most specific match.
   It allows to define the wide topic with default targets while some more specific topic can be handled differently. It gives additional flexibility in a message routing.
-  
+
   Each of these sections has a number of optional (`O`) or mandatory (`M`)
   options:
-  
+
   | Option        |  M/O   | Description                                    |
   | ------------- | :----: | ---------------------------------------------- |
   | `targets`     |   M    | service targets for this SUB                   |
@@ -304,6 +304,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
 ## Supported Notification Services
 _mqttwarn_ supports a number of services (listed alphabetically below):
 
+* [alexa-notify-me](#alexa-notify-me)
 * [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
@@ -380,6 +381,24 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:xxx]`, where `xxx` is the name of the service. This section _may_ have some settings which are required for a particular service, and all services have an rarely used option called `module` (see [The config:xxx sections](#the-configxxx-sections)) and one mandatory option called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
+
+### `alexa-notify-me`
+
+The `alexa-notify-me` service implements a gateway to make Alexa notifications using the Notify-Me voice app.
+http://www.thomptronics.com/notify-me
+
+```ini
+
+[config:alexa-notify-me]
+targets = {
+	'account1' : [ 'Access Code' ]
+  }
+
+[alexa/notify]
+targets = alexa-notify-me:account1
+```
+
+The access code is emailed to the user upon setup of Notify-Me
 
 ### `amqp`
 
@@ -473,6 +492,7 @@ Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
 ### `autoremote`
 
 The `autoremote` service forwards messages from desired topics to autoremote clients.
+
 ```ini
 
 [config:autoremote]
@@ -2548,7 +2568,7 @@ are supported.
 targets = {
         # targetid        : [ 'wsuri']
         'wssserver' : [ 'ws://localhost/ws' ],
-} 
+}
 ```
 
 Requires:
@@ -2742,11 +2762,11 @@ To simply forward an incoming MQTT message, you don't need to do anything other 
 [office/ups]
 targets = log:debug
 
-This example shows how to have messages received on the MQTT topic `office/ups`, saved into the `mqttwarn.log` file with a `debug` label. This of course assumes that you have configured the log section the way described [above](#the-configxxx-sections). 
+This example shows how to have messages received on the MQTT topic `office/ups`, saved into the `mqttwarn.log` file with a `debug` label. This of course assumes that you have configured the log section the way described [above](#the-configxxx-sections).
 
-But mqttwarn provides several options to create a different outbound message, allowing you for example to make your outbound message more human-readable. 
+But mqttwarn provides several options to create a different outbound message, allowing you for example to make your outbound message more human-readable.
 
-The title and format directives define the title and the body of the outbound message. Here, you can turn an MQTT payload that simply states "ON", into a friendlier version. 
+The title and format directives define the title and the body of the outbound message. Here, you can turn an MQTT payload that simply states "ON", into a friendlier version.
 
 ```
 [office/ups]
@@ -2754,7 +2774,7 @@ title = Office UPS
 format = The office UPS is {payload}
 ```
 
-Notice that the original MQTT payload is referenced, so that if the UPS is switched off and sends out a corresponding MQTT message, the outbound message will state the same. The information that is available to you in creating the outbound message, is called the transformation data. The very basic set of transformation data is the following : 
+Notice that the original MQTT payload is referenced, so that if the UPS is switched off and sends out a corresponding MQTT message, the outbound message will state the same. The information that is available to you in creating the outbound message, is called the transformation data. The very basic set of transformation data is the following :
 
 ```python
 {
@@ -2828,14 +2848,14 @@ so the outcome will be `{"humidity": 62.18}`.
 
 Within templates and formats, you can refer only to the top-level names of an incoming JSON message,
 which significantly limits the kinds of messages `mqttwarn` can process. A [solution is in the works](https://github.com/jpmens/mqttwarn/issues/303)
-for this, but in the meantime you can use an `alldata` function to transform the JSON into something 
+for this, but in the meantime you can use an `alldata` function to transform the JSON into something
 `mqttwarn` _can_ process.
 
 The trick is to build a new JSON message with _only_ top-level values, specifically the values you need.
 
 ### Custom functions
 
-A topic section in the INI file can have properties set as per the table at the bottom of [this section](https://github.com/jpmens/mqttwarn#the-__topic__-sections). The `targets`, `topic` and `qos` properties can not be defined with a function. 
+A topic section in the INI file can have properties set as per the table at the bottom of [this section](https://github.com/jpmens/mqttwarn#the-__topic__-sections). The `targets`, `topic` and `qos` properties can not be defined with a function.
 
 #### Topic-section properties that can call a custom function
 
@@ -2853,11 +2873,11 @@ Both the `datamap` and the `alldata` properties in a topic section can call a fu
 
 - `topic`: contains the value in `data['topic']`
 - `data`: provides access to some information of the inbound MQTT transmission, [more detail here](https://github.com/jpmens/mqttwarn#transformation-data)
-- `service`: provides access to the instance of the `paho.mqtt.client.Client` object (which provides a plethora of properties and methods), to the `mqttwarn` logging setup, to the Python `globals()` method and all that entails, and to the name of the script. 
+- `service`: provides access to the instance of the `paho.mqtt.client.Client` object (which provides a plethora of properties and methods), to the `mqttwarn` logging setup, to the Python `globals()` method and all that entails, and to the name of the script.
 
 #### Filter functions
 
-A function called from the `filter` property in a topic section needs to return `False` to stop the outbound notification. It has access to the `topic` and the `message` strings of the inbound MQTT transmission. 
+A function called from the `filter` property in a topic section needs to return `False` to stop the outbound notification. It has access to the `topic` and the `message` strings of the inbound MQTT transmission.
 
 #### Output functions
 
@@ -2981,7 +3001,7 @@ to make topic and the message's payload available simultaneously.
 
 ##### A custom function to convert nested JSON
 
-For example, say we are receiving messages from a temperature sensor 
+For example, say we are receiving messages from a temperature sensor
 running [Tasmota](https://github.com/arendst/Sonoff-Tasmota/),
 and we wish to convert them into [InfluxDB line format](https://docs.influxdata.com/influxdb/v1.6/write_protocols/line_protocol_tutorial/).
 
@@ -2996,17 +3016,17 @@ The incoming [JSON](https://github.com/arendst/Sonoff-Tasmota/wiki/JSON-Status-R
 },
 ```
 
-Since `Temperature` cannot be referenced directly within a `format`, we need to make it a top-level value. 
+Since `Temperature` cannot be referenced directly within a `format`, we need to make it a top-level value.
 While we're at it, we can change the date to milliseconds since the epoch, and include the topic:
 ```
 {
-    "Topic": "tasmota/temp/ds/1", 
-    "Timestamp": 1517525319000, 
+    "Topic": "tasmota/temp/ds/1",
+    "Timestamp": 1517525319000,
     "Temperature": 19.7
 }
 ```
 
-This can be accomplished with the following function: 
+This can be accomplished with the following function:
 ```
 import ast
 import logging
@@ -3216,7 +3236,7 @@ You need to install only the Docker executable.
 
 ### Run the Image
 
-You can run the image as a service, i.e. in the background, or you can 
+You can run the image as a service, i.e. in the background, or you can
 run it interactively, perhaps to help diagnose a problem.
 
 Note that you can run a local copy of the image, if you've built one (see below),
@@ -3253,7 +3273,7 @@ $ docker run -it --rm \
     --entrypoint bash \
     jpmens/mqttwarn
 ```
- 
+
 To start the application from within the container:
 ```
 # python mqttwarn.py
@@ -3261,7 +3281,7 @@ To start the application from within the container:
 
 `Ctrl-C` will stop it. You can start and stop it as often as you like, here, probably editing the `.ini` file as you go.
 
-`Ctrl-D` or `exit` will stop the container. 
+`Ctrl-D` or `exit` will stop the container.
 
 
 
@@ -3269,7 +3289,7 @@ To start the application from within the container:
 
 ##### Configuration Location
 
-You can of course run the Docker image from anywhere if you 
+You can of course run the Docker image from anywhere if you
 specify a full path to the configuration file:
 ```
      -v /full/path/to/folder:/opt/mqttwarn/conf
@@ -3307,9 +3327,9 @@ between executions.
 
 ##### If your MQTT Broker is Also Running in Docker on the Same Host
 
-If you give the MQTT broker container a name, then you can 
+If you give the MQTT broker container a name, then you can
 refer to it by name rather than by
-IP address.  For instance, if it's named `mosquitto` 
+IP address.  For instance, if it's named `mosquitto`
  put this in your `mqttwarn.ini` file:
 ```
 hostname  = 'mosquitto'
@@ -3346,7 +3366,7 @@ Execute the following from the root of the project :
 docker build -t mqttwarn-local .
 ```
 
-You can then edit any files and rebuild the image as many times as you need. 
+You can then edit any files and rebuild the image as many times as you need.
 You don't need to commit any changes.
 
 The name `mqttwarn-local` is not meaningful, other than

@@ -48,12 +48,12 @@ def plugin(srv, item):
         srv.logging.debug("Adding row to spreadsheet %s [%s]..." % (spreadsheet_url, worksheet_name))
         if os.path.isfile(oauth2_storage_filename):
             # Valid credentials from previously completed authentication?
-            srv.logging.debug(u"Trying to use credentials from file '%s'." % 
+            srv.logging.debug(u"Trying to use credentials from file '%s'." %
                 oauth2_storage_filename)
             storage = oauth2client.file.Storage(oauth2_storage_filename)
             credentials = storage.get()
             if credentials is None or credentials.invalid:
-                srv.logging.error(u"Error reading credentials from file '%s'." % 
+                srv.logging.error(u"Error reading credentials from file '%s'." %
                     oauth2_storage_filename)
                 return False
         elif oauth2_code is not None and len(oauth2_code) > 0:
