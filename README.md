@@ -594,25 +594,6 @@ targets = {
 Requires:
 * Python [dbus](http://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
 
-### `discord`
-
-The `discord` service provides notifications through discords webhooks.
-
-![Discord Webhook](assets/discord.png)
-
-```ini
-
-[config:discord]
-targets = {
-	'webhook1' : [ 'URL' ]
-  }
-
-[discord/webhook1]
-targets = discord:webhook1
-```
-
-The webhook url is found under discord server settings.
-
 ### `dnsupdate`
 
 The `dnsupdate` service updates an authoritative DNS server via RFC 2136 DNS Updates.
