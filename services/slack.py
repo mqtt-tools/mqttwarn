@@ -5,15 +5,26 @@ __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
+
+# 2018-11-13 - Update by psyciknz to add image upload function.  See Readme
+#              Needs slacker 0.10.0 at a minimum
+
 HAVE_SLACK=True
 try:
     from slacker import Slacker
 except ImportError:
     HAVE_SLACK=False
 
+import requests
+from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPDigestAuth
+
+
 def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
+
+    srv.logging.debug("*** MODULE=%s: service=%s, target=%s, item:%s", __file__, item.service, item.target, item)
 
     if HAVE_SLACK == False:
         srv.logging.error("slacker module missing")
@@ -49,10 +60,49 @@ def plugin(srv, item):
     # if the incoming payload has been transformed, use that,
     # else the original payload
     text = item.message
+    # check if the message has been decoded from a JSON payload
+    if 'message' in item.data:
+        text = item.data['message']
+    else:
+        text = item.message
+
+    # check if there is an image contained in a JSON payload
+    # (support either an image URL or base64 encoded image)
+    try:
+        image = None
+        if 'imageurl' in item.data:
+            imageurl = item.data['imageurl']
+            srv.logging.debug("Image url detected - %s" % imageurl)
+
+            #Image payload has auth parms, so use the correct method for authenticating.
+            if 'auth' in item.data:
+                authtype = item.data['auth']
+                authuser = item.data['user']
+                authpass = item.data['password']
+                if authtype == 'digest':
+                    image = requests.get(imageurl, stream=True,auth=HTTPDigestAuth(authuser, authpass)).raw
+                else:
+                    image = requests.get(imageurl, stream=True,auth=HTTPBasicAuth(authuser, authpass)).raw
+            else:
+                image = requests.get(imageurl, stream=True).raw
+            
+        elif 'imagebase64' in item.data:
+            imagebase64 = item.data['imagebase64']
+            srv.logging.debug("Image (base64 encoded) detected")
+            image = base64.decodestring(imagebase64)
+    except Exception, e:
+        srv.logging.warning("Cannot download image: %s" % (str(e)))
 
     try:
         slack = Slacker(token)
-        slack.chat.post_message(channel, text, as_user=as_user, username=username, icon_emoji=icon)
+        if image is None:
+            slack.chat.post_message(channel, text, as_user=as_user, username=username, icon_emoji=icon)
+        else:
+            
+            srv.logging.debug("Channel id: %s" % channel);
+            channelname = channel.replace('#','')
+            slack.files.upload(file_=image,title=text,channels=slack.channels.get_channel_id(channelname))
+            srv.logging.debug("image posted")
     except Exception, e:
         srv.logging.warning("Cannot post to slack %s: %s" % (channel, str(e)))
         return False
