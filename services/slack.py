@@ -96,7 +96,7 @@ def plugin(srv, item):
     try:
         slack = Slacker(token)
         if image is None:
-            slack.chat.post_message(channel, text, as_user=as_user, username=username, icon_emoji=icon)
+            slack.chat.post_message(channel, text, as_user=as_user, username=username, icon_emoji=icon, unfurl_links=True)
         else:
             
             srv.logging.debug("Channel id: %s" % channel);
