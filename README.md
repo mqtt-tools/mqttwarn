@@ -312,6 +312,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [carbon](#carbon)
 * [celery](#celery)
 * [dbus](#dbus)
+* [discord](#discord)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
 * [execute](#execute)
@@ -593,6 +594,25 @@ targets = {
 
 Requires:
 * Python [dbus](http://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
+
+### `discord`
+
+The `discord` service provides a gateway to a custom discord webhook.
+http://www.thomptronics.com/notify-me
+
+```ini
+
+[config:discord]
+targets = {
+	'webhook' : [ 'Webhook Url' ]
+  }
+
+[discord/server]
+targets = discord:webhook
+```
+
+The webhook url is found under server settings in discord. The topic with fill the username value and the payloud is in the message sent.
+
 
 ### `dnsupdate`
 
