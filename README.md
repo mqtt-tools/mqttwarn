@@ -312,7 +312,6 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [carbon](#carbon)
 * [celery](#celery)
 * [dbus](#dbus)
-* [discord](#discord)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
 * [execute](#execute)
