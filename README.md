@@ -598,7 +598,7 @@ Requires:
 ### `discord`
 
 The `discord` service provides a gateway to a custom discord webhook.
-http://www.thomptronics.com/notify-me
+
 
 ```ini
 
