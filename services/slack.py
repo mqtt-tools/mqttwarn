@@ -16,6 +16,7 @@ except ImportError:
     HAVE_SLACK=False
 
 import requests
+import base64
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
 
@@ -89,7 +90,14 @@ def plugin(srv, item):
         elif 'imagebase64' in item.data:
             imagebase64 = item.data['imagebase64']
             srv.logging.debug("Image (base64 encoded) detected")
-            image = base64.decodestring(imagebase64)
+            #image = base64.decodestring(imagebase64)
+            image = base64.b64decode(str(imagebase64))
+            filename = 'some_image.jpg'  
+            #base 64 doesn't seem to decode properly.  So have to write it to a temp image, and reload it.
+            #maybe this method might be dropped?
+            with open(filename, 'wb') as f:
+                f.write(image)
+            
     except Exception, e:
         srv.logging.warning("Cannot download image: %s" % (str(e)))
 
@@ -101,10 +109,17 @@ def plugin(srv, item):
             
             srv.logging.debug("Channel id: %s" % channel);
             channelname = channel.replace('#','')
-            slack.files.upload(file_=image,title=text,channels=slack.channels.get_channel_id(channelname))
+
+            # weird check and re-read I had to do for base64 decoded images.
+            if 'imagebase64' in item.data:
+                with open(filename,'rb') as f2:
+                    slack.files.upload(file_=f2,title=text,channels=slack.channels.get_channel_id(channelname))
+            else:
+                slack.files.upload(file_=image,title=text,channels=slack.channels.get_channel_id(channelname))
             srv.logging.debug("image posted")
     except Exception, e:
         srv.logging.warning("Cannot post to slack %s: %s" % (channel, str(e)))
         return False
 
     return True
+
