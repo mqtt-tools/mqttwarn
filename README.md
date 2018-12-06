@@ -2090,7 +2090,7 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 The pushover service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.
 
-Further, the imageurl payload, can have the addition parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
+Further, the imageurl payload, can have the additional parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
 
 The following payloads are valid;
 
@@ -2256,6 +2256,49 @@ joined the channel.
 ![Slack](assets/slack.png)
 
 This plugin requires [Python slacker](https://github.com/os/slacker).
+For image support (added November 2018), slacker 0.10.0 is required.
+
+The slack service will accept a payload with either a simple text message, or a json payload which contains
+a `message` and either an `imageurl` or `imagebase64` encoded image.
+
+Further, the imageurl payload, can have the additional parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
+
+The following payloads are valid;
+
+```
+Simple text message
+```
+
+```json
+{
+    "message": "Message only, with no image"
+}
+```
+
+```json
+ {
+    "message": "Message with base64 encoded image",
+    "imagebase64": "<base64 encoded image>"
+ }
+```
+
+```json
+ {
+    "message": "Message with image downloaded from URL",
+    "imageurl": "<image url>"
+ }
+```
+
+```json
+ {
+    "message": "Message with image downloaded from URL: digest authentication",
+    "imageurl": "<image url>",
+    "auth": "digest",
+    "user": "myspecialuser",
+    "password": "myspecialpassword"
+ }
+```
+For the above example, I would only recommend this be used in a local MQTT server instance, as the password for your imaging device is being transmitted in the clear to mqttwarn.
 
 ### `sqlite`
 

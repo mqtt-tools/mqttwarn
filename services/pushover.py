@@ -8,6 +8,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 # The code for pushover() between cuts was written by Mike Matz and
 # gracefully swiped from https://github.com/pix0r/pushover
 #
+# 2018-11-13 - Update by psyciknz to add image service authentication options (digest/basic)
 # 2018-04-07 - Updated by psyciknz to add the image upload function
 #              as supported by pushover
 #            - changed from urllib2 to requests for the loading of images
