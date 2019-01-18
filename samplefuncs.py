@@ -9,6 +9,16 @@ except ImportError:
     import simplejson as json
 
 def OwnTracksTopic2Data(topic):
+    if type(topic) == unicode:
+        try:
+            topic = str(topic)
+            parts = topic.split('/')
+            username = parts[1]
+            deviceid = parts[2]
+        except:
+            deviceid = 'unknown'
+            username = 'unknown'
+        return dict(username=username, device=deviceid)
     if type(topic) == str:
         try:
             # owntracks/username/device
