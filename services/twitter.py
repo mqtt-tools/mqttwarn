@@ -22,12 +22,19 @@ def plugin(srv, item):
 
     text = item.message[0:138]
     try:
+        text = text.decode('utf-8')
+    except Exception,  err:
+        srv.logging.debug("Cannot convert to unicode: %s" % (str(err)))
+    try:
         srv.logging.debug("Sending tweet to %s..." % (item.target))
         res = twapi.PostUpdate(text, trim_user=False)
         srv.logging.debug("Successfully sent tweet")
     except twitter.TwitterError, e:
         srv.logging.error("TwitterError: %s" % (str(e)))
         return False
+    except UnicodeDecodeError:
+        srv.logging.error("Your message could not be encoded.")
+    return False
     except Exception, e:
         srv.logging.error("Error sending tweet to %s: %s" % (item.target, str(e)))
         return False
