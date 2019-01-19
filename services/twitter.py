@@ -34,7 +34,7 @@ def plugin(srv, item):
         return False
     except UnicodeDecodeError:
         srv.logging.error("Your message could not be encoded.")
-    return False
+        return False
     except Exception, e:
         srv.logging.error("Error sending tweet to %s: %s" % (item.target, str(e)))
         return False
