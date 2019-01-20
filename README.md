@@ -2925,6 +2925,16 @@ A function called from the `filter` property in a topic section needs to return 
 
 Both the `title` and the `format` properties in the topic section can contain a string where `{bracketed}` references get resolved using the dictionary returned from a data mapping function. Or they can call a function that returns a string that may or may not contain such references. The functions called here do not have access to the actual dictionary returned from data mapping functions though.
 
+#### Notes
+
+When writing custom functions, it can be difficult to determine what the issue is when getting an error message such as
+
+````
+WARNING [mqttwarn] Cannot invoke filter function xxxx defined in yyyyy: ...
+```
+
+This is typically indicates variables or function calls which haven't been defined or similar.
+
 #### Examples
 
 Below are a number of example scenarios where custom functions are being used.
