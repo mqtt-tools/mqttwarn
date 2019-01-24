@@ -12,10 +12,10 @@ PUSHSAFER_API = "https://www.pushsafer.com/"
 class PushsaferError(Exception): pass
 
 def pushsafer(**kwargs):
-    assert 'message' in kwargs
+    assert 'm' in kwargs
 
-    if not 'privatekey' in kwargs:
-        kwargs['privatekey'] = os.environ['PUSHSAFER_TOKEN']
+    if not kwargs['k']:
+        kwargs['k'] = os.environ['PUSHSAFER_TOKEN']
 
     url = urlparse.urljoin(PUSHSAFER_API, "api")
     data = urllib.urlencode(kwargs)
