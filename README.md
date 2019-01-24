@@ -2929,7 +2929,7 @@ Both the `title` and the `format` properties in the topic section can contain a 
 
 When writing custom functions, it can be difficult to determine what the issue is when getting an error message such as
 
-````
+```
 WARNING [mqttwarn] Cannot invoke filter function xxxx defined in yyyyy: ...
 ```
 
