@@ -19,7 +19,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Supported Notification Services](#supported-notification-services)
     + [Configuration of service plugins](#configuration-of-service-plugins)
     + [Creating Custom Service Plugins](#creating-custom-service-plugins)
-  * [Outboound messages](#outbound-messages)
+  * [Outbound messages](#outbound-messages)
     + [Message forwarding](#message-forwarding)
     + [Transforming inbound JSON](#transforming-inboound-json)
     + [Custom functions](#custom-functions)
