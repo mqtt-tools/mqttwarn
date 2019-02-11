@@ -703,12 +703,12 @@ and the execute an external program. It is also a light version of [mqtt-launche
 [config:execute]
 targets = {
              # argv0 .....
-   'touch' : [ 'touch', '/tmp/executed' ]
+   'touch' : [ 'touch', '/tmp/executed' ],
+   'fritzctl' : [ '/usr/bin/fritzctl', 'temperature', "{args[0]}", "{args[1]}" ]
    }
 ```
 
-To pass the published data (text) to the command, use `[TEXT]` which then gets replaced.
-This can also be configured with the `text_replace` parameter.
+To pass the published data (json args array) to the command, use `{args[0]}` and `{args[1]}` which then gets replaced. Message looks like `'{ "args" : ["' + temp + '","' + room + '"] }'` for `fritzctl`.
 
 Note, that for each message targeted to the `execute` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
