@@ -158,7 +158,7 @@ class Config(RawConfigParser):
         try:
             val = self.get(section, key)
             val = [s.strip() for s in val.split(',')]
-        except Exception, e:
+        except Exception as e:
             logging.warn("Expecting a list in section `%s', key `%s' (%s)" % (section, key, str(e)))
 
         return val
@@ -302,7 +302,7 @@ class PeriodicThread(object):
         """
         try:
             self.run()
-        except Exception, e:
+        except Exception as e:
             logging.exception("Exception in running periodic thread")
         finally:
             with self.schedule_lock:
@@ -335,7 +335,7 @@ class PeriodicThread(object):
 
 try:
     cf = Config(CONFIGFILE)
-except Exception, e:
+except Exception as e:
     print "Cannot open configuration at %s: %s" % (CONFIGFILE, str(e))
     sys.exit(2)
 
@@ -529,7 +529,7 @@ def get_topic_data(section, topic):
         name = get_function_name(cf.get(section, 'datamap'))
         try:
             return cf.datamap(name, topic)
-        except Exception, e:
+        except Exception as e:
             logging.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, str(e)))
     return None
 
@@ -538,7 +538,7 @@ def get_all_data(section, topic, data):
         name = get_function_name(cf.get(section, 'alldata'))
         try:
             return cf.alldata(name, topic, data)
-        except Exception, e:
+        except Exception as e:
             logging.warn("Cannot invoke alldata function %s defined in %s: %s" % (name, section, str(e)))
     return None
 
