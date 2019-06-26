@@ -15,3 +15,11 @@ pastebin.py
 *.sln
 *.suo
 *.pyproj
+services/winscp.rnd
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/ProjectSettings.json
+f.01
+.vscode/settings.json
+.vscode/launch.json
+funcs.py

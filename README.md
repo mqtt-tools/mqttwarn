@@ -19,7 +19,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Supported Notification Services](#supported-notification-services)
     + [Configuration of service plugins](#configuration-of-service-plugins)
     + [Creating Custom Service Plugins](#creating-custom-service-plugins)
-  * [Outboound messages](#outbound-messages)
+  * [Outbound messages](#outbound-messages)
     + [Message forwarding](#message-forwarding)
     + [Transforming inbound JSON](#transforming-inboound-json)
     + [Custom functions](#custom-functions)
@@ -304,6 +304,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
 ## Supported Notification Services
 _mqttwarn_ supports a number of services (listed alphabetically below):
 
+* [alexa-notify-me](#alexa-notify-me)
 * [amqp](#amqp)
 * [apns](#apns)
 * [asterisk](#asterisk)
@@ -380,6 +381,24 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:xxx]`, where `xxx` is the name of the service. This section _may_ have some settings which are required for a particular service, and all services have an rarely used option called `module` (see [The config:xxx sections](#the-configxxx-sections)) and one mandatory option called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
+
+### `alexa-notify-me`
+
+The `alexa-notify-me` service implements a gateway to make Alexa notifications using the Notify-Me voice app.
+http://www.thomptronics.com/notify-me
+
+```ini
+
+[config:alexa-notify-me]
+targets = {
+	'account1' : [ 'Access Code' ]
+  }
+
+[alexa/notify]
+targets = alexa-notify-me:account1
+```
+
+The access code is emailed to the user upon setup of Notify-Me
 
 ### `amqp`
 
@@ -2071,6 +2090,8 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 The pushover service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.
 
+Further, the imageurl payload, can have the additional parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
+
 The following payloads are valid;
 
 ```
@@ -2096,6 +2117,17 @@ Simple text message
     "imageurl": "<image url>"
  }
 ```
+
+```json
+ {
+    "message": "Message with image downloaded from URL: digest authentication",
+    "imageurl": "<image url>",
+    "auth": "digest",
+    "user": "myspecialuser",
+    "password": "myspecialpassword"
+ }
+```
+For the above example, I would only recommend this be used in a local MQTT server instance, as the password for your imaging device is being transmitted in the clear to mqttwarn.
 
 ![pushover on iOS](assets/pushover.png)
 
@@ -2224,6 +2256,49 @@ joined the channel.
 ![Slack](assets/slack.png)
 
 This plugin requires [Python slacker](https://github.com/os/slacker).
+For image support (added November 2018), slacker 0.10.0 is required.
+
+The slack service will accept a payload with either a simple text message, or a json payload which contains
+a `message` and either an `imageurl` or `imagebase64` encoded image.
+
+Further, the imageurl payload, can have the additional parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
+
+The following payloads are valid;
+
+```
+Simple text message
+```
+
+```json
+{
+    "message": "Message only, with no image"
+}
+```
+
+```json
+ {
+    "message": "Message with base64 encoded image",
+    "imagebase64": "<base64 encoded image>"
+ }
+```
+
+```json
+ {
+    "message": "Message with image downloaded from URL",
+    "imageurl": "<image url>"
+ }
+```
+
+```json
+ {
+    "message": "Message with image downloaded from URL: digest authentication",
+    "imageurl": "<image url>",
+    "auth": "digest",
+    "user": "myspecialuser",
+    "password": "myspecialpassword"
+ }
+```
+For the above example, I would only recommend this be used in a local MQTT server instance, as the password for your imaging device is being transmitted in the clear to mqttwarn.
 
 ### `sqlite`
 
@@ -2849,6 +2924,16 @@ A function called from the `filter` property in a topic section needs to return 
 #### Output functions
 
 Both the `title` and the `format` properties in the topic section can contain a string where `{bracketed}` references get resolved using the dictionary returned from a data mapping function. Or they can call a function that returns a string that may or may not contain such references. The functions called here do not have access to the actual dictionary returned from data mapping functions though.
+
+#### Notes
+
+When writing custom functions, it can be difficult to determine what the issue is when getting an error message such as
+
+```
+WARNING [mqttwarn] Cannot invoke filter function xxxx defined in yyyyy: ...
+```
+
+This is typically indicates variables or function calls which haven't been defined or similar.
 
 #### Examples
 
