@@ -48,10 +48,27 @@ def plugin(srv, item):
     
     for record in jsondata['result']:
         if record['type'] == 'A' and record['content'] == ip:
-            srv.logging.info("No IP Address needed for record:" + record['name'])
+            srv.logging.info("No IP Address update needed for record:" + record['name'] + " Address: " + ip)
         else:
             srv.logging.info("IP Address needs update for record:" + record['name'] + " from: " + record['content'] + " to: " + ip )
-
+            resp = requests.put(
+                'https://api.cloudflare.com/client/v4/zones/{}/dns_records/{}'.format(
+                    zone, record['id']),
+                json={
+                    'type': 'A',
+                    'content': ip,
+                    'name': record['name'],
+                    "ttl":1,
+                    "proxied":True
+                },
+                headers={
+                    'X-Auth-Key': api_key,
+                    'X-Auth-Email': email
+                })
+            if resp.status_code != 200:
+                srv.logging.error("Error updating ip address of {} ({}) to {} - response received {}".format(record['name'],
+                    record['id'],ip,resp.status_code))
+                return False
     return True
 
     
