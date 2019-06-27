@@ -311,6 +311,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [autoremote](#autoremote)
 * [carbon](#carbon)
 * [celery](#celery)
+* [cloudflare](#cloudflare)
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
@@ -576,6 +577,41 @@ Broker URL can be any broker supported by celery. Celery serializer is usually j
 Targets are selected by task name. Message_format can be either "json" or "text". If it is json, the message will be sent as a json payload rather than a string.
 In this configuration, all messages that match hello/ will be sent to the celery task "myapp.hello". The first argument of the celery task will be the message from mqtt.
 
+
+### `cloudflare`
+
+The `cloudflare` service sends can update your A records with your current IP address.  It works well with the sample function `publish_public_ip_address` where the payload is an ip address.
+
+```ini
+[config:cloudflare]
+auth-email  = '<your cloudflare@email.address>'
+auth-key    = '<your cloudflare api key>'
+targets = {
+    'all': ['<zone id>','all'],
+    'www': ['<zone id>','<full domain name>',''],
+    'www2': ['12345657891234','www.mydomain.com',''],
+    'vpn': ['12345657891234','','12345613247']
+  }
+
+[mqttwarn/ip/#]
+targets = cloudflare:all, cloudflare:www2
+
+```
+`auth-email` is a cloudflare login address with it's auth-key (api key) authorised for performing updates.
+
+For Targets a zone id is the ID of one of your domains.  These will have their own ID these is on the bottom right of a domain overview page in the API section listed as Zone ID.
+
+Using the special name of `all` for a zone will update all A records for that domain to the passed IP address.
+Otherwise, set the parm 2 of a target to the full fqdn of the A record + domain.  eg A record `WWW` for domain `mydomain.com` for the example `www2` target above.
+
+Or you can obtain the record via curl command:
+```
+ curl -X GET "https://api.cloudflare.com/client/v4/zones/<zone id>/dns_records?type=A&page=1&per_page=20&order=type&direction=desc&match=all" -H "X-Auth-Email: <auth-email>"  -H "X-Auth-key: <auth-key>"  -H "Content-Type: application/json"
+```
+
+For the resulting json, you want the "id" field of the result entry.
+
+In the configuration above, when a new ip address is posted to mqttwarn/ip/<server> it will fire off the cloudflare service to update `all` of the A records for the zone and then the `www2` A record for zone id `12345657891234`.
 
 ### `dbus`
 
