@@ -32,6 +32,11 @@ functions = 'samplefuncs.py'
 ; name the service providers you will be using.
 launch    = file, log
 
+; Local services folder and launch directives.
+localservices = /full/path/to/local/mqttwarn-services
+; Can also be relative to mqttwarn.  If using docker, use a volume mount
+launch-local = myservice
+
 [config:file]
 append_newline = True
 targets = {

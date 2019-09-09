@@ -990,7 +990,7 @@ def load_module(path):
         except:
             pass
 
-def load_services(services):
+def load_services(servicefolder,services):
     for service in services:
         service_plugins[service] = {}
 
@@ -1001,8 +1001,11 @@ def load_services(services):
 
         service_plugins[service]['config'] = service_config
 
-        module = cf.g('config:' + service, 'module', service)
-        modulefile = 'services/%s.py' % module
+        #module = cf.g('config:' + service, 'module', service)
+        if os.path.isabs(servicefolder) == False:
+            modulefile = './{}/{}.py'.format(servicefolder,service)
+        else:
+            modulefile = '{}/{}.py'.format(servicefolder,service)
 
         try:
             service_plugins[service]['module'] = load_module(modulefile)
@@ -1028,7 +1031,30 @@ def connect():
         logging.error("Cannot chdir to %s: %s" % (cf.directory, str(e)))
         sys.exit(2)
 
-    load_services(services)
+    #load services bundled with the main repo (or container))
+    servicefolder = 'services'
+    load_services(servicefolder,services)
+
+    #if the services local folder is defined in the config, use it and load services.
+    if cf.has_option('defaults','localservices') and cf.has_option('defaults','launch-local'):
+        servicefolder = cf.localservices
+        
+
+        try:
+            services = cf.getlist('defaults', 'launch-local')
+        except:
+            logging.error("No services configured. Aborting")
+            sys.exit(2)
+
+        load_services(servicefolder,services)
+
+        try:
+            os.chdir(cf.directory)
+        except Exception, e:
+            logging.error("Cannot chdir to %s: %s" % (cf.directory, str(e)))
+            sys.exit(2)
+
+    
 
     srv.mqttc = mqttc
     srv.logging = logging

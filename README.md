@@ -150,7 +150,14 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   ; contain a `services/' directory with the required service plugins.
   directory = /tmp/
   
-  
+  ; Local services folder and launch directives.  The localservice directory can 
+  ; be a relative path or a full directrory
+  ; For docker, use a volume mount.  Eg -v /home/user/mqttwarn-local:/local-services
+  ; Exernal directroy /home/user/mqttwarn-local will mount to /local-services in 
+  ; the container, make sure the mqttwarn.ini has /local-services as a path
+  localservices = /local-services
+  launch-local = myservice
+
   ; optional: TLS parameters. (Don't forget to set the port number for
   ; TLS (probably 8883).
   ; You will need to set at least `ca_certs' if you want TLS support
