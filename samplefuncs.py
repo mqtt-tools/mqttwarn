@@ -9,17 +9,15 @@ except ImportError:
     import simplejson as json
 
 def OwnTracksTopic2Data(topic):
-    if type(topic) == str:
-        try:
-            # owntracks/username/device
-            parts = topic.split('/')
-            username = parts[1]
-            deviceid = parts[2]
-        except:
-            deviceid = 'unknown'
-            username = 'unknown'
-        return dict(username=username, device=deviceid)
-    return None
+    try:
+        # owntracks/username/device
+        parts = topic.split('/')
+        username = parts[1]
+        deviceid = parts[2]
+    except:
+        deviceid = 'unknown'
+        username = 'unknown'
+    return dict(username=username, device=deviceid)
 
 def OwnTracksConvert(data):
     if type(data) == dict:

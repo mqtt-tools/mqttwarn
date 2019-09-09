@@ -3412,6 +3412,11 @@ and appended to
 each time the container is executed. You can delete the file
 between executions.
 
+Another solution is to write logs directly to stdout inside the container. That way they are piped to the docker logs engine and your terminal directly, without producing any files.
+```
+logfile = '/dev/stdout'
+```
+
 
 ##### If your MQTT Broker is Also Running in Docker on the Same Host
 
