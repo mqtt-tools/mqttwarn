@@ -7,6 +7,7 @@ RUN pip install paho-mqtt requests jinja2
 
 # build /opt/mqttwarn
 RUN mkdir -p /opt/mqttwarn
+RUN mkdir -p /opt/local-services
 WORKDIR /opt/mqttwarn
 
 # add user mqttwarn to image
@@ -27,5 +28,6 @@ ENV MQTTWARNINI="/opt/mqttwarn/conf/mqttwarn.ini"
 COPY . /opt/mqttwarn
 
 # run process
-CMD python mqttwarn.py
+CMD ["/bin/bash" , "run.sh"]
+
 
