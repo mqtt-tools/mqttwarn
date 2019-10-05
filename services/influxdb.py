@@ -44,14 +44,23 @@ def plugin(srv, item):
         url = "http://%s:%d/write?db=%s&rp=%s&precision=%s" % (host, port, database, rp, precision)
 
         # influxdb line protocol:
-        # measurement,tagKey1=tagVal1,tagKey2=tagVal2 field1=value1 field2=value2
+        # measurement,tagKey1=tagVal1,tagKey2=tagVal2 field1=value1,field2=value2 Timestamp
+        # sample format in .ini file; no quotes
 
-        # if no format has been set, default to "value={payload}""
-        if item.message == item.payload:
+        if (item.message == item.payload) or (not (' ' in  item.message) and not (',' in item.message)):
+            # if no format has been set, default to "value={payload}"
+            # or if format has been set to output simple value, without additional tags or multiple fields
+            # format = {json_attribute}
             data = measurement + ',' + tag + ' value=' + value
+
+        elif (',' in item.message) and (not ' ' in item.message):
+            # if format does not include any additional tags or a timestamp, but includes one or multiple non-default fields
+            # format = field1=value1,field2=value2
+            data = measurement + ',' + tag + ' ' + item.message
+
         else:
-            # sample format in .ini file; no quotes:
-            # format = host=server1,location=rack1 cpu={payload}
+            # if format includes additional tags and one or multiple non-default fields and an optional timestamp, either group separated by whitespace from each other
+            # format = tagKey1=tagVal1,tagKey2=tagVal2 field1=value1,field2=value2
             data = measurement + ',' + tag + ',' + item.message
 
         srv.logging.debug(url)
