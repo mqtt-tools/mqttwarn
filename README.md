@@ -385,7 +385,7 @@ We term the array for each target an "address list" for the particular service. 
 ### `alexa-notify-me`
 
 The `alexa-notify-me` service implements a gateway to make Alexa notifications using the Notify-Me voice app.
-http://www.thomptronics.com/notify-me
+https://www.thomptronics.com/about/notify-me
 
 ```ini
 
