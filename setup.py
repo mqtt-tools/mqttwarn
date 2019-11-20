@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2018 The mqttwarn developers
+# (c) 2014-2019 The mqttwarn developers
 import sys
 from setuptools import setup, find_packages
 
@@ -127,6 +127,7 @@ setup(name='mqttwarn',
         "Operating System :: Unix",
         "Operating System :: MacOS",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
         "Topic :: Communications",
         "Topic :: Education",
         "Topic :: Internet",
