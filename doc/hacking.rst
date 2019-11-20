@@ -11,8 +11,8 @@ Get hold of the sources::
 
 Create virtualenv::
 
-    virtualenv .venv27
-    source .venv27/bin/activate
+    virtualenv .venv2
+    source .venv2/bin/activate
 
 Install Python package in development mode::
 
