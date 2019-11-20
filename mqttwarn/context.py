@@ -57,7 +57,7 @@ class RuntimeContext(object):
         if self.config.has_option(section, 'filter'):
             filterfunc = sanitize_function_name( self.config.get(section, 'filter') )
             try:
-                return self.invoker.filter(filterfunc, topic, payload)
+                return self.invoker.filter(filterfunc, topic, payload, section)
             except Exception, e:
                 logger.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, str(e)))
         return False
@@ -185,7 +185,7 @@ class FunctionInvoker(object):
 
         return val
 
-    def filter(self, name, topic, payload):
+    def filter(self, name, topic, payload, section=None):
         """
         Invoke function "name" loaded from the "functions" Python module.
         Return that function's True/False.
@@ -199,7 +199,10 @@ class FunctionInvoker(object):
         rc = False
         try:
             func = load_function(name=name, filepath=self.config.functions)
-            rc = func(topic, payload)
+            try:
+                rc = func(topic, payload, section, self.srv)  # new version
+            except TypeError:
+                rc = func(topic, payload)                     # legacy signature
         except:
             raise
 
