@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2019-11-20 0.11.1
+=================
+- Update author email within setup.py after PyPI upload croaked at us
+
+
 2019-11-20 0.11.0
 =================
 - Add foundation for unit tests based on pytest
