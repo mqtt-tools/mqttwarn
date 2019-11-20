@@ -7,6 +7,12 @@ in progress
 ===========
 
 
+2019-11-20 0.11.2
+=================
+- Remove "Topic :: Internet :: MQTT" from the list of trove classifiers
+  after PyPI upload croaked again
+
+
 2019-11-20 0.11.1
 =================
 - Update author email within setup.py after PyPI upload croaked at us
