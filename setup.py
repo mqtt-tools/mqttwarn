@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2019 The mqttwarn developers
-import sys
+import os
 from setuptools import setup, find_packages
+
+here = os.path.abspath(os.path.dirname(__file__))
+README = open(os.path.join(here, 'README.rst')).read()
 
 requires = [
     'six==1.11.0',
@@ -108,8 +111,7 @@ extras = {
 setup(name='mqttwarn',
       version='0.10.1',
       description='mqttwarn - subscribe to MQTT topics and notify pluggable services',
-      long_description='mqttwarn subscribes to any number of MQTT topics and publishes received payloads to one or more '
-                       'notification services after optionally applying sophisticated transformations.',
+      long_description=README,
       license="EPL 2.0",
       classifiers=[
         "Development Status :: 4 - Beta",
