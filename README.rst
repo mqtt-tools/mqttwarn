@@ -35,17 +35,14 @@ Description
 payloads to one or more notification services after optionally applying
 sophisticated transformations.
 
-*mqttwarn* comes with over **70 notification handler plugins** for a wide
+It comes with over **70 notification handler plugins** for a wide
 range of notification services and is very open to further contributions.
-
 You can enjoy the alphabetical list of plugins within the handbook_.
 
 A picture says a thousand words.
 
-.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/develop/assets/mqttwarn.jpg
+.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/develop/assets/mqttwarn.png
     :target: #
-
-.. _handbook: https://github.com/jpmens/mqttwarn/blob/develop/HANDBOOK.md
 
 
 Introduction
@@ -60,10 +57,13 @@ Notifications are transmitted to the appropriate service via plugins.
 can easily add your own.
 
 A more detailed blog post about what mqttwarn can be used for is available
-at http://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/.
+at https://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/.
 
 For example, you may wish to submit an alarm published as text to the
 MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
+
+
+.. _handbook: https://github.com/jpmens/mqttwarn/blob/develop/HANDBOOK.md
 
 
 *************
@@ -215,7 +215,7 @@ Use of the source code included here is governed by the
 Please also recognize the licenses of third-party components.
 
 .. _issue: https://github.com/jpmens/mqttwarn/issues/new
-.. _EPL-2.0:
+.. _EPL-2.0: https://www.eclipse.org/legal/epl-2.0/
 .. _LICENSE: https://github.com/jpmens/mqttwarn/blob/develop/LICENSE
 
 

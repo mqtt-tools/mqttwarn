@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2019-11-20 0.11.3
+=================
+- Fix README.rst
+
+
 2019-11-20 0.11.2
 =================
 - Remove "Topic :: Internet :: MQTT" from the list of trove classifiers
