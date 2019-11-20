@@ -192,6 +192,7 @@ def on_message(mosq, userdata, msg):
     """
     Message received from the broker
     """
+
     topic = msg.topic
     try:
         payload = msg.payload.decode('utf-8')
@@ -311,7 +312,7 @@ def send_to_targets(section, topic, payload):
 
         # skip targets with invalid services
         if not service in service_plugins:
-            logger.error("Invalid configuration: topic %s points to non-existing service %s" % (topic, service))
+            logger.error("Invalid configuration: topic '%s' points to non-existing service '%s'" % (topic, service))
             continue
 
         sendtos = None
@@ -433,8 +434,8 @@ def processor(worker_id=None):
             service_targets = context.get_service_targets(service)
 
             if target not in service_targets:
-                error_message = "Invalid configuration: topic {topic} points to " \
-                                "non-existing target {target} in service {service}".format(**locals())
+                error_message = "Invalid configuration: Topic '{topic}' points to " \
+                                "non-existing target '{target}' in service '{service}'".format(**locals())
                 raise KeyError(error_message)
 
         except Exception as ex:
@@ -576,9 +577,31 @@ def connect():
 
     try:
         mqttc.connect(cf.hostname, int(cf.port), 60)
+
     except Exception, e:
         logger.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), str(e)))
         sys.exit(2)
+
+    # Launch worker threads to operate on queue
+    start_workers()
+
+    while not exit_flag:
+        reconnect_interval = 5
+
+        try:
+            mqttc.loop_forever()
+        except socket.error:
+            pass
+        except:
+            # FIXME: add logging with trace
+            raise
+
+        if not exit_flag:
+            logger.warning("MQTT server disconnected, trying to reconnect each %s seconds" % reconnect_interval)
+            time.sleep(reconnect_interval)
+
+
+def start_workers():
 
     # Launch worker threads to operate on queue
     logger.info('Starting %s worker threads' % cf.num_workers)
@@ -605,21 +628,6 @@ def connect():
             except AttributeError:
                 logger.error("[cron] section has function [%s] specified, but that's not defined" % name)
                 continue
-
-    while not exit_flag:
-        reconnect_interval = 5
-
-        try:
-            mqttc.loop_forever()
-        except socket.error:
-            pass
-        except:
-            # FIXME: add logging with trace
-            raise
-
-        if not exit_flag:
-            logger.warning("MQTT server disconnected, trying to reconnect each %s seconds" % reconnect_interval)
-            time.sleep(reconnect_interval)
 
 
 def cleanup(signum=None, frame=None):

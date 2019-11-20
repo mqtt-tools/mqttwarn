@@ -29,6 +29,7 @@ def plugin(srv, item):
         mode = "w"
 
     try:
+        srv.logging.info("Writing to file `%s'" % (filename))
         f = open(filename, mode)
         f.write(text)
         f.close()

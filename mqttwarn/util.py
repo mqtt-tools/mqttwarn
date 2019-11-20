@@ -25,8 +25,10 @@ class Struct:
     """
     def __init__(self, **entries):
         self.__dict__.update(entries)
+
     def __repr__(self):
         return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in self.__dict__.iteritems()))
+
     def get(self, key, default=None):
         if key in self.__dict__ and self.__dict__[key] is not None:
             return self.__dict__[key]
@@ -90,6 +92,10 @@ def parse_cron_options(argstring):
 
         my_periodic_task = 60; now=true
 
+    Respective "argstring"::
+
+        60; now=true
+
     """
     parts = argstring.split(';')
     options = {'interval': float(parts[0].strip())}
@@ -102,6 +108,7 @@ def parse_cron_options(argstring):
 # http://code.activestate.com/recipes/473878-timeout-function-using-threading/
 def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
     import threading
+
     class InterruptableThread(threading.Thread):
         def __init__(self):
             threading.Thread.__init__(self)
@@ -110,6 +117,8 @@ def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
         def run(self):
             try:
                 self.result = func(*args, **kwargs)
+
+            # FIXME: Shouldn't we report this better?
             except:
                 self.result = default
 
@@ -161,8 +170,13 @@ def load_function(name=None, filepath=None):
     elif file_ext.lower() == '.pyc':
         py_mod = imp.load_compiled(mod_name, filepath)
 
+    else:
+        raise RuntimeError("Loading Python code from '{}' failed".format(filepath))
+
     if hasattr(py_mod, name):
         mod_inst = getattr(py_mod, name)
+    else:
+        raise RuntimeError("Loading function '{}' from '{}' failed".format(name, filepath))
 
     return mod_inst
 

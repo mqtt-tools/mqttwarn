@@ -9,13 +9,14 @@ import logging
 from docopt import docopt
 
 from mqttwarn import __version__
-from mqttwarn.configuration import Config
+from mqttwarn.configuration import load_configuration
 from mqttwarn.core import bootstrap, connect, cleanup, run_plugin
 from mqttwarn.util import get_resource_content
 
 logger = logging.getLogger(__name__)
 
 APP_NAME = 'mqttwarn'
+
 
 def run():
     """
@@ -101,22 +102,6 @@ def run_mqttwarn():
 
     # Connect to broker and start listening
     connect()
-
-
-def load_configuration(configfile=None, name=None):
-    if configfile is None:
-        configfile = os.getenv(name.upper() + 'INI', name + '.ini')
-
-    if not os.path.exists(configfile):
-        raise ValueError('Configuration file "{}" does not exist'.format(configfile))
-
-    defaults = {
-        'clientid': name,
-        'lwt': 'clients/{}'.format(name),
-        'logfile': os.getenv(name.upper() + 'LOG', name + '.log'),
-    }
-
-    return Config(configfile, defaults=defaults)
 
 
 def setup_logging(config):

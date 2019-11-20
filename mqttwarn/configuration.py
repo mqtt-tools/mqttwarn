@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2018 The mqttwarn developers
+import os
 import sys
 import ast
 import codecs
@@ -153,3 +154,20 @@ class Config(RawConfigParser):
             d = dict((key, self.g(section, key))
                 for (key) in self.options(section) if key not in ['targets', 'module'])
         return d
+
+
+def load_configuration(configfile=None, name='mqttwarn'):
+
+    if configfile is None:
+        configfile = os.getenv(name.upper() + 'INI', name + '.ini')
+
+    if not os.path.exists(configfile):
+        raise ValueError('Configuration file "{}" does not exist'.format(configfile))
+
+    defaults = {
+        'clientid': name,
+        'lwt': 'clients/{}'.format(name),
+        'logfile': os.getenv(name.upper() + 'LOG', name + '.log'),
+    }
+
+    return Config(configfile, defaults=defaults)
