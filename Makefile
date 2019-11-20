@@ -49,8 +49,7 @@ test-coverage: install-tests
 # Release this piece of software
 # Synopsis:
 #   make release bump=minor  (major,minor,patch)
-release: bumpversion push sdist
-#release: bumpversion push sdist pypi-upload
+release: bumpversion push sdist pypi-upload
 
 
 # -------------

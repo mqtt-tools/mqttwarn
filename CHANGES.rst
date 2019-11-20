@@ -5,8 +5,16 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2019-11-20 0.11.0
+=================
 - Add foundation for unit tests based on pytest
 - Add test harness
+- Integrate changes from the master branch
+- Improve documentation, add a more compact ``README.rst`` and
+  move the detailed documentation to ``HANDBOOK.md`` for now.
+- First release on PyPI
 
 
 .. _mqttwarn-0.10.1:
