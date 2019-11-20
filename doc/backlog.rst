@@ -12,6 +12,7 @@ Goals for 0.15.0
 - [x] Put example "mqttwarn.ini" into resources folder of module namespace,
       add "mqttwarn make-config" and "mqttwarn make-samplefuncs"  commands to dump them to stdout
 - [x] Add Makefile for releasing and documentation building
+- [o] Add software tests
 - [o] Refactor contents from "examples", "templates" and "vendor" folders
       - [o] Refactor ``examples/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
       - [o] Refactor ``examples/zabbix/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
@@ -23,6 +24,22 @@ Goals for 0.15.0
 - [o] How to address "samplefuncs.py" in relation to "mqttwarn.ini"? E.g. if the mqttwarn configuration file
       would be ``/etc/mqttwarn/acme.ini``, should this load ``/etc/mqttwarn/samplefuncs.py`` or use the current
       working directory for that? Or even both!?
+
+- [o] When running the mqttwarn daemon and no configuration file is given,
+      use configuration from the ".mqttwarn" folder in the current working directory.
+      When doing so, also use ".mqttwarn/templates" as the default templates folder.
+
+- [o] Verify that "functions" still accepts file names as well as dotted module names
+- [o] Adapt configuration for Supervisor and systemd
+- [o] Improve documentation: Add a complete roundtrip example involving ``mosquitto_pub``
+- [o] Improve documentation: Add "credits" section. At least add the author of Mosquitto.
+- [o] Add ``mqttwarn make-pubs`` or ``mqttwarn selftest``, see https://github.com/jpmens/mqttwarn/issues/127#issuecomment-381690557
+- [o] Release on PyPI
+
+
+****************
+Goals for 0.16.0
+****************
 - [o] Refactor the ``mqttwarn make-config|make-samplefuncs`` machinery into a ``mqttwarn init``-style thing. Proposal::
 
       # Create folder .mqttwarn with minimal configuration (config.ini, custom.py)
@@ -34,16 +51,6 @@ Goals for 0.15.0
       # Create folder .mqttwarn with configuration from named preset "homie" (homie.ini, homie.py)
       mqttwarn init --preset=homie
 
-- [o] When running the mqttwarn daemon and no configuration file is given,
-      use configuration from the ".mqttwarn" folder in the current working directory.
-      When doing so, also use ".mqttwarn/templates" as the default templates folder.
-
-- [o] Verify that "functions" still accepts file names as well as dotted module names
-- [o] Adapt configuration for Supervisor and systemd
-- [o] Improve documentation: Add a complete roundtrip example involving ``mosquitto_pub``
-- [o] Improve documentation: Add "credits" section. At least add the author of Mosquitto.
-- [o] Release on PyPI
-
 
 ***************
 Goals for 1.0.0
@@ -52,8 +59,9 @@ Goals for 1.0.0
 - [o] Make "mqttwarn --plugin=log --data=" obtain JSON data from STDIN
 - [o] Translate documentation into reStructuredText format,
       render it using Sphinx and optionally publish to readthedocs.org.
-- [o] Add software tests
 - [o] Add support for Python 3
+- [o] Add activity indicator for running a) interactively (snappy) or b) daemonized (in interval).
+      Display "tps" and general activity on a per-message basis.
 
 
 ***************
