@@ -65,6 +65,7 @@ def test_timeout():
     assert timeout(func, timeout_secs=above_duration) == 42
 
     # FIXME: Better catch and report the exception?
+    # FIXME: Derive "timeout_secs" from "duration"
     assert timeout(errfunc, timeout_secs=0.10, default='foobar') == 'foobar'
 
 
@@ -85,16 +86,16 @@ def test_load_module():
 
 def test_load_function():
 
+    # Load valid function
     func = load_function(name='foobar', filepath=funcfile)
     assert func is not None
 
-    func = load_function(name='foobar', filepath=funcfile)
-    assert func is not None
-
+    # Load invalid function, function name does not exist in "funcfile"
     with pytest.raises(RuntimeError) as excinfo:
         load_function(name='unknown', filepath=funcfile)
     assert str(excinfo.value) == "Loading function 'unknown' from '{}' failed".format(funcfile)
 
+    # Load invalid function, "funcfile" does not exist at all
     with pytest.raises(RuntimeError) as excinfo:
         load_function(name='unknown', filepath='unknown.txt')
     assert str(excinfo.value) == "Loading Python code from 'unknown.txt' failed"
@@ -107,7 +108,7 @@ def test_get_resource_content():
 
 def test_exception_traceback():
 
-    # 1. Getting exception from ``sys.exc_info()``
+    # Get exception from ``sys.exc_info()``
     try:
         raise ValueError('Something reasonable')
 
