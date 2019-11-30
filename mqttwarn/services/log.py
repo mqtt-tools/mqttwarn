@@ -23,7 +23,7 @@ def plugin(srv, item):
 
     try:
         levels[level]("%s", text)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot invoke service log with level `%s': %s" % (level, str(e)))
         return False
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2018 The mqttwarn developers
+# (c) 2018-2019 The mqttwarn developers
 import time
 import pytest
 from mqttwarn.util import Struct, Formatter, asbool, parse_cron_options, timeout, sanitize_function_name, load_module, \
@@ -19,12 +19,12 @@ def test_struct():
 
 def test_formatter_basic():
     result = Formatter().format("{foo}", **{u'foo': u'Räuber Hotzenplotz'}).encode('utf-8')
-    assert result == 'R\xc3\xa4uber Hotzenplotz'
+    assert result == b'R\xc3\xa4uber Hotzenplotz'
 
 
 def test_formatter_json():
     result = Formatter().format("{foo!j}", **{u'foo': {u'bar': u'Räuber Hotzenplotz'}}).encode('utf-8')
-    assert result == '{"bar": "R\\u00e4uber Hotzenplotz"}'
+    assert result == b'{"bar": "R\\u00e4uber Hotzenplotz"}'
 
 
 def test_asbool():
@@ -79,9 +79,9 @@ def test_sanitize_function_name():
 def test_load_module():
     module = load_module('mqttwarn/services/file.py')
     assert 'plugin' in dir(module)
-    assert module.plugin.func_code.co_argcount == 2
-    assert 'srv' in module.plugin.func_code.co_varnames
-    assert 'item' in module.plugin.func_code.co_varnames
+    assert module.plugin.__code__.co_argcount == 2
+    assert 'srv' in module.plugin.__code__.co_varnames
+    assert 'item' in module.plugin.__code__.co_varnames
 
 
 def test_load_function():
@@ -113,7 +113,5 @@ def test_exception_traceback():
         raise ValueError('Something reasonable')
 
     except Exception as ex:
-        pass
-
-    tb = exception_traceback()
-    assert 'ValueError: Something reasonable' in tb
+        tb = exception_traceback()
+        assert 'ValueError: Something reasonable' in tb

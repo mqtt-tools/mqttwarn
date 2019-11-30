@@ -2,7 +2,7 @@
 # (c) 2018 The mqttwarn developers
 import logging
 
-from mqttwarn.core import make_service
+from mqttwarn.core import make_service, decode_payload
 from tests import configfile
 from tests.util import core_bootstrap, send_message
 
@@ -32,7 +32,63 @@ def test_bootstrap(caplog):
         #assert 'Job queue has 0 items to process' in caplog.text, caplog.text
 
 
-def test_on_message(caplog):
+def test_decode_payload_foo(caplog):
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT.
+        core_bootstrap(configfile=configfile)
+
+        # Proof that decoding an unconfigured thing yields nothing sensible.
+        outcome = decode_payload(section='foo', topic='bar', payload='baz')
+        assert outcome['topic'] == 'bar'
+        assert outcome['payload'] == 'baz'
+        assert 'Cannot decode JSON object, payload=baz' in caplog.text, caplog.text
+
+
+def test_decode_payload_json(caplog):
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT.
+        core_bootstrap(configfile=configfile)
+
+        # Proof that decoding a valid JSON payload decodes it appropriately.
+        outcome = decode_payload(section='foo', topic='bar', payload='{"baz": "qux"}')
+        assert outcome['topic'] == 'bar'
+        assert outcome['payload'] == '{"baz": "qux"}'
+        assert outcome['baz'] == 'qux'
+
+
+def test_decode_payload_datamap(caplog):
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT.
+        core_bootstrap(configfile=configfile)
+
+        # Proof that decoding a valid JSON payload decodes it appropriately.
+        outcome = decode_payload(section='test/datamap', topic='bar', payload='{"baz": "qux"}')
+        assert outcome['topic'] == 'bar'
+        assert outcome['baz'] == 'qux'
+        assert outcome['datamap-key'] == 'datamap-value'
+
+
+def test_decode_payload_alldata(caplog):
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT.
+        core_bootstrap(configfile=configfile)
+
+        # Proof that decoding a valid JSON payload decodes it appropriately.
+        outcome = decode_payload(section='test/alldata', topic='bar', payload='{"baz": "qux"}')
+        assert outcome['topic'] == 'bar'
+        assert outcome['baz'] == 'qux'
+        assert outcome['alldata-key'] == 'alldata-value'
+
+
+def test_message_basic(caplog):
 
     with caplog.at_level(logging.DEBUG):
 

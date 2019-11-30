@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2018 The mqttwarn developers
+# (c) 2014-2019 The mqttwarn developers
 import os
 import sys
 import ast
 import codecs
 import logging
-from ConfigParser import RawConfigParser, NoOptionError
+try:
+    from configparser import RawConfigParser, NoOptionError
+except ImportError:
+    # Backward-compatibility for Python 2
+    from ConfigParser import RawConfigParser, NoOptionError
 
 HAVE_TLS = True
 try:
@@ -30,7 +34,7 @@ class Config(RawConfigParser):
 
         RawConfigParser.__init__(self)
         f = codecs.open(configuration_file, 'r', encoding='utf-8')
-        self.readfp(f)
+        self.read_file(f)
         f.close()
 
         ''' set defaults '''
@@ -120,7 +124,7 @@ class Config(RawConfigParser):
         try:
             val = self.get(section, key)
             val = [s.strip() for s in val.split(',')]
-        except Exception, e:
+        except Exception as e:
             logger.warn("Expecting a list in section `%s', key `%s' (%s)" % (section, key, str(e)))
 
         return val

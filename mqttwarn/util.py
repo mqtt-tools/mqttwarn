@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2018 The mqttwarn developers
+# (c) 2014-2019 The mqttwarn developers
 import os
 import re
 import imp
@@ -27,7 +27,7 @@ class Struct:
         self.__dict__.update(entries)
 
     def __repr__(self):
-        return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in self.__dict__.iteritems()))
+        return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in self.__dict__.items()))
 
     def get(self, key, default=None):
         if key in self.__dict__ and self.__dict__[key] is not None:
@@ -37,7 +37,7 @@ class Struct:
 
     def enum(self):
         item = {}
-        for (k, v) in self.__dict__.iteritems():
+        for (k, v) in self.__dict__.items():
             item[k] = v
         return item
 
@@ -71,7 +71,7 @@ def asbool(obj):
     # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
     # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
     """
-    if isinstance(obj, basestring):
+    if isinstance(obj, str):
         obj = obj.strip().lower()
         if obj in ['true', 'yes', 'on', 'y', 't', '1']:
             return True
@@ -148,7 +148,8 @@ def sanitize_function_name(s):
 def load_module(path):
     try:
         fp = open(path, 'rb')
-        return imp.load_source(md(path).hexdigest(), path, fp)
+        digest = md(path.encode('utf-8')).hexdigest()
+        return imp.load_source(digest, path, fp)
     finally:
         try:
             fp.close()
@@ -183,7 +184,7 @@ def load_function(name=None, filepath=None):
 
 def get_resource_content(package, filename):
     with pkg_resources.resource_stream(package, filename) as stream:
-        return stream.read()
+        return stream.read().decode('utf-8')
 
 
 def exception_traceback(exc_info=None):

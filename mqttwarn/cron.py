@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2018 The mqttwarn developers
+# (c) 2014-2019 The mqttwarn developers
 import logging
 import threading
 
@@ -50,7 +50,7 @@ class PeriodicThread(object):
         """
         try:
             self.run()
-        except Exception, e:
+        except Exception as e:
             logger.exception("Exception in running periodic thread")
         finally:
             with self.schedule_lock:

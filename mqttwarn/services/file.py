@@ -33,7 +33,7 @@ def plugin(srv, item):
         f = open(filename, mode)
         f.write(text)
         f.close()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot write to file `%s': %s" % (filename, str(e)))
         return False
 

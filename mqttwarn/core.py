@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2018 The mqttwarn developers
+# (c) 2014-2019 The mqttwarn developers
 import os
 import sys
 import time
@@ -7,7 +7,11 @@ import types
 import socket
 import logging
 import threading
-import Queue
+try:
+    from queue import Queue
+except ImportError:
+    # Backward-compatibility for Python 2
+    from Queue import Queue
 from datetime import datetime
 from pkg_resources import resource_filename
 
@@ -59,7 +63,7 @@ mqttc = None
 
 
 # Initialize processor queue
-q_in = Queue.Queue(maxsize=0)
+q_in = Queue(maxsize=0)
 exit_flag = False
 
 # Instances of PeriodicThread objects
@@ -194,10 +198,7 @@ def on_message(mosq, userdata, msg):
     """
 
     topic = msg.topic
-    try:
-        payload = msg.payload.decode('utf-8')
-    except UnicodeEncodeError:
-        payload = msg.payload
+    payload = msg.payload
     logger.debug("Message received on %s: %s" % (topic, payload))
 
     if msg.retain == 1:
@@ -222,14 +223,14 @@ def on_message(mosq, userdata, msg):
 
 def send_failover(reason, message):
     # Make sure we dump this event to the log
-    logger.warn(message)
+    logger.warning(message)
     # Attempt to send the message to our failover targets
     send_to_targets('failover', reason, message)
 
 
 def send_to_targets(section, topic, payload):
     if cf.has_section(section) == False:
-        logger.warn("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
+        logger.warning("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
         return
 
     # decode raw payload into transformation data
@@ -307,7 +308,7 @@ def send_to_targets(section, topic, payload):
             try:
                 service, target = t.split(':', 2)
             except:
-                logger.warn("Invalid target %s - should be 'service:target'" % (t))
+                logger.warning("Invalid target %s - should be 'service:target'" % (t))
                 continue
 
         # skip targets with invalid services
@@ -361,12 +362,12 @@ def xform(function, orig_value, transform_data):
             try:
                 res = cf.datamap(function_name, transform_data)
                 return res
-            except Exception, e:
-                logger.warn("Cannot invoke %s(): %s" % (function_name, str(e)))
+            except Exception as e:
+                logger.warning("Cannot invoke %s(): %s" % (function_name, str(e)))
 
         try:
             res = Formatter().format(function, **transform_data).encode('utf-8')
-        except Exception, e:
+        except Exception as e:
             logger.warning("Cannot format message: %s" % e)
 
     if type(res) == str:
@@ -382,8 +383,8 @@ def decode_payload(section, topic, payload):
     transform_data = builtin_transform_data(topic, payload)
 
     topic_data = context.get_topic_data(section, topic)
-    if topic_data is not None and type(topic_data) == dict:
-        transform_data = dict(transform_data.items() + topic_data.items())
+    if topic_data is not None and isinstance(topic_data, dict):
+        transform_data.update(topic_data)
 
     # The dict returned is completely merged into transformation data
     # The difference between this and `get_topic_data()' is that this
@@ -393,8 +394,8 @@ def decode_payload(section, topic, payload):
     # longer fix the original ... (legacy)
 
     all_data = context.get_all_data(section, topic, transform_data)
-    if all_data is not None and type(all_data) == dict:
-        transform_data = dict(transform_data.items() + all_data.items())
+    if all_data is not None and isinstance(all_data, dict):
+        transform_data.update(all_data)
 
     # Attempt to decode the payload from JSON. If it's possible, add
     # the JSON keys into item to pass to the plugin, and create the
@@ -402,9 +403,9 @@ def decode_payload(section, topic, payload):
     try:
         payload = payload.rstrip("\0")
         payload_data = json.loads(payload)
-        transform_data = dict(transform_data.items() + payload_data.items())
+        transform_data.update(payload_data)
     except Exception as ex:
-        logger.debug(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+        logger.warning(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
 
     return transform_data
 
@@ -467,12 +468,12 @@ def processor(worker_id=None):
 
         try:
             item['priority'] = int(xform(context.get_config(section, 'priority'), 0, transform_data))
-        except Exception, e:
+        except Exception as e:
             item['priority'] = 0
-            logger.warn("Failed to determine the priority, defaulting to zero: %s" % (str(e)))
+            logger.warning("Failed to determine the priority, defaulting to zero: %s" % (str(e)))
 
         if HAVE_JINJA is False and context.get_config(section, 'template'):
-            logger.warn("Templating not possible because Jinja2 is not installed")
+            logger.warning("Templating not possible because Jinja2 is not installed")
 
         if HAVE_JINJA is True:
             template = context.get_config(section, 'template')
@@ -481,8 +482,8 @@ def processor(worker_id=None):
                     text = render_template(template, transform_data)
                     if text is not None:
                         item['message'] = text
-                except Exception, e:
-                    logger.warn("Cannot render `%s' template: %s" % (template, str(e)))
+                except Exception as e:
+                    logger.warning("Cannot render `%s' template: %s" % (template, str(e)))
 
         if item.get('message') is not None and len(item.get('message')) > 0:
             st = Struct(**item)
@@ -493,13 +494,13 @@ def processor(worker_id=None):
                 service_logger_name = 'mqttwarn.services.{}'.format(service)
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
-            except Exception, e:
+            except Exception as e:
                 logger.error("Cannot invoke service for `%s': %s" % (service, str(e)))
 
             if not notified:
-                logger.warn("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))
+                logger.warning("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))
         else:
-            logger.warn("Notification of %s for `%s' suppressed: text is empty" % (service, item.get('topic')))
+            logger.warning("Notification of %s for `%s' suppressed: text is empty" % (service, item.get('topic')))
 
         q_in.task_done()
 
@@ -543,7 +544,7 @@ def connect():
 
     try:
         os.chdir(cf.directory)
-    except Exception, e:
+    except Exception as e:
         logger.error("Cannot chdir to %s: %s" % (cf.directory, str(e)))
         sys.exit(2)
 
@@ -578,7 +579,7 @@ def connect():
     try:
         mqttc.connect(cf.hostname, int(cf.port), 60)
 
-    except Exception, e:
+    except Exception as e:
         logger.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), str(e)))
         sys.exit(2)
 
