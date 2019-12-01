@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Make README.rst ASCII-compatible, resolve #386.
 
 
 2019-11-20 0.11.3

@@ -174,7 +174,7 @@ Project information
 
 About
 =====
-These links will guide you to the source code of »mqttwarn« and its documentation.
+These links will guide you to the source code of *mqttwarn* and its documentation.
 
 - `mqttwarn on GitHub <https://github.com/jpmens/mqttwarn>`_
 - `mqttwarn on the Python Package Index (PyPI) <https://pypi.org/project/mqttwarn/>`_
