@@ -5,7 +5,10 @@ mqttwarn changelog
 
 in progress
 ===========
-- Make README.rst ASCII-compatible, resolve #386.
+- Add documentation based on Jekyll and publish on www.mqttwarn.net. Thanks, @jpmens!
+- Add logo source and PNG images. Thanks, @gumm!
+- Make testsuite pass successfully on Python3.
+- Make README.rst ASCII-compatible, resolve #386. Thanks, @dlangille!
 
 
 2019-11-20 0.11.3
