@@ -691,7 +691,7 @@ def run_plugin(config=None, name=None, data=None):
 
     # Build a mimikry item instance for feeding to the service plugin
     item = Struct(**data)
-    item.config = config
+    item.config = config.config('config:' + name)
     item.service = srv
     item.target = 'mqttwarn'
     item.data = {}        # FIXME
