@@ -5,6 +5,10 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2019-12-02 0.12.0
+=================
 - Add documentation based on Jekyll and publish on www.mqttwarn.net. Thanks, @jpmens!
 - Add logo source and PNG images. Thanks, @gumm!
 - Make testsuite pass successfully on Python3.
