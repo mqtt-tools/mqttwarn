@@ -10,6 +10,7 @@ in progress
 - Make testsuite pass successfully on Python3.
 - Make README.rst ASCII-compatible, resolve #386. Thanks, @dlangille!
 - Fix direct plugin invocation
+- Re-add compatibility with Python2
 
 
 2019-11-20 0.11.3
