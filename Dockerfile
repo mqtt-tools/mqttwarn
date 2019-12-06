@@ -3,7 +3,7 @@ FROM python:2.7
 # based on https://github.com/pfichtner/docker-mqttwarn
 
 # install python libraries (TODO: any others?)
-RUN pip install paho-mqtt requests jinja2
+RUN pip install paho-mqtt requests jinja2 slacker
 
 # build /opt/mqttwarn
 RUN mkdir -p /opt/mqttwarn
