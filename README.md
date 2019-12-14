@@ -156,7 +156,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   ; You will need to set at least `ca_certs' if you want TLS support
   ; ca_certs: path to the Certificate Authority certificate file (concatenated
   ;           PEM file)
-  ; tls_version: currently either 'tlsv1' or 'sslv3'
+  ; tls_version: currently one of 'tlsv1_1', 'tlsv1_2' (or 'sslv3', 'tlsv1' deprecated)
   ; tls_insecure: True or False (False is default): Do or do not verify
   ;               broker's certificate CN
   ; certfile: path to PEM encode client certificate file
@@ -385,7 +385,7 @@ We term the array for each target an "address list" for the particular service. 
 ### `alexa-notify-me`
 
 The `alexa-notify-me` service implements a gateway to make Alexa notifications using the Notify-Me voice app.
-http://www.thomptronics.com/notify-me
+https://www.thomptronics.com/about/notify-me
 
 ```ini
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
 import rrdtool
 
 __author__    = 'devsaurus <devsaurus@users.noreply.github.com>'
