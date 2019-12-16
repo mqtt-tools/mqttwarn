@@ -525,7 +525,7 @@ def load_services(services):
             service_plugins[service]['module'] = load_module(modulefile)
             logger.info('Successfully loaded service "{}"'.format(service))
         except Exception as ex:
-            logger.error('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
+            logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
 
 
 def connect():
@@ -682,6 +682,7 @@ def run_plugin(config=None, name=None, data=None):
     """
 
     # Bootstrap mqttwarn core
+    # TODO: Optionally run w/o configuration.
     bootstrap(config=config)
 
     # Load designated service plugins
@@ -691,6 +692,7 @@ def run_plugin(config=None, name=None, data=None):
 
     # Build a mimikry item instance for feeding to the service plugin
     item = Struct(**data)
+    # TODO: Read configuration optionally from data.
     item.config = config.config('config:' + name)
     item.service = srv
     item.target = 'mqttwarn'
