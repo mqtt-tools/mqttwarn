@@ -31,7 +31,7 @@ def plugin(srv, item):
 
         requests.post(url = "https://api.notifymyecho.com/v1/NotifyMe", data = body)
 	srv.logging.debug("Successfully sent to NotifyMe service.")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Failed to send message to NotifyMe service." % (str(e)))
         return False
 

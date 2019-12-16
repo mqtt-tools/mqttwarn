@@ -22,7 +22,7 @@ def plugin(srv, item):
 
     try:
         res = subprocess.check_output(cmd, stdin=None, stderr=subprocess.STDOUT, shell=False, universal_newlines=True, cwd='/tmp')
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot execute %s because %s" % (cmd, e))
         return False
 

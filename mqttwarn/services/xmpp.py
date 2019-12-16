@@ -31,7 +31,7 @@ def plugin(srv, item):
             connection.auth(jid.getNode(), password, resource=jid.getResource())
             connection.send(xmpp.protocol.Message(target, text))
         srv.logging.debug("Successfully sent message")
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Error sending message to %s: %s" % (item.target, str(e)))
         return False
 

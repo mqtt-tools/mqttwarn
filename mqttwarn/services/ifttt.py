@@ -30,7 +30,7 @@ def plugin(srv, item):
         url = "https://maker.ifttt.com/trigger/" + event + "/with/key/" + apikey
         requests.post(url, data=payload)
         srv.logging.debug("Successfully sent ifttt event")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot send ifttt event: %s" % (str(e)))
         return False
 

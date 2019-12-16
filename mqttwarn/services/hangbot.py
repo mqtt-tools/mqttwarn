@@ -33,7 +33,7 @@ def plugin(srv, item):
         headers = {'content-type': 'application/json'}
         requests.post(url, data = json.dumps(payload), headers = headers, verify=False)
         srv.logging.debug("Successfully sent to hangoutsbot")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Failed to send message to hangoutsbot" % (str(e)))
         return False
 

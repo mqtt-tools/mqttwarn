@@ -98,7 +98,7 @@ def plugin(srv, item):
             with open(filename, 'wb') as f:
                 f.write(image)
             
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot download image: %s" % (str(e)))
 
     try:
@@ -117,7 +117,7 @@ def plugin(srv, item):
             else:
                 slack.files.upload(file_=image,title=text,channels=slack.channels.get_channel_id(channelname))
             srv.logging.debug("image posted")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot post to slack %s: %s" % (channel, str(e)))
         return False
 

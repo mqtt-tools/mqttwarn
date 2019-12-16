@@ -31,7 +31,7 @@ def plugin(srv, item):
             if target['message_format'] == 'json':
                 message = json.loads(message)
             app.send_task(target['task'], [item.message])
-        except Exception, e:
+        except Exception as e:
             srv.logging.warning("Error: %s" % str(e))
             return False
 

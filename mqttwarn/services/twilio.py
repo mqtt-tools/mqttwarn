@@ -35,7 +35,7 @@ def plugin(srv, item):
                     to=to_nr,
                     from_=from_nr)
         srv.logging.debug("Twilio returns %s" % (message.sid))
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Twilio failed: %s" % (str(e)))
         return False
 

@@ -40,7 +40,7 @@ def plugin(srv, item):
             else:
                 try:
                     ttsparams[key] = ttsparams[key].format(**item.data).encode('utf-8')
-                except Exception, e:
+                except Exception as e:
                     srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
                     return False
 
@@ -59,7 +59,7 @@ def plugin(srv, item):
         channel_vars = "{ignore_early_media=true,originate_timeout=60,origination_caller_id_name='" + title + "'}"
         # originate the call
         server.freeswitch.api("originate", channel_vars + gateway + number + " &playback(" + shout_url + ")")
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Error originating Freeswitch VOIP call to %s via %s%s: %s" % (item.target, gateway, number, str(e)))
         return False
 

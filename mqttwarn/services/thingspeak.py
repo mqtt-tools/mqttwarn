@@ -40,7 +40,7 @@ def plugin(srv, item):
                 field = "field%s" % (n+1)
                 value = ("{%s}" % f).format(**item.data).encode('utf-8')
                 builddata.update({field: value})
-        except Exception, e:
+        except Exception as e:
             srv.logging.warn("unable to extract fields or values, skipping: %s / %s: %s", field_id, message, str(e))
             return False
 

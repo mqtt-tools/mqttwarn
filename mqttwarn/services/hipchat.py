@@ -42,7 +42,7 @@ def plugin(srv, item):
         resp = urllib2.urlopen(request, timeout=timeout)
         data = resp.read()
 
-    except Exception, e:
+    except Exception as e:
             srv.logging.warn("Cannot POST %s: %s" % (url, str(e)))
             return False
 

@@ -67,7 +67,7 @@ def plugin(srv, item):
         syslog.syslog(priority, message)
         srv.logging.debug("Successfully sent")
         syslog.closelog()
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Error sending to syslog: %s" % (str(e)))
         syslog.closelog()
         return False

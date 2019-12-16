@@ -27,7 +27,7 @@ def plugin(srv, item):
         url = "https://" + item.addrs[0] + ":" + item.addrs[1]
         requests.get('https://autoremotejoaomgcd.appspot.com/sendmessage?key=' + item.addrs[0] + '&message=' + item.message + '&target=' + item.addrs[2] + '&sender=' + item.topic + '&password=' + item.addrs[1] + '&ttl=' + item.addrs[4] + '&collapseKey=' + item.addrs[3])
 	srv.logging.debug("Successfully sent to autoremote service")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Failed to send message to autoremote service" % (str(e)))
         return False
 

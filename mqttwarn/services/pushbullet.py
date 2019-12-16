@@ -40,7 +40,7 @@ def plugin(srv, item):
         pb = PushBullet(apikey)
         pb.pushNote(device_id, title, text, recipient_type)
         srv.logging.debug("Successfully sent pushbullet notification")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot notify pushbullet: %s" % (str(e)))
         return False
 

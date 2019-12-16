@@ -31,7 +31,7 @@ def plugin(srv, item):
 
     try:
         srv.mqttc.publish(outgoing_topic, outgoing_payload, qos=qos, retain=retain)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot PUBlish via `mqttpub:%s': %s" % (item.target, str(e)))
         return False
 

@@ -19,7 +19,7 @@ def plugin(srv, item):
     try:
         proc = subprocess.Popen(argv,
             stdin=subprocess.PIPE, close_fds=True)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot create osxsay pipe: %s" % str(e))
         return False
 
@@ -28,7 +28,7 @@ def plugin(srv, item):
     except IOError as e:
         srv.logging.warn("Cannot write to osxsay pipe: errno %d" % (e.errno))
         return False
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot write to osxsay pipe: %s" % (str(e)))
         return False
 

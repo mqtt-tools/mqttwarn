@@ -38,7 +38,7 @@ def plugin(srv, item):
         )
 
         mastodon.toot(text)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot post to Mastodon: %s" % (str(e)))
         return False
 

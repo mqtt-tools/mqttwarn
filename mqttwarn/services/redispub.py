@@ -25,7 +25,7 @@ def plugin(srv, item):
 
     try:
         rp = redis.Redis(host, port)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot connect to redis on %s:%s : %s" % (host, port, str(e)))
         return False
 
@@ -34,7 +34,7 @@ def plugin(srv, item):
 
     try:
         rp.publish(channel, text)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot publish to redis on %s:%s : %s" % (host, port, str(e)))
         return False
 

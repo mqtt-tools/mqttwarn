@@ -17,7 +17,7 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    print item
+    print(item)
 
     try:
         cert_file, key_file = addrs

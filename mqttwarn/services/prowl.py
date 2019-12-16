@@ -26,7 +26,7 @@ def plugin(srv, item):
             priority=priority,
             providerkey=None,
             url=None)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot prowl: %s" % (str(e)))
         return False
 

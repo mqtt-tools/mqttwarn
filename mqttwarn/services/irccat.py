@@ -34,7 +34,7 @@ def plugin(srv, item):
         sock.send(message)
         sock.close()
 
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Error sending IRCCAT notification to %s:%s [%s]: %s" % (item.target, addr, port, str(e)))
         return False
 

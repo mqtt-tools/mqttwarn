@@ -40,8 +40,8 @@ def plugin(srv, item):
         srv.logging.error("atleast one devicetoken is required")
         return False
 
-    devicetokens = filter(None, devicetokens)
-    devicetokens = filter(lambda name: name.strip(), devicetokens)
+    devicetokens = [_f for _f in devicetokens if _f]
+    devicetokens = [name for name in devicetokens if name.strip()]
     appid = appid.strip()
     appsecret = appsecret.strip()
 

@@ -27,7 +27,7 @@ def plugin(srv, item):
                 rrdtool.update(item.addrs, "N:" + text)
         else:
                 rrdtool.update(item.addrs + text.split())
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot call rrdtool")
         return False
 

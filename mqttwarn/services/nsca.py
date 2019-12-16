@@ -41,7 +41,7 @@ def plugin(srv, item):
     try:
         notif = NSCANotifier(nsca_host)
         notif.svc_result(host_name, service_description, status, text)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot notify to NSCA host `%s': %s" % (nsca_host, str(e)))
         return False
 

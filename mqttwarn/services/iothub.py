@@ -20,7 +20,7 @@ def iothub_connect(srv, item, deviceid, devicekey):
     # item.config is brought in from the configuration file
     try:
         hostname = item.config['hostname']
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Incorrect target configuration for target=%s: %s", item.target, str(e))
         return False
     protocol = item.config.get('protocol', 'AMQP')
@@ -63,7 +63,7 @@ def plugin(srv, item):
         if not deviceid in iothub_clients:
             iothub_clients[deviceid] = iothub_connect(srv, item, deviceid, devicekey)
         client = iothub_clients[deviceid]
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Unable to connect for target=%s, deviceid=%s: %s" % (item.target, deviceid, str(e)))
         return False
 
@@ -74,7 +74,7 @@ def plugin(srv, item):
         else:
             msg = IoTHubMessage(item.message)
         msg.message_id = str("%s:%s" % (item.target, uuid.uuid4().hex))
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Unable to prepare message for target=%s: %s" % (item.target, str(e)))
         return False
 
@@ -82,7 +82,7 @@ def plugin(srv, item):
     try:
         client.send_event_async(msg, iothub_send_confirmation_callback, srv)
         srv.logging.debug("Message queued: id=%s", msg.message_id)
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Unable to send to IoT Hub for target=%s: %s" % (item.target, str(e)))
         return False
 

@@ -41,7 +41,7 @@ def plugin(srv, item):
 
         # The API Does not like raw numbers as values.
         row = {}
-        for k, v in item.data.iteritems():
+        for k, v in item.data.items():
             row[k] = str(v)
 
         client.InsertRow(row, spreadsheet_key, worksheet_id)

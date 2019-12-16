@@ -25,7 +25,7 @@ def plugin(srv, item):
             '/usr/share/icons/gnome/32x32/places/network-server.png')
         n.show()
         srv.logging.debug("Successfully sent notification")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot invoke notification to linux: %s" % (str(e)))
         return False
 

@@ -28,7 +28,7 @@ def plugin(srv, item):
     for key in data["trackers"].keys():
         try:
             data["trackers"][key] = data["trackers"][key].format(**item.data).encode('utf-8')
-        except Exception, e:
+        except Exception as e:
             srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
             return False
     try:

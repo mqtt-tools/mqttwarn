@@ -55,7 +55,7 @@ def plugin(srv, item):
 
         _serialport.write(text)
 
-    except SerialException, e:
+    except SerialException as e:
         srv.logging.warning("Cannot write to com port `%s': %s" % (comName, str(e)))
         return False
 

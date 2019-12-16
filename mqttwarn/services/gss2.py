@@ -41,24 +41,24 @@ def plugin(srv, item):
         return False
 
     if not os.path.exists(client_secrets_filename):
-        srv.logging.error(u"Cannot find file '%s'." % client_secrets)
+        srv.logging.error("Cannot find file '%s'." % client_secrets)
         return False
 
     try:
         srv.logging.debug("Adding row to spreadsheet %s [%s]..." % (spreadsheet_url, worksheet_name))
         if os.path.isfile(oauth2_storage_filename):
             # Valid credentials from previously completed authentication?
-            srv.logging.debug(u"Trying to use credentials from file '%s'." % 
+            srv.logging.debug("Trying to use credentials from file '%s'." %
                 oauth2_storage_filename)
             storage = oauth2client.file.Storage(oauth2_storage_filename)
             credentials = storage.get()
             if credentials is None or credentials.invalid:
-                srv.logging.error(u"Error reading credentials from file '%s'." % 
+                srv.logging.error("Error reading credentials from file '%s'." %
                     oauth2_storage_filename)
                 return False
         elif oauth2_code is not None and len(oauth2_code) > 0:
             # After restart - hopefully with the code coming from the Google webpage.
-            srv.logging.debug(u"Trying to use client_secrets from '%s' and OAuth code '%s'." %
+            srv.logging.debug("Trying to use client_secrets from '%s' and OAuth code '%s'." %
                 (client_secrets_filename, oauth2_code))
             try:
                 credentials = oauth2client.client.credentials_from_clientsecrets_and_code(
@@ -69,12 +69,12 @@ def plugin(srv, item):
                 if credentials is None:
                     raise clientsecrets.InvalidClientSecretsError("Resulting credentials are None!?")
             except clientsecrets.InvalidClientSecretsError as e:
-                srv.logging.error(u"Something went wrong using '%s' and OAuth code '%s': %s" %
+                srv.logging.error("Something went wrong using '%s' and OAuth code '%s': %s" %
                     (client_secrets_filename, oauth2_code, str(e)))
                 return False
             except oauth2client.client.FlowExchangeError as e:
                 if 'invalid_grantCode' in e.message:
-                    srv.logging.error(u"It seems you need to start over: Clear the "
+                    srv.logging.error("It seems you need to start over: Clear the "
                         "'oauth2_code'-field and restart mqttwarn.")
                     return False
                 else:
@@ -91,7 +91,7 @@ def plugin(srv, item):
                 scope=SCOPE,
                 redirect_uri='urn:ietf:wg:oauth:2.0:oob')
             auth_uri = flow.step1_get_authorize_url()
-            srv.logging.error(u'NO AUTHENTICATION AVAILABLE: Visit this URL and copy code to '
+            srv.logging.error('NO AUTHENTICATION AVAILABLE: Visit this URL and copy code to '
                 'mqttwarn.ini -> config:gss2 -> oauth2_code: %s' % auth_uri)
             return False
 

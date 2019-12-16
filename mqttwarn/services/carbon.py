@@ -59,7 +59,7 @@ def plugin(srv, item):
         sock.connect((carbon_host, carbon_port))
         sock.sendall(carbon_msg)
         sock.close()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot send to carbon service %s:%d: %s" % (carbon_host, carbon_port, str(e)))
         return False
 

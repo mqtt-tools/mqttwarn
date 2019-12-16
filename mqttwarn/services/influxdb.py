@@ -81,7 +81,7 @@ def plugin(srv, item):
         else:
             srv.logging.warn("POST request failed: (%s) %s" % (r.status_code, r.text))
         
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Failed to send POST request to InfluxDB server using %s: %s" % (url, str(e)))
 
     return False

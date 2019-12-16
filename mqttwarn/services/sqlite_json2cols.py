@@ -27,7 +27,7 @@ def plugin(srv, item):
     table = item.addrs[1]
     try:
         conn = sqlite3.connect(path)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot connect to sqlite at %s : %s" % (path, str(e)))
         return False
 
@@ -75,7 +75,7 @@ def plugin(srv, item):
     try:
         srv.logging.debug("Inserting into SQLITE")
         c.execute('CREATE TABLE IF NOT EXISTS %s (%s);' % (table, col_definition))
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot create sqlite table in %s : %s" % (path, str(e)))
         return False
 
@@ -84,7 +84,7 @@ def plugin(srv, item):
         conn.commit()
         c.close()
         srv.logging.debug("Inserted into SQLITE")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot INSERT INTO sqlite:%s : %s" % (table, str(e)))
 
 

@@ -25,7 +25,7 @@ def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
     
     try:
         cursor.execute("describe %s" % table_name)
-    except Exception, e:
+    except Exception as e:
         colspec = ['`id` INT AUTO_INCREMENT']
         for k in keys:
             if isinstance(rowdict[k['ori']], (int, long)):
@@ -41,7 +41,7 @@ def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
 
         try:
             cursor.execute(query)
-        except Exception, e:
+        except Exception as e:
             srv.logging.warn("Mysql target incorrectly configured. Could not create table %s: %s" % table_name, e)
             return False
     try:
@@ -50,7 +50,7 @@ def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
         sql = ''
         values = tuple()
 
-        for i in xrange(len(keys)):
+        for i in range(len(keys)):
             if i > 0:
                 columns +=","
                 values_template +=","
@@ -64,7 +64,7 @@ def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
 
 
         cursor.execute(sql, values)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Could not insert value into table %s. Query: %s, values: %s, Error: %s" %\
                          (table_name, sql, str(values), str(e)))
         return False
@@ -74,7 +74,7 @@ def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
         query = 'insert into %s set topic="%s", ts="%s" on duplicate key update ts="%s"' % \
             (index_table_name, table_name, str(now), str(now))
         cursor.execute(query)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Could not insert value into index table %s" %\
                          index_table_name)
 
@@ -103,7 +103,7 @@ def plugin(srv, item):
                                passwd=passwd,
                                db=dbname)
         cursor = conn.cursor()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot connect to mysql: %s" % (str(e)))
         return False
 
@@ -116,7 +116,7 @@ def plugin(srv, item):
             try:
                 if isinstance(col_data[key], basestring):
                     col_data[key] = item.data[key].format(**item.data).encode('utf-8')
-            except Exception, e:
+            except Exception as e:
                 col_data[key] = item.data[key]
     try:
         result = add_row(srv, cursor, index_table_name, table_name, col_data, item.addrs)
@@ -124,7 +124,7 @@ def plugin(srv, item):
             srv.logging.debug("Failed building values to add to database")
         else:
             conn.commit()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot add mysql row: %s" % (str(e)))
         traceback.print_exc()
         cursor.close()

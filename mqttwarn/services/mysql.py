@@ -57,7 +57,7 @@ def plugin(srv, item):
                     passwd=passwd,
                     db=dbname)
         cursor = conn.cursor()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot connect to mysql: %s" % (str(e)))
         return False
 
@@ -76,7 +76,7 @@ def plugin(srv, item):
         for key in item.data.keys():
             try:
                 col_data[key] = item.data[key].format(**item.data).encode('utf-8')
-            except Exception, e:
+            except Exception as e:
                 col_data[key] = item.data[key]
 
     try:
@@ -84,7 +84,7 @@ def plugin(srv, item):
         if unknown_keys is not None:
             srv.logging.debug("Skipping unused keys %s" % ",".join(unknown_keys))
         conn.commit()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot add mysql row: %s" % (str(e)))
         cursor.close()
         conn.close()

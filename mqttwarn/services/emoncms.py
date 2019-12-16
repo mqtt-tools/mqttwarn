@@ -35,7 +35,7 @@ def plugin(srv, item):
 
         response = urllib2.urlopen(request, timeout=timeout)
         data = response.read()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Failed to send GET request to EmonCMS using %s: %s" % (resource, str(e)))
         return False
 

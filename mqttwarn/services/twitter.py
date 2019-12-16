@@ -25,10 +25,10 @@ def plugin(srv, item):
         srv.logging.debug("Sending tweet to %s..." % (item.target))
         res = twapi.PostUpdate(text, trim_user=False)
         srv.logging.debug("Successfully sent tweet")
-    except twitter.TwitterError, e:
+    except twitter.TwitterError as e:
         srv.logging.error("TwitterError: %s" % (str(e)))
         return False
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Error sending tweet to %s: %s" % (item.target, str(e)))
         return False
 

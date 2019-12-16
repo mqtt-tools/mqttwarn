@@ -7,7 +7,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import sys
 import nntplib
-import StringIO
+import io
 from email.mime.text import MIMEText
 from email.Utils import formatdate
 
@@ -41,7 +41,7 @@ def plugin(srv, item):
         msg['User-Agent']   = srv.SCRIPTNAME
         # msg['Message-ID'] = '<jp001@tiggr>'
 
-        msg_file = StringIO.StringIO(msg.as_string())
+        msg_file = io.StringIO(msg.as_string())
         nntp = nntplib.NNTP(host, port, user=username, password=password)
 
         srv.logging.debug(nntp.getwelcome())
@@ -49,7 +49,7 @@ def plugin(srv, item):
 
         nntp.post(msg_file)
         nntp.quit()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot post to %s newsgroup: %s" % (newsgroup, str(e)))
         return False
 

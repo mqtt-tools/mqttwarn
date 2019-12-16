@@ -84,7 +84,7 @@ def plugin(srv, item):
         if r.status_code != requests.codes.ok:
             srv.logging.warning("Invalid response from icinga2 REST API at `%s`: %s" % (host, r.text))
             return False
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Failed to POST request to icinga2 REST API at `%s': %s" % (host, str(e)))
         return False
 

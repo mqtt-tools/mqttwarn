@@ -107,7 +107,7 @@ def plugin(srv, item):
             auth=auth,
             tls=tls,
             **params)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot PUBlish via `mqtt:%s': %s" % (item.target, str(e)))
         return False
 

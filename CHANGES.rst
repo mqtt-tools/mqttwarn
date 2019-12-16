@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Apply basic changes for Python3 support through 2to3
 
 
 2019-12-02 0.12.0

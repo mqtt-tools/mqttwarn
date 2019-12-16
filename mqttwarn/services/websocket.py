@@ -31,7 +31,7 @@ def plugin(srv, item):
         ws.connect(uri)
         ws.send(text)
         ws.close()
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot write to websocket `%s': %s" % (uri, str(e)))
         return False
 

@@ -123,7 +123,7 @@ def plugin(srv, item):
         srv.logging.debug("Sending pushover notification to %s [%s]...." % (item.target, params))
         pushover(image=image, user=userkey, token=appkey, **params)
         srv.logging.debug("Successfully sent pushover notification")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Error sending pushover notification: %s" % (str(e)))
         return False
 

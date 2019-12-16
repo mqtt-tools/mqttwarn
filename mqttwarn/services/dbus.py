@@ -40,7 +40,7 @@ def plugin(srv, item):
         interface.Notify(app_name, replaces_id, app_icon, summary, text,
                     actions, hints, expire_timeout)
         srv.logging.debug("Successfully sent message")
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Error sending message to %s: %s" % (item.target, str(e)))
         return False
 

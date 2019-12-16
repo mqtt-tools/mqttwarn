@@ -65,7 +65,7 @@ def plugin(srv, item):
         ssh.connect(**c)
         _,stdout,stderr = ssh.exec_command(command)
 
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot run command %s on host %s" % (command, host))
         srv.logging.warning("%s" % e)
         return False

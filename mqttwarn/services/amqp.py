@@ -44,7 +44,7 @@ def plugin(srv, item):
         client.close()
 
         srv.logging.debug("Successfully published AMQP notification")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Error on AMQP publish to %s [%s/%s]: %s" % (item.target, exchange, routing_key, str(e)))
         return False
 

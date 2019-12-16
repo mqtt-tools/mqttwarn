@@ -105,7 +105,7 @@ def plugin(srv, item):
         srv.logging.debug("Sending pushsafer notification to %s [%s]..." % (item.target, params))
         pushsafer(m=message, k=appkey, **params)
         srv.logging.debug("Successfully sent pushsafer notification")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Error sending pushsafer notification to %s [%s]: %s" % (item.target, params, str(e)))
         return False
 

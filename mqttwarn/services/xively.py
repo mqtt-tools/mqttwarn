@@ -32,7 +32,7 @@ def plugin(srv, item):
 
 	#lets filter data
 	ds = []
-	for k,v in item.data.iteritems():
+	for k,v in item.data.items():
 		if k in item.addrs:
 			ds.append(xively.Datastream(id=str(k), current_value=str(v), at=now))
 	feed.datastreams = ds

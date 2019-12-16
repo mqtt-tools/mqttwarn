@@ -49,7 +49,7 @@ def plugin(srv, item):
         response = dns.query.tcp(update, dns_nameserver, timeout=10)
 
         srv.logging.debug("DNS Update: {0}".format(dns.rcode.to_text(response.rcode())))
-    except Exception, e:
+    except Exception as e:
         srv.logging.warning("Cannot notify to dnsupdate `%s': %s" % (dns_nameserver, str(e)))
         return False
 

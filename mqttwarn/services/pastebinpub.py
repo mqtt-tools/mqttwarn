@@ -38,7 +38,7 @@ def plugin(srv, item):
             api_dev_key,
             username,
             password)
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot retrieve session data from pastebin: %s" % (str(e)))
         return False
 
@@ -54,7 +54,7 @@ def plugin(srv, item):
             paste_expire_date = expiredate
             )
         srv.logging.debug("Successfully added paste to pastebin")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Cannot publish to pastebin: %s" % (str(e)))
         return False
 

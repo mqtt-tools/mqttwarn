@@ -64,7 +64,7 @@ def plugin(srv, item):
                     srv.logging.debug("Trapper for STATUS responds with %s" % res['info'])
 
                 return True
-        except Exception, e:
+        except Exception as e:
             srv.logging.warn("Trapper responded: %s" % (str(e)))
             return False
 
@@ -87,7 +87,7 @@ def plugin(srv, item):
             srv.logging.debug("Trapper for client=%s, item=%s, value=%s responds with %s" % (client, key, value, res['info']))
 
             return True
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Trapper responded: %s" % (str(e)))
 
     return False

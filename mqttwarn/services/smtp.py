@@ -51,7 +51,7 @@ def plugin(srv, item):
         server.sendmail(sender, smtp_addresses, msg.as_string())
         server.quit()
         srv.logging.debug("Successfully sent SMTP notification")
-    except Exception, e:
+    except Exception as e:
         srv.logging.warn("Error sending notification to SMTP recipient %s, addresses: %s. "
                          "Exception: %s" % (item.target, smtp_addresses, str(e)))
         return False

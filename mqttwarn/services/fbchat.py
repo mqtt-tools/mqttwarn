@@ -27,7 +27,7 @@ def plugin(srv, item):
         srv.logging.debug("Sending msg to %s..." % (item.target))
         sent = fbclient.sendMessage(text, thread_id=ffriend.uid, thread_type=ThreadType.USER)
         srv.logging.debug("Successfully sent message")
-    except Exception, e:
+    except Exception as e:
         srv.logging.error("Error sending fbchat to %s: %s" % (item.target, str(e)))
         return False
     client.logout()
