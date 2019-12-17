@@ -5,7 +5,11 @@ mqttwarn changelog
 
 in progress
 ===========
-- Apply basic changes for Python3 support through 2to3
+- Remove instapush service as it no longer exists
+- Python2/3 compatibility
+- Make "pushover" service use requests
+- Mitigate some deprecation warnings. Bump core package dependencies.
+- Improve testing and CI
 
 
 2019-12-02 0.12.0
