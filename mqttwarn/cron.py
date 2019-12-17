@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2019 The mqttwarn developers
+from builtins import object
 import logging
 import threading
 

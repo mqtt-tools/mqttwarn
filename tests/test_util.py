@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # (c) 2018-2019 The mqttwarn developers
+from __future__ import division
+from builtins import str
+from past.utils import old_div
 import time
 import pytest
 from mqttwarn.util import Struct, Formatter, asbool, parse_cron_options, timeout, sanitize_function_name, load_module, \
@@ -51,8 +54,8 @@ def test_parse_cron_options():
 def test_timeout():
 
     duration = 0.0005
-    below_duration = duration - duration / 2
-    above_duration = duration + duration / 2
+    below_duration = duration - old_div(duration, 2)
+    above_duration = duration + old_div(duration, 2)
 
     def func():
         time.sleep(duration)

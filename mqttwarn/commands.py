@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2018 The mqttwarn developers
+from __future__ import print_function
 import os
 import sys
 import json

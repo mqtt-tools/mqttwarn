@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+from builtins import str
 import socket
 import struct
 
@@ -14,6 +16,7 @@ try:
     import json
 except ImportError:
     import simplejson as json
+
 
 class ZabbixSender:
     
@@ -58,10 +61,11 @@ class ZabbixSender:
         #JPM return recv_data
         return recv_json
 
+
 if __name__ == '__main__':
     sender = ZabbixSender(u'127.0.0.1')
-    for num in range(0,2):
+    for num in range(0, 2):
         sender.AddData(u'HostA', u'AppX_Logger', u'sent data 第' + str(num))
     res = sender.Send()
-    print sender.send_data
-    print res
+    print(sender.send_data)
+    print(res)

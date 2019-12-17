@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2018 The mqttwarn developers
+from builtins import str
 import logging
 
 from mqttwarn.core import make_service, decode_payload

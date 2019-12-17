@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 import puka
 import json
@@ -24,7 +25,7 @@ consume = client.basic_consume(queue=queue_name, no_ack=False)
 while True:
     try:
         msg = client.wait(consume)
-        print json.dumps(msg, indent=4)
+        print(json.dumps(msg, indent=4))
         client.basic_ack(msg)
     except KeyboardInterrupt:
         client.close()

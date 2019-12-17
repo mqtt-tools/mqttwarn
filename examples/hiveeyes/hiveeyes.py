@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # hiveeyes-schwarmalarm function extensions for mqttwarn
 # https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
+from builtins import object
+from past.builtins import cmp
+from builtins import str
 import re
 import json
 from datetime import datetime

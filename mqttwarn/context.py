@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2019 The mqttwarn developers
+from builtins import object
 import attr
 import logging
 
@@ -59,7 +60,7 @@ class RuntimeContext(object):
             try:
                 return self.invoker.filter(filterfunc, topic, payload, section)
             except Exception as e:
-                logger.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, str(e)))
+                logger.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, e))
         return False
 
     def get_topic_data(self, section, topic):
@@ -68,7 +69,7 @@ class RuntimeContext(object):
             try:
                 return self.invoker.datamap(name, topic)
             except Exception as e:
-                logger.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, str(e)))
+                logger.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, e))
         return None
 
     def get_all_data(self, section, topic, data):
@@ -77,7 +78,7 @@ class RuntimeContext(object):
             try:
                 return self.invoker.alldata(name, topic, data)
             except Exception as e:
-                logger.warn("Cannot invoke alldata function %s defined in %s: %s" % (name, section, str(e)))
+                logger.warn("Cannot invoke alldata function %s defined in %s: %s" % (name, section, e))
         return None
 
     def get_topic_targets(self, section, topic, data):

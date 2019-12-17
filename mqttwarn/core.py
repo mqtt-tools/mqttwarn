@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2019 The mqttwarn developers
+from builtins import object
+from past.builtins import cmp
+from builtins import chr
+from builtins import str
 import os
 import sys
 import time
-import types
 import socket
 import logging
 import threading
@@ -108,6 +111,7 @@ def make_service(mqttc=None, name=None):
 
 
 class Job(object):
+
     def __init__(self, prio, service, section, topic, payload, data, target):
         self.prio       = prio
         self.service    = service
@@ -119,6 +123,7 @@ class Job(object):
 
         logger.debug("New `%s:%s' job: %s" % (service, target, topic))
         return
+
     def __cmp__(self, other):
         return cmp(self.prio, other.prio)
 
@@ -161,7 +166,7 @@ def on_connect(mosq, userdata, flags, result_code):
                 continue
 
             logger.debug("Subscribing to %s (qos=%d)" % (topic, qos))
-            mqttc.subscribe(str(topic), qos)
+            mqttc.subscribe(topic, qos)
             subscribed.append(topic)
 
         if cf.lwt is not None:
@@ -241,14 +246,14 @@ def send_to_targets(section, topic, payload):
 
     if function_name is not None:
         targetlist = context.get_topic_targets(section, topic, data)
-        targetlist_type = type(targetlist)
-        if targetlist_type is not types.ListType:
+        if not isinstance(targetlist, list):
+            targetlist_type = type(targetlist)
             logger.error('Topic target definition by function "{function_name}" ' \
-                          'in section "{section}" is empty or incorrect. ' \
-                          'targetlist={targetlist}, type={targetlist_type}'.format(**locals()))
+                         'in section "{section}" is empty or incorrect. Should be a list. ' \
+                         'targetlist={targetlist}, type={targetlist_type}'.format(**locals()))
             return
 
-    elif type(dispatcher_dict) == dict:
+    elif isinstance(dispatcher_dict, dict):
         def get_key(item):
             # precede a key with the number of topic levels and then use reverse alphabetic sort order
             # '+' is after '#' in ascii table
@@ -263,11 +268,11 @@ def send_to_targets(section, topic, payload):
             return "{:03d}{}".format(levels, modified_topic)
 
         # produce a sorted list of topic/targets with longest and more specific first
-        sorted_dispatcher = sorted(dispatcher_dict.items(), key=get_key, reverse=True)
+        sorted_dispatcher = sorted(list(dispatcher_dict.items()), key=get_key, reverse=True)
         for match_topic, targets in sorted_dispatcher:
             if paho.topic_matches_sub(match_topic, topic):
                 # hocus pocus, let targets become a list
-                targetlist = targets if type(targets) == list else [targets]
+                targetlist = targets if isinstance(targets, list) else [targets]
                 logger.debug("Most specific match %s dispatched to %s" % (match_topic, targets))
                 # first most specific topic matches then stops processing
                 break
@@ -277,9 +282,9 @@ def send_to_targets(section, topic, payload):
             return
     else:
         targetlist = cf.getlist(section, 'targets')
-        if type(targetlist) != list:
+        if not isinstance(targetlist, list):
             # if targets is neither dict nor list
-            logger.error("Target definition in section [%s] is incorrect" % section)
+            logger.error("Target definition in section [%s] is incorrect, should be a list." % section)
             cleanup(0)
             return
 
@@ -363,14 +368,14 @@ def xform(function, orig_value, transform_data):
                 res = cf.datamap(function_name, transform_data)
                 return res
             except Exception as e:
-                logger.warning("Cannot invoke %s(): %s" % (function_name, str(e)))
+                logger.warning("Cannot invoke %s(): %s" % (function_name, e))
 
         try:
             res = Formatter().format(function, **transform_data).encode('utf-8')
         except Exception as e:
             logger.warning("Cannot format message: %s" % e)
 
-    if type(res) == str:
+    if isinstance(res, str):
         res = res.replace("\\n", "\n")
     return res
 
@@ -460,7 +465,7 @@ def processor(worker_id=None):
         }
 
         transform_data = job.data
-        item['data'] = dict(transform_data.items())
+        item['data'] = dict(list(transform_data.items()))
 
         item['title'] = xform(context.get_config(section, 'title'), SCRIPTNAME, transform_data)
         item['image'] = xform(context.get_config(section, 'image'), '', transform_data)
@@ -470,7 +475,7 @@ def processor(worker_id=None):
             item['priority'] = int(xform(context.get_config(section, 'priority'), 0, transform_data))
         except Exception as e:
             item['priority'] = 0
-            logger.warning("Failed to determine the priority, defaulting to zero: %s" % (str(e)))
+            logger.warning("Failed to determine the priority, defaulting to zero: %s" % e)
 
         if HAVE_JINJA is False and context.get_config(section, 'template'):
             logger.warning("Templating not possible because Jinja2 is not installed")
@@ -483,7 +488,7 @@ def processor(worker_id=None):
                     if text is not None:
                         item['message'] = text
                 except Exception as e:
-                    logger.warning("Cannot render `%s' template: %s" % (template, str(e)))
+                    logger.warning("Cannot render `%s' template: %s" % (template, e))
 
         if item.get('message') is not None and len(item.get('message')) > 0:
             st = Struct(**item)
@@ -495,7 +500,7 @@ def processor(worker_id=None):
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
             except Exception as e:
-                logger.error("Cannot invoke service for `%s': %s" % (service, str(e)))
+                logger.error("Cannot invoke service for `%s': %s" % (service, e))
 
             if not notified:
                 logger.warning("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))
@@ -545,7 +550,7 @@ def connect():
     try:
         os.chdir(cf.directory)
     except Exception as e:
-        logger.error("Cannot chdir to %s: %s" % (cf.directory, str(e)))
+        logger.error("Cannot chdir to %s: %s" % (cf.directory, e))
         sys.exit(2)
 
     load_services(services)
@@ -580,7 +585,7 @@ def connect():
         mqttc.connect(cf.hostname, int(cf.port), 60)
 
     except Exception as e:
-        logger.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), str(e)))
+        logger.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), e))
         sys.exit(2)
 
     # Launch worker threads to operate on queue

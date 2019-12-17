@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2019 The mqttwarn developers
+from builtins import str
 import os
 import re
 import imp
@@ -8,7 +9,7 @@ import json
 import string
 import traceback
 import pkg_resources
-from six import StringIO
+from six import StringIO, string_types
 
 try:
     import hashlib
@@ -27,7 +28,7 @@ class Struct:
         self.__dict__.update(entries)
 
     def __repr__(self):
-        return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in self.__dict__.items()))
+        return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in list(self.__dict__.items())))
 
     def get(self, key, default=None):
         if key in self.__dict__ and self.__dict__[key] is not None:
@@ -37,7 +38,7 @@ class Struct:
 
     def enum(self):
         item = {}
-        for (k, v) in self.__dict__.items():
+        for (k, v) in list(self.__dict__.items()):
             item[k] = v
         return item
 
@@ -71,7 +72,7 @@ def asbool(obj):
     # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
     # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
     """
-    if isinstance(obj, str):
+    if isinstance(obj, string_types):
         obj = obj.strip().lower()
         if obj in ['true', 'yes', 'on', 'y', 't', '1']:
             return True
