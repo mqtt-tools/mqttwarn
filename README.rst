@@ -1,11 +1,11 @@
 .. image:: https://img.shields.io/badge/Python-2.7,%203.6,%203.7-green.svg
-    :target: https://github.com/jpmens/mqttwarn/tree/develop
+    :target: https://github.com/jpmens/mqttwarn
 
 .. image:: https://img.shields.io/pypi/v/mqttwarn.svg
-    :target: #
+    :target: https://pypi.org/project/mqttwarn/
 
 .. image:: https://img.shields.io/github/tag/jpmens/mqttwarn.svg
-    :target: https://github.com/jpmens/mqttwarn/tree/develop
+    :target: https://github.com/jpmens/mqttwarn
 
 |
 
@@ -18,7 +18,7 @@ mqttwarn
 ########
 To *warn*, *alert*, or *notify*.
 
-.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/develop/assets/google-definition.jpg
+.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/master/assets/google-definition.jpg
     :target: #
 
 
@@ -41,7 +41,7 @@ You can enjoy the alphabetical list of plugins within the handbook_.
 
 A picture says a thousand words.
 
-.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/develop/assets/mqttwarn.png
+.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/master/assets/mqttwarn.png
     :target: #
 
 
@@ -63,7 +63,7 @@ For example, you may wish to submit an alarm published as text to the
 MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 
 
-.. _handbook: https://github.com/jpmens/mqttwarn/blob/develop/HANDBOOK.md
+.. _handbook: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md
 
 
 *************
@@ -157,7 +157,7 @@ Running in a development sandbox
 ================================
 For hacking_ on mqttwarn, please install it in development mode.
 
-.. _hacking: https://github.com/jpmens/mqttwarn/blob/develop/doc/hacking.rst
+.. _hacking: https://github.com/jpmens/mqttwarn/blob/master/doc/hacking.rst
 
 
 
@@ -178,7 +178,7 @@ These links will guide you to the source code of *mqttwarn* and its documentatio
 
 - `mqttwarn on GitHub <https://github.com/jpmens/mqttwarn>`_
 - `mqttwarn on the Python Package Index (PyPI) <https://pypi.org/project/mqttwarn/>`_
-- `mqttwarn documentation <https://github.com/jpmens/mqttwarn/tree/develop/doc>`_
+- `mqttwarn documentation <https://github.com/jpmens/mqttwarn/tree/master/doc>`_
 
 
 Requirements
@@ -216,7 +216,7 @@ Please also recognize the licenses of third-party components.
 
 .. _issue: https://github.com/jpmens/mqttwarn/issues/new
 .. _EPL-2.0: https://www.eclipse.org/legal/epl-2.0/
-.. _LICENSE: https://github.com/jpmens/mqttwarn/blob/develop/LICENSE
+.. _LICENSE: https://github.com/jpmens/mqttwarn/blob/master/LICENSE
 
 
 ***************
@@ -251,7 +251,7 @@ ported to Python 3 during that phase. You are welcome to participate!
 We outlined the tasks for the next releases within the backlog_.
 They might be transferred into GitHub issues progressively, if applicable.
 
-.. _backlog: https://github.com/jpmens/mqttwarn/blob/develop/doc/backlog.rst
+.. _backlog: https://github.com/jpmens/mqttwarn/blob/master/doc/backlog.rst
 
 
 Legal stuff

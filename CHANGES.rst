@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2019-12-17 0.13.2
+=================
+- Fix documentation
+
+
 2019-12-17 0.13.1
 =================
 - Address compatibility issues with configparser
