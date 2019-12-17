@@ -126,7 +126,7 @@ def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
     it = InterruptableThread()
     it.start()
     it.join(timeout_secs)
-    if it.isAlive():
+    if it.is_alive():
         return default
     else:
         return it.result

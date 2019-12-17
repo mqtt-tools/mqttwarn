@@ -34,7 +34,7 @@ class Config(RawConfigParser):
 
         RawConfigParser.__init__(self)
         f = codecs.open(configuration_file, 'r', encoding='utf-8')
-        self.readfp(f)
+        self.read_file(f)
         f.close()
 
         ''' set defaults '''
