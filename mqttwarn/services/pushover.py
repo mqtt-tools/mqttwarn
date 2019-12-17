@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
-__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__copyright__ = 'Copyright 2014-2019 Jan-Piet Mens'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 # The code for pushover() between cuts was written by Mike Matz and
 # gracefully swiped from https://github.com/pix0r/pushover
 #
+# 2019-12-17 - Update by jpmens to remove urlparse
 # 2018-11-13 - Update by psyciknz to add image service authentication options (digest/basic)
 # 2018-04-07 - Updated by psyciknz to add the image upload function
 #              as supported by pushover
@@ -17,14 +18,12 @@ __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/ep
 #            - text to accompany the image comes from the "message" attribute
 #              of the json payload.
 
-from future import standard_library
-standard_library.install_aliases()
 import os
 import base64
 import requests
-import urllib.parse
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
+from requests.compat import urljoin
 
 PUSHOVER_API = "https://api.pushover.net/1/"
 
@@ -40,7 +39,7 @@ def pushover(image, **kwargs):
     if not 'user' in kwargs:
         kwargs['user'] = os.environ['PUSHOVER_USER']
 
-    url = urllib.parse.urljoin(PUSHOVER_API, "messages.json")
+    url = urljoin(PUSHOVER_API, "messages.json")
     headers = { 'User-Agent': 'mqttwarn' }
 
     if image:
