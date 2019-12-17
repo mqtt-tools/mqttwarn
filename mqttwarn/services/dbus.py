@@ -3,22 +3,15 @@
 
 __author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
 __copyright__ = 'Copyright 2014 Fabian Affolter'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-HAVE_DBUS=True
-try:
-    import dbus
-except ImportError:
-    HAVE_DBUS=False
+import dbus
+
 
 def plugin(srv, item):
     """Send a message through dbus to the user's desktop."""
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
-
-    if not HAVE_DBUS:
-        srv.logging.error("Cannot send DBUS message; `dbus' module not installed")
-        return False
 
     text = item.message
     summary = item.addrs[0]
@@ -41,7 +34,7 @@ def plugin(srv, item):
                     actions, hints, expire_timeout)
         srv.logging.debug("Successfully sent message")
     except Exception as e:
-        srv.logging.error("Error sending message to %s: %s" % (item.target, str(e)))
+        srv.logging.error("Error sending message to %s: %s" % (item.target, e))
         return False
 
     return True

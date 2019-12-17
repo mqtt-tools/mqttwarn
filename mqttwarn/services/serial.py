@@ -3,11 +3,13 @@
 
 __author__    = 'Daniel Lindner <andann83()gmail.com>'
 __copyright__ = 'Copyright 2016 Daniel Lindner'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import serial
+from builtins import bytes
 
 _serialport = None
+
 
 def plugin(srv, item):
     global _serialport
@@ -56,7 +58,7 @@ def plugin(srv, item):
         _serialport.write(text)
 
     except SerialException as e:
-        srv.logging.warning("Cannot write to com port `%s': %s" % (comName, str(e)))
+        srv.logging.warning("Cannot write to com port `%s': %s" % (comName, e))
         return False
 
     return True

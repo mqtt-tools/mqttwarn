@@ -3,10 +3,11 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import socket
 import time
+import socket
+
 
 def plugin(srv, item):
 
@@ -60,7 +61,7 @@ def plugin(srv, item):
         sock.sendall(carbon_msg)
         sock.close()
     except Exception as e:
-        srv.logging.warning("Cannot send to carbon service %s:%d: %s" % (carbon_host, carbon_port, str(e)))
+        srv.logging.warning("Cannot send to carbon service %s:%d: %s" % (carbon_host, carbon_port, e))
         return False
 
     return True

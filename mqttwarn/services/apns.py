@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__author__ = 'Jan-Piet Mens <jpmens()gmail.com>'
+__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
+
 import json
-import os
 from apns import APNs, Payload
 
-__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
-__copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 def plugin(srv, item):
-
-    addrs   = item.addrs
-    data    = item.data
-    text    = item.message
+    addrs = item.addrs
+    data = item.data
+    text = item.message
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
-
-    print(item)
 
     try:
         cert_file, key_file = addrs
@@ -30,7 +27,7 @@ def plugin(srv, item):
         return False
 
     apns_token = data['apns_token']
-    payload    = data['payload']
+    payload = data['payload']
 
     custom = {}
     try:
@@ -39,7 +36,6 @@ def plugin(srv, item):
             custom = mdata['custom']
     except:
         pass
-    
 
     apns = APNs(use_sandbox=False, cert_file=cert_file, key_file=key_file)
 

@@ -1,36 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'Jan-Piet Mens <jp@mens.de>'
+__author__ = 'Jan-Piet Mens <jp@mens.de>'
 __copyright__ = 'Copyright 2018 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-HAVE_REQUESTS = True
-try:
-    import requests
-    from requests.auth import HTTPBasicAuth
-except ImportError:
-    HAVE_REQUESTS = False
+from six import string_types
+
+import requests
 
 try:
-    import json
-except ImportError:
     import simplejson as json
+except ImportError:
+    import json
+
 
 def plugin(srv, item):
-
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    if HAVE_REQUESTS == False:
-        srv.logging.error("Missing module: requests")
-        return False
+    hook_url = item.addrs[0]
+    channel = item.addrs[1]
+    username = item.addrs[2]  # may be None
+    icon_url = item.addrs[3]  # may be None
 
-    hook_url    = item.addrs[0]
-    channel     = item.addrs[1]
-    username    = item.addrs[2]    # may be None
-    icon_url    = item.addrs[3]    # may be None
-
-    text        = item.message
+    text = item.message
     try:
         """ Try to format a Markdown table if we have JSON in the payload """
         """ ETOOMESSY; volunteers to refactor? """
@@ -39,9 +32,9 @@ def plugin(srv, item):
         keylen = vallen = 10
         for key in j:
             # print type(key), keylen, len(key)
-            if type(key) == unicode and keylen < len(key):
+            if isinstance(key, string_types) and keylen < len(key):
                 keylen = len(key)
-            if type(j[key]) == unicode and vallen < len(j[key]):
+            if isinstance(j[key], string_types) and vallen < len(j[key]):
                 vallen = len(j[key])
         s = ""
         if title is not None and title != "":
@@ -49,7 +42,7 @@ def plugin(srv, item):
         key = "key"
         val = "value"
         s = s + "| {0:<{kw}}  | {1:<{vw}} |\n".format("key", "value", kw=keylen, vw=vallen)
-        s = s + "|:{0:<{kw}}  |:{1:<{vw}} |\n".format('-'*keylen, '-'*vallen, kw=keylen, vw=vallen)
+        s = s + "|:{0:<{kw}}  |:{1:<{vw}} |\n".format('-' * keylen, '-' * vallen, kw=keylen, vw=vallen)
         for key in j:
             s = s + "| {0:<{kw}}  | {1:<{vw}} |\n".format(key, j[key], kw=keylen, vw=vallen)
         text = s
@@ -57,21 +50,20 @@ def plugin(srv, item):
         srv.logging.debug("not JSON; proceeding with text")
         pass
 
-
     payload = {}
-    payload["channel"]     = channel
-    payload["text"]        = text
+    payload["channel"] = channel
+    payload["text"] = text
     if username is not None:
-        payload["username"]    = username
+        payload["username"] = username
     if icon_url is not None:
-        payload["icon_url"]    = icon_url
+        payload["icon_url"] = icon_url
 
     # print payload
 
     headers = {
-        "Content-type" : "application/json",
-        "Accept"       : "application/json"
-        }
+        "Content-type": "application/json",
+        "Accept": "application/json"
+    }
 
     try:
         r = requests.post(hook_url, data=json.dumps(payload), headers=headers)
@@ -79,7 +71,7 @@ def plugin(srv, item):
             srv.logging.warning("Invalid response from Mattermost Webhook: %s" % (r.text))
             return False
     except Exception as e:
-        srv.logging.warning("Failed to POST request to Mattermost Webhook: %s" % (str(e)))
+        srv.logging.warning("Failed to POST request to Mattermost Webhook: %s" % e)
         return False
 
     return True

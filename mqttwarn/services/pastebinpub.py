@@ -3,23 +3,16 @@
 
 __author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
 __copyright__ = 'Copyright 2014 Fabian Affolter'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-HAVE_PASTEBIN=True
-try:
-    from pastebin import PastebinAPI
-except:
-    HAVE_PASTEBIN=False
+from pastebin import PastebinAPI
+
 
 def plugin(srv, item):
     """ Pushlish the message to pastebin.com """
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__,
         item.service, item.target)
-
-    if HAVE_PASTEBIN is False:
-        srv.logging.warn("Pastebin module is not available.")
-        return False
 
     pastebin_data = item.addrs
 
@@ -39,7 +32,7 @@ def plugin(srv, item):
             username,
             password)
     except Exception as e:
-        srv.logging.warn("Cannot retrieve session data from pastebin: %s" % (str(e)))
+        srv.logging.warn("Cannot retrieve session data from pastebin: %s" % e)
         return False
 
     try:
@@ -55,7 +48,7 @@ def plugin(srv, item):
             )
         srv.logging.debug("Successfully added paste to pastebin")
     except Exception as e:
-        srv.logging.warn("Cannot publish to pastebin: %s" % (str(e)))
+        srv.logging.warn("Cannot publish to pastebin: %s" % e)
         return False
 
     return True

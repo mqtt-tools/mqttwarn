@@ -5,7 +5,7 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Martyn Whitwell <martyn.whitwell()gmail.com>'
 __copyright__ = 'Copyright 2016 Jan-Piet Mens,  Martyn Whitwell'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 
 # example configuration in mqttwarn.ini:
@@ -19,9 +19,8 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 #  }
 
 
+import psycopg2
 
-import psycopg2 # http://initd.org/psycopg/
-import sys
 
 def add_row(cursor, tablename, rowdict, schema):
     # XXX tablename not sanitized
@@ -50,6 +49,7 @@ def add_row(cursor, tablename, rowdict, schema):
     cursor.execute(sql, values)
 
     return unknown_keys
+
 
 def plugin(srv, item):
 
@@ -80,7 +80,7 @@ def plugin(srv, item):
                     database=dbname)
         cursor = conn.cursor()
     except Exception as e:
-        srv.logging.warn("Cannot connect to postgres: %s" % (str(e)))
+        srv.logging.warn("Cannot connect to postgres: %s" % e)
         return False
 
     text = item.message
@@ -92,7 +92,7 @@ def plugin(srv, item):
        }
 
     if item.data is not None:
-        for key in item.data.keys():
+        for key in list(item.data.keys()):
             try:
                 col_data[key] = item.data[key].format(**item.data).encode('utf-8')
             except Exception as e:
@@ -104,7 +104,7 @@ def plugin(srv, item):
             srv.logging.debug("Skipping unused keys %s" % ",".join(unknown_keys))
         conn.commit()
     except Exception as e:
-        srv.logging.warn("Cannot add postgres row: %s" % (str(e)))
+        srv.logging.warn("Cannot add postgres row: %s" % e)
         cursor.close()
         conn.close()
         return False

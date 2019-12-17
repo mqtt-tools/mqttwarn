@@ -1,34 +1,37 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'João Paulo Barraca <jpbarraca()gmail.com>'
+__author__ = 'João Paulo Barraca <jpbarraca()gmail.com>'
 __copyright__ = 'Copyright 2014 João Paulo Barraca'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 # Credits to Jan-Piet Mens for the mysql.py code which served as basis for this module
 
-import MySQLdb
-import time
+from six import string_types
+from builtins import str
+
 import re
+import time
 import traceback
+import MySQLdb
 
 
 def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
     keys = []
     clean_key = re.compile(r'[^\d\w_-]+')
-    for k,v in rowdict.items():
+    for k, v in list(rowdict.items()):
         if k in ignorekeys:
             continue
 
         key = clean_key.sub('', k)
         keys.append({'ori': k, 'clean': key})
-    
+
     try:
         cursor.execute("describe %s" % table_name)
     except Exception as e:
         colspec = ['`id` INT AUTO_INCREMENT']
         for k in keys:
-            if isinstance(rowdict[k['ori']], (int, long)):
+            if isinstance(rowdict[k['ori']], int):
                 colspec.append('`%s` LONG' % k['clean'])
             elif isinstance(rowdict[k['ori']], (float)):
                 colspec.append('`%s` FLOAT' % k['clean'])
@@ -52,37 +55,34 @@ def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
 
         for i in range(len(keys)):
             if i > 0:
-                columns +=","
-                values_template +=","
+                columns += ","
+                values_template += ","
 
-            columns += " "+keys[i]['clean']
+            columns += " " + keys[i]['clean']
             values_template += " %s"
-            values += (MySQLdb.escape_string( str(rowdict[ keys[i]['ori']])), )
-
+            values += (MySQLdb.escape_string(str(rowdict[keys[i]['ori']])),)
 
         sql = "insert into %s (%s) values (%s)" % (table_name, columns, values_template)
 
-
         cursor.execute(sql, values)
     except Exception as e:
-        srv.logging.warn("Could not insert value into table %s. Query: %s, values: %s, Error: %s" %\
-                         (table_name, sql, str(values), str(e)))
+        srv.logging.warn("Could not insert value into table %s. Query: %s, values: %s, Error: %s" % \
+                         (table_name, sql, values, e))
         return False
 
     try:
         now = time.strftime('%Y-%m-%d %H:%M:%S')
         query = 'insert into %s set topic="%s", ts="%s" on duplicate key update ts="%s"' % \
-            (index_table_name, table_name, str(now), str(now))
+                (index_table_name, table_name, now, now)
         cursor.execute(query)
     except Exception as e:
-        srv.logging.warn("Could not insert value into index table %s" %\
+        srv.logging.warn("Could not insert value into index table %s" % \
                          index_table_name)
 
     return True
 
 
 def plugin(srv, item):
-
     srv.logging.debug("*** MODULE=%s: service=%s target=%s", __file__, item.service, item.target)
 
     host = item.config.get('host', 'localhost')
@@ -91,7 +91,7 @@ def plugin(srv, item):
     passwd = item.config.get('pass')
     dbname = item.config.get('dbname')
     index_table_name = item.config.get('index')
-    #ignore_keys = item.config.get('ignore_')
+    # ignore_keys = item.config.get('ignore_')
 
     # Sanitize table_name
     table_name = item.data['topic'].replace('/', '_')
@@ -104,7 +104,7 @@ def plugin(srv, item):
                                db=dbname)
         cursor = conn.cursor()
     except Exception as e:
-        srv.logging.warn("Cannot connect to mysql: %s" % (str(e)))
+        srv.logging.warn("Cannot connect to mysql: %s" % e)
         return False
 
     # Create new dict for column data. First add fallback column
@@ -112,9 +112,9 @@ def plugin(srv, item):
     col_data = {}
 
     if item.data is not None:
-        for key in item.data.keys():
+        for key in list(item.data.keys()):
             try:
-                if isinstance(col_data[key], basestring):
+                if isinstance(col_data[key], string_types):
                     col_data[key] = item.data[key].format(**item.data).encode('utf-8')
             except Exception as e:
                 col_data[key] = item.data[key]
@@ -125,7 +125,7 @@ def plugin(srv, item):
         else:
             conn.commit()
     except Exception as e:
-        srv.logging.warn("Cannot add mysql row: %s" % (str(e)))
+        srv.logging.warn("Cannot add mysql row: %s" % e)
         traceback.print_exc()
         cursor.close()
         conn.close()
@@ -135,4 +135,3 @@ def plugin(srv, item):
     conn.close()
 
     return True
-

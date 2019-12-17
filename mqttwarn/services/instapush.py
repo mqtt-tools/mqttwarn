@@ -3,17 +3,21 @@
 
 __author__    = 'Diogo Gomes <diogogomes()gmail.com>'
 __copyright__ = 'Copyright 2014 Diogo Gomes'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import urllib2
-import base64
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+
+import urllib.request, urllib.error, urllib.parse
 try:
-    import json
-except ImportError:
     import simplejson as json
+except ImportError:
+    import json
+
 
 def plugin(srv, item):
-    ''' addrs: (node, name) '''
+    """ addrs: (node, name) """
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
@@ -25,25 +29,25 @@ def plugin(srv, item):
         data["trackers"] = item.addrs[1]
     else:
         data["trackers"]  = json.loads(item.message)
-    for key in data["trackers"].keys():
+    for key in list(data["trackers"].keys()):
         try:
             data["trackers"][key] = data["trackers"][key].format(**item.data).encode('utf-8')
         except Exception as e:
-            srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
+            srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, e))
             return False
     try:
         method = "POST"
         resource = "https://api.instapush.im/v1/post"
 
-        handler = urllib2.HTTPHandler()
-        opener = urllib2.build_opener(handler)
+        handler = urllib.request.HTTPHandler()
+        opener = urllib.request.build_opener(handler)
 
-        request = urllib2.Request(resource, data=json.dumps(data))
+        request = urllib.request.Request(resource, data=json.dumps(data))
         request.add_header('x-instapush-appid', appid)
         request.add_header('x-instapush-appsecret', appsecret)
         request.add_header("Content-Type",'application/json')
 
-        connection = opener.open(request,timeout=5)
+        connection = opener.open(request, timeout=5)
 
         reply = str(connection.read())
         srv.logging.info("Server reply: %s" % reply)
@@ -53,7 +57,7 @@ def plugin(srv, item):
 
         return not r['error']
 
-    except urllib2.HTTPError, e:
+    except urllib.error.HTTPError as e:
         srv.logging.warn("Failed to send POST request to instapush using %s: %s" % (resource, str(e.read())))
         return False
 

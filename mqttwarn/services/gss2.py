@@ -3,32 +3,27 @@
 
 __author__    = 'Philipp Adelt <autosort-github@philipp.adelt.net>, based on code by Jan Badenhorst'
 __copyright__ = 'Copyright 2016 Philipp Adelt, 2014 Jan Badenhorst'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import os
 
 try:
-    import json
-except ImportError:
     import simplejson as json
-
-HAVE_GSS = True
-try:
-    import gspread
-    import oauth2client.client
-    import oauth2client.file
-    from oauth2client import clientsecrets
 except ImportError:
-    HAVE_GSS = False
+    import json
 
-SCOPE="https://spreadsheets.google.com/feeds"
+import gspread
+import oauth2client.client
+import oauth2client.file
+from oauth2client import clientsecrets
+
+
+SCOPE = "https://spreadsheets.google.com/feeds"
+
 
 def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
-    if not HAVE_GSS:
-        srv.logging.error("Google Spreadsheet or oauth2client is not installed. Consider 'pip install gspread google-api-python-client'.")
-        return False
 
     try:
         spreadsheet_url = item.addrs[0]
@@ -37,11 +32,11 @@ def plugin(srv, item):
         oauth2_code = item.config['oauth2_code']
         oauth2_storage_filename = item.config['oauth2_storage_filename']
     except KeyError as e:
-        srv.logging.error("Some configuration item is missing: %s" % str(e))
+        srv.logging.error("Some configuration item is missing: %s" % e)
         return False
 
     if not os.path.exists(client_secrets_filename):
-        srv.logging.error("Cannot find file '%s'." % client_secrets)
+        srv.logging.error("Cannot find file '%s'." % client_secrets_filename)
         return False
 
     try:
@@ -70,7 +65,7 @@ def plugin(srv, item):
                     raise clientsecrets.InvalidClientSecretsError("Resulting credentials are None!?")
             except clientsecrets.InvalidClientSecretsError as e:
                 srv.logging.error("Something went wrong using '%s' and OAuth code '%s': %s" %
-                    (client_secrets_filename, oauth2_code, str(e)))
+                    (client_secrets_filename, oauth2_code, e))
                 return False
             except oauth2client.client.FlowExchangeError as e:
                 if 'invalid_grantCode' in e.message:
@@ -109,7 +104,7 @@ def plugin(srv, item):
         srv.logging.debug("Successfully added row to spreadsheet")
 
     except Exception as e:
-        srv.logging.warn("Error adding row to spreadsheet %s [%s]: %s" % (spreadsheet_url, worksheet_name, str(e)))
+        srv.logging.warn("Error adding row to spreadsheet %s [%s]: %s" % (spreadsheet_url, worksheet_name, e))
         return False
 
     return True

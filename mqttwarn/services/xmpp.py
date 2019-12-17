@@ -3,9 +3,10 @@
 
 __author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
 __copyright__ = 'Copyright 2014 Fabian Affolter'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import xmpp     # pip install xmpp
+import xmpp
+
 
 def plugin(srv, item):
     """Send a message to XMPP recipient(s)."""
@@ -32,10 +33,11 @@ def plugin(srv, item):
             connection.send(xmpp.protocol.Message(target, text))
         srv.logging.debug("Successfully sent message")
     except Exception as e:
-        srv.logging.error("Error sending message to %s: %s" % (item.target, str(e)))
+        srv.logging.error("Error sending message to %s: %s" % (item.target, e))
         return False
 
     return True
+
 
 def xmpppy_monkeypatch_ssl():
     """

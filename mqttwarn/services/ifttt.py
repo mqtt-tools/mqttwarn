@@ -3,9 +3,10 @@
 
 __author__    = 'Bram Hendrickx'
 __copyright__ = 'Copyright 2016 Bram Hendrickx'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import requests
+
 
 def plugin(srv, item):
     ''' expects (apikey, event) in adddrs '''
@@ -31,7 +32,7 @@ def plugin(srv, item):
         requests.post(url, data=payload)
         srv.logging.debug("Successfully sent ifttt event")
     except Exception as e:
-        srv.logging.warning("Cannot send ifttt event: %s" % (str(e)))
+        srv.logging.warning("Cannot send ifttt event: %s" % e)
         return False
 
     return True

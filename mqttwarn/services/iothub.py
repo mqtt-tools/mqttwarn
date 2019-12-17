@@ -1,27 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from six import string_types
 
 __author__    = 'Morten Høybye Frederiksen <morten()mfd-consult.dk>'
 __copyright__ = 'Copyright 2016 Morten Høybye Frederiksen'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-HAVE_IOTHUB=True
-try:
-    import iothub_client
-    from iothub_client import *
-    from iothub_client_args import *
-    import uuid
-except ImportError:
-    HAVE_IOTHUB=False
+from builtins import str
+
+import uuid
+from iothub_client import *
+from iothub_client_args import *
+
 
 iothub_clients = {}
+
 
 def iothub_connect(srv, item, deviceid, devicekey):
     # item.config is brought in from the configuration file
     try:
         hostname = item.config['hostname']
     except Exception as e:
-        srv.logging.error("Incorrect target configuration for target=%s: %s", item.target, str(e))
+        srv.logging.error("Incorrect target configuration for target=%s: %s", item.target, e)
         return False
     protocol = item.config.get('protocol', 'AMQP')
     timeout = item.config.get('timeout')
@@ -42,18 +42,16 @@ def iothub_connect(srv, item, deviceid, devicekey):
     srv.logging.info("Client: protocol=%s, hostname=%s, device=%s" % (protocol, hostname, deviceid))
     return client
 
+
 def iothub_send_confirmation_callback(msg, res, srv):
     if res != IoTHubClientConfirmationResult.OK:
         srv.logging.error("Message confirmation: id=%s: %s", msg.message_id, res)
     else:
         srv.logging.debug("Message confirmation: id=%s: %s", msg.message_id, res)
 
+
 def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
-
-    if not HAVE_IOTHUB:
-        srv.logging.error("Azure IoT SDK is not installed")
-        return False
 
     # addrs is a list[] containing device id and key.
     deviceid, devicekey = item.addrs
@@ -64,12 +62,12 @@ def plugin(srv, item):
             iothub_clients[deviceid] = iothub_connect(srv, item, deviceid, devicekey)
         client = iothub_clients[deviceid]
     except Exception as e:
-        srv.logging.error("Unable to connect for target=%s, deviceid=%s: %s" % (item.target, deviceid, str(e)))
+        srv.logging.error("Unable to connect for target=%s, deviceid=%s: %s" % (item.target, deviceid, e))
         return False
 
     # Prepare message
     try:
-        if type(item.message) == unicode:
+        if isinstance(item.message, string_types):
             msg = IoTHubMessage(bytearray(item.message, 'utf8'))
         else:
             msg = IoTHubMessage(item.message)

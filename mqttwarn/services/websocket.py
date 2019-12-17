@@ -3,11 +3,12 @@
 
 __author__    = 'Giovanni Angoli <juzam76()gmail.com>'
 __copyright__ = 'Copyright 2018 Giovanni Angoli'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-# this is basically the file.py service but declined for websockets, not more than s/file/websocket/g
+# This is basically the file.py service but declined for websockets, not more than s/file/websocket/g.
 
-import websocket # pip install websocket-client
+import websocket
+
 
 def plugin(srv, item):
 
@@ -32,7 +33,7 @@ def plugin(srv, item):
         ws.send(text)
         ws.close()
     except Exception as e:
-        srv.logging.warning("Cannot write to websocket `%s': %s" % (uri, str(e)))
+        srv.logging.warning("Cannot write to websocket `%s': %s" % (uri, e))
         return False
 
     return True

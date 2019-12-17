@@ -1,26 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
+__author__ = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-HAVE_PUKA=True
-try:
-    import puka
-except ImportError:
-    HAVE_PUKA=False
+import puka
 
 
 def plugin(srv, item):
-
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    if not HAVE_PUKA:
-        srv.logging.error("Python puka is not installed")
-        return False
-
-    uri         = item.config['uri']
+    uri = item.config['uri']
 
     exchange, routing_key = item.addrs
 
@@ -32,20 +23,20 @@ def plugin(srv, item):
         client.wait(promise)
 
         headers = {
-                'content_type'    : 'text/plain',
-                'x-agent'         : 'mqttwarn',
-                'delivery_mode'   : 1,
-             }
+            'content_type': 'text/plain',
+            'x-agent': 'mqttwarn',
+            'delivery_mode': 1,
+        }
         promise = client.basic_publish(exchange=exchange,
-                        routing_key=routing_key,
-                        headers=headers,
-                        body=item.message)
+                                       routing_key=routing_key,
+                                       headers=headers,
+                                       body=item.message)
         client.wait(promise)
         client.close()
 
         srv.logging.debug("Successfully published AMQP notification")
     except Exception as e:
-        srv.logging.warn("Error on AMQP publish to %s [%s/%s]: %s" % (item.target, exchange, routing_key, str(e)))
+        srv.logging.warn("Error on AMQP publish to %s [%s/%s]: %s" % (item.target, exchange, routing_key, e))
         return False
 
     return True

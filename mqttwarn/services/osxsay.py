@@ -3,9 +3,10 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import subprocess
+
 
 def plugin(srv, item):
 
@@ -20,7 +21,7 @@ def plugin(srv, item):
         proc = subprocess.Popen(argv,
             stdin=subprocess.PIPE, close_fds=True)
     except Exception as e:
-        srv.logging.warn("Cannot create osxsay pipe: %s" % str(e))
+        srv.logging.warn("Cannot create osxsay pipe: %s" % e)
         return False
 
     try:
@@ -29,7 +30,7 @@ def plugin(srv, item):
         srv.logging.warn("Cannot write to osxsay pipe: errno %d" % (e.errno))
         return False
     except Exception as e:
-        srv.logging.warn("Cannot write to osxsay pipe: %s" % (str(e)))
+        srv.logging.warn("Cannot write to osxsay pipe: %s" % e)
         return False
 
     proc.stdin.close()

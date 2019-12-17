@@ -3,11 +3,10 @@
 
 __author__    = 'Halacs <halacs87()gmail.com>'
 __copyright__ = 'Copyright 2018 Halacs'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-from collections import defaultdict
-import MySQLdb # apt-get install python-mysqldb
-import sys
+import MySQLdb
+
 
 # https://mail.python.org/pipermail/tutor/2010-December/080701.html
 def add_row(srv, cursor, tablename, rowdict):
@@ -33,9 +32,10 @@ def add_row(srv, cursor, tablename, rowdict):
 
     return unknown_keys
 
+
 def daraFv(srv, item, data, col_data, mapping):
     if data is not None:
-        for key in data.keys():
+        for key in list(data.keys()):
             if type(data[key]) is dict:
                 daraFv(srv, item, data[key], col_data, mapping)
             else:
@@ -44,6 +44,7 @@ def daraFv(srv, item, data, col_data, mapping):
                         col_data[mapping[key]] = data[key].format(**data).encode('utf-8')
                     except Exception as e:
                         col_data[mapping[key]] = data[key]
+
 
 def plugin(srv, item):
 
@@ -67,7 +68,7 @@ def plugin(srv, item):
         conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=dbname)
         cursor = conn.cursor()
     except Exception as e:
-        srv.logging.warn("Cannot connect to mysql: %s" % (str(e)))
+        srv.logging.warn("Cannot connect to mysql: %s" % e)
         return False
 
     col_data = {}
@@ -85,7 +86,7 @@ def plugin(srv, item):
             srv.logging.debug("Skipping unused keys %s" % ",".join(unknown_keys))
         conn.commit()
     except Exception as e:
-        srv.logging.warn("Cannot add mysql row: %s" % (str(e)))
+        srv.logging.warn("Cannot add mysql row: %s" % e)
         cursor.close()
         conn.close()
         return False

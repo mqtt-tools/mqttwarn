@@ -3,13 +3,13 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import sys
 import nntplib
-import io
+from six import StringIO
 from email.mime.text import MIMEText
-from email.Utils import formatdate
+from email.utils import formatdate
+
 
 def plugin(srv, item):
 
@@ -41,7 +41,7 @@ def plugin(srv, item):
         msg['User-Agent']   = srv.SCRIPTNAME
         # msg['Message-ID'] = '<jp001@tiggr>'
 
-        msg_file = io.StringIO(msg.as_string())
+        msg_file = StringIO(msg.as_string())
         nntp = nntplib.NNTP(host, port, user=username, password=password)
 
         srv.logging.debug(nntp.getwelcome())
@@ -50,7 +50,7 @@ def plugin(srv, item):
         nntp.post(msg_file)
         nntp.quit()
     except Exception as e:
-        srv.logging.warn("Cannot post to %s newsgroup: %s" % (newsgroup, str(e)))
+        srv.logging.warn("Cannot post to %s newsgroup: %s" % (newsgroup, e))
         return False
 
     return True

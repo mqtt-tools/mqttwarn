@@ -3,14 +3,15 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 try:
-    import json
-except ImportError:
     import simplejson as json
+except ImportError:
+    import json
 from vendor import ZabbixSender
 import time
+
 
 def plugin(srv, item):
 
@@ -65,7 +66,7 @@ def plugin(srv, item):
 
                 return True
         except Exception as e:
-            srv.logging.warn("Trapper responded: %s" % (str(e)))
+            srv.logging.warn("Trapper responded: %s" % e)
             return False
 
     # We are adding a normal item/value via the trapper
@@ -88,6 +89,6 @@ def plugin(srv, item):
 
             return True
     except Exception as e:
-        srv.logging.warn("Trapper responded: %s" % (str(e)))
+        srv.logging.warn("Trapper responded: %s" % e)
 
     return False

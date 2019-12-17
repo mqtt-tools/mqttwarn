@@ -3,10 +3,14 @@
 
 __author__    = 'Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Ben Jones'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-from xmlrpclib import ServerProxy
-import urllib
+from future import standard_library
+standard_library.install_aliases()
+
+from xmlrpc.client import ServerProxy
+import urllib.request, urllib.parse, urllib.error
+
 
 def plugin(srv, item):
 
@@ -29,7 +33,7 @@ def plugin(srv, item):
         ttsurl = ttsurl[8:]
 
     if ttsparams is not None:
-        for key in ttsparams.keys():
+        for key in list(ttsparams.keys()):
 
             # { 'q' : '@message' }
             # Quoted field, starts with '@'. Do not use .format, instead grab
@@ -41,7 +45,7 @@ def plugin(srv, item):
                 try:
                     ttsparams[key] = ttsparams[key].format(**item.data).encode('utf-8')
                 except Exception as e:
-                    srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, str(e)))
+                    srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, e))
                     return False
 
     try:
@@ -50,7 +54,7 @@ def plugin(srv, item):
         if ttsparams is not None:
             if not shout_url.endswith('?'):
                 shout_url = shout_url + '?'
-            shout_url = shout_url + urllib.urlencode(ttsparams)
+            shout_url = shout_url + urllib.parse.urlencode(ttsparams)
         # debugging
         srv.logging.debug("Shout URL: %s" % shout_url)
         # Freeswitch API
@@ -60,7 +64,7 @@ def plugin(srv, item):
         # originate the call
         server.freeswitch.api("originate", channel_vars + gateway + number + " &playback(" + shout_url + ")")
     except Exception as e:
-        srv.logging.error("Error originating Freeswitch VOIP call to %s via %s%s: %s" % (item.target, gateway, number, str(e)))
+        srv.logging.error("Error originating Freeswitch VOIP call to %s via %s%s: %s" % (item.target, gateway, number, e))
         return False
 
     return True

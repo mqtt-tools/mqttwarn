@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__author__    = 'devsaurus <devsaurus@users.noreply.github.com>'
+__copyright__ = 'Copyright 2015'
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
+
 import re
 import rrdtool
 
-__author__    = 'devsaurus <devsaurus@users.noreply.github.com>'
-__copyright__ = 'Copyright 2015'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 def plugin(srv, item):
 

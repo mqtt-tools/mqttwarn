@@ -3,8 +3,9 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
+from builtins import str
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -53,7 +54,7 @@ def plugin(srv, item):
         srv.logging.debug("Successfully sent SMTP notification")
     except Exception as e:
         srv.logging.warn("Error sending notification to SMTP recipient %s, addresses: %s. "
-                         "Exception: %s" % (item.target, smtp_addresses, str(e)))
+                         "Exception: %s" % (item.target, smtp_addresses, e))
         return False
 
     return True

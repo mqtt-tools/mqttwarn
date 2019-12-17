@@ -3,9 +3,10 @@
 
 __author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
 __copyright__ = 'Copyright 2014 Fabian Affolter'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import syslog
+
 
 def plugin(srv, item):
     """Transfer a message to a syslog server."""
@@ -68,7 +69,7 @@ def plugin(srv, item):
         srv.logging.debug("Successfully sent")
         syslog.closelog()
     except Exception as e:
-        srv.logging.error("Error sending to syslog: %s" % (str(e)))
+        srv.logging.error("Error sending to syslog: %s" % e)
         syslog.closelog()
         return False
 

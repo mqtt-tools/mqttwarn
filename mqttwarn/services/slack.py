@@ -3,20 +3,18 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 
 # 2018-11-13 - Update by psyciknz to add image upload function.  See Readme
 #              Needs slacker 0.10.0 at a minimum
 
-HAVE_SLACK=True
-try:
-    from slacker import Slacker
-except ImportError:
-    HAVE_SLACK=False
+from slacker import Slacker
 
-import requests
+
+from builtins import str
 import base64
+import requests
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
 
@@ -24,12 +22,6 @@ from requests.auth import HTTPDigestAuth
 def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
-
-    srv.logging.debug("*** MODULE=%s: service=%s, target=%s, item:%s", __file__, item.service, item.target, item)
-
-    if HAVE_SLACK == False:
-        srv.logging.error("slacker module missing")
-        return False
 
     # check for service level token
     token = item.config.get('token')
@@ -49,8 +41,8 @@ def plugin(srv, item):
             token, channel, username, icon = addrs
         else:
             channel, username, icon = addrs
-    except:
-        srv.logging.error("Incorrect target configuration for target=%s: %s", item.target, str(e))
+    except Exception as e:
+        srv.logging.error("Incorrect target configuration for target=%s: %s", item.target, e)
         return False
 
     # if no token then fail
@@ -99,7 +91,7 @@ def plugin(srv, item):
                 f.write(image)
             
     except Exception as e:
-        srv.logging.warning("Cannot download image: %s" % (str(e)))
+        srv.logging.warning("Cannot download image: %s", e)
 
     try:
         slack = Slacker(token)
@@ -118,7 +110,7 @@ def plugin(srv, item):
                 slack.files.upload(file_=image,title=text,channels=slack.channels.get_channel_id(channelname))
             srv.logging.debug("image posted")
     except Exception as e:
-        srv.logging.warning("Cannot post to slack %s: %s" % (channel, str(e)))
+        srv.logging.warning("Cannot post to slack %s: %s" % (channel, e))
         return False
 
     return True

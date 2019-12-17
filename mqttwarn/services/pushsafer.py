@@ -1,15 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib
-import urllib2
-import urlparse
-import json
+__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
+__copyright__ = 'Copyright 2014 Jan-Piet Mens'
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
+
+from future import standard_library
+standard_library.install_aliases()
 import os
+import json
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 
 PUSHSAFER_API = "https://www.pushsafer.com/"
 
+
 class PushsaferError(Exception): pass
+
 
 def pushsafer(**kwargs):
     assert 'm' in kwargs
@@ -17,19 +25,16 @@ def pushsafer(**kwargs):
     if not kwargs['k']:
         kwargs['k'] = os.environ['PUSHSAFER_TOKEN']
 
-    url = urlparse.urljoin(PUSHSAFER_API, "api")
-    data = urllib.urlencode(kwargs)
-    req = urllib2.Request(url, data)
-    response = urllib2.urlopen(req, timeout=3)
+    url = urllib.parse.urljoin(PUSHSAFER_API, "api")
+    data = urllib.parse.urlencode(kwargs)
+    req = urllib.request.Request(url, data)
+    response = urllib.request.urlopen(req, timeout=3)
     output = response.read()
     data = json.loads(output)
 
     if data['status'] != 1:
         raise PushsaferError(output)
 
-__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
-__copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
 def plugin(srv, item):
 
@@ -106,7 +111,7 @@ def plugin(srv, item):
         pushsafer(m=message, k=appkey, **params)
         srv.logging.debug("Successfully sent pushsafer notification")
     except Exception as e:
-        srv.logging.warn("Error sending pushsafer notification to %s [%s]: %s" % (item.target, params, str(e)))
+        srv.logging.warn("Error sending pushsafer notification to %s [%s]: %s" % (item.target, params, e))
         return False
 
     return True

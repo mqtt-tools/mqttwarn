@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
 __author__    = 'Artem Alexandrov <qk4l@tem4uk.ru>'
 __copyright__ = 'Copyright 2016 Artem Alexandrov'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
+
+
+from builtins import str
+from builtins import object
+import requests
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 def plugin(srv, item):
@@ -27,7 +30,7 @@ def plugin(srv, item):
         parse_mode = item.config['parse_mode']
     tg_contact = item.addrs[0]
 
-    class TelegramAPI():
+    class TelegramAPI(object):
         def __init__(self, token, parse_mode=None):
             self.token = token
             self.disable_notification = False

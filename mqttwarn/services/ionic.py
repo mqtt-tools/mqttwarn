@@ -3,15 +3,19 @@
 
 __author__ = 'hubble2webb <hubble2webb@users.noreply.github.com>'
 __copyright__ = 'Copyright 2015 hubble2webb'
-__license__ = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import urllib2
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+
+import urllib.request, urllib.error, urllib.parse
 import base64
 
 try:
-    import json
-except ImportError:
     import simplejson as json
+except ImportError:
+    import json
 
 
 def plugin(srv, item):
@@ -53,10 +57,10 @@ def plugin(srv, item):
     resource = "https://push.ionic.io/api/v1/push"
 
     try:
-        handler = urllib2.HTTPHandler()
-        opener = urllib2.build_opener(handler)
+        handler = urllib.request.HTTPHandler()
+        opener = urllib.request.build_opener(handler)
 
-        request = urllib2.Request(resource, data=json.dumps(data))
+        request = urllib.request.Request(resource, data=json.dumps(data))
         request.add_header('X-Ionic-Application-Id', appid)
         request.add_header("Authorization", "Basic %s" % base64.encodestring('%s:' % appsecret).replace('\n', ''))
         request.add_header("Content-Type", 'application/json')
@@ -64,7 +68,7 @@ def plugin(srv, item):
         connection = opener.open(request, timeout=5)
         srv.logging.info("Server reply: %s" % str(connection.read()))
 
-    except urllib2.HTTPError, e:
+    except urllib.error.HTTPError as e:
         srv.logging.warn("Failed to send POST request to ionic using %s: %s" % (resource, str(e.read())))
         return False
 

@@ -1,5 +1,8 @@
+from builtins import str
 import xively
 import datetime
+import requests
+
 
 def get_datastream(feed, datastream_name):
 	try:
@@ -14,6 +17,7 @@ def get_datastream(feed, datastream_name):
 		#Ho! we didn't find the datastream, better create him myself
 		datastream = feed.datastreams.create(datastream_name)
 		return datastream
+
 
 def plugin(srv, item):
 	srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
@@ -32,7 +36,7 @@ def plugin(srv, item):
 
 	#lets filter data
 	ds = []
-	for k,v in item.data.items():
+	for k,v in list(item.data.items()):
 		if k in item.addrs:
 			ds.append(xively.Datastream(id=str(k), current_value=str(v), at=now))
 	feed.datastreams = ds

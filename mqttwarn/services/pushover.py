@@ -3,7 +3,7 @@
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 # The code for pushover() between cuts was written by Mike Matz and
 # gracefully swiped from https://github.com/pix0r/pushover
@@ -17,17 +17,20 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 #            - text to accompany the image comes from the "message" attribute
 #              of the json payload.
 
+from future import standard_library
+standard_library.install_aliases()
+import os
 import base64
 import requests
+import urllib.parse
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
-import urlparse
-import json
-import os
 
 PUSHOVER_API = "https://api.pushover.net/1/"
 
+
 class PushoverError(Exception): pass
+
 
 def pushover(image, **kwargs):
     assert 'message' in kwargs
@@ -37,7 +40,7 @@ def pushover(image, **kwargs):
     if not 'user' in kwargs:
         kwargs['user'] = os.environ['PUSHOVER_USER']
 
-    url = urlparse.urljoin(PUSHOVER_API, "messages.json")
+    url = urllib.parse.urljoin(PUSHOVER_API, "messages.json")
     headers = { 'User-Agent': 'mqttwarn' }
 
     if image:
@@ -47,7 +50,8 @@ def pushover(image, **kwargs):
         r = requests.post(url, data=kwargs, headers=headers)
 
     if r.json()['status'] != 1:
-        raise PushoverError(output)
+        raise PushoverError(r.content)
+
 
 def plugin(srv, item):
 
@@ -124,7 +128,7 @@ def plugin(srv, item):
         pushover(image=image, user=userkey, token=appkey, **params)
         srv.logging.debug("Successfully sent pushover notification")
     except Exception as e:
-        srv.logging.warn("Error sending pushover notification: %s" % (str(e)))
+        srv.logging.warn("Error sending pushover notification: %s" % e)
         return False
 
     return True

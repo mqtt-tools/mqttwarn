@@ -40,6 +40,7 @@ extras = {
     'gss2': [
         'gspread==2.1.1',
         'oauth2client==4.1.2',
+        #'google-api-python-client==1.7.11',
     ],
     'iothub': [
         'iothub-client==1.1.2.0',

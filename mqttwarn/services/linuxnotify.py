@@ -3,9 +3,10 @@
 
 __author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
 __copyright__ = 'Copyright 2014 Fabian Affolter'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 from gi.repository import Notify
+
 
 def plugin(srv, item):
     """Send a message to the user's desktop notification system."""
@@ -26,7 +27,7 @@ def plugin(srv, item):
         n.show()
         srv.logging.debug("Successfully sent notification")
     except Exception as e:
-        srv.logging.warning("Cannot invoke notification to linux: %s" % (str(e)))
+        srv.logging.warning("Cannot invoke notification to linux: %s" % e)
         return False
 
     return True

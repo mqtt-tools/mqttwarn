@@ -3,13 +3,14 @@
 
 __author__    = 'Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2016 Ben Jones'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import requests
 import logging
 
 # disable info logging in requests module (e.g. connection pool message for every post request)
 logging.getLogger("requests").setLevel(logging.WARNING)
+
 
 def plugin(srv, item):
     ''' addrs: (measurement) '''
@@ -82,6 +83,6 @@ def plugin(srv, item):
             srv.logging.warn("POST request failed: (%s) %s" % (r.status_code, r.text))
         
     except Exception as e:
-        srv.logging.warn("Failed to send POST request to InfluxDB server using %s: %s" % (url, str(e)))
+        srv.logging.warn("Failed to send POST request to InfluxDB server using %s: %s" % (url, e))
 
     return False

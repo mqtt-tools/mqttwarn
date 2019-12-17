@@ -3,26 +3,20 @@
 
 __author__    = 'Jan Badenhorst <janhendrik.badenhorst()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan Badenhorst'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
+from builtins import str
 try:
-    import json
-except ImportError:
     import simplejson as json
-
-HAVE_GSS = True
-try:
-    import gdata.spreadsheet.service
 except ImportError:
-    HAVE_GSS = False
+    import json
+
+import gdata.spreadsheet.service
 
 
 def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
-    if not HAVE_GSS:
-        srv.logging.warn("Google Spreadsheet is not installed")
-        return False
 
     spreadsheet_key = item.addrs[0]
     worksheet_id = item.addrs[1]
@@ -41,14 +35,14 @@ def plugin(srv, item):
 
         # The API Does not like raw numbers as values.
         row = {}
-        for k, v in item.data.items():
+        for k, v in list(item.data.items()):
             row[k] = str(v)
 
         client.InsertRow(row, spreadsheet_key, worksheet_id)
         srv.logging.debug("Successfully added row to spreadsheet")
 
     except Exception as e:
-        srv.logging.warn("Error adding row to spreadsheet %s [%s]: %s" % (spreadsheet_key, worksheet_id, str(e)))
+        srv.logging.warn("Error adding row to spreadsheet %s [%s]: %s" % (spreadsheet_key, worksheet_id, e))
         return False
 
     return True

@@ -3,26 +3,21 @@
 
 __author__    = 'Vium https://github.com/Vium'
 __copyright__ = 'Copyright 2016'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-#based on the great SQLITE code by Jan-Piet Mens
+# Based on the great SQLITE code by Jan-Piet Mens.
 
-HAVE_SQLITE=True
-try:
-    import sqlite3
-except:
-    HAVE_SQLITE=False
-
+from builtins import str
+import sqlite3
 import unicodedata
+from six import string_types
+
 
 def plugin(srv, item):
-    ''' sqlite. Expects addrs to contain (path, tablename) '''
+    """ sqlite. Expects addrs to contain (path, tablename) """
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    if HAVE_SQLITE is False:
-        srv.logging.warn("Sqlite3 is not installed")
-        return False
     path  = item.addrs[0]
     table = item.addrs[1]
     try:
@@ -31,19 +26,16 @@ def plugin(srv, item):
         srv.logging.warn("Cannot connect to sqlite at %s : %s" % (path, str(e)))
         return False
 
-
-
-
     table_cols =  {}
     #determine datatypes
     for key in item.data: #i.e. {"sensor_id":"testsensor","whatdata":"hello","data":1}"
         if key[0] == '_' or key == 'payload' or key == 'topic': #we just want to save the payload there is probably a better way
             continue
         else:
-            if isinstance(item.data[key],  (int, long, float)):
+            if isinstance(item.data[key],  (int, float)):
                 table_cols[key] = 'float'
                 item.data[key] = str(item.data[key]) #make str for sql
-            elif isinstance(item.data[key], basestring):
+            elif isinstance(item.data[key], string_types):
                 table_cols[key] = 'varchar(20)'
                 item.data[key] = "\'%s\'" % item.data[key] #add '' for sql
 
@@ -86,6 +78,5 @@ def plugin(srv, item):
         srv.logging.debug("Inserted into SQLITE")
     except Exception as e:
         srv.logging.warn("Cannot INSERT INTO sqlite:%s : %s" % (table, str(e)))
-
 
     return True

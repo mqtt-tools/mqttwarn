@@ -3,10 +3,11 @@
 
 __author__    = 'Przemek Anuszek <przemas75()gmail.com>'
 __copyright__ = 'Copyright 2016 Przemek Anuszek'
-__license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
+__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 from fbchat import Client
 from fbchat.models import *
+
 
 def plugin(srv, item):
 
@@ -28,7 +29,7 @@ def plugin(srv, item):
         sent = fbclient.sendMessage(text, thread_id=ffriend.uid, thread_type=ThreadType.USER)
         srv.logging.debug("Successfully sent message")
     except Exception as e:
-        srv.logging.error("Error sending fbchat to %s: %s" % (item.target, str(e)))
+        srv.logging.error("Error sending fbchat to %s: %s" % (item.target, e))
         return False
     client.logout()
     return True
