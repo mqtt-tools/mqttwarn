@@ -103,9 +103,10 @@ extras = {
         'xmpppy==0.5.0rc1',
     ],
     'test': [
-        'pytest==3.8.0',
-        'pytest-cov==2.6.0',
+        'pytest==4.6.7',
+        'pytest-cov==2.8.1',
         'lovely.testlayers>=0.7.1',
+        'tox==3.14.2',
     ],
 }
 

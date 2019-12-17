@@ -2,6 +2,7 @@
 /.idea
 /.venv*
 /dist*
+/build
 *.pyc
 *.egg-info
 *.sln
@@ -18,3 +19,4 @@ funcs.py
 .pytest_cache
 .pytest_results
 .coverage
+.tox
