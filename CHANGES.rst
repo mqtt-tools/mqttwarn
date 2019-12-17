@@ -5,6 +5,10 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2019-12-17 0.13.0
+=================
 - Remove instapush service as it no longer exists
 - Python2/3 compatibility
 - Make "pushover" service use requests
