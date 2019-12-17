@@ -14,6 +14,7 @@ requires = [
     'docopt==0.6.2',
     'requests==2.22.0',
     'future==0.18.2',
+    'configparser==4.0.2',
 ]
 
 extras = {

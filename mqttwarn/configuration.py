@@ -5,11 +5,7 @@ import sys
 import ast
 import codecs
 import logging
-try:
-    from configparser import RawConfigParser, NoOptionError
-except ImportError:
-    # Backward-compatibility for Python 2
-    from ConfigParser import RawConfigParser, NoOptionError
+from configparser import RawConfigParser, NoOptionError
 
 HAVE_TLS = True
 try:
