@@ -13,6 +13,7 @@ requires = [
     'attrs==19.3.0',
     'docopt==0.6.2',
     'requests==2.22.0',
+    'future==0.18.2',
 ]
 
 extras = {
