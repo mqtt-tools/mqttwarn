@@ -326,7 +326,6 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [icinga2](#icinga2)
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
-* [instapush](#instapush)
 * [ionic](#ionic)
 * [iothub](#iothub)
 * [irccat](#irccat)
@@ -1178,43 +1177,6 @@ time         entity   room      temperature  topic
 ```
 
 
-
-### `instapush`
-
-This service is for [Instapush](https://instapush.im), an app for
-both IOS and Android, which provides free instant notifications.
-
-You should first create an application and respective event following the [tutorial](https://instapush.im/home/start/).
-
-Afterward you will find your Application ID and Application Secret in the "Basic Info" of your application.
-
-Each _mqttwarn_ target corresponds to an event in your Instapush application.
-
-The "trackers" in Instapush correspond to JSON values in the _mqttwarn_ `config:instapush` section or from the message payload. You can define as many trackers as you wish.
-
-Consider the following event created in Instapush:
-
-| Field          | Value                |
-| -------------- | -------------------- |
-| `Event title`  | alerts               |
-| `Trackers`     | object, action       |
-| `Push Message` | {object} just {action} |
-
-To always send the same `object` and `action` tracker values, set them as constants in the event of the target:
-
-```ini
-[config:instapush]
-appid = '12345abc123456'
-appsecret = '1234567890abcd123456789abcdef123456789'
-targets = {
-             # event   # trackers
-  'notify' : [ 'alerts', {"object":"door", "action":"opened/closed"}]
-  }
-```
-
-![instapush](assets/instapush.png)
-
-To send tracker values based on the message payload, leave out the tracker element of the target definition in the `config:instapush` section: If your target is a list with only 1 element, that element will be considered the "event" and the "trackers" will be taken from the mqtt payload, which must have all tracker fields present.
 
 ### `irccat`
 
