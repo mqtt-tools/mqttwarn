@@ -9,6 +9,7 @@
 
 .. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/master.svg?style=svg
     :target: https://circleci.com/gh/jpmens/mqttwarn/tree/master
+
 |
 
 .. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
