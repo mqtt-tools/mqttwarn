@@ -7,6 +7,12 @@ in progress
 ===========
 
 
+2019-12-27 0.13.3
+=================
+- Improve Python2/3 compatibility for "make-config" subcommand. Fix #393.
+  Thanks, @Gulaschcowboy!
+
+
 2019-12-17 0.13.2
 =================
 - Fix documentation

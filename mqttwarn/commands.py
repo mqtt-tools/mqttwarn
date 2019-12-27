@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2018 The mqttwarn developers
+# (c) 2014-2019 The mqttwarn developers
 from __future__ import print_function
 import os
 import sys
 import json
+import codecs
 import signal
 import logging
 
@@ -44,6 +45,13 @@ def run():
     # Read commandline options
     options = docopt(commandline_schema, version=APP_NAME + ' ' + __version__)
 
+    # Python2/3 string encoding compat - sigh.
+    # https://stackoverflow.com/questions/2737966/how-to-change-the-stdin-and-stdout-encoding-on-python-2/58449987#58449987
+    utf8_writer = codecs.getwriter('utf-8')
+    if sys.version_info.major <= 2:
+        sys.stdout = utf8_writer(sys.stdout)
+    else:
+        sys.stdout = utf8_writer(sys.stdout.buffer)
 
     if options['make-config']:
         payload = get_resource_content('mqttwarn.examples', 'basic/mqttwarn.ini')
