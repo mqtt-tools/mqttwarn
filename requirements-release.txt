@@ -1,0 +1,3 @@
+bumpversion==0.5.3
+twine==1.11.0
+keyring==12.0.1
