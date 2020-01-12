@@ -114,18 +114,24 @@ def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
         def __init__(self):
             threading.Thread.__init__(self)
             self.result = None
+            self.exception = None
 
         def run(self):
             try:
                 self.result = func(*args, **kwargs)
 
             # FIXME: Shouldn't we report this better?
-            except:
+            except Exception as ex:
                 self.result = default
+                self.exception = ex
 
     it = InterruptableThread()
     it.start()
     it.join(timeout_secs)
+
+    if it.exception is not None:
+        raise it.exception
+
     if it.is_alive():
         return default
     else:

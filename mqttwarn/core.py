@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
+# (c) 2014-2020 The mqttwarn developers
 from builtins import object
 from past.builtins import cmp
 from builtins import chr
@@ -493,6 +493,7 @@ def processor(worker_id=None):
         if item.get('message') is not None and len(item.get('message')) > 0:
             st = Struct(**item)
             notified = False
+            logger.info("Invoking service plugin for `%s'" % service)
             try:
                 # Fire the plugin in a separate thread and kill it if it doesn't return in 10s
                 module = service_plugins[service]['module']
@@ -500,7 +501,7 @@ def processor(worker_id=None):
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
             except Exception as e:
-                logger.error("Cannot invoke service for `%s': %s" % (service, e))
+                logger.exception("Cannot invoke service for `%s'" % service)
 
             if not notified:
                 logger.warning("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))

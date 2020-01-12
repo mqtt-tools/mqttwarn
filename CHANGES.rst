@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2020-01-12 0.14.0
+=================
+- Improve exception handling when service plugin fails
+
+
 2020-01-09 0.13.6
 =================
 - Support Python 3.8
