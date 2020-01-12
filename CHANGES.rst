@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2020-01-12 0.13.8
+=================
+- Fix charset encoding issue for service "mqttpub". Thanks, @jpmens!
+
+
 2020-01-12 0.13.7
 =================
 - Improve exception handling when service plugin fails
