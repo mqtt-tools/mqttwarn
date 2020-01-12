@@ -113,7 +113,7 @@ extras = {
 }
 
 setup(name='mqttwarn',
-      version='0.13.6',
+      version='0.13.7',
       description='mqttwarn - subscribe to MQTT topics and notify pluggable services',
       long_description=README,
       license="EPL 2.0",
