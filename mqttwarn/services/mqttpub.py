@@ -23,7 +23,7 @@ def plugin(srv, item):
 
     if item.data is not None:
         try:
-            outgoing_topic =  item.addrs[0].format(**item.data).encode('utf-8')
+            outgoing_topic =  item.addrs[0].format(**item.data)
         except:
             srv.logging.debug("Outgoing topic cannot be formatted; not published")
             return False
