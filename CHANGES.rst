@@ -7,9 +7,10 @@ in progress
 ===========
 
 
-2020-01-12 0.14.0
+2020-01-12 0.13.7
 =================
 - Improve exception handling when service plugin fails
+- Properly handle charset encoding, both on Python 2 and Python 3
 
 
 2020-01-09 0.13.6

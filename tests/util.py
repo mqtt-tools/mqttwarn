@@ -30,7 +30,7 @@ def send_message(topic=None, payload=None):
 
     # Mock an instance of an Eclipse Paho MQTTMessage
     message = MQTTMessage(mid=42, topic=topic.encode('utf-8'))
-    message.payload = payload
+    message.payload = payload.encode('utf-8')
 
     # Signal the message to the machinery
     on_message(None, None, message)

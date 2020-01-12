@@ -203,7 +203,7 @@ def on_message(mosq, userdata, msg):
     """
 
     topic = msg.topic
-    payload = msg.payload
+    payload = msg.payload.decode('utf-8')
     logger.debug("Message received on %s: %s" % (topic, payload))
 
     if msg.retain == 1:
@@ -371,7 +371,7 @@ def xform(function, orig_value, transform_data):
                 logger.warning("Cannot invoke %s(): %s" % (function_name, e))
 
         try:
-            res = Formatter().format(function, **transform_data).encode('utf-8')
+            res = Formatter().format(function, **transform_data)
         except Exception as e:
             logger.warning("Cannot format message: %s" % e)
 
