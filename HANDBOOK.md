@@ -13,8 +13,6 @@ Notifications are transmitted to the appropriate service via plugins. We provide
 I've written an introductory post, explaining [what mqttwarn can be used for](http://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/). For example, you may wish to notify via e-mail and to Pushover of an alarm published as text to the MQTT topic `home/monitoring/+`.
 
   * [Getting started](#getting-started)
-    + [Requirements](#requirements)
-    + [Installation](#installation)
     + [Configuration](#configuration)
   * [Supported Notification Services](#supported-notification-services)
     + [Configuration of service plugins](#configuration-of-service-plugins)
@@ -34,30 +32,9 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Notes](#notes)
   * [Press](#press)
   
-      
+
   ## Getting started
-  
-  ### Requirements
-  
-  You'll need at least the following components:
-  
-  * Python 2.x (tested with 2.6 and 2.7)
-  * An MQTT broker (e.g. [Mosquitto](http://mosquitto.org))
-  * The Paho Python module: `pip install paho-mqtt`
-  
-  ### Installation
-  
-  1. Clone this repository into a fresh directory.
-  2. Copy `mqttwarn.ini.sample` to `mqttwarn.ini` and edit to your taste
-  3. Install the prerequisite Python modules for the services you want to use
-  4. Launch `mqttwarn.py`
-  
-  I recommend you use [Supervisor](http://jpmens.net/2014/02/13/in-my-toolbox-supervisord/) for running this.
-  
-  Alternatively, a systemd-based installation using a Python virtualenv might be handy,
-  see [systemd unit configuration file for mqttwarn](https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service)
-  for step-by-step instructions about doing this.
-  
+
   ### Configuration
   
   I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
@@ -87,7 +64,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   **Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
   
-  Launch `mqttwarn.py` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
+  Launch `mqttwarn` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
   
   ```
   mosquitto_pub -t test/1 -m "Hello"
@@ -1706,7 +1683,7 @@ define service{
         }
 ```
 
-with the following target definition in `mqttwarn.py`
+with the following target definition in `mqttwarn.ini`
 
 ```ini
 [config:nsca]
@@ -1761,7 +1738,7 @@ def check_temperature(data):
 ```
 
 Requires:
-* [pynsca](https://github.com/djmitche/pynsca), but you don't have to install that; it suffices if you drop `pynsca.py` alongside `mqttwarn.py` (i.e. in the same directory)
+* [pynsca](https://github.com/djmitche/pynsca).
 
 ### `osxnotify`
 
@@ -3293,9 +3270,9 @@ $ docker run -it --rm \
     jpmens/mqttwarn
 ```
  
-To start the application from within the container:
+To start the application from within the container, just invoke
 ```
-# python mqttwarn.py
+mqttwarn
 ```
 
 `Ctrl-C` will stop it. You can start and stop it as often as you like, here, probably editing the `.ini` file as you go.

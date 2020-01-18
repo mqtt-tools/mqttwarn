@@ -21,7 +21,7 @@ from collections import deque, defaultdict
 # Run mqttwarn::
 #
 #   export MQTTWARNINI=examples/hiveeyes/hiveeyes.ini
-#   ./mqttwarn.py
+#   mqttwarn
 #
 # Trigger an alarm by simulating a weight loss event::
 #

@@ -188,9 +188,9 @@ Requirements
 ============
 You'll need at least the following components:
 
-* Python 2.x. We tested it with 2.6 and 2.7.
-* Some more Python modules defined in the ``setup.py`` file. These will probably get installed automatically.
+* Python. The program should work on Python 2, Python 3 and PyPy.
 * An MQTT broker. We recommend Mosquitto_.
+* Some more Python modules to satisfy service dependencies defined in the ``setup.py`` file.
 
 .. _Mosquitto: https://mosquitto.org
 

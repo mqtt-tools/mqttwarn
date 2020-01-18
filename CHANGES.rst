@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Remove references to ``mqttwarn.py``. Cleanup documentation.
 
 
 2020-01-12 0.13.8
