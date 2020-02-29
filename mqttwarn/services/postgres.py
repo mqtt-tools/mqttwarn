@@ -14,7 +14,7 @@ __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/ep
 # user    = 'username'
 # pass    = 'password'
 # dbname  = 'databasename'
-# targets = { 
+# targets = {
 #    'target1': ['table1', 'fallbackcol1', 'schema']
 #  }
 
@@ -68,7 +68,7 @@ def plugin(srv, item):
             schema = item.addrs[2].format(**item.data).encode('utf-8')
         except:
             schema = 'public'
-    except:        
+    except:
         srv.logging.warn("postgres target incorrectly configured")
         return False
 
