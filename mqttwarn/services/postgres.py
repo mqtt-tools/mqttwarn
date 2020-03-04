@@ -14,7 +14,7 @@ __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/ep
 # user    = 'username'
 # pass    = 'password'
 # dbname  = 'databasename'
-# targets = { 
+# targets = {
 #    'target1': ['table1', 'fallbackcol1', 'schema']
 #  }
 
@@ -62,13 +62,13 @@ def plugin(srv, item):
     dbname  = item.config.get('dbname')
 
     try:
-        table_name = item.addrs[0].format(**item.data).encode('utf-8')
-        fallback_col = item.addrs[1].format(**item.data).encode('utf-8')
+        table_name = item.addrs[0].format(**item.data)
+        fallback_col = item.addrs[1].format(**item.data)
         try:
-            schema = item.addrs[2].format(**item.data).encode('utf-8')
+            schema = item.addrs[2].format(**item.data)
         except:
             schema = 'public'
-    except:        
+    except:
         srv.logging.warn("postgres target incorrectly configured")
         return False
 
@@ -94,7 +94,7 @@ def plugin(srv, item):
     if item.data is not None:
         for key in list(item.data.keys()):
             try:
-                col_data[key] = item.data[key].format(**item.data).encode('utf-8')
+                col_data[key] = item.data[key].format(**item.data)
             except Exception as e:
                 col_data[key] = item.data[key]
 
