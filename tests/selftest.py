@@ -6,6 +6,11 @@ def foobar():
     return True
 
 
+def xform_func(data):
+    data['datamap-key'] = 'datamap-value'
+    return data
+
+
 def datamap_dummy(topic):
     return {'datamap-key': 'datamap-value'}
 

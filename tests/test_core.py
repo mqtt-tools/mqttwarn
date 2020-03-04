@@ -165,3 +165,24 @@ def test_message_file_unicode():
     with io.open(outputfile, mode='rt', encoding='utf-8') as f:
         content = f.read()
         assert u'Räuber Hotzenplotz' in content, content
+
+
+def test_xform_func(caplog):
+    """
+    Submit a message to the "log" plugin and proof
+    everything gets dispatched properly.
+
+    This time, it validates the "xform" function in the context of invoking
+    a user-defined function defined through the "format" setting.
+    """
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT
+        core_bootstrap(configfile=configfile)
+
+        # Signal mocked MQTT message to the core machinery for processing
+        send_message(topic='test/log-2', payload='{"name": "temperature", "value": 42.42}')
+
+        # Proof that the message has been routed to the "log" plugin properly
+        assert "'value': 42.42" in caplog.text, caplog.text
+        assert "'datamap-key': 'datamap-value'" in caplog.text, caplog.text

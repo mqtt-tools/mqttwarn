@@ -351,10 +351,12 @@ def builtin_transform_data(topic, payload):
 
 
 def xform(function, orig_value, transform_data):
-    ''' Attempt transformation on orig_value.
-        1st. function()
-        2nd. inline {xxxx}
-        '''
+    """
+    Attempt transformation on orig_value.
+
+    - 1st. function()
+    - 2nd. inline {xxxx}
+    """
 
     if orig_value is None:
         return None
@@ -365,7 +367,7 @@ def xform(function, orig_value, transform_data):
         function_name = sanitize_function_name(function)
         if function_name is not None:
             try:
-                res = cf.datamap(function_name, transform_data)
+                res = context.invoker.datamap(function_name, transform_data)
                 return res
             except Exception as e:
                 logger.warning("Cannot invoke %s(): %s" % (function_name, e))
@@ -377,6 +379,7 @@ def xform(function, orig_value, transform_data):
 
     if isinstance(res, str):
         res = res.replace("\\n", "\n")
+
     return res
 
 

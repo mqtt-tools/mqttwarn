@@ -5,7 +5,13 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2020-03-04 0.13.9
+=================
 - Remove references to ``mqttwarn.py``. Cleanup documentation.
+- Fix charset encoding within Postgres plugin. Thanks, @clarkspark!
+- Fix function invocation through "format" setting. Thanks, @clarkspark!
 
 
 2020-01-12 0.13.8
