@@ -497,15 +497,14 @@ targets  = {
 [config:apprise-json]
 module   = 'apprise'
 baseuri  = 'json://localhost:1234/mqtthook'
-; sender   = 'monitoring@example.org'
-; sender_name = 'Example Monitoring'
+; Surrogate for satisfying machinery. 
 targets  = {
-    'demo' : [],
+    'n/a' : [''],
     }
 
 [apprise-test]
 topic    = apprise/#
-targets  = apprise-mail:demo, apprise-json:demo
+targets  = apprise-mail:demo, apprise-json
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
