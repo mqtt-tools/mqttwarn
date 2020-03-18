@@ -11,6 +11,7 @@ in progress
 =================
 - Add service plugin for `Apprise <https://github.com/caronc/apprise>`_.
 - Upgrade xmpppy to 0.6.0
+- More verbose exception when formatting message fails
 
 
 2020-03-04 0.13.9

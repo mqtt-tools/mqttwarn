@@ -375,7 +375,7 @@ def xform(function, orig_value, transform_data):
         try:
             res = Formatter().format(function, **transform_data)
         except Exception as e:
-            logger.warning("Cannot format message: %s" % e)
+            logger.exception("Formatting message failed")
 
     if isinstance(res, str):
         res = res.replace("\\n", "\n")
