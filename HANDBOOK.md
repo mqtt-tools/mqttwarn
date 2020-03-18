@@ -284,6 +284,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [alexa-notify-me](#alexa-notify-me)
 * [amqp](#amqp)
 * [apns](#apns)
+* [apprise](#apprise)
 * [asterisk](#asterisk)
 * [autoremote](#autoremote)
 * [carbon](#carbon)
@@ -464,6 +465,53 @@ would thus emit the APNS notification to the specified device.
 
 
 Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
+
+
+### `apprise`
+
+The `apprise` service interacts with the [Apprise] Python module,
+which in turn can talk to a plethora of popular notification services.
+Please read their documentation about more details.
+
+The following discussion assumes a payload like this is published via MQTT:
+```bash
+echo '{"device": "foobar"}' | mosquitto_pub -t 'apprise/foo' -l
+```
+
+This configuration snippet will activate two service plugins
+`apprise-mail` and `apprise-json`, both using the Apprise module.
+
+```ini
+[defaults]
+launch    = apprise-mail, apprise-json
+
+[config:apprise-mail]
+module   = 'apprise'
+baseuri  = 'mailtos://smtp_username:smtp_password@mail.example.org'
+sender   = 'monitoring@example.org'
+sender_name = 'Example Monitoring'
+targets  = {
+    'demo' : ['foo@example.org', 'bar@example.org'],
+    }
+
+[config:apprise-json]
+module   = 'apprise'
+baseuri  = 'json://localhost:1234/mqtthook'
+; sender   = 'monitoring@example.org'
+; sender_name = 'Example Monitoring'
+targets  = {
+    'demo' : [],
+    }
+
+[apprise-test]
+topic    = apprise/#
+targets  = apprise-mail:demo, apprise-json:demo
+format   = Alarm from {device}: {payload}
+title    = Alarm from {device}
+```
+
+[Apprise]: https://github.com/caronc/apprise
+
 
 ### `autoremote`
 

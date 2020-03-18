@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2020-03-18 0.14.0
+=================
+- Add service plugin for `Apprise <https://github.com/caronc/apprise>`_.
+
+
 2020-03-04 0.13.9
 =================
 - Remove references to ``mqttwarn.py``. Cleanup documentation.
