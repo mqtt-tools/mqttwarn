@@ -10,6 +10,7 @@ in progress
 2020-03-18 0.14.0
 =================
 - Add service plugin for `Apprise <https://github.com/caronc/apprise>`_.
+- Upgrade xmpppy to 0.6.0
 
 
 2020-03-04 0.13.9
