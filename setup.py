@@ -25,7 +25,7 @@ extras = {
         'apns==2.0.1',
     ],
     'apprise': [
-        'apprise==0.8.4',
+        'apprise==0.8.5',
     ],
     'asterisk': [
         'pyst2==0.5.0',

@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2020-03-31 0.14.2
+=================
+- Upgrade to apprise 0.8.5
+
+
 2020-03-28 0.14.1
 =================
 - Upgrade xmpppy to 0.6.1, add dnspython as dependency
