@@ -130,7 +130,8 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   ; optional: TLS parameters. (Don't forget to set the port number for
   ; TLS (probably 8883).
-  ; You will need to set at least `ca_certs' if you want TLS support
+  ; You will need to set at least `ca_certs' if you want TLS support and
+  ; tls = True
   ; ca_certs: path to the Certificate Authority certificate file (concatenated
   ;           PEM file)
   ; tls_version: currently one of 'tlsv1_1', 'tlsv1_2' (or 'sslv3', 'tlsv1' deprecated)
@@ -138,6 +139,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   ;               broker's certificate CN
   ; certfile: path to PEM encode client certificate file
   ; keyfile: path to PEM encode client private key file
+  tls = True
   ca_certs = '/path/to/ca-certs.pem'
   certfile = '/path/to/client.crt'
   keyfile = '/path/to/client.key'
