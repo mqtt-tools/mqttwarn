@@ -1,0 +1,5 @@
+{
+  "livingroom/temperature": true, 
+  "bedroom/temperature": true, 
+  "bedroom/lights": false
+}
