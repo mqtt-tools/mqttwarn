@@ -13,6 +13,8 @@ try:
 except ImportError:
     HAVE_TLS = False
 
+from mqttwarn.util import load_functions
+
 logger = logging.getLogger(__name__)
 
 
@@ -80,6 +82,8 @@ class Config(RawConfigParser):
                 self.tls_version = ssl.PROTOCOL_SSLv3
 
         self.loglevelnumber = self.level2number(self.loglevel)
+        self.functions = load_functions(self.functions)
+
 
     def level2number(self, level):
 

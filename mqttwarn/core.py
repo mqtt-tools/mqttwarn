@@ -627,7 +627,7 @@ def start_workers():
     if cf.has_section('cron'):
         for name, val in cf.items('cron'):
             try:
-                func = load_function(name=name, filepath=cf.functions)
+                func = load_function(name=name, py_mod=cf.functions)
                 cron_options = parse_cron_options(val)
                 interval = cron_options['interval']
                 logger.debug('Scheduling function "{name}" as periodic task ' \

@@ -136,7 +136,7 @@ class FunctionInvoker(object):
 
         val = None
         try:
-            func = load_function(name=name, filepath=self.config.functions)
+            func = load_function(name=name, py_mod=self.config.functions)
             try:
                 val = func(topic, self.srv)  # new version
             except TypeError:
@@ -158,7 +158,7 @@ class FunctionInvoker(object):
 
         val = None
         try:
-            func = load_function(name=name, filepath=self.config.functions)
+            func = load_function(name=name, py_mod=self.config.functions)
             val = func(topic, data, self.srv)
         except:
             raise
@@ -179,7 +179,7 @@ class FunctionInvoker(object):
 
         val = None
         try:
-            func = load_function(name=name, filepath=self.config.functions)
+            func = load_function(name=name, py_mod=self.config.functions)
             val = func(topic=topic, data=data, srv=self.srv)
         except:
             raise
@@ -199,7 +199,7 @@ class FunctionInvoker(object):
 
         rc = False
         try:
-            func = load_function(name=name, filepath=self.config.functions)
+            func = load_function(name=name, py_mod=self.config.functions)
             try:
                 rc = func(topic, payload, section, self.srv)  # new version
             except TypeError:

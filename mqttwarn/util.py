@@ -143,7 +143,7 @@ def sanitize_function_name(s):
 
     if s is not None:
         try:
-            valid = re.match('^[\w]+\(\)', s)
+            valid = re.match(r'^[\w]+\(\)', s)
             if valid is not None:
                 func = re.sub('[()]', '', s)
         except:
@@ -164,11 +164,12 @@ def load_module(path):
             pass
 
 
-def load_function(name=None, filepath=None):
-    mod_inst = None
+def load_functions(filepath=None):
+    if not filepath:
+        return None
 
-    assert name, 'Function name must be given'
-    assert filepath, 'Path to file must be given'
+    if not os.path.isfile(filepath):
+        raise IOError("'{}' not found".format(filepath))
 
     mod_name, file_ext = os.path.splitext(os.path.split(filepath)[-1])
 
@@ -179,14 +180,21 @@ def load_function(name=None, filepath=None):
         py_mod = imp.load_compiled(mod_name, filepath)
 
     else:
-        raise RuntimeError("Loading Python code from '{}' failed".format(filepath))
+        raise ValueError("'{}' does not have the .py or .pyc extension".format(filepath))
 
-    if hasattr(py_mod, name):
-        mod_inst = getattr(py_mod, name)
-    else:
-        raise RuntimeError("Loading function '{}' from '{}' failed".format(name, filepath))
+    return py_mod
 
-    return mod_inst
+
+def load_function(name=None, py_mod=None):
+    assert name, 'Function name must be given'
+    assert py_mod, 'Python module must be given'
+
+    func = getattr(py_mod, name, None)
+
+    if func is None:
+        raise AttributeError("Function '{}' does not exist in '{}'".format(name, py_mod.__file__))
+
+    return func
 
 
 def get_resource_content(package, filename):

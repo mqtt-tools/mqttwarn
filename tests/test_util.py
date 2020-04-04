@@ -6,8 +6,8 @@ from past.utils import old_div
 import time
 import pytest
 from mqttwarn.util import Struct, Formatter, asbool, parse_cron_options, timeout, sanitize_function_name, load_module, \
-    load_function, get_resource_content, exception_traceback
-from tests import funcfile
+    load_functions, load_function, get_resource_content, exception_traceback
+from tests import funcfile, configfile, bad_funcfile
 
 
 def test_struct():
@@ -89,21 +89,45 @@ def test_load_module():
     assert 'item' in module.plugin.__code__.co_varnames
 
 
+def test_load_functions():
+
+    # Load valid functions file
+    py_mod = load_functions(filepath=funcfile)
+    assert py_mod is not None
+
+    # No-op
+    py_mod = load_functions(filepath=None)
+    assert py_mod is None
+
+    # Load missing functions file
+    with pytest.raises(IOError) as excinfo:
+        load_functions(filepath='unknown.txt')
+    assert str(excinfo.value) == "'{}' not found".format('unknown.txt')
+
+    # Load functions file that is not a python file
+    with pytest.raises(ValueError) as excinfo:
+        load_functions(filepath=configfile)
+    assert str(excinfo.value) == "'{}' does not have the .py or .pyc extension".format(configfile)
+
+    # Load bad functions file
+    with pytest.raises(Exception):
+        load_functions(filepath=bad_funcfile)
+
+
 def test_load_function():
 
+    # Load valid functions file
+    py_mod = load_functions(filepath=funcfile)
+    assert py_mod is not None
+
     # Load valid function
-    func = load_function(name='foobar', filepath=funcfile)
+    func = load_function(name='foobar', py_mod=py_mod)
     assert func is not None
 
     # Load invalid function, function name does not exist in "funcfile"
-    with pytest.raises(RuntimeError) as excinfo:
-        load_function(name='unknown', filepath=funcfile)
-    assert str(excinfo.value) == "Loading function 'unknown' from '{}' failed".format(funcfile)
-
-    # Load invalid function, "funcfile" does not exist at all
-    with pytest.raises(RuntimeError) as excinfo:
-        load_function(name='unknown', filepath='unknown.txt')
-    assert str(excinfo.value) == "Loading Python code from 'unknown.txt' failed"
+    with pytest.raises(AttributeError) as excinfo:
+        load_function(name='unknown', py_mod=py_mod)
+    assert str(excinfo.value) == "Function 'unknown' does not exist in '{}'".format(funcfile)
 
 
 def test_get_resource_content():
