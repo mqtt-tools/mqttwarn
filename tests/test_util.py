@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2018-2019 The mqttwarn developers
 from __future__ import division
+import re
 from builtins import str
 from past.utils import old_div
 import time
@@ -127,7 +128,7 @@ def test_load_function():
     # Load invalid function, function name does not exist in "funcfile"
     with pytest.raises(AttributeError) as excinfo:
         load_function(name='unknown', py_mod=py_mod)
-    assert str(excinfo.value) == "Function 'unknown' does not exist in '{}'".format(funcfile)
+    assert re.match("Function 'unknown' does not exist in '{}c?'".format(funcfile), str(excinfo.value))
 
 
 def test_get_resource_content():
