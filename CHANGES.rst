@@ -5,6 +5,10 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2020-04-14 0.15.0
+=================
 - Document ``tls=True`` setting. Thanks, @jpmens!
 - Add ``warntoggle`` example (#408). Thanks, @robdejonge!
 - Load functions file at configuration load (#410). Thanks, @fhriley!
