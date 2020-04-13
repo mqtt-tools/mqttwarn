@@ -8,6 +8,7 @@ in progress
 - Document ``tls=True`` setting. Thanks, @jpmens!
 - Add ``warntoggle`` example (#408). Thanks, @robdejonge!
 - Load functions file at configuration load (#410). Thanks, @fhriley!
+- Try to make "zabbix" service work again
 
 
 2020-03-31 0.14.2

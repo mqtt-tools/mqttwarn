@@ -14,9 +14,9 @@ Goals for 0.15.0
 - [x] Add Makefile for releasing and documentation building
 - [o] Add software tests
 - [o] Refactor contents from "examples", "templates" and "vendor" folders
-      - [o] Refactor ``examples/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
-      - [o] Refactor ``examples/zabbix/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
-      - [o] Refactor ``vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
+      - [o] Wire ``contrib/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
+      - [o] Wire ``contrib/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
+      - [o] Wire ``mqttwarn/vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
       - [o] The path to the "templates" folder must be specified using command line argument or environment variable.
             Otherwise, look nearby the configuration file /path/to/mqttwarn.ini, so use /path/to/templates.
       - [o] Integrate existing template .j2 files into example folder?
