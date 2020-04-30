@@ -14,7 +14,7 @@ def togglestate(topic, payload, section, srv):
         if topic in toggles:
             # file found, topic found
             topicblock = toggles[topic]
-	        srv.logging.debug('togglestate() was called from the ' + section + ' section and found ' + topic + ' in ' + filename)
+	    srv.logging.debug('togglestate() was called from the ' + section + ' section and found ' + topic + ' in ' + filename)
         else:
             # file found, adding new topic
             toggles[topic] = default_topicblock
