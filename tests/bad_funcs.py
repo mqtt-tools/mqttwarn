@@ -3,4 +3,4 @@
 
 def foobar():
    foo # intentional indentation error
-    return True
+   return True
