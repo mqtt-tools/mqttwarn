@@ -413,7 +413,7 @@ def decode_payload(section, topic, payload):
         payload_data = json.loads(payload)
         transform_data.update(payload_data)
     except Exception as ex:
-        logger.warning(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+        logger.debug(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
 
     return transform_data
 
