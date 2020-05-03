@@ -53,11 +53,11 @@ def plugin(srv, item):
             #Open port for first use
             srv.logging.debug("Open %s with %d baud", comName, comBaudRate)
             _serialport = serial.serial_for_url(comName)
-            _serialport.baudrate = comBaudRate 
+            _serialport.baudrate = comBaudRate
 
         _serialport.write(text)
 
-    except SerialException as e:
+    except serial.SerialException as e:
         srv.logging.warning("Cannot write to com port `%s': %s" % (comName, e))
         return False
 
