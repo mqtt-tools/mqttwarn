@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  mqttwarn:
+    image: jpmens/mqttwarn 
+    container_name: mqttwarn
+    restart: always
+    volumes:
+      - /path/to/mqttwarn:/etc/mqttwarn # Location for mqttwarn.ini and funcs.py
+      - /etc/localtime:/etc/localtime:ro
+    # If you want to change the default location of mqttwarn.ini, uncomment the following lines:
+    #environment:
+    #  - MQTTWARNINI=/etc/mqttwarn/mqttwarn.ini
