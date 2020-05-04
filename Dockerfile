@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3.8.2-slim-buster
 
 # based on https://github.com/pfichtner/docker-mqttwarn
 
