@@ -1,6 +1,3 @@
-version: '3.7'
-
-services:
 # To use this Docker Compose file for mqttwarn:
 #
 # 1. Acquire "docker-compose.yml":
@@ -15,8 +12,11 @@ services:
 # 4. Define the location to the custom functions file within "mqttwarn.ini":
 #
 # functions = 'funcs.py'
+version: '3.7'
+
+services:
   mqttwarn:
-    image: jpmens/mqttwarn 
+    image: jpmens/mqttwarn
     container_name: mqttwarn
     restart: always
     volumes:
