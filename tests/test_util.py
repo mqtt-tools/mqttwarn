@@ -54,7 +54,7 @@ def test_parse_cron_options():
 #@pytest.mark.slow
 def test_timeout():
 
-    duration = 0.0005
+    duration = 0.005
     below_duration = duration - old_div(duration, 2)
     above_duration = duration + old_div(duration, 2)
 
