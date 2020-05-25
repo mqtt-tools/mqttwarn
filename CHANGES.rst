@@ -5,6 +5,14 @@ mqttwarn changelog
 
 in progress
 ===========
+- Fix for the mqttwarn.service service unit. Thanks, Fulvio!
+- Fix encoding of data for Python3 within Pushsafer plugin. Thanks, Thomas!
+- Non-JSON payload should not generate warning. Thanks, Morten!
+- Fix missing namespace within Serial plugin. Thanks, Morten!
+- Fix Dockerfile to use mqttwarn pip module. Thanks, Koen!
+- Add Docker Compose file and update Dockerfile to use /etc/mqttwarn. Thanks, Koen!
+- Change Dockerfile base image to python:3.8.2-slim-buster. Thanks, Koen!
+- Improve code formatting within custom functions of "warntoggle" example. Thanks, Dan!
 
 
 2020-04-14 0.15.0
