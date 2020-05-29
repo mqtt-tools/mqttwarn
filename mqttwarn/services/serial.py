@@ -22,7 +22,7 @@ def plugin(srv, item):
     # While it may contain more than one item (e.g. pushover)
     # the `serial' service carries one two, i.e. a com name and baudrate
     try:
-        comName = item.addrs[0].format(**item.data).encode('utf-8')
+        comName = item.addrs[0].format(**item.data)
         comBaudRate = int(item.addrs[1])
     except:
         srv.logging.error("Incorrect target configuration for {0}/{1}".format(item.service, item.target))
@@ -55,7 +55,7 @@ def plugin(srv, item):
             _serialport = serial.serial_for_url(comName)
             _serialport.baudrate = comBaudRate
 
-        _serialport.write(text)
+        _serialport.write(text.encode('utf-8'))
 
     except serial.SerialException as e:
         srv.logging.warning("Cannot write to com port `%s': %s" % (comName, e))
