@@ -7,6 +7,12 @@ in progress
 ===========
 
 
+2020-06-06 0.16.1
+=================
+- Fix charset encoding within pipe module. Thanks, Morten!
+- Fix removal of "as_user" option within Slack plugin. Thanks, Morten!
+
+
 2020-05-30 0.16.0
 =================
 - Fix for the mqttwarn.service service unit. Thanks, Fulvio!
