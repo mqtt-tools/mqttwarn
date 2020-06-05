@@ -33,7 +33,7 @@ def plugin(srv, item):
     # check if we have the optional as_user token (extract and remove if so)
     if isinstance(addrs[-1], (bool)):
         as_user = addrs[-1]
-        local_addrs = addrs[:len(addrs) - 1]
+        addrs = addrs[:len(addrs) - 1]
 
     # check for target level tokens (which have preference)
     try:
