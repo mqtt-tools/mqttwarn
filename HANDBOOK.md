@@ -1137,6 +1137,9 @@ Following is an ini example, showing the various connection properties for the I
 [config:influxdb]
 host      = 'influxdbhost'
 port      = 8086
+# Protocol for Influx connection [http|https], optional - default is set to http
+infxproto = 'https'
+
 username  = 'username'
 password  = 'password'
 database  = 'mqttwarn'
