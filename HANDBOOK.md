@@ -1135,10 +1135,10 @@ Following is an ini example, showing the various connection properties for the I
 
 ```ini
 [config:influxdb]
+# Protocol for connection to InfluxDB: http or https. Default: http
+scheme    = 'https'
 host      = 'influxdbhost'
 port      = 8086
-# Protocol for Influx connection [http|https], optional - default is set to http
-infxproto = 'https'
 
 username  = 'username'
 password  = 'password'

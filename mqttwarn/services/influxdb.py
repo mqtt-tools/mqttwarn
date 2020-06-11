@@ -32,7 +32,7 @@ def plugin(srv, item):
     # precision=[ns,u,ms,s,m,h] - optional, default=nanosecond
     precision   = item.config.get('precision', 'ns')
     # protocol=[http,https] - optional, default=http
-    protocol    = item.config.get('infxproto', 'http')
+    protocol    = item.config.get('scheme', 'http')
 
     # allow overrides per target
     # 'target'  = [ 'measurement', 'database',    'rp', 'precision' ]

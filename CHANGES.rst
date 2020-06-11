@@ -7,6 +7,11 @@ in progress
 ===========
 
 
+2020-06-06 0.16.2
+=================
+- Optionally choose scheme for connection to InfluxDB. Thanks, Dennis!
+
+
 2020-06-06 0.16.1
 =================
 - Fix charset encoding within pipe module. Thanks, Morten!
