@@ -17,10 +17,14 @@ def plugin(srv, item):
     # addrs is a list[] containing device id and sas token
     deviceid, sastoken = item.addrs
 
-    # iot hub name is stored in config
+    # iot hub name and qos is stored in config
     iothubname = item.config['iothubname']
+    qos = int(item.config.get('qos', 0))
+    if qos < 0 or qos > 1:
+        srv.logging.error("Only QoS 0 or 1 allowed for Azure IoT Hub, not '%s'." % str(qos))
+        return False
 
-    # connect...
+    # connection info...
     params = {
         'hostname': iothubname + ".azure-devices.net",
         'port': 8883,

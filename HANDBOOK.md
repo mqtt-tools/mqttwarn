@@ -307,7 +307,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [ionic](#ionic)
-* [azure-iot](#azure-iot)
+* [azure_iot](#azure_iot)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
@@ -1091,15 +1091,17 @@ targets = {
 
 ![ionic](assets/ionic.png)
 
-### `azure-iot`
+### `azure_iot`
 
 This service is for [Microsoft Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/).
-The configuration requires the name of the IoT Hub, and one or more targets.
+The configuration requires the name of the IoT Hub, optionally a QoS level
+(default 0), and one or more targets.
 Each target defines which device to impersonate when sending the message.
 
 ```ini
-[config:azure-iot]
+[config:azure_iot]
 iothubname = 'MyIoTHub'
+qos = 1
 targets = {
                # device id   # sas token
     'test' : [ 'mqttwarn',   'SharedAccessSignature sr=...' ]
@@ -1107,7 +1109,7 @@ targets = {
 ```
 
 Message delivery is performed using the MQTT protocol, observing the Azure IoT
-Hub requirements, using QOS = 0.
+Hub requirements.
 
 ### `influxdb`
 
