@@ -154,7 +154,10 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   ###### `launch`
   
-  In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions.
+  In the `launch` option you specify a list of comma-separated _service_ names  
+  defined within the `[config:xxx]` sections which should be launched.
+  
+  You should launch every service you want to use from your topic/target definitions here.
   
   #### The `[config:xxx]` sections
   
@@ -162,9 +165,16 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   has a mandatory option called `targets`, which is a dictionary of target names, each
   pointing to an array of "addresses". Address formats depend on the particular service.
   
-  A service section may have an option called `module`, which refers to the name
-  of the actual service module to use. A service called `filetruncate` - and
-  referenced as such in the `launch` option -
+  The Python module name for this service will be derived
+  a) from the name of the definition itself, i.e. the `xxx` part, or
+  b) from the value of the `module` option within that configuration section.
+  
+  - When the module name is a plain string, it will be resolved as a filename inside the  
+    built-in `mqttwarn/services` directory.
+  - When the module name contains a dot, it will be resolved as an absolute dotted reference.
+  
+  Example:
+  A service called `filetruncate` - and referenced as such in the `launch` option -
   may have `module = file`, in which case the service works like a regular `file`
   service, with its own distinct set of service options. It is thus possible to
   have several different service configurations for the same underlying service,
