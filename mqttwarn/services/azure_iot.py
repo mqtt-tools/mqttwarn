@@ -29,7 +29,7 @@ def plugin(srv, item):
         'hostname': iothubname + ".azure-devices.net",
         'port': 8883,
         'protocol': mqttclient.MQTTv311,
-        'qos': 0,
+        'qos': qos,
         'retain': False,
         'client_id': deviceid,
     }
