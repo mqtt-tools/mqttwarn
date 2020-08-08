@@ -5,7 +5,7 @@ __author__    = 'Giovanni Angoli <juzam76()gmail.com>'
 __copyright__ = 'Copyright 2018 Giovanni Angoli'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-# This is basically the file.py service but declined for websockets, not more than s/file/websocket/g.
+# This is basically the file.py service but designed for websockets, not more than s/file/websocket/g.
 
 import websocket
 
