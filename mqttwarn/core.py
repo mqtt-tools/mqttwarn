@@ -592,6 +592,9 @@ def connect():
         logger.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), e))
         sys.exit(2)
 
+    # Update our runtime context (used by functions etc) now we have a connected MQTT client
+    context.invoker.srv.mqttc = mqttc
+
     # Launch worker threads to operate on queue
     start_workers()
 
@@ -669,7 +672,8 @@ def cleanup(signum=None, frame=None):
 def bootstrap(config=None, scriptname=None):
     # FIXME: Remove global variables
     global context, cf, SCRIPTNAME
-    invoker = FunctionInvoker(config=config, srv=make_service(mqttc=mqttc, name='mqttwarn.context'))
+    # NOTE: this is called before we connect to the MQTT broker, so mqttc is not initialised yet
+    invoker = FunctionInvoker(config=config, srv=make_service(mqttc=None, name='mqttwarn.context'))
     context = RuntimeContext(config=config, invoker=invoker)
     cf = config
     SCRIPTNAME = scriptname
