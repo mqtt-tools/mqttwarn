@@ -5,6 +5,9 @@ FROM python:3.8.2-slim-buster
 # install mqttwarn
 RUN pip install mqttwarn
 
+# install extra dependencies needed for our services/functions
+RUN pip install slacker gpxpy
+
 # create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
 WORKDIR /etc/mqttwarn
