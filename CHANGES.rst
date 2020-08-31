@@ -5,9 +5,10 @@ mqttwarn changelog
 
 in progress
 ===========
+- Use Python3 to create virtualenv
 
 
-2020-08-31 0.16.3
+2020-08-31 0.17.0
 =================
 - srv.mqttc is None when calling into a custom function. Thanks, Ben.
 - sundry changes for FreeBSD package. Thanks, Dan.
