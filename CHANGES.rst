@@ -5,7 +5,9 @@ mqttwarn changelog
 
 in progress
 ===========
+- Use ``allow_dirty = False`` within ``.bumpversion.cfg``
 - Use Python3 to create virtualenv
+- Bump version numbers for release tools packages
 
 
 2020-08-31 0.17.0
