@@ -6,7 +6,8 @@ from builtins import str
 from past.utils import old_div
 import time
 import pytest
-from mqttwarn.util import Struct, Formatter, asbool, parse_cron_options, timeout, sanitize_function_name, load_module, \
+from mqttwarn.util import Struct, Formatter, asbool, parse_cron_options, timeout, sanitize_function_name, \
+    load_module_from_file, load_module_by_name, \
     load_functions, load_function, get_resource_content, exception_traceback
 from tests import funcfile, configfile, bad_funcfile
 
@@ -82,12 +83,32 @@ def test_sanitize_function_name():
     assert sanitize_function_name(None) is None
 
 
-def test_load_module():
-    module = load_module('mqttwarn/services/file.py')
+def test_load_module_from_file_good():
+    module = load_module_from_file('mqttwarn/services/file.py')
     assert 'plugin' in dir(module)
     assert module.plugin.__code__.co_argcount == 2
     assert 'srv' in module.plugin.__code__.co_varnames
     assert 'item' in module.plugin.__code__.co_varnames
+
+
+def test_load_module_from_file_bad():
+    with pytest.raises(IOError) as excinfo:
+        load_module_from_file('mqttwarn/services/unknown.py')
+        assert str(excinfo.value) == "IOError: [Errno 2] No such file or directory: 'mqttwarn/services/unknown.py'"
+
+
+def test_load_module_by_name_good():
+    module = load_module_by_name('mqttwarn.services.file')
+    assert 'plugin' in dir(module)
+    assert module.plugin.__code__.co_argcount == 2
+    assert 'srv' in module.plugin.__code__.co_varnames
+    assert 'item' in module.plugin.__code__.co_varnames
+
+
+def test_load_module_by_name_bad():
+    with pytest.raises(ImportError) as excinfo:
+        load_module_by_name('mqttwarn.services.unknown')
+        assert str(excinfo.value) == "ImportError: No module named unknown"
 
 
 def test_load_functions():

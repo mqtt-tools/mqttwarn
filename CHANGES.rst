@@ -8,12 +8,14 @@ in progress
 - Use ``allow_dirty = False`` within ``.bumpversion.cfg``
 - Use Python3 to create virtualenv
 - Bump version numbers for release tools packages
+- Add external plugin module loading. Thanks, @psyciknz!
 
 
 2020-08-31 0.17.0
 =================
 - srv.mqttc is None when calling into a custom function. Thanks, Ben.
 - sundry changes for FreeBSD package. Thanks, Dan.
+- Fix ``ZabbixSender.py``. Thanks, Ben!
 - service tweaks: nsca, zabbix
 
 2020-06-06 0.16.2

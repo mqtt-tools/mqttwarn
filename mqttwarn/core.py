@@ -23,7 +23,7 @@ import paho.mqtt.client as paho
 from mqttwarn.context import RuntimeContext, FunctionInvoker
 from mqttwarn.cron import PeriodicThread
 from mqttwarn.util import \
-    load_function, load_module, timeout, \
+    load_function, load_module_from_file, load_module_by_name, timeout, \
     parse_cron_options, sanitize_function_name, Struct, Formatter, asbool, exception_traceback
 
 try:
@@ -500,7 +500,10 @@ def processor(worker_id=None):
             try:
                 # Fire the plugin in a separate thread and kill it if it doesn't return in 10s
                 module = service_plugins[service]['module']
-                service_logger_name = 'mqttwarn.services.{}'.format(service)
+                if '.' in service:
+                    service_logger_name = service
+                else:
+                    service_logger_name = 'mqttwarn.services.{}'.format(service)
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
             except Exception as e:
@@ -528,13 +531,21 @@ def load_services(services):
         service_plugins[service]['config'] = service_config
 
         module = cf.g('config:' + service, 'module', service)
-        modulefile = resource_filename('mqttwarn.services', module + '.py')
 
-        try:
-            service_plugins[service]['module'] = load_module(modulefile)
-            logger.info('Successfully loaded service "{}"'.format(service))
-        except Exception as ex:
-            logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
+        if '.' in module:
+            try:
+                service_plugins[service]['module'] = load_module_by_name(module)
+                logger.info('Successfully loaded service "{}" from module "{}"'.format(service, module))
+            except Exception as ex:
+                logger.exception('Unable to load service "{}" from module "{}": {}'.format(service, module, ex))
+
+        else:
+            modulefile = resource_filename('mqttwarn.services', module + '.py')
+            try:
+                service_plugins[service]['module'] = load_module_from_file(modulefile)
+                logger.info('Successfully loaded service "{}"'.format(service))
+            except Exception as ex:
+                logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
 
 
 def connect():
@@ -700,7 +711,10 @@ def run_plugin(config=None, name=None, data=None):
 
     # Load designated service plugins
     load_services([name])
-    service_logger_name = 'mqttwarn.services.{}'.format(name)
+    if '.' in name:
+        service_logger_name = name
+    else:
+        service_logger_name = 'mqttwarn.services.{}'.format(name)
     srv = make_service(mqttc=None, name=service_logger_name)
 
     # Build a mimikry item instance for feeding to the service plugin
