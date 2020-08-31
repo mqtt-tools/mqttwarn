@@ -154,7 +154,10 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   ###### `launch`
   
-  In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions.
+  In the `launch` option you specify a list of comma-separated _service_ names  
+  defined within the `[config:xxx]` sections which should be launched.
+  
+  You should launch every service you want to use from your topic/target definitions here.
   
   #### The `[config:xxx]` sections
   
@@ -162,9 +165,16 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   has a mandatory option called `targets`, which is a dictionary of target names, each
   pointing to an array of "addresses". Address formats depend on the particular service.
   
-  A service section may have an option called `module`, which refers to the name
-  of the actual service module to use. A service called `filetruncate` - and
-  referenced as such in the `launch` option -
+  The Python module name for this service will be derived
+  a) from the name of the definition itself, i.e. the `xxx` part, or
+  b) from the value of the `module` option within that configuration section.
+  
+  - When the module name is a plain string, it will be resolved as a filename inside the  
+    built-in `mqttwarn/services` directory.
+  - When the module name contains a dot, it will be resolved as an absolute dotted reference.
+  
+  Example:
+  A service called `filetruncate` - and referenced as such in the `launch` option -
   may have `module = file`, in which case the service works like a regular `file`
   service, with its own distinct set of service options. It is thus possible to
   have several different service configurations for the same underlying service,
@@ -307,7 +317,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [ionic](#ionic)
-* [iothub](#iothub)
+* [azure_iot](#azure_iot)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
@@ -1091,31 +1101,25 @@ targets = {
 
 ![ionic](assets/ionic.png)
 
-### `iothub`
+### `azure_iot`
 
 This service is for [Microsoft Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/).
-The configuration requires a hostname for the IoT Hub, all other service configuration options are optional.
+The configuration requires the name of the IoT Hub, optionally a QoS level
+(default 0), and one or more targets.
 Each target defines which device to impersonate when sending the message.
 
 ```ini
-[config:iothub]
-hostname = '<name>.azure-devices.net'
-# protocol = 'AMQP'/'MQTT'/'HTTP' # Optional, default is AMQP
-# message_timeout = 10000 # Optional, default is not to expire
-# timeout = 10 # Optional, for HTTP transport only
-# minimum_polling_time = 9 # Optional, for HTTP transport only
+[config:azure_iot]
+iothubname = 'MyIoTHub'
+qos = 1
 targets = {
-               # device id   # device key
-    'test' : [ 'pi',         'uN...6w=' ]
+               # device id   # sas token
+    'test' : [ 'mqttwarn',   'SharedAccessSignature sr=...' ]
   }
 ```
 
-Note that the actual message delivery is done asynchronously, meaning that
-successful processing is no guarantee for actual delivery. In the case of an
-error occurring, an error message should eventually appear in the log.
-
-Requires:
-* [Microsoft Azure IoT device SDK for Python](https://github.com/Azure/azure-iot-sdks/tree/master/python/device)
+Message delivery is performed using the MQTT protocol, observing the Azure IoT
+Hub requirements.
 
 ### `influxdb`
 

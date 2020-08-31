@@ -151,8 +151,13 @@ def sanitize_function_name(s):
     return func
 
 
-# http://code.davidjanes.com/blog/2008/11/27/how-to-dynamically-load-python-code/
-def load_module(path):
+def load_module_from_file(path):
+    """
+    http://code.davidjanes.com/blog/2008/11/27/how-to-dynamically-load-python-code/
+
+    :param path:
+    :return:
+    """
     try:
         fp = open(path, 'rb')
         digest = md(path.encode('utf-8')).hexdigest()
@@ -162,6 +167,42 @@ def load_module(path):
             fp.close()
         except:
             pass
+
+
+def load_module_by_name(name):
+    """
+    https://pymotw.com/2/imp/#loading-modules
+
+    :param name:
+    :return:
+    """
+    module = import_module(name)
+    return module
+
+
+def import_module(name, path=None):
+    """
+    Derived from `import_from_dotted_path`:
+    https://chase-seibert.github.io/blog/2014/04/23/python-imp-examples.html
+
+    import_from_dotted_path('foo.bar') -> from foo import bar; return bar
+    """
+
+    try:
+        next_module, remaining_names = name.split('.', 1)
+    except ValueError:
+        next_module = name
+        remaining_names = None
+
+    fp, pathname, description = imp.find_module(next_module, path)
+    module = imp.load_module(next_module, fp, pathname, description)
+
+    if remaining_names is None:
+        return module
+    if hasattr(module, remaining_names):
+        return getattr(module, remaining_names)
+
+    return import_module(remaining_names, path=module.__path__)
 
 
 def load_functions(filepath=None):

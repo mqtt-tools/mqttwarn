@@ -47,9 +47,6 @@ extras = {
         'oauth2client>=4.1.2',
         #'google-api-python-client>=1.7.11',
     ],
-    'iothub': [
-        'iothub-client>=1.1.2.0',
-    ],
     'mysql': [
         'mysql',
     ],
@@ -117,7 +114,7 @@ extras = {
 }
 
 setup(name='mqttwarn',
-      version='0.16.2',
+      version='0.18.0',
       description='mqttwarn - subscribe to MQTT topics and notify pluggable services',
       long_description=README,
       license="EPL 2.0",
