@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2018 The mqttwarn developers
 
-__version__   = '0.16.2'
+__version__   = '0.17.0'
 
 __author__    = 'Jan-Piet Mens <jpmens()gmail.com>, Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014-2018 Jan-Piet Mens'
