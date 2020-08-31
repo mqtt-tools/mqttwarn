@@ -7,6 +7,12 @@ in progress
 ===========
 
 
+2020-08-31 0.16.3
+=================
+- srv.mqttc is None when calling into a custom function. Thanks, Ben.
+- sundry changes for FreeBSD package. Thanks, Dan.
+- service tweaks: nsca, zabbix
+
 2020-06-06 0.16.2
 =================
 - Optionally choose scheme for connection to InfluxDB. Thanks, Dennis!
