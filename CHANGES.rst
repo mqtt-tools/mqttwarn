@@ -5,10 +5,15 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2020-08-31 0.18.0
+=================
 - Use ``allow_dirty = False`` within ``.bumpversion.cfg``
 - Use Python3 to create virtualenv
 - Bump version numbers for release tools packages
 - Add external plugin module loading. Thanks, @psyciknz!
+- Replaced iothub service with azure-iot, just using MQTT. Thanks, Morten!
 
 
 2020-08-31 0.17.0
@@ -17,6 +22,7 @@ in progress
 - sundry changes for FreeBSD package. Thanks, Dan.
 - Fix ``ZabbixSender.py``. Thanks, Ben!
 - service tweaks: nsca, zabbix
+
 
 2020-06-06 0.16.2
 =================
