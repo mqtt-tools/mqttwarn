@@ -9,7 +9,6 @@ from future import standard_library
 standard_library.install_aliases()
 
 import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
 import base64
 try:
     import simplejson as json
@@ -44,7 +43,7 @@ def plugin(srv, item):
             "displaytime" : 10000
         }
     }
-    jsoncommand = json.dumps(jsonparams)
+    jsoncommand = json.dumps(jsonparams).encode("utf-8")
 
     url = 'http://%s/jsonrpc' % (xbmchost)
     try:
