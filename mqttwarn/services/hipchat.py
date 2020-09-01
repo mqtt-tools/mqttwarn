@@ -42,7 +42,7 @@ def plugin(srv, item):
                 'message_format': 'html',
                 'notify': notify})
 
-        request = urllib.request.Request(url, headers=headers, data=datastr)
+        request = urllib.request.Request(url, headers=headers, data=datastr.encode("utf-8"))
         resp = urllib.request.urlopen(request, timeout=timeout)
         data = resp.read()
 
