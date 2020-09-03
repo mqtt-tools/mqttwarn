@@ -27,7 +27,7 @@ def pushsafer(**kwargs):
 
     url = urllib.parse.urljoin(PUSHSAFER_API, "api")
     data = urllib.parse.urlencode(kwargs).encode('utf-8')
-    req = urllib.request.Request(url, data.encode("utf-8"))
+    req = urllib.request.Request(url, data)
     response = urllib.request.urlopen(req, timeout=3)
     output = response.read()
     data = json.loads(output)
