@@ -99,7 +99,7 @@ def plugin(srv, item):
             srv.logging.debug("post params: " + str(params))
             res = requests.post(url, params=params)
             answer = res.text
-            answer_json = json.loads(answer.decode('utf8'))
+            answer_json = json.loads(answer)
             if not answer_json["ok"]:
                 srv.logging.warn(answer_json)
                 return False
