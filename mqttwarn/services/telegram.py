@@ -121,6 +121,6 @@ def plugin(srv, item):
         if 'ok' in reply and reply['ok']:
             return True
         return False
-    except:
-        srv.logging.warn("Failed to send request to Telegram")
+    except Exception:
+        srv.logging.error("Failed to send request to Telegram", exc_info=True)
         return False
