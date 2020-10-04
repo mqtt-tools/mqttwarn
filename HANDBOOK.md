@@ -2484,7 +2484,7 @@ targets = {
    'j01' : [ 'First Name' ],
    'j02' : [ '@username' ],
    'j03' : [ '#chat_id' ]
-}
+    }
 ```
 Configure the `telegram` service WITH chatid:
 ```ini
@@ -2496,7 +2496,7 @@ use_chat_id = True
 targets = {
     #       chatId (in quotes)
     'j01' : ['123456789']
-}
+    }
 ```
 
 Possible issue:
