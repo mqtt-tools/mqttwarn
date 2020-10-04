@@ -96,10 +96,10 @@ def plugin(srv, item):
             params = {"chat_id": chat_id, "text": message,
                       "parse_mode": self.parse_mode, "disable_notification": self.disable_notification}
             srv.logging.debug("Trying to /sendMessage: {url}".format(url=url))
-            srv.logging.debug("post params: " + str(params))
+            srv.logging.debug("post params: %r", params)
             res = requests.post(url, params=params)
             answer = res.text
-            answer_json = json.loads(answer.decode('utf8'))
+            answer_json = json.loads(answer)
             if not answer_json["ok"]:
                 srv.logging.warn(answer_json)
                 return False
@@ -109,18 +109,18 @@ def plugin(srv, item):
     try:
         tg = TelegramAPI(token, parse_mode)
         if useChatId:
-            srv.logging.debug("Setting chatid directly to %s" % tg_contact)
+            srv.logging.debug("Setting chatid directly to %r", tg_contact)
             uid = int(tg_contact)
         else:
             uid = tg.get_uid(tg_contact)
         if uid == 0:
-            srv.logging.warn("Cannot get chat_id for user %s" % tg_contact)
+            srv.logging.warn("Cannot get chat_id for user %r", tg_contact)
             return False
         reply = tg.send_message(uid, item.message)
-        srv.logging.debug("Telegram reply: %s" % reply)
+        srv.logging.debug("Telegram reply: %r", reply)
         if 'ok' in reply and reply['ok']:
             return True
         return False
-    except:
-        srv.logging.warn("Failed to send request to Telegram")
+    except Exception:
+        srv.logging.error("Failed to send request to Telegram", exc_info=True)
         return False
