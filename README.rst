@@ -40,7 +40,7 @@ sophisticated transformations.
 
 It comes with over **70 notification handler plugins** for a wide
 range of notification services and is very open to further contributions.
-You can enjoy the alphabetical list of plugins within the handbook_.
+You can enjoy the alphabetical list of plugins within the handbook_services_.
 
 A picture says a thousand words.
 
@@ -67,6 +67,7 @@ MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 
 
 .. _handbook: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md
+.. _handbook_services: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md#supported-notification-services
 
 
 *************
