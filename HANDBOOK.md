@@ -301,6 +301,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [autoremote](#autoremote)
 * [carbon](#carbon)
 * [celery](#celery)
+* [chromecast](#chromecast)
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
@@ -611,6 +612,35 @@ Broker URL can be any broker supported by celery. Celery serializer is usually j
 Targets are selected by task name. Message_format can be either "json" or "text". If it is json, the message will be sent as a json payload rather than a string.
 In this configuration, all messages that match hello/ will be sent to the celery task "myapp.hello". The first argument of the celery task will be the message from mqtt.
 
+
+### `chromecast`
+
+The `chromecast` service sends messages via Text To Speach (TTS) to Chromecast devices, including Google Home Speakers.
+
+```ini
+# Don't fogert to set launch = ..., chromecast
+[config:chromecast]
+; Chromecast devices, including Google Home Speakers
+#baseuri  = 'http://my.personal.server:5000/translate_tts?srttss_mimetype=audio/wav&'
+#mimetype = 'audio/wav'
+targets  = {
+    'speaker' : ['Living Room'],
+    }
+
+# echo 'Hello world' | mosquitto_pub -t 'chromecast/say' -l
+# echo '{"message": "Hello world", "addrs": ["Living Room"]}' | mosquitto_pub -t 'chromecast/say' -l
+# command line test;  mqttwarn --plugin=chromecast --data='{"message": "Hello world", "addrs": ["Living Room"]}'
+[chromecast/say]
+targets = chromecast:speaker
+
+```
+Address targets are the registered device friendly name. In this example, "Living Room".
+The TTS server defaults to Google translate (and English).
+A custom server URL can be used for local TTS assuming the server honors Google Syntax arguments (for example https://github.com/clach04/srttss) via baseuri (and mimetype if the server does not server mp3 format files).
+
+Requires pychromecast to be installed via::
+
+    pip install pychromecast
 
 ### `dbus`
 
