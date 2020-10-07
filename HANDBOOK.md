@@ -29,6 +29,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Examples](#examples)
     + [Low battery notifications](#low-battery-notifications)
     + [Producing JSON](#producing-json)
+    + [Amazon Alexa](#amazon-alexa)
   * [Notes](#notes)
   * [Press](#press)
   
@@ -388,7 +389,10 @@ targets = {
 targets = alexa-notify-me:account1
 ```
 
-The access code is emailed to the user upon setup of Notify-Me
+The access code is emailed to the user upon setup of Notify-Me.
+
+Also see examples for Amazon Alexa.
+
 
 ### `amqp`
 
@@ -3531,6 +3535,21 @@ targets thusly:
 ```json
 "host": "arduino/temp", "woohooo": 17, "tst": "2014-04-13T09:25:46.247150Z", "temperature": "22", "short_message": "Heat 22"}
 ```
+
+
+### Amazon Alexa
+
+An alternative to alexa-notify-me notification (speaker glows yellow and awaits instruction to play the notification) is to for TTS to specific devices or announce to a speaker group.
+
+See the examples directory for integration with pipe and https://github.com/thorsten-gehrig/alexa-remote-control shell scripts.
+
+Instructions:
+
+* Download/checkout https://github.com/thorsten-gehrig/alexa-remote-control
+* Edit secrets.sh
+* Ensure paths are correct (scripts and ini file assume path /home/pi/shell/alexa-remote-control)
+* Edit ini file targets with device names and/or group name (saystdin for single devices, announce_stdin for groups)
+* Sanity check, chmod a+x on all shell scripts
 
 
 
