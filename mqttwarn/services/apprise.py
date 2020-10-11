@@ -31,7 +31,7 @@ def plugin(srv, item):
         to = ','.join(addresses)
 
         # Create an Apprise instance.
-        apobj = apprise.Apprise()
+        apobj = apprise.Apprise(asset=apprise.AppriseAsset(async_mode=False))
 
         # Add notification services by server url.
         uri = '{baseuri}?from={sender}&to={to}'.format(baseuri=baseuri, sender=sender, to=to)
