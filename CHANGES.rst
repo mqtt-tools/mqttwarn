@@ -7,6 +7,17 @@ in progress
 ===========
 
 
+2020-10-11 0.19.0
+=================
+- [xbmc] Fix encoding of data for python3. Thanks, Ben!
+- [hipchat, ionic, pushsafer] Fix charset encoding. Thanks, JP!
+- [telegram] Add compatibility for both Python 2 and Python 3. Thanks, @clach04!
+- Add new service for Chromecast TTS. Thanks, @clach04!
+- Add example for Amazon Alexa Say/Announce. Thanks, @clach04!
+- Improve documentation. Thanks, @clach04!
+- Fix Apprise service by explicitly using legacy/synchronous mode.
+
+
 2020-08-31 0.18.0
 =================
 - Use ``allow_dirty = False`` within ``.bumpversion.cfg``
