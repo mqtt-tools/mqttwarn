@@ -1,4 +1,4 @@
-.. image:: https://img.shields.io/badge/Python-2.7,%203.6,%203.7,%203.8;%20PyPy,%20PyPy3-green.svg
+.. image:: https://img.shields.io/badge/Python-2.7,%203.5,%203.6,%203.7,%203.8,%203.9;%20PyPy,%20PyPy3-green.svg
     :target: https://github.com/jpmens/mqttwarn
 
 .. image:: https://img.shields.io/pypi/v/mqttwarn.svg

@@ -16,6 +16,7 @@ in progress
 - Add example for Amazon Alexa Say/Announce. Thanks, @clach04!
 - Improve documentation. Thanks, @clach04!
 - Fix Apprise service by explicitly using legacy/synchronous mode.
+- Add Python 3.9 support
 
 
 2020-08-31 0.18.0
