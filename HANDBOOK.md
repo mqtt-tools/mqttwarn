@@ -403,6 +403,7 @@ may, the configuration is as follows:
 ```ini
 [config:amqp]
 uri     =  'amqp://user:password@localhost:5672/'
+targets = {
     'test01'     : [ 'name_of_exchange',    'routing_key' ],
     }
 ```
