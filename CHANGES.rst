@@ -6,6 +6,9 @@ mqttwarn changelog
 in progress
 ===========
 
+2020-10-20 0.20.0
+=================
+- [telegram] Fix encoding of data for python3. Thanks, Ben!
 
 2020-10-11 0.19.0
 =================
