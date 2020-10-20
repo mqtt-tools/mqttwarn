@@ -40,7 +40,7 @@ def plugin(srv, item):
         def http_get(self, url):
             res = requests.get(url)
             answer = res.text
-            answer_json = json.loads(answer.decode('utf8'))
+            answer_json = json.loads(answer)
             return answer_json
 
         def get_updates(self):
