@@ -1,11 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
-__copyright__ = 'Copyright 2014 Fabian Affolter'
-__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
+__originalauthor__ = 'Fabian Affolter <fabian()affolter-engineering.ch>'
+__author__         = 'Remi Vincent <remi.vincent()gmail.com>'
+__copyright__      = 'Copyright 2020 Remi Vincent'
+__license__        = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import xmpp
+import slixmpp
+import asyncio
+
+class send_msg_bot(slixmpp.ClientXMPP):
+    def __init__(self, sender, password, recipient, message, loop):
+        self.loop = loop
+        asyncio.set_event_loop(loop)
+        slixmpp.ClientXMPP.__init__(self, sender, password)
+        self.recipient = recipient
+        self.message = message
+        self.add_event_handler("session_start", self.start)
+
+    async def start(self, event):
+        self.send_message(mto = self.recipient, mbody = self.message, mtype = 'chat')
+        self.disconnect()
 
 
 def plugin(srv, item):
@@ -25,45 +40,15 @@ def plugin(srv, item):
 
     try:
         srv.logging.debug("Sending XMPP notification to %s, addresses: %s" % (item.target, xmpp_addresses))
+        loop = asyncio.new_event_loop()
+
         for target in xmpp_addresses:
-            jid = xmpp.protocol.JID(sender)
-            connection = xmpp.Client(jid.getDomain(),debug=[])
-            connection.connect()
-            connection.auth(jid.getNode(), password, resource=jid.getResource())
-            connection.send(xmpp.protocol.Message(target, text))
+            xmpp = send_msg_bot(sender, password, target, text, loop)
+            xmpp.connect()
+            xmpp.process(forever=False)
         srv.logging.debug("Successfully sent message")
     except Exception as e:
         srv.logging.error("Error sending message to %s: %s" % (item.target, e))
         return False
 
     return True
-
-
-def xmpppy_monkeypatch_ssl():
-    """
-    Mitigate "AttributeError: '_ssl._SSLSocket' object has no attribute 'issuer'"
-
-    Monkey-patched _startSSL method from
-    https://raw.githubusercontent.com/freebsd/freebsd-ports/master/net-im/py-xmpppy/files/patch-xmpp-transports.py
-    """
-    import ssl
-
-    def _startSSL(self):
-        """ Immidiatedly switch socket to TLS mode. Used internally."""
-        """ Here we should switch pending_data to hint mode."""
-        tcpsock=self._owner.Connection
-        tcpsock._sslObj    = ssl.wrap_socket(tcpsock._sock, None, None)
-        tcpsock._sslIssuer = tcpsock._sslObj.getpeercert().get('issuer')
-        tcpsock._sslServer = tcpsock._sslObj.getpeercert().get('server')
-        tcpsock._recv = tcpsock._sslObj.read
-        tcpsock._send = tcpsock._sslObj.write
-
-        tcpsock._seen_data=1
-        self._tcpsock=tcpsock
-        tcpsock.pending_data=self.pending_data
-        tcpsock._sock.setblocking(0)
-
-        self.starttls='success'
-
-    from xmpp.transports import TLS
-    TLS._startSSL = _startSSL

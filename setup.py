@@ -102,8 +102,7 @@ extras = {
         'xively-python',
     ],
     'xmpp': [
-        'xmpppy>=0.6.1',
-        'dnspython>=1.16.0',
+        'slixmpp>=1.5.2',
     ],
     'test': [
         'pytest>=4.6.7',

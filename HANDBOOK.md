@@ -2689,7 +2689,7 @@ recipients get the message.
 
 Requires:
 * XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
-* [xmpppy](http://xmpppy.sourceforge.net)
+* [slixmpp](https://lab.louiz.org/poezio/slixmpp)
 
 ### `xively`
 
