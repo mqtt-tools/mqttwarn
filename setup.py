@@ -105,6 +105,9 @@ extras = {
         'xmpppy>=0.6.1',
         'dnspython>=1.16.0',
     ],
+    'slixmpp': [
+        'slixmpp>=1.5.2',
+    ],
     'test': [
         'pytest>=4.6.7',
         'pytest-cov>=2.8.1',

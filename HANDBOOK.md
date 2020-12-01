@@ -361,6 +361,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [websocket](#websocket)
 * [xbmc](#xbmc)
 * [xmpp](#xmpp)
+* [slixmpp](#slixmpp)
 * [xively](#xively)
 * [zabbix](#zabbix)
 
@@ -2690,6 +2691,27 @@ recipients get the message.
 Requires:
 * XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
 * [xmpppy](http://xmpppy.sourceforge.net)
+
+### `slixmpp`
+
+The `slixmpp` service sends notification to one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
+(Jabber) recipients.
+
+```ini
+[config:slixmpp]
+sender = 'mqttwarn@jabber.server'
+password = 'Password for sender'
+targets = {
+    'admin' : [ 'admin1@jabber.server', 'admin2@jabber.server' ]
+    }
+```
+
+Targets may contain more than one recipient, in which case all specified
+recipients get the message.
+
+Requires:
+* XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
+* [slixmpp](https://lab.louiz.org/poezio/slixmpp)
 
 ### `xively`
 
