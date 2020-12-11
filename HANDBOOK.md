@@ -3357,14 +3357,14 @@ This is the typical way of running `mqttwarn`.
 
 From the folder containing your `mqttwarn.ini` file:
 
-```
+```console
 $ docker run -d --rm --name mqttwarn \
-    -v $PWD:/opt/mqttwarn/conf \
+    -v $PWD/mqttwarn.ini:/etc/mqttwarn/mqttwarn.ini \
     jpmens/mqttwarn
 ```
 
 To stop the container:
-```
+```console
 $ docker stop mqttwarn
 ```
 
@@ -3376,16 +3376,16 @@ rather than to restart the Docker container.
 
 From the folder containing your `mqttwarn.ini` file:
 
-```
+```console
 $ docker run -it --rm \
-    -v $PWD:/opt/mqttwarn/conf \
+    -v $PWD/mqttwarn.ini:/opt/mqttwarn/mqttwarn.ini \
     --entrypoint bash \
     jpmens/mqttwarn
 ```
  
 To start the application from within the container, just invoke
-```
-mqttwarn
+```console
+$ mqttwarn
 ```
 
 `Ctrl-C` will stop it. You can start and stop it as often as you like, here, probably editing the `.ini` file as you go.
@@ -3401,30 +3401,44 @@ mqttwarn
 You can of course run the Docker image from anywhere if you 
 specify a full path to the configuration file:
 ```
-     -v /full/path/to/folder:/opt/mqttwarn/conf
+     -v /full/path/to/folder/mqttwarn.ini:/etc/mqttwarn/qttwarn.ini
 ```
 
 ##### Functions
 If you have one or more files of Python functions in the same folder
 as your `.ini` file, then prefix
  the filenames in `.ini` file with a folder:
+```ini
+functions = '/etc/mqttwarn/funcs.py'
 ```
-functions = 'functions/funcs.py'
+Then modify the volume mount in `docker run` to mount the whole dir:
 ```
-Then add this argument to `docker run`:
+    -v $PWD:/etc/mqttwarn
 ```
-    -v $PWD:/opt/mqttwarn/functions
+
+##### Custom services
+You have the option to inject services to the official container.
+If you have a `myservice.py` file, you can add it to the services directory with a new volume mount:
 ```
+   -v $PWD/myservice.py:/app/mqttwarn/services/myservice.py
+```
+Be aware that mounting the whole directory will override the original services.
+
+After doing this, you can use your service like:
+```ini
+[config:myservice]
+```
+For service development you probably also want to change the loglevel to `DEBUG`. 
 
 ##### Log file
 
 By default the log file will be created inside the container.
 If you would like instead log to a file on the host, add this to your
 `mqttwarn.ini` file:
+```ini
+logfile = 'mqttwarn.log'
 ```
-logfile = 'log/mqttwarn.log'
-```
-Add this argument to `docker run`
+And modify the volume mount in `docker run` to mount the whole dir:
 ```
     -v $PWD:/opt/mqttwarn/log
 ```
@@ -3434,9 +3448,10 @@ each time the container is executed. You can delete the file
 between executions.
 
 Another solution is to write logs directly to stdout inside the container. That way they are piped to the docker logs engine and your terminal directly, without producing any files.
-```
+```ini
 logfile = '/dev/stdout'
 ```
+This is the recommended way if you run your containers. You can check the logs with `docker logs` anytime.
 
 
 ##### If your MQTT Broker is Also Running in Docker on the Same Host
@@ -3445,25 +3460,31 @@ If you give the MQTT broker container a name, then you can
 refer to it by name rather than by
 IP address.  For instance, if it's named `mosquitto` 
  put this in your `mqttwarn.ini` file:
-```
+```ini
 hostname  = 'mosquitto'
 ```
 Then add this argument to `docker run`:
 ```
     --link mosquitto
 ```
+(If you run them from the same docker-compose, or if they are in the same k8s namespace you don't need to explicitly link them.)
 
 ##### A full example
 
 If you have your `.ini` and Python files in your current directory,
 this will run `mqttwarn` and place the log file in the current directory:
-```
+```console
 $ docker run -d --rm --name mqttwarn \
-    -v $PWD:/opt/mqttwarn/conf \
-    -v $PWD:/opt/mqttwarn/functions \
-    -v $PWD:/opt/mqttwarn/log \
+    -v $PWD:/opt/mqttwarn \
     --link mosquitto \
     jpmens/mqttwarn
+```
+And you need an `mqttwarn.ini` with these values:
+```ini
+[defaults]
+hostname  = 'mosquitto'
+logfile = '/etc/mqttwarn/mqttwarn.log'
+functions = '/etc/mqttwarn/funcs.py'
 ```
 
 
@@ -3476,8 +3497,8 @@ the `Dockerfile`, you can build a local image from the files on your drive
 
 Execute the following from the root of the project :
 
-```
-docker build -t mqttwarn-local .
+```console
+$ docker build -t mqttwarn-local .
 ```
 
 You can then edit any files and rebuild the image as many times as you need. 
