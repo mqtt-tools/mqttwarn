@@ -98,12 +98,18 @@ def plugin(srv, item):
                 else:
                     encoded_params = urllib.parse.urlencode(params)
             else:
-                encoded_params = message
+                if tojson is not None:
+                    encoded_params = item.payload
+                    request.add_header('Content-Type', 'application/json')
+                else:
+                    encoded_params = message
 
-            request.add_data(encoded_params)
+
+            request.data = encoded_params.encode('utf-8')
             request.add_header('User-agent', srv.SCRIPTNAME)
             if auth is not None:
                 request.add_header("Authorization", "Basic %s" % auth)
+            srv.logging.debug("before send")
             resp = urllib.request.urlopen(request, timeout=timeout)
             data = resp.read()
             # print "POST returns ", data
