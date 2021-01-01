@@ -204,7 +204,7 @@ def on_message(mosq, userdata, msg):
 
     topic = msg.topic
     payload = msg.payload.decode('utf-8')
-    logger.debug("Message received on %s: %s" % (topic, payload))
+    logger.debug("Message received on %s: %s" % (topic, payload[0:250])) # truncate long payloads
 
     if msg.retain == 1:
         if cf.skipretained:
