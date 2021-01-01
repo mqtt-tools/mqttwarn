@@ -81,7 +81,7 @@ extras = {
         'pyserial>=3.4',
     ],
     'slack': [
-        'slacker>=0.9.65',
+        'slack-sdk>=3.1.0',
     ],
     'ssh': [
         'paramiko>=2.4.1',
