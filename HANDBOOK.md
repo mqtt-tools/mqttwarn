@@ -2291,8 +2291,7 @@ joined the channel.
 
 ![Slack](assets/slack.png)
 
-This plugin requires [Python slacker](https://github.com/os/slacker).
-For image support (added November 2018), slacker 0.10.0 is required.
+This plugin requires [Python slack-sdk](https://github.com/slackapi/python-slack-sdk).
 
 The slack service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.

@@ -5,12 +5,8 @@ __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-
-# 2018-11-13 - Update by psyciknz to add image upload function.  See Readme
-#              Needs slacker 0.10.0 at a minimum
-
-from slacker import Slacker
-
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 from builtins import str
 import base64
@@ -28,12 +24,6 @@ def plugin(srv, item):
 
     # get the target tokens
     addrs = list(item.addrs)
-    as_user = False
-
-    # check if we have the optional as_user token (extract and remove if so)
-    if isinstance(addrs[-1], (bool)):
-        as_user = addrs[-1]
-        addrs = addrs[:len(addrs) - 1]
 
     # check for target level tokens (which have preference)
     try:
@@ -82,33 +72,26 @@ def plugin(srv, item):
         elif 'imagebase64' in item.data:
             imagebase64 = item.data['imagebase64']
             srv.logging.debug("Image (base64 encoded) detected")
-            #image = base64.decodestring(imagebase64)
             image = base64.b64decode(str(imagebase64))
-            filename = 'some_image.jpg'  
-            #base 64 doesn't seem to decode properly.  So have to write it to a temp image, and reload it.
-            #maybe this method might be dropped?
-            with open(filename, 'wb') as f:
-                f.write(image)
             
     except Exception as e:
         srv.logging.warning("Cannot download image: %s", e)
 
     try:
-        slack = Slacker(token)
+        slack = WebClient(token=token)
         if image is None:
-            slack.chat.post_message(channel, text, as_user=as_user, username=username, icon_emoji=icon, unfurl_links=True)
+            slack.chat_postMessage(channel=channel, text=text, username=username, icon_emoji=icon, unfurl_links=True)
         else:
             
             srv.logging.debug("Channel id: %s" % channel);
-            channelname = channel.replace('#','')
 
-            # weird check and re-read I had to do for base64 decoded images.
-            if 'imagebase64' in item.data:
-                with open(filename,'rb') as f2:
-                    slack.files.upload(file_=f2,title=text,channels=slack.channels.get_channel_id(channelname))
-            else:
-                slack.files.upload(file_=image,title=text,channels=slack.channels.get_channel_id(channelname))
+            slack.files_upload(file=image,title=text,channels=channel)
             srv.logging.debug("image posted")
+    except SlackApiError as e:
+        assert e.response["ok"] is False
+        assert e.response["error"]
+        srv.logging.warning("Cannot post to slack %s: %s" % (channel, e.response['error']))
+        return False
     except Exception as e:
         srv.logging.warning("Cannot post to slack %s: %s" % (channel, e))
         return False
