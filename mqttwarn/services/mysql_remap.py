@@ -65,7 +65,7 @@ def plugin(srv, item):
         return False
 
     try:
-        conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=dbname)
+        conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=dbname, port=port)
         cursor = conn.cursor()
     except Exception as e:
         srv.logging.warn("Cannot connect to mysql: %s" % e)
