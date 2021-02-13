@@ -45,8 +45,8 @@ def plugin(srv, item):
     srv.logging.debug("Connecting to MySql host '%s' and database '%s' as user '%s'", host, dbname, user)
 
     try:
-        table_name = item.addrs[0].format(**item.data).encode('utf-8')
-        fallback_col = item.addrs[1].format(**item.data).encode('utf-8')
+        table_name = item.addrs[0].format(**item.data)
+        fallback_col = item.addrs[1].format(**item.data)
     except:
         srv.logging.warn("mysql target incorrectly configured")
         return False
@@ -55,7 +55,8 @@ def plugin(srv, item):
         conn = MySQLdb.connect(host=host,
                                user=user,
                                passwd=passwd,
-                               db=dbname)
+                               db=dbname,
+                               port=port)
         cursor = conn.cursor()
     except Exception as e:
         srv.logging.warn("Cannot connect to mysql: %s" % e)
@@ -75,7 +76,7 @@ def plugin(srv, item):
     if item.data is not None:
         for key in list(item.data.keys()):
             try:
-                col_data[key] = item.data[key].format(**item.data).encode('utf-8')
+                col_data[key] = item.data[key].format(**item.data)
             except Exception as e:
                 col_data[key] = item.data[key]
 

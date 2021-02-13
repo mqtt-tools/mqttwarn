@@ -6,39 +6,33 @@ Task: Make mqttwarn a first citizen of the Python ecosystem.
 
 
 ****************
-Goals for 0.15.0
+Goals for 0.20.0
 ****************
-- [x] Refactoring. Move "services" into module namespace.
-- [x] Put example "mqttwarn.ini" into resources folder of module namespace,
-      add "mqttwarn make-config" and "mqttwarn make-samplefuncs"  commands to dump them to stdout
-- [x] Add Makefile for releasing and documentation building
-- [o] Add software tests
+- [o] Improve software tests
 - [o] Refactor contents from "examples", "templates" and "vendor" folders
-      - [o] Refactor ``examples/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
-      - [o] Refactor ``examples/zabbix/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
-      - [o] Refactor ``vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
-      - [o] The path to the "templates" folder must be specified using command line argument or environment variable.
+      - The path to the "templates" folder must be specified using command line argument or environment variable.
             Otherwise, look nearby the configuration file /path/to/mqttwarn.ini, so use /path/to/templates.
-      - [o] Integrate existing template .j2 files into example folder?
-      - [o] Move the whole /examples folder into /mqttwarn/examples?
+      - Integrate existing template .j2 files into example folder?
+- [o] Add some entrypoints
+      - Wire ``contrib/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
+      - Wire ``contrib/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
+      - Wire ``mqttwarn/vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
 - [o] How to address "samplefuncs.py" in relation to "mqttwarn.ini"? E.g. if the mqttwarn configuration file
       would be ``/etc/mqttwarn/acme.ini``, should this load ``/etc/mqttwarn/samplefuncs.py`` or use the current
       working directory for that? Or even both!?
-
 - [o] When running the mqttwarn daemon and no configuration file is given,
       use configuration from the ".mqttwarn" folder in the current working directory.
       When doing so, also use ".mqttwarn/templates" as the default templates folder.
-
 - [o] Verify that "functions" still accepts file names as well as dotted module names
 - [o] Adapt configuration for Supervisor and systemd
 - [o] Improve documentation: Add a complete roundtrip example involving ``mosquitto_pub``
 - [o] Improve documentation: Add "credits" section. At least add the author of Mosquitto.
 - [o] Add ``mqttwarn make-pubs`` or ``mqttwarn selftest``, see https://github.com/jpmens/mqttwarn/issues/127#issuecomment-381690557
-- [o] Release on PyPI
+- [o] Improve logging: Let "file" service report about where it's writing to
 
 
 ****************
-Goals for 0.16.0
+Goals for 0.21.0
 ****************
 - [o] Refactor the ``mqttwarn make-config|make-samplefuncs`` machinery into a ``mqttwarn init``-style thing. Proposal::
 
@@ -101,15 +95,3 @@ Goals for 2.0.0
 - [o] Think about adding further support for plugins, e.g. for provisioning databases appropriately, see also
       https://github.com/jpmens/mqttwarn/issues/283
 - [o] Configuration and source tree file watcher like ``pserve ... --reload``
-
-
-*************
-This and that
-*************
-- [o] Add more eye candy to README.rst
-
-    - Logo:
-        - https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
-        - https://github.com/jpmens/mqttwarn/issues/81#issuecomment-75520401
-
-- [o] Improve logging: Let "file" service report about where it's writing to

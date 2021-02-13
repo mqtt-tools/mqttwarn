@@ -31,6 +31,8 @@ def plugin(srv, item):
     rp          = item.config.get('rp', '')
     # precision=[ns,u,ms,s,m,h] - optional, default=nanosecond
     precision   = item.config.get('precision', 'ns')
+    # protocol=[http,https] - optional, default=http
+    protocol    = item.config.get('scheme', 'http')
 
     # allow overrides per target
     # 'target'  = [ 'measurement', 'database',    'rp', 'precision' ]
@@ -42,7 +44,7 @@ def plugin(srv, item):
                 precision = item.addrs[3] or precision
 
     try:
-        url = "http://%s:%d/write?db=%s&rp=%s&precision=%s" % (host, port, database, rp, precision)
+        url = "%s://%s:%d/write?db=%s&rp=%s&precision=%s" % (protocol, host, port, database, rp, precision)
 
         # influxdb line protocol:
         # measurement,tagKey1=tagVal1,tagKey2=tagVal2 field1=value1,field2=value2 Timestamp

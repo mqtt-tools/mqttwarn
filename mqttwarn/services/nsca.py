@@ -24,7 +24,7 @@ def plugin(srv, item):
     except:
         pass
 
-    nsca_host = config['nsca_host']
+    nsca_host = str(config['nsca_host'])
 
     host_name = item.addrs[0]
     service_description = item.addrs[1]

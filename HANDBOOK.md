@@ -13,8 +13,6 @@ Notifications are transmitted to the appropriate service via plugins. We provide
 I've written an introductory post, explaining [what mqttwarn can be used for](http://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/). For example, you may wish to notify via e-mail and to Pushover of an alarm published as text to the MQTT topic `home/monitoring/+`.
 
   * [Getting started](#getting-started)
-    + [Requirements](#requirements)
-    + [Installation](#installation)
     + [Configuration](#configuration)
   * [Supported Notification Services](#supported-notification-services)
     + [Configuration of service plugins](#configuration-of-service-plugins)
@@ -31,33 +29,13 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Examples](#examples)
     + [Low battery notifications](#low-battery-notifications)
     + [Producing JSON](#producing-json)
+    + [Amazon Alexa](#amazon-alexa)
   * [Notes](#notes)
   * [Press](#press)
   
-      
+
   ## Getting started
-  
-  ### Requirements
-  
-  You'll need at least the following components:
-  
-  * Python 2.x (tested with 2.6 and 2.7)
-  * An MQTT broker (e.g. [Mosquitto](http://mosquitto.org))
-  * The Paho Python module: `pip install paho-mqtt`
-  
-  ### Installation
-  
-  1. Clone this repository into a fresh directory.
-  2. Copy `mqttwarn.ini.sample` to `mqttwarn.ini` and edit to your taste
-  3. Install the prerequisite Python modules for the services you want to use
-  4. Launch `mqttwarn.py`
-  
-  I recommend you use [Supervisor](http://jpmens.net/2014/02/13/in-my-toolbox-supervisord/) for running this.
-  
-  Alternatively, a systemd-based installation using a Python virtualenv might be handy,
-  see [systemd unit configuration file for mqttwarn](https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service)
-  for step-by-step instructions about doing this.
-  
+
   ### Configuration
   
   I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
@@ -87,7 +65,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   **Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
   
-  Launch `mqttwarn.py` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
+  Launch `mqttwarn` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
   
   ```
   mosquitto_pub -t test/1 -m "Hello"
@@ -153,7 +131,8 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   ; optional: TLS parameters. (Don't forget to set the port number for
   ; TLS (probably 8883).
-  ; You will need to set at least `ca_certs' if you want TLS support
+  ; You will need to set at least `ca_certs' if you want TLS support and
+  ; tls = True
   ; ca_certs: path to the Certificate Authority certificate file (concatenated
   ;           PEM file)
   ; tls_version: currently one of 'tlsv1_1', 'tlsv1_2' (or 'sslv3', 'tlsv1' deprecated)
@@ -161,6 +140,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   ;               broker's certificate CN
   ; certfile: path to PEM encode client certificate file
   ; keyfile: path to PEM encode client private key file
+  tls = True
   ca_certs = '/path/to/ca-certs.pem'
   certfile = '/path/to/client.crt'
   keyfile = '/path/to/client.key'
@@ -175,7 +155,10 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   ###### `launch`
   
-  In the `launch` option you specify which _services_ (of those available in the `services/` directory of _mqttwarn_ or using the `module` option, see the following paragraphs) you want to be able to use in target definitions.
+  In the `launch` option you specify a list of comma-separated _service_ names  
+  defined within the `[config:xxx]` sections which should be launched.
+  
+  You should launch every service you want to use from your topic/target definitions here.
   
   #### The `[config:xxx]` sections
   
@@ -183,9 +166,16 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   has a mandatory option called `targets`, which is a dictionary of target names, each
   pointing to an array of "addresses". Address formats depend on the particular service.
   
-  A service section may have an option called `module`, which refers to the name
-  of the actual service module to use. A service called `filetruncate` - and
-  referenced as such in the `launch` option -
+  The Python module name for this service will be derived
+  a) from the name of the definition itself, i.e. the `xxx` part, or
+  b) from the value of the `module` option within that configuration section.
+  
+  - When the module name is a plain string, it will be resolved as a filename inside the  
+    built-in `mqttwarn/services` directory.
+  - When the module name contains a dot, it will be resolved as an absolute dotted reference.
+  
+  Example:
+  A service called `filetruncate` - and referenced as such in the `launch` option -
   may have `module = file`, in which case the service works like a regular `file`
   service, with its own distinct set of service options. It is thus possible to
   have several different service configurations for the same underlying service,
@@ -307,10 +297,12 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [alexa-notify-me](#alexa-notify-me)
 * [amqp](#amqp)
 * [apns](#apns)
+* [apprise](#apprise)
 * [asterisk](#asterisk)
 * [autoremote](#autoremote)
 * [carbon](#carbon)
 * [celery](#celery)
+* [chromecast](#chromecast)
 * [dbus](#dbus)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
@@ -327,7 +319,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [ionic](#ionic)
-* [iothub](#iothub)
+* [azure_iot](#azure_iot)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
@@ -369,6 +361,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [websocket](#websocket)
 * [xbmc](#xbmc)
 * [xmpp](#xmpp)
+* [slixmpp](#slixmpp)
 * [xively](#xively)
 * [zabbix](#zabbix)
 
@@ -397,7 +390,10 @@ targets = {
 targets = alexa-notify-me:account1
 ```
 
-The access code is emailed to the user upon setup of Notify-Me
+The access code is emailed to the user upon setup of Notify-Me.
+
+Also see examples for Amazon Alexa.
+
 
 ### `amqp`
 
@@ -408,6 +404,7 @@ may, the configuration is as follows:
 ```ini
 [config:amqp]
 uri     =  'amqp://user:password@localhost:5672/'
+targets = {
     'test01'     : [ 'name_of_exchange',    'routing_key' ],
     }
 ```
@@ -487,6 +484,52 @@ would thus emit the APNS notification to the specified device.
 
 
 Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
+
+
+### `apprise`
+
+The `apprise` service interacts with the [Apprise] Python module,
+which in turn can talk to a plethora of popular notification services.
+Please read their documentation about more details.
+
+The following discussion assumes a payload like this is published via MQTT:
+```bash
+echo '{"device": "foobar"}' | mosquitto_pub -t 'apprise/foo' -l
+```
+
+This configuration snippet will activate two service plugins
+`apprise-mail` and `apprise-json`, both using the Apprise module.
+
+```ini
+[defaults]
+launch    = apprise-mail, apprise-json
+
+[config:apprise-mail]
+module   = 'apprise'
+baseuri  = 'mailtos://smtp_username:smtp_password@mail.example.org'
+sender   = 'monitoring@example.org'
+sender_name = 'Example Monitoring'
+targets  = {
+    'demo' : ['foo@example.org', 'bar@example.org'],
+    }
+
+[config:apprise-json]
+module   = 'apprise'
+baseuri  = 'json://localhost:1234/mqtthook'
+; Surrogate for satisfying machinery. 
+targets  = {
+    'n/a' : [''],
+    }
+
+[apprise-test]
+topic    = apprise/#
+targets  = apprise-mail:demo, apprise-json
+format   = Alarm from {device}: {payload}
+title    = Alarm from {device}
+```
+
+[Apprise]: https://github.com/caronc/apprise
+
 
 ### `autoremote`
 
@@ -575,6 +618,35 @@ Broker URL can be any broker supported by celery. Celery serializer is usually j
 Targets are selected by task name. Message_format can be either "json" or "text". If it is json, the message will be sent as a json payload rather than a string.
 In this configuration, all messages that match hello/ will be sent to the celery task "myapp.hello". The first argument of the celery task will be the message from mqtt.
 
+
+### `chromecast`
+
+The `chromecast` service sends messages via Text To Speach (TTS) to Chromecast devices, including Google Home Speakers.
+
+```ini
+# Don't fogert to set launch = ..., chromecast
+[config:chromecast]
+; Chromecast devices, including Google Home Speakers
+#baseuri  = 'http://my.personal.server:5000/translate_tts?srttss_mimetype=audio/wav&'
+#mimetype = 'audio/wav'
+targets  = {
+    'speaker' : ['Living Room'],
+    }
+
+# echo 'Hello world' | mosquitto_pub -t 'chromecast/say' -l
+# echo '{"message": "Hello world", "addrs": ["Living Room"]}' | mosquitto_pub -t 'chromecast/say' -l
+# command line test;  mqttwarn --plugin=chromecast --data='{"message": "Hello world", "addrs": ["Living Room"]}'
+[chromecast/say]
+targets = chromecast:speaker
+
+```
+Address targets are the registered device friendly name. In this example, "Living Room".
+The TTS server defaults to Google translate (and English).
+A custom server URL can be used for local TTS assuming the server honors Google Syntax arguments (for example https://github.com/clach04/srttss) via baseuri (and mimetype if the server does not server mp3 format files).
+
+Requires pychromecast to be installed via::
+
+    pip install pychromecast
 
 ### `dbus`
 
@@ -1065,31 +1137,25 @@ targets = {
 
 ![ionic](assets/ionic.png)
 
-### `iothub`
+### `azure_iot`
 
 This service is for [Microsoft Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/).
-The configuration requires a hostname for the IoT Hub, all other service configuration options are optional.
+The configuration requires the name of the IoT Hub, optionally a QoS level
+(default 0), and one or more targets.
 Each target defines which device to impersonate when sending the message.
 
 ```ini
-[config:iothub]
-hostname = '<name>.azure-devices.net'
-# protocol = 'AMQP'/'MQTT'/'HTTP' # Optional, default is AMQP
-# message_timeout = 10000 # Optional, default is not to expire
-# timeout = 10 # Optional, for HTTP transport only
-# minimum_polling_time = 9 # Optional, for HTTP transport only
+[config:azure_iot]
+iothubname = 'MyIoTHub'
+qos = 1
 targets = {
-               # device id   # device key
-    'test' : [ 'pi',         'uN...6w=' ]
+               # device id   # sas token
+    'test' : [ 'mqttwarn',   'SharedAccessSignature sr=...' ]
   }
 ```
 
-Note that the actual message delivery is done asynchronously, meaning that
-successful processing is no guarantee for actual delivery. In the case of an
-error occurring, an error message should eventually appear in the log.
-
-Requires:
-* [Microsoft Azure IoT device SDK for Python](https://github.com/Azure/azure-iot-sdks/tree/master/python/device)
+Message delivery is performed using the MQTT protocol, observing the Azure IoT
+Hub requirements.
 
 ### `influxdb`
 
@@ -1109,8 +1175,11 @@ Following is an ini example, showing the various connection properties for the I
 
 ```ini
 [config:influxdb]
+# Protocol for connection to InfluxDB: http or https. Default: http
+scheme    = 'https'
 host      = 'influxdbhost'
 port      = 8086
+
 username  = 'username'
 password  = 'password'
 database  = 'mqttwarn'
@@ -1706,7 +1775,7 @@ define service{
         }
 ```
 
-with the following target definition in `mqttwarn.py`
+with the following target definition in `mqttwarn.ini`
 
 ```ini
 [config:nsca]
@@ -1761,7 +1830,7 @@ def check_temperature(data):
 ```
 
 Requires:
-* [pynsca](https://github.com/djmitche/pynsca), but you don't have to install that; it suffices if you drop `pynsca.py` alongside `mqttwarn.py` (i.e. in the same directory)
+* [pynsca](https://github.com/djmitche/pynsca).
 
 ### `osxnotify`
 
@@ -2222,8 +2291,7 @@ joined the channel.
 
 ![Slack](assets/slack.png)
 
-This plugin requires [Python slacker](https://github.com/os/slacker).
-For image support (added November 2018), slacker 0.10.0 is required.
+This plugin requires [Python slack-sdk](https://github.com/slackapi/python-slack-sdk).
 
 The slack service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.
@@ -2451,7 +2519,7 @@ targets = {
    'j01' : [ 'First Name' ],
    'j02' : [ '@username' ],
    'j03' : [ '#chat_id' ]
-}
+    }
 ```
 Configure the `telegram` service WITH chatid:
 ```ini
@@ -2463,7 +2531,7 @@ use_chat_id = True
 targets = {
     #       chatId (in quotes)
     'j01' : ['123456789']
-}
+    }
 ```
 
 Possible issue:
@@ -2622,6 +2690,27 @@ recipients get the message.
 Requires:
 * XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
 * [xmpppy](http://xmpppy.sourceforge.net)
+
+### `slixmpp`
+
+The `slixmpp` service sends notification to one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
+(Jabber) recipients.
+
+```ini
+[config:slixmpp]
+sender = 'mqttwarn@jabber.server'
+password = 'Password for sender'
+targets = {
+    'admin' : [ 'admin1@jabber.server', 'admin2@jabber.server' ]
+    }
+```
+
+Targets may contain more than one recipient, in which case all specified
+recipients get the message.
+
+Requires:
+* XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
+* [slixmpp](https://lab.louiz.org/poezio/slixmpp)
 
 ### `xively`
 
@@ -3293,9 +3382,9 @@ $ docker run -it --rm \
     jpmens/mqttwarn
 ```
  
-To start the application from within the container:
+To start the application from within the container, just invoke
 ```
-# python mqttwarn.py
+mqttwarn
 ```
 
 `Ctrl-C` will stop it. You can start and stop it as often as you like, here, probably editing the `.ini` file as you go.
@@ -3468,6 +3557,21 @@ targets thusly:
 ```json
 "host": "arduino/temp", "woohooo": 17, "tst": "2014-04-13T09:25:46.247150Z", "temperature": "22", "short_message": "Heat 22"}
 ```
+
+
+### Amazon Alexa
+
+An alternative to alexa-notify-me notification (speaker glows yellow and awaits instruction to play the notification) is to for TTS to specific devices or announce to a speaker group.
+
+See the examples directory for integration with pipe and https://github.com/thorsten-gehrig/alexa-remote-control shell scripts.
+
+Instructions:
+
+* Download/checkout https://github.com/thorsten-gehrig/alexa-remote-control
+* Edit secrets.sh
+* Ensure paths are correct (scripts and ini file assume path /home/pi/shell/alexa-remote-control)
+* Edit ini file targets with device names and/or group name (saystdin for single devices, announce_stdin for groups)
+* Sanity check, chmod a+x on all shell scripts
 
 
 

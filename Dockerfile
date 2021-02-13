@@ -1,31 +1,27 @@
-FROM python:2.7
+FROM python:3.8.2-slim-buster
 
 # based on https://github.com/pfichtner/docker-mqttwarn
 
-# install python libraries (TODO: any others?)
-RUN pip install paho-mqtt requests jinja2
+# install mqttwarn
+RUN pip install mqttwarn
 
-# build /opt/mqttwarn
-RUN mkdir -p /opt/mqttwarn
-WORKDIR /opt/mqttwarn
+# create /etc/mqttwarn
+RUN mkdir -p /etc/mqttwarn
+WORKDIR /etc/mqttwarn
 
 # add user mqttwarn to image
 RUN groupadd -r mqttwarn && useradd -r -g mqttwarn mqttwarn
-RUN chown -R mqttwarn /opt/mqttwarn
+RUN chown -R mqttwarn:mqttwarn /etc/mqttwarn
 
 # process run as mqttwarn user
 USER mqttwarn
 
 # conf file from host
-VOLUME ["/opt/mqttwarn/conf"]
+VOLUME ["/etc/mqttwarn"]
 
 # set conf path
-ENV MQTTWARNINI="/opt/mqttwarn/conf/mqttwarn.ini"
-
-# finally, copy the current code (ideally we'd copy only what we need, but it
-#  is not clear what that is, yet)
-COPY . /opt/mqttwarn
+ENV MQTTWARNINI="/etc/mqttwarn/mqttwarn.ini"
 
 # run process
-CMD python mqttwarn.py
+CMD mqttwarn
 

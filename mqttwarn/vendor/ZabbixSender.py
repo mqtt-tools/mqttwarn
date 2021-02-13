@@ -20,7 +20,7 @@ except ImportError:
 
 class ZabbixSender:
     
-    zbx_header = 'ZBXD'
+    zbx_header = b'ZBXD'
     zbx_version = 1
     zbx_sender_data = {u'request': u'sender data', u'data': []}
     send_data = ''

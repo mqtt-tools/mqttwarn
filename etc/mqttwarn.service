@@ -11,11 +11,9 @@
 # -----
 # Basic setup::
 #
-#   cd /opt
-#   git clone https://github.com/jpmens/mqttwarn
-#   cd mqttwarn
-#   virtualenv .venv2
-#   ./.venv2/bin/pip install paho-mqtt==1.1
+#   mkdir /opt/mqttwarn
+#   virtualenv /opt/mqttwarn
+#   /opt/mqttwarn/bin/pip install mqttwarn
 #
 # Prepare and enable the systemd service::
 #
@@ -23,7 +21,8 @@
 #   cp etc/mqttwarn.default /etc/default/mqttwarn
 #   cp etc/mqttwarn.service /usr/lib/systemd/system/
 #   cp etc/mqttwarn.logrotate /etc/logrotate.d/mqttwarn
-#   mkdir /var/log/mqttwarn; chown mqttwarn:mqttwarn /var/log/mqttwarn
+#   mkdir /var/log/mqttwarn
+#   chown mqttwarn:mqttwarn /var/log/mqttwarn
 #   systemctl enable mqttwarn
 #
 # Configuration
@@ -48,7 +47,7 @@
 # For installing further Python modules into the virtualenv
 # of the mqttwarn installation by using pip, just issue e.g.::
 #
-#   /opt/mqttwarn/.venv2/bin/pip install xmpppy==0.5.0rc1 jinja2==2.8
+#   /opt/mqttwarn/bin/pip install xmpppy==0.5.0rc1
 #
 
 [Unit]
@@ -64,8 +63,9 @@ LimitNOFILE=65536
 Environment='STDOUT=/var/log/mqttwarn/mqttwarn.log'
 Environment='STDERR=/var/log/mqttwarn/mqttwarn.log'
 EnvironmentFile=/etc/default/mqttwarn
+PassEnvironment=MQTTWARNINI
 WorkingDirectory=/opt/mqttwarn
-ExecStart=/opt/mqttwarn/.venv2/bin/python /opt/mqttwarn/mqttwarn.py ${MQTTWARN_OPTIONS} >>${STDOUT} 2>>${STDERR}
+ExecStart=/bin/sh -c 'exec /opt/mqttwarn/bin/mqttwarn ${MQTTWARN_OPTIONS} >>${STDOUT} 2>>${STDERR}'
 KillMode=control-group
 Restart=on-failure
 

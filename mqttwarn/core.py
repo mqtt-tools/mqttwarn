@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
+# (c) 2014-2020 The mqttwarn developers
 from builtins import object
 from past.builtins import cmp
 from builtins import chr
@@ -23,7 +23,7 @@ import paho.mqtt.client as paho
 from mqttwarn.context import RuntimeContext, FunctionInvoker
 from mqttwarn.cron import PeriodicThread
 from mqttwarn.util import \
-    load_function, load_module, timeout, \
+    load_function, load_module_from_file, load_module_by_name, timeout, \
     parse_cron_options, sanitize_function_name, Struct, Formatter, asbool, exception_traceback
 
 try:
@@ -203,7 +203,7 @@ def on_message(mosq, userdata, msg):
     """
 
     topic = msg.topic
-    payload = msg.payload
+    payload = msg.payload.decode('utf-8')
     logger.debug("Message received on %s: %s" % (topic, payload))
 
     if msg.retain == 1:
@@ -351,10 +351,12 @@ def builtin_transform_data(topic, payload):
 
 
 def xform(function, orig_value, transform_data):
-    ''' Attempt transformation on orig_value.
-        1st. function()
-        2nd. inline {xxxx}
-        '''
+    """
+    Attempt transformation on orig_value.
+
+    - 1st. function()
+    - 2nd. inline {xxxx}
+    """
 
     if orig_value is None:
         return None
@@ -365,18 +367,19 @@ def xform(function, orig_value, transform_data):
         function_name = sanitize_function_name(function)
         if function_name is not None:
             try:
-                res = cf.datamap(function_name, transform_data)
+                res = context.invoker.datamap(function_name, transform_data)
                 return res
             except Exception as e:
                 logger.warning("Cannot invoke %s(): %s" % (function_name, e))
 
         try:
-            res = Formatter().format(function, **transform_data).encode('utf-8')
+            res = Formatter().format(function, **transform_data)
         except Exception as e:
-            logger.warning("Cannot format message: %s" % e)
+            logger.exception("Formatting message failed")
 
     if isinstance(res, str):
         res = res.replace("\\n", "\n")
+
     return res
 
 
@@ -410,7 +413,7 @@ def decode_payload(section, topic, payload):
         payload_data = json.loads(payload)
         transform_data.update(payload_data)
     except Exception as ex:
-        logger.warning(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
+        logger.debug(u"Cannot decode JSON object, payload={payload}: {ex}".format(**locals()))
 
     return transform_data
 
@@ -493,14 +496,18 @@ def processor(worker_id=None):
         if item.get('message') is not None and len(item.get('message')) > 0:
             st = Struct(**item)
             notified = False
+            logger.info("Invoking service plugin for `%s'" % service)
             try:
                 # Fire the plugin in a separate thread and kill it if it doesn't return in 10s
                 module = service_plugins[service]['module']
-                service_logger_name = 'mqttwarn.services.{}'.format(service)
+                if '.' in service:
+                    service_logger_name = service
+                else:
+                    service_logger_name = 'mqttwarn.services.{}'.format(service)
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
             except Exception as e:
-                logger.error("Cannot invoke service for `%s': %s" % (service, e))
+                logger.exception("Cannot invoke service for `%s'" % service)
 
             if not notified:
                 logger.warning("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))
@@ -524,13 +531,21 @@ def load_services(services):
         service_plugins[service]['config'] = service_config
 
         module = cf.g('config:' + service, 'module', service)
-        modulefile = resource_filename('mqttwarn.services', module + '.py')
 
-        try:
-            service_plugins[service]['module'] = load_module(modulefile)
-            logger.info('Successfully loaded service "{}"'.format(service))
-        except Exception as ex:
-            logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
+        if '.' in module:
+            try:
+                service_plugins[service]['module'] = load_module_by_name(module)
+                logger.info('Successfully loaded service "{}" from module "{}"'.format(service, module))
+            except Exception as ex:
+                logger.exception('Unable to load service "{}" from module "{}": {}'.format(service, module, ex))
+
+        else:
+            modulefile = resource_filename('mqttwarn.services', module + '.py')
+            try:
+                service_plugins[service]['module'] = load_module_from_file(modulefile)
+                logger.info('Successfully loaded service "{}"'.format(service))
+            except Exception as ex:
+                logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
 
 
 def connect():
@@ -588,6 +603,9 @@ def connect():
         logger.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), e))
         sys.exit(2)
 
+    # Update our runtime context (used by functions etc) now we have a connected MQTT client
+    context.invoker.srv.mqttc = mqttc
+
     # Launch worker threads to operate on queue
     start_workers()
 
@@ -623,7 +641,7 @@ def start_workers():
     if cf.has_section('cron'):
         for name, val in cf.items('cron'):
             try:
-                func = load_function(name=name, filepath=cf.functions)
+                func = load_function(name=name, py_mod=cf.functions)
                 cron_options = parse_cron_options(val)
                 interval = cron_options['interval']
                 logger.debug('Scheduling function "{name}" as periodic task ' \
@@ -665,7 +683,8 @@ def cleanup(signum=None, frame=None):
 def bootstrap(config=None, scriptname=None):
     # FIXME: Remove global variables
     global context, cf, SCRIPTNAME
-    invoker = FunctionInvoker(config=config, srv=make_service(mqttc=mqttc, name='mqttwarn.context'))
+    # NOTE: this is called before we connect to the MQTT broker, so mqttc is not initialised yet
+    invoker = FunctionInvoker(config=config, srv=make_service(mqttc=None, name='mqttwarn.context'))
     context = RuntimeContext(config=config, invoker=invoker)
     cf = config
     SCRIPTNAME = scriptname
@@ -692,7 +711,10 @@ def run_plugin(config=None, name=None, data=None):
 
     # Load designated service plugins
     load_services([name])
-    service_logger_name = 'mqttwarn.services.{}'.format(name)
+    if '.' in name:
+        service_logger_name = name
+    else:
+        service_logger_name = 'mqttwarn.services.{}'.format(name)
     srv = make_service(mqttc=None, name=service_logger_name)
 
     # Build a mimikry item instance for feeding to the service plugin

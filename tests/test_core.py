@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-# (c) 2018 The mqttwarn developers
+# (c) 2018-2020 The mqttwarn developers
+import io
+import os
+import json
+
 from builtins import str
 import logging
 
@@ -89,7 +93,11 @@ def test_decode_payload_alldata(caplog):
         assert outcome['alldata-key'] == 'alldata-value'
 
 
-def test_message_basic(caplog):
+def test_message_log(caplog):
+    """
+    Submit a message to the "log" plugin and proof
+    everything gets dispatched properly.
+    """
 
     with caplog.at_level(logging.DEBUG):
 
@@ -100,4 +108,98 @@ def test_message_basic(caplog):
         send_message(topic='test/log-1', payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
-        assert "u'temperature: 42.42" in caplog.text, caplog.text
+        assert "temperature: 42.42" in caplog.text, caplog.text
+
+
+def test_message_file():
+    """
+    Submit a message to the "file" plugin and proof
+    everything gets dispatched properly.
+    """
+
+    data = {
+        'name': 'temperature',
+        'value': 42.42,
+    }
+
+    outputfile = '/tmp/mqttwarn-test.01'
+    if os.path.exists(outputfile):
+        os.unlink(outputfile)
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=configfile)
+
+    # Signal mocked MQTT message to the core machinery for processing.
+    send_message(topic='test/file-1', payload=json.dumps(data))
+
+    # Proof that the message has been written to the designated file properly.
+    with open(outputfile) as f:
+        content = f.read()
+        assert "temperature: 42.42" in content, content
+
+
+def test_message_file_unicode():
+    """
+    Submit a message to the "file" plugin and proof
+    everything gets dispatched properly.
+
+    This time, we use special characters (umlauts)
+    to proof charset encoding is also handled properly.
+    """
+
+    data = {
+        'item': 'Räuber Hotzenplotz'
+    }
+
+    outputfile = '/tmp/mqttwarn-test.02'
+    if os.path.exists(outputfile):
+        os.unlink(outputfile)
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=configfile)
+
+    # Signal mocked MQTT message to the core machinery for processing.
+    send_message(topic='test/file-2', payload=json.dumps(data))
+
+    # Proof that the message has been written to the designated file properly.
+    with io.open(outputfile, mode='rt', encoding='utf-8') as f:
+        content = f.read()
+        assert u'Räuber Hotzenplotz' in content, content
+
+
+def test_plugin_module(caplog):
+    """
+    Check if using a module with dotted name also works.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT
+        core_bootstrap(configfile=configfile)
+
+        # Signal mocked MQTT message to the core machinery for processing
+        send_message(topic='test/plugin-1', payload='{"name": "temperature", "value": 42.42}')
+
+        # Proof that the message has been routed to the "log" plugin properly
+        assert 'Plugin invoked' in caplog.text, caplog.text
+
+
+def test_xform_func(caplog):
+    """
+    Submit a message to the "log" plugin and proof
+    everything gets dispatched properly.
+
+    This time, it validates the "xform" function in the context of invoking
+    a user-defined function defined through the "format" setting.
+    """
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT
+        core_bootstrap(configfile=configfile)
+
+        # Signal mocked MQTT message to the core machinery for processing
+        send_message(topic='test/log-2', payload='{"name": "temperature", "value": 42.42}')
+
+        # Proof that the message has been routed to the "log" plugin properly
+        assert "'value': 42.42" in caplog.text, caplog.text
+        assert "'datamap-key': 'datamap-value'" in caplog.text, caplog.text

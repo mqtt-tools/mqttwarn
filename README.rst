@@ -1,4 +1,4 @@
-.. image:: https://img.shields.io/badge/Python-2.7,%203.6,%203.7-green.svg
+.. image:: https://img.shields.io/badge/Python-2.7,%203.5,%203.6,%203.7,%203.8,%203.9;%20PyPy,%20PyPy3-green.svg
     :target: https://github.com/jpmens/mqttwarn
 
 .. image:: https://img.shields.io/pypi/v/mqttwarn.svg
@@ -40,7 +40,7 @@ sophisticated transformations.
 
 It comes with over **70 notification handler plugins** for a wide
 range of notification services and is very open to further contributions.
-You can enjoy the alphabetical list of plugins within the handbook_.
+You can enjoy the alphabetical list of plugins within the handbook_services_.
 
 A picture says a thousand words.
 
@@ -67,6 +67,7 @@ MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 
 
 .. _handbook: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md
+.. _handbook_services: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md#supported-notification-services
 
 
 *************
@@ -89,7 +90,7 @@ You can also add support for a specific service plugin::
 
 You can also add support for multiple services, all at once::
 
-    pip install --upgrade 'mqttwarn[asterisk,nsca,osxnotify,tootpaste,xmpp]'
+    pip install --upgrade 'mqttwarn[apprise,asterisk,nsca,osxnotify,tootpaste,xmpp]'
 
 
 
@@ -188,9 +189,9 @@ Requirements
 ============
 You'll need at least the following components:
 
-* Python 2.x. We tested it with 2.6 and 2.7.
-* Some more Python modules defined in the ``setup.py`` file. These will probably get installed automatically.
+* Python. The program should work on Python 2, Python 3 and PyPy.
 * An MQTT broker. We recommend Mosquitto_.
+* Some more Python modules to satisfy service dependencies defined in the ``setup.py`` file.
 
 .. _Mosquitto: https://mosquitto.org
 

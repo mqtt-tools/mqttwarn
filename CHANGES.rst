@@ -6,6 +6,110 @@ mqttwarn changelog
 in progress
 ===========
 
+2020-10-20 0.20.0
+=================
+- [telegram] Fix encoding of data for python3. Thanks, Ben!
+
+2020-10-11 0.19.0
+=================
+- [xbmc] Fix encoding of data for python3. Thanks, Ben!
+- [hipchat, ionic, pushsafer] Fix charset encoding. Thanks, JP!
+- [telegram] Add compatibility for both Python 2 and Python 3. Thanks, @clach04!
+- Add new service for Chromecast TTS. Thanks, @clach04!
+- Add example for Amazon Alexa Say/Announce. Thanks, @clach04!
+- Improve documentation. Thanks, @clach04!
+- Fix Apprise service by explicitly using legacy/synchronous mode.
+- Add Python 3.9 support
+
+
+2020-08-31 0.18.0
+=================
+- Use ``allow_dirty = False`` within ``.bumpversion.cfg``
+- Use Python3 to create virtualenv
+- Bump version numbers for release tools packages
+- Add external plugin module loading. Thanks, @psyciknz!
+- Replaced iothub service with azure-iot, just using MQTT. Thanks, Morten!
+
+
+2020-08-31 0.17.0
+=================
+- srv.mqttc is None when calling into a custom function. Thanks, Ben.
+- sundry changes for FreeBSD package. Thanks, Dan.
+- Fix ``ZabbixSender.py``. Thanks, Ben!
+- service tweaks: nsca, zabbix
+
+
+2020-06-06 0.16.2
+=================
+- Optionally choose scheme for connection to InfluxDB. Thanks, Dennis!
+
+
+2020-06-06 0.16.1
+=================
+- Fix charset encoding within pipe module. Thanks, Morten!
+- Fix removal of "as_user" option within Slack plugin. Thanks, Morten!
+
+
+2020-05-30 0.16.0
+=================
+- Fix for the mqttwarn.service service unit. Thanks, Fulvio!
+- Fix encoding of data for Python3 within Pushsafer plugin. Thanks, Thomas!
+- Non-JSON payload should not generate warning. Thanks, Morten!
+- Fix missing namespace within Serial plugin. Thanks, Morten!
+- Fix Dockerfile to use mqttwarn pip module. Thanks, Koen!
+- Add Docker Compose file and update Dockerfile to use /etc/mqttwarn. Thanks, Koen!
+- Change Dockerfile base image to python:3.8.2-slim-buster. Thanks, Koen!
+- Improve code formatting within custom functions of "warntoggle" example. Thanks, Dan!
+- Fix charset encoding within Serial plugin. Thanks, Morten!
+
+
+2020-04-14 0.15.0
+=================
+- Document ``tls=True`` setting. Thanks, @jpmens!
+- Add ``warntoggle`` example (#408). Thanks, @robdejonge!
+- Load functions file at configuration load (#410). Thanks, @fhriley!
+- Try to make "zabbix" service work again
+
+
+2020-03-31 0.14.2
+=================
+- Upgrade to apprise 0.8.5
+
+
+2020-03-28 0.14.1
+=================
+- Upgrade xmpppy to 0.6.1, add dnspython as dependency
+
+
+2020-03-18 0.14.0
+=================
+- Add service plugin for `Apprise <https://github.com/caronc/apprise>`_.
+- Upgrade xmpppy to 0.6.0
+- More verbose exception when formatting message fails
+
+
+2020-03-04 0.13.9
+=================
+- Remove references to ``mqttwarn.py``. Cleanup documentation.
+- Fix charset encoding within Postgres plugin. Thanks, @clarkspark!
+- Fix function invocation through "format" setting. Thanks, @clarkspark!
+
+
+2020-01-12 0.13.8
+=================
+- Fix charset encoding issue for service "mqttpub". Thanks, @jpmens!
+
+
+2020-01-12 0.13.7
+=================
+- Improve exception handling when service plugin fails
+- Properly handle charset encoding, both on Python 2 and Python 3
+
+
+2020-01-09 0.13.6
+=================
+- Support Python 3.8
+
 
 2019-12-27 0.13.5
 =================

@@ -9,7 +9,7 @@ try:
     import simplejson as json
 except ImportError:
     import json
-from vendor import ZabbixSender
+from mqttwarn.vendor import ZabbixSender
 import time
 
 
