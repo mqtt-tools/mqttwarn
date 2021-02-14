@@ -321,6 +321,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [ionic](#ionic)
 * [azure_iot](#azure_iot)
 * [irccat](#irccat)
+* [launch](#launch)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
 * mastodon (see [tootpaste](#tootpaste))
@@ -1284,6 +1285,30 @@ targets = {
 
 Requires:
 * gobject-introspection Python bindings
+
+### `launch`
+
+The `launch` target excutes the specified program and its arguments. It is similar
+to `pipe` but it doesn't open a pipe to the program. It provides stdout as response
+to configured queue.
+Example use cases are f.e. IoT buttons which publish a message when they are pushed
+and the excute an external program. It is also a clone of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
+
+```ini
+[config:launch]
+targets = {
+              # full_topic, topic[0], topic[1], args[0], .....
+   'touch'    : [ None,0,0,'touch', '/tmp/executed' ],
+   'fritzctl' : [ None,0,0,'/usr/bin/fritzctl', 'temperature', "{args[0]}", "{args[1]}" ]
+   'backup'   : ["response/{topic[1]}/{topic[2]}",0,0,'/usr/bin/sudo','/usr/sbin/dirvish','--vault', "{args[0]}" ],
+   }
+```
+
+To pass the published data (json args array) to the command, use `{args[0]}` and `{args[1]}` which then gets replaced. Message looks like `'{ "args" : ["' + temp + '","' + room + '"] }'` for `fritzctl`.
+outgoing_topic is constructed by parts of incoming topic or as full_incoming topic.
+
+Note, that for each message targeted to the `launch` service, a new process is
+spawned (fork/exec), so it is quite "expensive".
 
 ### `log`
 
