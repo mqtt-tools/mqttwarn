@@ -27,7 +27,7 @@ def plugin(srv, item):
     outbound_topic = item.addrs[0]
     qos            = item.addrs[1]
     retain         = item.addrs[2]
-    addrs          = item.addrs.slice(3)
+    addrs          = item.addrs[3:]
     # replace args[0], args[1] ...
     cmd = [i.format(args=args) for i in addrs]
     srv.logging.debug("*** MODULE=%s: service=%s, command=%s", __file__, item.service, str( cmd ))
