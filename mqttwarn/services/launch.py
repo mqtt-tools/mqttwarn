@@ -48,6 +48,6 @@ def plugin(srv, item):
             srv.mqttc.publish(outgoing_topic, outgoing_payload, qos=qos, retain=retain)
         except Exception as e:
             srv.logging.warning("Cannot PUBlish response %s: %s" % (outgoing_topic, e))
-        return False
+            return False
 
     return True
