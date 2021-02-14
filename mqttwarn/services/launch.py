@@ -8,6 +8,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 import subprocess
 import json
 from pipes import quote
+from six import string_types
 
 def plugin(srv, item):
 
@@ -24,13 +25,14 @@ def plugin(srv, item):
     elif type(args) is str or type(args) is unicode:
         args=(quote(args),)
 
-    outbound_topic = item.addrs[0]
+    topic=list(map( lambda x: quote(x), item.topic.split('/') ))
+    outgoing_topic = item.addrs[0].format(full_topic=quote(item.topic),topic=topic)
     qos            = item.addrs[1]
     retain         = item.addrs[2]
     addrs          = item.addrs[3:]
     # replace args[0], args[1] ...
     cmd = [i.format(args=args) for i in addrs]
-    srv.logging.debug("*** MODULE=%s: service=%s, command=%s", __file__, item.service, str( cmd ))
+    srv.logging.debug("*** MODULE=%s: service=%s, command=%s outgoing_topic=%s", __file__, item.service, str( cmd ),outgoing_topic)
 
     try:
         res = subprocess.check_output(cmd, stdin=None, stderr=subprocess.STDOUT, shell=False, universal_newlines=True, cwd='/tmp')
@@ -38,14 +40,14 @@ def plugin(srv, item):
         srv.logging.warning("Cannot execute %s because %s" % (cmd, e))
         return False
 
-    if outbound_topic is not None:
+    if outgoing_topic is not None:
         outgoing_payload = res.rstrip('\n')
         if isinstance(outgoing_payload, string_types):
             outgoing_payload = bytearray(outgoing_payload, encoding='utf-8')
         try:
             srv.mqttc.publish(outgoing_topic, outgoing_payload, qos=qos, retain=retain)
         except Exception as e:
-            srv.logging.warning("Cannot PUBlish via `mqttpub:%s': %s" % (item.target, e))
+            srv.logging.warning("Cannot PUBlish response %s: %s" % (outgoing_topic, e))
         return False
 
     return True
