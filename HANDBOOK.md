@@ -321,12 +321,12 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [ionic](#ionic)
 * [azure_iot](#azure_iot)
 * [irccat](#irccat)
-* [launch](#launch)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
 * mastodon (see [tootpaste](#tootpaste))
 * [mattermost](#mattermost)
 * [mqtt](#mqtt)
+* [mqtt_filter](#mqtt_filter)
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
 * [mysql_dynamic](#mysql_dynamic)
@@ -1286,30 +1286,6 @@ targets = {
 Requires:
 * gobject-introspection Python bindings
 
-### `launch`
-
-The `launch` target excutes the specified program and its arguments. It is similar
-to `pipe` but it doesn't open a pipe to the program. It provides stdout as response
-to configured queue.
-Example use cases are f.e. IoT buttons which publish a message when they are pushed
-and the excute an external program. It is also a clone of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
-
-```ini
-[config:launch]
-targets = {
-              # full_topic, topic[0], topic[1], args[0], .....
-   'touch'    : [ None,0,0,'touch', '/tmp/executed' ],
-   'fritzctl' : [ None,0,0,'/usr/bin/fritzctl', 'temperature', "{args[0]}", "{args[1]}" ]
-   'backup'   : ["response/{topic[1]}/{topic[2]}",0,0,'/usr/bin/sudo','/usr/sbin/dirvish','--vault', "{args[0]}" ],
-   }
-```
-
-To pass the published data (json args array) to the command, use `{args[0]}` and `{args[1]}` which then gets replaced. Message looks like `'{ "args" : ["' + temp + '","' + room + '"] }'` for `fritzctl`.
-outgoing_topic is constructed by parts of incoming topic or as full_incoming topic.
-
-Note, that for each message targeted to the `launch` service, a new process is
-spawned (fork/exec), so it is quite "expensive".
-
 ### `log`
 
 The `log` service allows us to use the logging system in use by _mqttwarn_
@@ -1447,6 +1423,71 @@ This shows the currently full configuration possible. Global values from the
 `mqtt` service override those not specified here. Also, if you don't need
 authentication (`auth`) or (`tls`) you may omit those sections. (The `defaults`
 section must exist.)
+
+### `mqtt_filter`
+
+The `mqtt_filter` target executes the specified program and its arguments. It is similar
+to `pipe` but it doesn't open a pipe to the program. It provides stdout as response
+to a configured queue.
+Example use cases are f.e. IoT buttons which publish a message when they are pushed
+and the execute an external program. It is also a clone of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
+With no response configured it acts like `execute` with multiple arguments.
+
+To pass the published data (json args array) to the command, use `{args[0]}` and `{args[1]}` which then gets replaced. Message looks like `'{ "args" : ["' + temp + '","' + room + '"] }'` for `fr
+itzctl`.
+
+outgoing_topic is constructed by parts of incoming topic or as full_incoming topic.
+
+```ini
+[config:mqtt_filter]
+targets = {
+   # full_topic, topic[0], topic[1], args[0], .....
+   'touch'    : [ None,0,0,'touch', '/tmp/executed' ],
+   'fritzctl' : [ None,0,0,'/usr/bin/fritzctl','--loglevel=ERROR','temperature', "{args[0]}", "{args[1]}" ]
+   'backup'   : ["response/{topic[1]}/{topic[2]}",0,0,'/usr/bin/sudo','/usr/sbin/dirvish','--vault', "{args[0]}" ],
+   }
+```
+
+Use case for fritzctl is to change the requested temperature for a connected thermostat.
+Topic is constructed as /home/{room}/temperature/{action}.
+
+```
+def TemperatureConvert( data=None, srv=None):
+
+    # optional debug logger
+    if srv is not None:
+        srv.logging.debug('data={data}, srv={srv}'.format(**locals()))
+
+    topic = str( data.get('topic','') )
+
+    # init
+    room = ''
+    action = 'status'
+
+    # /home/{room}/temperature/{action}
+    parts = topic.split('/')
+
+    for idx, part in enumerate( parts ):
+         if idx == 1:
+             room = part
+
+         if idx == 3:
+             action = part
+
+    temp = str( data.get('payload','sav') )
+    if temp == '':
+        temp = 'sav'
+
+    if action == 'set':
+        cmd = '{ "args" : ["' + temp + '","' + room + '"] }'
+
+    return cmd
+```
+
+Use case for backup is to run a dirvish backup triggered by a simple mqtt message.
+
+Note, that for each message targeted to the `mqtt_filter` service, a new process is
+spawned (fork/exec), so it is quite "expensive".
 
 ### `mqttpub`
 

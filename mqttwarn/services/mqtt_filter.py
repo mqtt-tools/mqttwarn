@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'Tobias Brunner <tobias()tobru.ch>'
+__author__    = 'Joerg Gollnick <github+mqttwarn()wurzelbenutzer.de>'
 __copyright__ = 'Copyright 2016 Tobias Brunner / 2021 Joerg Gollnick'
 __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)"""
 
@@ -14,7 +14,7 @@ def plugin(srv, item):
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    # same as for ssh - extract args from json item.message
+    # same as for ssh
     args=json.loads(item.message)["args"]
 
     if type(args) is list and len(args) == 1:
@@ -25,13 +25,17 @@ def plugin(srv, item):
     elif type(args) is str or type(args) is unicode:
         args=(quote(args),)
 
+    # parse topic
     topic=list(map( lambda x: quote(x), item.topic.split('/') ))
-    outgoing_topic = item.addrs[0].format(full_topic=quote(item.topic),topic=topic)
+
+    # replace palceholders args[0], args[1] ..., full_topic, topic[0],
+    outgoing_topic = item.addrs[0].format(args=args,full_topic=quote(item.topic),topic=topic)
     qos            = item.addrs[1]
     retain         = item.addrs[2]
     addrs          = item.addrs[3:]
-    # replace args[0], args[1] ...
-    cmd = [i.format(args=args) for i in addrs]
+
+    cmd = [i.format(args=args, full_topic=quote(item.topic),topic=topic) for i in addrs]
+
     srv.logging.debug("*** MODULE=%s: service=%s, command=%s outgoing_topic=%s", __file__, item.service, str( cmd ),outgoing_topic)
 
     try:
