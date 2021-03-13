@@ -1429,8 +1429,8 @@ section must exist.)
 The `mqtt_filter` target executes the specified program and its arguments. It is similar
 to `pipe` but it doesn't open a pipe to the program. It provides stdout as response
 to a configured queue.
-Example use cases are f.e. IoT buttons which publish a message when they are pushed
-and the execute an external program. It is also a clone of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
+Example use cases are e.g. IoT buttons which publish a message when they are pushed
+and they execute an external program. It is also a clone of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
 With no response configured it acts like `execute` with multiple arguments.
 
 To pass the published data (json args array) to the command, use `{args[0]}` and `{args[1]}` which then gets replaced. Message looks like `'{ "args" : ["' + temp + '","' + room + '"] }'` for `fr
@@ -1442,8 +1442,11 @@ outgoing_topic is constructed by parts of incoming topic or as full_incoming top
 [config:mqtt_filter]
 targets = {
    # full_topic, topic[0], topic[1], args[0], .....
+   # touch file /tmp/executed
    'touch'    : [ None,0,0,'touch', '/tmp/executed' ],
+   # uses firtzctl to set temperature of a room
    'fritzctl' : [ None,0,0,'/usr/bin/fritzctl','--loglevel=ERROR','temperature', "{args[0]}", "{args[1]}" ]
+   # performs a dirvish backup and writes stdout as a new messages to response topic
    'backup'   : ["response/{topic[1]}/{topic[2]}",0,0,'/usr/bin/sudo','/usr/sbin/dirvish','--vault', "{args[0]}" ],
    }
 ```
