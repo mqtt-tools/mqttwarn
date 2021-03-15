@@ -15,15 +15,19 @@ def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     # same as for ssh
-    args=json.loads(item.message)["args"]
+    json_message=json.loads(item.message)
 
-    if type(args) is list and len(args) == 1:
-        args=args[0]
+    args = None
+    if json_message is not None:
+        args = json_message["args"]
 
-    if type(args) is list:
-        args=tuple([ quote(v) for v  in args ]) #escape the shell args
-    elif type(args) is str or type(args) is unicode:
-        args=(quote(args),)
+        if type(args) is list and len(args) == 1:
+            args=args[0]
+
+        if type(args) is list:
+            args=tuple([ quote(v) for v  in args ]) #escape the shell args
+        elif type(args) is str or type(args) is unicode:
+            args=(quote(args),)
 
     # parse topic
     topic=list(map( lambda x: quote(x), item.topic.split('/') ))
