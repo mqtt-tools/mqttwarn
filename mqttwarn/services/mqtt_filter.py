@@ -28,13 +28,17 @@ def plugin(srv, item):
     # parse topic
     topic=list(map( lambda x: quote(x), item.topic.split('/') ))
 
+    outgoing_topic = None
     # replace palceholders args[0], args[1] ..., full_topic, topic[0],
-    outgoing_topic = item.addrs[0].format(args=args,full_topic=quote(item.topic),topic=topic)
+    if item.addrs[0] is not None:
+        outgoing_topic = item.addrs[0].format(args=args,full_topic=quote(item.topic),topic=topic)
     qos            = item.addrs[1]
     retain         = item.addrs[2]
     addrs          = item.addrs[3:]
 
-    cmd = [i.format(args=args, full_topic=quote(item.topic),topic=topic) for i in addrs]
+    cmd = None
+    if addrs is not None:
+        cmd = [i.format(args=args, full_topic=quote(item.topic),topic=topic) for i in addrs]
 
     srv.logging.debug("*** MODULE=%s: service=%s, command=%s outgoing_topic=%s", __file__, item.service, str( cmd ),outgoing_topic)
 
