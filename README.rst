@@ -1,14 +1,18 @@
-.. image:: https://img.shields.io/badge/Python-2.7,%203.5,%203.6,%203.7,%203.8,%203.9;%20PyPy,%20PyPy3-green.svg
-    :target: https://github.com/jpmens/mqttwarn
+.. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/master.svg?style=svg
+    :target: https://circleci.com/gh/jpmens/mqttwarn/tree/master
+
+.. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
+    :target: https://pypi.org/project/mqttwarn/
 
 .. image:: https://img.shields.io/pypi/v/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
 
-.. image:: https://img.shields.io/github/tag/jpmens/mqttwarn.svg
-    :target: https://github.com/jpmens/mqttwarn
+.. image:: https://img.shields.io/pypi/l/mqttwarn.svg
+    :alt: License
+    :target: https://pypi.org/project/mqttwarn/
 
-.. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/master.svg?style=svg
-    :target: https://circleci.com/gh/jpmens/mqttwarn/tree/master
+.. image:: https://img.shields.io/pypi/status/mqttwarn.svg
+    :target: https://pypi.org/project/mqttwarn/
 
 |
 
