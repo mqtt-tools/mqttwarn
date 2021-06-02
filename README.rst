@@ -23,6 +23,7 @@
 ########
 mqttwarn
 ########
+
 To *warn*, *alert*, or *notify*.
 
 .. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/master/assets/google-definition.jpg
@@ -33,6 +34,7 @@ To *warn*, *alert*, or *notify*.
 *****
 About
 *****
+
 mqttwarn - subscribe to MQTT topics and notify pluggable services.
 
 
@@ -71,12 +73,14 @@ MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 
 
 .. _handbook: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md
+.. _Docker handbook: https://github.com/jpmens/mqttwarn/blob/master/DOCKER.md
 .. _handbook_services: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md#supported-notification-services
 
 
 *************
 Documentation
 *************
+
 The handbook_ is the right place to read all about *mqttwarn*'s
 features and service plugins.
 
@@ -84,6 +88,7 @@ features and service plugins.
 ************
 Installation
 ************
+
 Synopsis::
 
     pip install --upgrade mqttwarn
@@ -97,10 +102,19 @@ You can also add support for multiple services, all at once::
     pip install --upgrade 'mqttwarn[apprise,asterisk,nsca,osxnotify,tootpaste,xmpp]'
 
 
+***************
+Container image
+***************
+
+For running ``mqttwarn`` on a container infrastructure like Docker or
+Kubernetes, there are images on Docker Hub called ``jpmens/mqttwarn``.
+To read more about this topic, please follow up on the `Docker handbook`_.
+
 
 *************
 Configuration
 *************
+
 First, create configuration and custom Python starter files
 ``mqttwarn.ini`` and ``samplefuncs.py`` and edit them to your taste::
 
