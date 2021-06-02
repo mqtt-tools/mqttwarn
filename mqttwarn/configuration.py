@@ -53,7 +53,6 @@ class Config(RawConfigParser):
         self.functions    = None
         self.num_workers  = 1
 
-        self.directory    = '.'
         self.ca_certs     = None
         self.tls_version  = None
         self.certfile     = None
