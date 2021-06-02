@@ -23,9 +23,8 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Custom functions](#custom-functions)
     + [Templates](#templates)
   * [Periodic tasks](#periodic-tasks)
-  * [Running with Docker](#running-with-docker)
-    + [Run the Image](#run-the-image)
-    + [Build the image](#build-the-image)
+  * [Running with Docker](#docker)
+  * [Loading external services](#loading-external-services)
   * [Examples](#examples)
     + [Low battery notifications](#low-battery-notifications)
     + [Producing JSON](#producing-json)
@@ -3402,6 +3401,55 @@ pinger = 10.5; now=true
 ## Docker
 
 In order to run `mqttwarn` on Docker, please follow up at [DOCKER.md](DOCKER.md).
+
+
+## Loading external services
+
+In order to bring in custom emitter machinery to `mqttwarn` in form of service
+plugins, there are two options.
+
+
+### Service plugin from package
+
+This configuration snippet outlines how to load a custom plugin from a Python
+module referenced in "dotted" notation.
+
+```ini
+[defaults]
+; name the service providers you will be using.
+launch    = log, file, tests.acme.foobar
+
+[test/plugin-module]
+; echo '{"name": "temperature", "value": 42.42}' | mosquitto_pub -h localhost -t test/plugin-module -l
+targets = tests.acme.foobar:default
+format = {name}: {value}
+
+[config:tests.acme.foobar]
+targets = {
+    'default'  : [ 'default' ],
+  }
+```
+
+### Service plugin from file
+
+This configuration snippet outlines how to load a custom plugin from a Python
+file referenced by file name.
+
+```ini
+[defaults]
+; name the service providers you will be using.
+launch    = log, file, tests/acme/foobar.py
+
+[test/plugin-file]
+; echo '{"name": "temperature", "value": 42.42}' | mosquitto_pub -h localhost -t test/plugin-file -l
+targets = tests/acme/foobar.py:default
+format = {name}: {value}
+
+[config:tests/acme/foobar.py]
+targets = {
+    'default'  : [ 'default' ],
+  }
+```
 
 
 ## Examples ##
