@@ -562,12 +562,6 @@ def connect():
         logger.error("No services configured. Aborting")
         sys.exit(2)
 
-    try:
-        os.chdir(cf.directory)
-    except Exception as e:
-        logger.error("Cannot chdir to %s: %s" % (cf.directory, e))
-        sys.exit(2)
-
     load_services(services)
 
     # Initialize MQTT broker connection
