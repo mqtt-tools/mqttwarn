@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+command="/usr/bin/python /opt/mqttwarn/mqttwarn.py"
+command_args="${MQTTWARN_OPTIONS}"
+command_background=yes
+pidfile=/run/mqttwarn.pid
+directory=/opt/mqttwarn
+
+name="mqttwarn"
+description="mqttwarn pluggable mqtt notification service"
+
+depend() {
+  need net
+}
