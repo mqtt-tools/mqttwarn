@@ -7,7 +7,7 @@
 # Configuration
 # -------------
 
-$(eval venvpath     := .venv_util)
+$(eval venvpath     := .venv)
 $(eval pip          := $(venvpath)/bin/pip)
 $(eval python       := $(venvpath)/bin/python)
 $(eval pytest       := $(venvpath)/bin/pytest)
