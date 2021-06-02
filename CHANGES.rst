@@ -7,7 +7,7 @@ in progress
 ===========
 
 
-2021-06-02 0.21.0
+2021-06-03 0.21.0
 =================
 - [xmpp] Add slixmpp plugin and documentation. Thanks, Remi!
 - [mysql] Fix unicode vs byte issue for Python 3. Thanks, Filip!
@@ -18,6 +18,7 @@ in progress
   responds with MQTT publish. Thanks, Jörg!
 - [core] Remove "os.chdir" as it is apparently not needed anymore. Thanks, Dan!
 - [ci] Run tests on Python 3.9, remove testing on Python 3.5
+- [core] Load service plugins from both modules and files
 
 
 2020-10-20 0.20.0

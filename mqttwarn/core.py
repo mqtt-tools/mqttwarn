@@ -532,20 +532,27 @@ def load_services(services):
 
         module = cf.g('config:' + service, 'module', service)
 
-        if '.' in module:
+        if module.endswith(".py"):
+            modulefile = module
+
+        elif '.' in module:
+            logger.debug('Trying to load service "{}" from module "{}"'.format(service, module))
             try:
                 service_plugins[service]['module'] = load_module_by_name(module)
                 logger.info('Successfully loaded service "{}" from module "{}"'.format(service, module))
+                continue
             except Exception as ex:
                 logger.exception('Unable to load service "{}" from module "{}": {}'.format(service, module, ex))
 
         else:
             modulefile = resource_filename('mqttwarn.services', module + '.py')
-            try:
-                service_plugins[service]['module'] = load_module_from_file(modulefile)
-                logger.info('Successfully loaded service "{}"'.format(service))
-            except Exception as ex:
-                logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
+
+        logger.debug('Trying to load service "{}" from file "{}"'.format(service, modulefile))
+        try:
+            service_plugins[service]['module'] = load_module_from_file(modulefile)
+            logger.info('Successfully loaded service "{}"'.format(service))
+        except Exception as ex:
+            logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
 
 
 def connect():
