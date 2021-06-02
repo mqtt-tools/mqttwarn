@@ -18,7 +18,7 @@ the necessary steps needed to create a configuration and run it.
 Within an empty folder, create a baseline `mqttwarn.ini` file:
 ```shell
 docker run -it --rm --volume=$PWD:/etc/mqttwarn jpmens/mqttwarn mqttwarn make-config > mqttwarn.ini
-touch samplefuncs.py
+docker run -it --rm --volume=$PWD:/etc/mqttwarn jpmens/mqttwarn mqttwarn make-samplefuncs > samplefuncs.py
 ```
 
 Then, assuming your MQTT broker runs on `localhost`, amend the `mqttwarn.ini` like:
@@ -104,18 +104,6 @@ Then add this argument to `docker run`:
 ```shell
 --link=mosquitto
 ```
-
-### Custom services
-You have the option to inject services to the official container.
-If you have a `myservice.py` file, you can add it to the services directory with a new volume mount:
-```
--v $PWD/myservice.py:/usr/local/lib/python3.8/site-packages/mqttwarn/services/myservice.py
-```
-After doing this, you can use your service like:
-```ini
-[config:myservice]
-```
-For service development you probably also want to change the loglevel to `DEBUG`. 
 
 
 ### A full example
