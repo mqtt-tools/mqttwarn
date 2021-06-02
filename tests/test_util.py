@@ -149,7 +149,7 @@ def test_load_function():
     # Load invalid function, function name does not exist in "funcfile"
     with pytest.raises(AttributeError) as excinfo:
         load_function(name='unknown', py_mod=py_mod)
-    assert re.match("Function 'unknown' does not exist in '.+{}c?'".format(funcfile), str(excinfo.value))
+    assert re.match("Function 'unknown' does not exist in '.*{}c?'".format(funcfile), str(excinfo.value))
 
 
 def test_get_resource_content():
