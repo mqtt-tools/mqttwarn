@@ -7,8 +7,10 @@ import json
 from builtins import str
 import logging
 
+import pytest
+
 from mqttwarn.core import make_service, decode_payload
-from tests import configfile
+from tests import configfile, configfile_v2
 from tests.util import core_bootstrap, send_message
 
 
@@ -167,9 +169,10 @@ def test_message_file_unicode():
         assert u'Räuber Hotzenplotz' in content, content
 
 
-def test_plugin_module(caplog):
+@pytest.mark.parametrize("configfile", [configfile, configfile_v2])
+def test_plugin_module(caplog, configfile):
     """
-    Check if using a module with dotted name also works.
+    Check if loading a service module with dotted name works.
     """
 
     with caplog.at_level(logging.DEBUG):
@@ -184,9 +187,10 @@ def test_plugin_module(caplog):
         assert 'Plugin invoked' in caplog.text, caplog.text
 
 
-def test_plugin_file(caplog):
+@pytest.mark.parametrize("configfile", [configfile, configfile_v2])
+def test_plugin_file(caplog, configfile):
     """
-    Check if using a module with dotted name also works.
+    Check if loading a service module from a file works.
     """
 
     with caplog.at_level(logging.DEBUG):

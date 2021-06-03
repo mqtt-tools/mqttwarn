@@ -6,7 +6,13 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2021-06-03 0.22.0
+=================
+
 - [build] Fix unwanted cache hits when automatically building Docker images. Thanks, Gergő!
+- [core] Respect relative path names within configuration file. This applies
+  to both the function file as well as module files.
 
 
 2021-06-03 0.21.0
@@ -20,7 +26,7 @@ in progress
   responds with MQTT publish. Thanks, Jörg!
 - [core] Remove "os.chdir" as it is apparently not needed anymore. Thanks, Dan!
 - [ci] Run tests on Python 3.9, remove testing on Python 3.5
-- [core] Load service plugins from both modules and files
+- [core] Load service plugins from both modules and files.
 
 
 2020-10-20 0.20.0
