@@ -7,10 +7,6 @@
 #
 FROM python:3.9-slim-buster
 
-# Install mqttwarn
-COPY . /src
-RUN pip install /src
-
 # Create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
 WORKDIR /etc/mqttwarn
@@ -27,6 +23,10 @@ VOLUME ["/etc/mqttwarn"]
 
 # Set default configuration path
 ENV MQTTWARNINI="/etc/mqttwarn/mqttwarn.ini"
+
+# Install mqttwarn
+COPY . /src
+RUN pip install /src
 
 # Invoke program
 CMD mqttwarn

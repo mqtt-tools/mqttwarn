@@ -6,14 +6,14 @@ mqttwarn changelog
 in progress
 ===========
 
-- [build] Fix unwanted cache hits when automatically building Docker images
+- [build] Fix unwanted cache hits when automatically building Docker images. Thanks, Gergő!
 
 
 2021-06-03 0.21.0
 =================
 - [xmpp] Add slixmpp plugin and documentation. Thanks, Remi!
 - [mysql] Fix unicode vs byte issue for Python 3. Thanks, Filip!
-- [http] Fix to send whole message. Thanks, Gergo!
+- [http] Fix to send whole message. Thanks, Gergő!
 - [slack] Replace ``slacker`` with ``slack-sdk``. Thanks, mcdamo!
 - [mysql] Fix specified port bug. Thanks, Hyman!
 - [launch] Add new service ``launch``. Flexible arguments for command,
