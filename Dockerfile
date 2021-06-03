@@ -6,7 +6,7 @@ FROM python:3.9-slim-buster
 RUN pip install mqttwarn
 
 # install extra dependencies needed for our services/functions
-RUN pip install slacker gpxpy
+RUN pip install slack-sdk gpxpy
 
 # create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
