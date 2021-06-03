@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: themattrix/tox
+      - image: mikicz/tox-base
     steps:
       - checkout
       - run: tox

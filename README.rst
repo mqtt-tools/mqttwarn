@@ -1,14 +1,18 @@
-.. image:: https://img.shields.io/badge/Python-2.7,%203.5,%203.6,%203.7,%203.8,%203.9;%20PyPy,%20PyPy3-green.svg
-    :target: https://github.com/jpmens/mqttwarn
+.. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/master.svg?style=svg
+    :target: https://circleci.com/gh/jpmens/mqttwarn/tree/master
+
+.. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
+    :target: https://pypi.org/project/mqttwarn/
 
 .. image:: https://img.shields.io/pypi/v/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
 
-.. image:: https://img.shields.io/github/tag/jpmens/mqttwarn.svg
-    :target: https://github.com/jpmens/mqttwarn
+.. image:: https://img.shields.io/pypi/l/mqttwarn.svg
+    :alt: License
+    :target: https://pypi.org/project/mqttwarn/
 
-.. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/master.svg?style=svg
-    :target: https://circleci.com/gh/jpmens/mqttwarn/tree/master
+.. image:: https://img.shields.io/pypi/status/mqttwarn.svg
+    :target: https://pypi.org/project/mqttwarn/
 
 |
 
@@ -19,6 +23,7 @@
 ########
 mqttwarn
 ########
+
 To *warn*, *alert*, or *notify*.
 
 .. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/master/assets/google-definition.jpg
@@ -29,6 +34,7 @@ To *warn*, *alert*, or *notify*.
 *****
 About
 *****
+
 mqttwarn - subscribe to MQTT topics and notify pluggable services.
 
 
@@ -67,12 +73,14 @@ MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 
 
 .. _handbook: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md
+.. _Docker handbook: https://github.com/jpmens/mqttwarn/blob/master/DOCKER.md
 .. _handbook_services: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md#supported-notification-services
 
 
 *************
 Documentation
 *************
+
 The handbook_ is the right place to read all about *mqttwarn*'s
 features and service plugins.
 
@@ -80,6 +88,7 @@ features and service plugins.
 ************
 Installation
 ************
+
 Synopsis::
 
     pip install --upgrade mqttwarn
@@ -93,10 +102,19 @@ You can also add support for multiple services, all at once::
     pip install --upgrade 'mqttwarn[apprise,asterisk,nsca,osxnotify,tootpaste,xmpp]'
 
 
+***************
+Container image
+***************
+
+For running ``mqttwarn`` on a container infrastructure like Docker or
+Kubernetes, there are images on Docker Hub called ``jpmens/mqttwarn``.
+To read more about this topic, please follow up on the `Docker handbook`_.
+
 
 *************
 Configuration
 *************
+
 First, create configuration and custom Python starter files
 ``mqttwarn.ini`` and ``samplefuncs.py`` and edit them to your taste::
 

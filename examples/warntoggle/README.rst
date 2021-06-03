@@ -18,5 +18,5 @@ Installation
 
 - Copy the ``togglestate()`` function from ``mqttwarn/customfunctions.py`` to your own custom functions file, or copy the entire file and refer to it in `mqttwarn.ini` with a  ``functions = 'customfunctions.py'`` directive.
 - Copy the content of the `www` folder to a web server on the same host as `mqttwarn`, ensure Python is enabled for the server and ``warntoggle.json`` is writeable by the web server.
-- Create a symbolic link from ``/opt/mqttwarn/warntoggle.json`` -> ``/var/www/html/warntoggle.json`, obviously adjusted for your local situation. Alternatively, configure the filename inside the custom function where it now says ``filename = "warntoggle.js"`` to contain an absolute path.
+- Create a symbolic link from ``/etc/mqttwarn/warntoggle.json`` -> ``/var/www/html/warntoggle.json`, obviously adjusted for your local situation. Alternatively, configure the filename inside the custom function where it now says ``filename = "warntoggle.js"`` to contain an absolute path.
 - For each stream you wish to be considered by ``warntoggle``, add a line ``filter = togglestate()`` to ``mqttwarn.ini``. This must be done inside each stream section.

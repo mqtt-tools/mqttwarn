@@ -23,9 +23,8 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Custom functions](#custom-functions)
     + [Templates](#templates)
   * [Periodic tasks](#periodic-tasks)
-  * [Running with Docker](#running-with-docker)
-    + [Run the Image](#run-the-image)
-    + [Build the image](#build-the-image)
+  * [Running with Docker](#docker)
+  * [Loading external services](#loading-external-services)
   * [Examples](#examples)
     + [Low battery notifications](#low-battery-notifications)
     + [Producing JSON](#producing-json)
@@ -122,13 +121,8 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   ; name the service providers you will be using.
   launch   = file, log, osxnotify, mysql, smtp
-  
-  ; the directory to which we should cd after startup (default: ".")
-  ; the cd is performed before loading service plugins, so it should
-  ; contain a `services/' directory with the required service plugins.
-  directory = /tmp/
-  
-  
+
+
   ; optional: TLS parameters. (Don't forget to set the port number for
   ; TLS (probably 8883).
   ; You will need to set at least `ca_certs' if you want TLS support and
@@ -326,6 +320,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * mastodon (see [tootpaste](#tootpaste))
 * [mattermost](#mattermost)
 * [mqtt](#mqtt)
+* [mqtt_filter](#mqtt_filter)
 * [mqttpub](#mqttpub)
 * [mysql](#mysql)
 * [mysql_dynamic](#mysql_dynamic)
@@ -1422,6 +1417,74 @@ This shows the currently full configuration possible. Global values from the
 `mqtt` service override those not specified here. Also, if you don't need
 authentication (`auth`) or (`tls`) you may omit those sections. (The `defaults`
 section must exist.)
+
+### `mqtt_filter`
+
+The `mqtt_filter` target executes the specified program and its arguments. It is similar
+to `pipe` but it doesn't open a pipe to the program. It provides stdout as response
+to a configured queue.
+Example use cases are e.g. IoT buttons which publish a message when they are pushed
+and they execute an external program. It is also a clone of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
+With no response configured it acts like `execute` with multiple arguments.
+
+To pass the published data (json args array) to the command, use `{args[0]}` and `{args[1]}` which then gets replaced. Message looks like `'{ "args" : ["' + temp + '","' + room + '"] }'` for `fr
+itzctl`.
+
+outgoing_topic is constructed by parts of incoming topic or as full_incoming topic.
+
+```ini
+[config:mqtt_filter]
+targets = {
+   # full_topic, topic[0], topic[1], args[0], .....
+   # touch file /tmp/executed
+   'touch'    : [ None,0,0,'touch', '/tmp/executed' ],
+   # uses firtzctl to set temperature of a room
+   'fritzctl' : [ None,0,0,'/usr/bin/fritzctl','--loglevel=ERROR','temperature', "{args[0]}", "{args[1]}" ]
+   # performs a dirvish backup and writes stdout as a new messages to response topic
+   'backup'   : ["response/{topic[1]}/{topic[2]}",0,0,'/usr/bin/sudo','/usr/sbin/dirvish','--vault', "{args[0]}" ],
+   }
+```
+
+Use case for fritzctl is to change the requested temperature for a connected thermostat.
+Topic is constructed as /home/{room}/temperature/{action}.
+
+```
+def TemperatureConvert( data=None, srv=None):
+
+    # optional debug logger
+    if srv is not None:
+        srv.logging.debug('data={data}, srv={srv}'.format(**locals()))
+
+    topic = str( data.get('topic','') )
+
+    # init
+    room = ''
+    action = 'status'
+
+    # /home/{room}/temperature/{action}
+    parts = topic.split('/')
+
+    for idx, part in enumerate( parts ):
+         if idx == 1:
+             room = part
+
+         if idx == 3:
+             action = part
+
+    temp = str( data.get('payload','sav') )
+    if temp == '':
+        temp = 'sav'
+
+    if action == 'set':
+        cmd = '{ "args" : ["' + temp + '","' + room + '"] }'
+
+    return cmd
+```
+
+Use case for backup is to run a dirvish backup triggered by a simple mqtt message.
+
+Note, that for each message targeted to the `mqtt_filter` service, a new process is
+spawned (fork/exec), so it is quite "expensive".
 
 ### `mqttpub`
 
@@ -3335,158 +3398,58 @@ instead of waiting for the interval to elapse, you might want to configure:
 pinger = 10.5; now=true
 ```
 
+## Docker
 
-## Running with Docker
+In order to run `mqttwarn` on Docker, please follow up at [DOCKER.md](DOCKER.md).
 
-If you would rather use `mqttwarn` without installing Python
-and the required libraries, you can run it as a [Docker container](https://www.docker.com/).
-You need to install only the Docker executable.
 
-### Run the Image
+## Loading external services
 
-You can run the image as a service, i.e. in the background, or you can 
-run it interactively, perhaps to help diagnose a problem.
+In order to bring in custom emitter machinery to `mqttwarn` in form of service
+plugins, there are two options.
 
-Note that you can run a local copy of the image, if you've built one (see below),
-by replacing `jpmens/mqttwarn` with `mqttwarn-local` in the following examples.
 
-#### As a Service
+### Service plugin from package
 
-This is the typical way of running `mqttwarn`.
+This configuration snippet outlines how to load a custom plugin from a Python
+module referenced in "dotted" notation.
 
-From the folder containing your `mqttwarn.ini` file:
+```ini
+[defaults]
+; name the service providers you will be using.
+launch    = log, file, tests.acme.foobar
 
-```
-$ docker run -d --rm --name mqttwarn \
-    -v $PWD:/opt/mqttwarn/conf \
-    jpmens/mqttwarn
-```
+[test/plugin-module]
+; echo '{"name": "temperature", "value": 42.42}' | mosquitto_pub -h localhost -t test/plugin-module -l
+targets = tests.acme.foobar:default
+format = {name}: {value}
 
-To stop the container:
-```
-$ docker stop mqttwarn
-```
-
-#### Interactively
-
-If you want to experiment with your configuration, or to diagnose
-a problem, it can be simpler to restart the Python script,
-rather than to restart the Docker container.
-
-From the folder containing your `mqttwarn.ini` file:
-
-```
-$ docker run -it --rm \
-    -v $PWD:/opt/mqttwarn/conf \
-    --entrypoint bash \
-    jpmens/mqttwarn
-```
- 
-To start the application from within the container, just invoke
-```
-mqttwarn
+[config:tests.acme.foobar]
+targets = {
+    'default'  : [ 'default' ],
+  }
 ```
 
-`Ctrl-C` will stop it. You can start and stop it as often as you like, here, probably editing the `.ini` file as you go.
+### Service plugin from file
 
-`Ctrl-D` or `exit` will stop the container. 
+This configuration snippet outlines how to load a custom plugin from a Python
+file referenced by file name.
 
+```ini
+[defaults]
+; name the service providers you will be using.
+launch    = log, file, tests/acme/foobar.py
 
+[test/plugin-file]
+; echo '{"name": "temperature", "value": 42.42}' | mosquitto_pub -h localhost -t test/plugin-file -l
+targets = tests/acme/foobar.py:default
+format = {name}: {value}
 
-#### Options
-
-##### Configuration Location
-
-You can of course run the Docker image from anywhere if you 
-specify a full path to the configuration file:
+[config:tests/acme/foobar.py]
+targets = {
+    'default'  : [ 'default' ],
+  }
 ```
-     -v /full/path/to/folder:/opt/mqttwarn/conf
-```
-
-##### Functions
-If you have one or more files of Python functions in the same folder
-as your `.ini` file, then prefix
- the filenames in `.ini` file with a folder:
-```
-functions = 'functions/funcs.py'
-```
-Then add this argument to `docker run`:
-```
-    -v $PWD:/opt/mqttwarn/functions
-```
-
-##### Log file
-
-By default the log file will be created inside the container.
-If you would like instead log to a file on the host, add this to your
-`mqttwarn.ini` file:
-```
-logfile = 'log/mqttwarn.log'
-```
-Add this argument to `docker run`
-```
-    -v $PWD:/opt/mqttwarn/log
-```
-`mqttwarn.log` will be created in your current folder,
-and appended to
-each time the container is executed. You can delete the file
-between executions.
-
-Another solution is to write logs directly to stdout inside the container. That way they are piped to the docker logs engine and your terminal directly, without producing any files.
-```
-logfile = '/dev/stdout'
-```
-
-
-##### If your MQTT Broker is Also Running in Docker on the Same Host
-
-If you give the MQTT broker container a name, then you can 
-refer to it by name rather than by
-IP address.  For instance, if it's named `mosquitto` 
- put this in your `mqttwarn.ini` file:
-```
-hostname  = 'mosquitto'
-```
-Then add this argument to `docker run`:
-```
-    --link mosquitto
-```
-
-##### A full example
-
-If you have your `.ini` and Python files in your current directory,
-this will run `mqttwarn` and place the log file in the current directory:
-```
-$ docker run -d --rm --name mqttwarn \
-    -v $PWD:/opt/mqttwarn/conf \
-    -v $PWD:/opt/mqttwarn/functions \
-    -v $PWD:/opt/mqttwarn/log \
-    --link mosquitto \
-    jpmens/mqttwarn
-```
-
-
-
-### Build the image
-
-If you are making any changes to the `mqttwarn` application or to
-the `Dockerfile`, you can build a local image from the files on your drive
-(not from the files on Github).
-
-Execute the following from the root of the project :
-
-```
-docker build -t mqttwarn-local .
-```
-
-You can then edit any files and rebuild the image as many times as you need. 
-You don't need to commit any changes.
-
-The name `mqttwarn-local` is not meaningful, other than
-making it obvious when you run it that you are using your
-own personal image.  You can use any name you like, but avoid
-`mqttwarn` otherwise it's easily confused with the official images.
-
 
 
 ## Examples ##

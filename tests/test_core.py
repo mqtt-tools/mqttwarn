@@ -178,7 +178,24 @@ def test_plugin_module(caplog):
         core_bootstrap(configfile=configfile)
 
         # Signal mocked MQTT message to the core machinery for processing
-        send_message(topic='test/plugin-1', payload='{"name": "temperature", "value": 42.42}')
+        send_message(topic='test/plugin-module', payload='{"name": "temperature", "value": 42.42}')
+
+        # Proof that the message has been routed to the "log" plugin properly
+        assert 'Plugin invoked' in caplog.text, caplog.text
+
+
+def test_plugin_file(caplog):
+    """
+    Check if using a module with dotted name also works.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT
+        core_bootstrap(configfile=configfile)
+
+        # Signal mocked MQTT message to the core machinery for processing
+        send_message(topic='test/plugin-file', payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
         assert 'Plugin invoked' in caplog.text, caplog.text
