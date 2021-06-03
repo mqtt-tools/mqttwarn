@@ -19,6 +19,9 @@ RUN chown -R mqttwarn:mqttwarn /etc/mqttwarn
 COPY . /src
 RUN pip install /src
 
+# Install extra dependencies needed for our services/functions
+RUN pip install slack-sdk gpxpy
+
 # Make process run as "mqttwarn" user
 USER mqttwarn
 
