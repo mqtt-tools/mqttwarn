@@ -552,8 +552,13 @@ def load_services(services):
 
         # Load built-in service module.
         else:
+            # Backward-compatibility patch for honoring the renaming of the `http.py` module.
+            if module == "http":
+                module = "http_urllib"
+            logger.debug('Trying to load built-in service "{}" from "{}"'.format(service, module))
             modulefile_candidates = [ resource_filename('mqttwarn.services', module + '.py') ]
 
+        success = False
         for modulefile in modulefile_candidates:
             if not os.path.isfile(modulefile):
                 continue
@@ -561,8 +566,13 @@ def load_services(services):
             try:
                 service_plugins[service]['module'] = load_module_from_file(modulefile)
                 logger.info('Successfully loaded service "{}"'.format(service))
+                success = True
             except Exception as ex:
                 logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
+
+        if not success:
+            logger.critical('Unable to load service "{}"'.format(service))
+            sys.exit(1)
 
 
 def connect():

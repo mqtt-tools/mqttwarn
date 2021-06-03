@@ -59,7 +59,7 @@ def plugin(srv, item):
                 try:
                     params[key] = params[key].format(**item.data).encode('utf-8')
                 except Exception as e:
-                    srv.logging.debug("Parameter %s cannot be formatted: %s" % (key, e))
+                    srv.logging.exception("Parameter %s cannot be formatted" % key)
                     return False
 
     message  = item.message
@@ -82,6 +82,7 @@ def plugin(srv, item):
 
             resp = urllib.request.urlopen(request, timeout=timeout)
             data = resp.read()
+            #srv.logging.debug("HTTP response:\n%s" % data)
         except Exception as e:
             srv.logging.warn("Cannot GET %s: %s" % (resource, e))
             return False
@@ -112,7 +113,7 @@ def plugin(srv, item):
             srv.logging.debug("before send")
             resp = urllib.request.urlopen(request, timeout=timeout)
             data = resp.read()
-            # print "POST returns ", data
+            #srv.logging.debug("HTTP response:\n%s" % data)
         except Exception as e:
             srv.logging.warn("Cannot POST %s: %s" % (url, e))
             return False
