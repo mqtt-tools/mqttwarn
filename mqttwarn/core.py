@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2020 The mqttwarn developers
+# (c) 2014-2021 The mqttwarn developers
 from builtins import object
 from past.builtins import cmp
 from builtins import chr
@@ -532,9 +532,15 @@ def load_services(services):
 
         module = cf.g('config:' + service, 'module', service)
 
+        # Load external service from file.
+        modulefile_candidates = []
         if module.endswith(".py"):
-            modulefile = module
+            # Add two candidates: a) Use the file as given and b) treat the file as relative to
+            # the directory of the configuration file. That retains backward compatibility.
+            modulefile_candidates.append(module)
+            modulefile_candidates.append(os.path.join(cf.configuration_path, module))
 
+        # Load external service with module specification.
         elif '.' in module:
             logger.debug('Trying to load service "{}" from module "{}"'.format(service, module))
             try:
@@ -544,15 +550,19 @@ def load_services(services):
             except Exception as ex:
                 logger.exception('Unable to load service "{}" from module "{}": {}'.format(service, module, ex))
 
+        # Load built-in service module.
         else:
-            modulefile = resource_filename('mqttwarn.services', module + '.py')
+            modulefile_candidates = [ resource_filename('mqttwarn.services', module + '.py') ]
 
-        logger.debug('Trying to load service "{}" from file "{}"'.format(service, modulefile))
-        try:
-            service_plugins[service]['module'] = load_module_from_file(modulefile)
-            logger.info('Successfully loaded service "{}"'.format(service))
-        except Exception as ex:
-            logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
+        for modulefile in modulefile_candidates:
+            if not os.path.isfile(modulefile):
+                continue
+            logger.debug('Trying to load service "{}" from file "{}"'.format(service, modulefile))
+            try:
+                service_plugins[service]['module'] = load_module_from_file(modulefile)
+                logger.info('Successfully loaded service "{}"'.format(service))
+            except Exception as ex:
+                logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
 
 
 def connect():

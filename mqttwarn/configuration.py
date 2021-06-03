@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
+# (c) 2014-2021 The mqttwarn developers
 import os
 import sys
 import ast
@@ -34,6 +34,8 @@ class Config(RawConfigParser):
         f = codecs.open(configuration_file, 'r', encoding='utf-8')
         self.read_file(f)
         f.close()
+
+        self.configuration_path = os.path.dirname(configuration_file)
 
         ''' set defaults '''
         self.hostname     = 'localhost'
@@ -81,7 +83,20 @@ class Config(RawConfigParser):
                 self.tls_version = ssl.PROTOCOL_SSLv3
 
         self.loglevelnumber = self.level2number(self.loglevel)
-        self.functions = load_functions(self.functions)
+
+        # Load function file as given (backward-compatibility).
+        if os.path.isfile(self.functions):
+            functions_file = self.functions
+
+        # Load function file as given if path is absolute.
+        elif os.path.isabs(self.functions):
+            functions_file = self.functions
+
+        # Load function file relative to path of configuration file if path is relative.
+        else:
+            functions_file = os.path.join(self.configuration_path, self.functions)
+
+        self.functions = load_functions(functions_file)
 
 
     def level2number(self, level):
