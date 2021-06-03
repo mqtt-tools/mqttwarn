@@ -12,7 +12,7 @@ in progress
 
 - [http] Rename ``http.py`` module to ``http_urllib.py`` to reduce conflicts with stdlib.
   For backward compatibility reasons, it is still available by the same name, so no
-  configurations will break.
+  configurations will break. Thanks, Morten!
 
 
 2021-06-03 0.22.0
