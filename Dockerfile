@@ -1,27 +1,32 @@
+# Docker build file for mqttwarn.
+# Based on https://github.com/pfichtner/docker-mqttwarn.
+#
+# Invoke like:
+#
+#   docker build --tag=mqttwarn-local .
+#
 FROM python:3.9-slim-buster
 
-# based on https://github.com/pfichtner/docker-mqttwarn
+# Install mqttwarn
+COPY . /src
+RUN pip install /src
 
-# install mqttwarn
-RUN pip install mqttwarn
-
-# create /etc/mqttwarn
+# Create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
 WORKDIR /etc/mqttwarn
 
-# add user mqttwarn to image
+# Add user "mqttwarn"
 RUN groupadd -r mqttwarn && useradd -r -g mqttwarn mqttwarn
 RUN chown -R mqttwarn:mqttwarn /etc/mqttwarn
 
-# process run as mqttwarn user
+# Make process run as "mqttwarn" user
 USER mqttwarn
 
-# conf file from host
+# Use configuration file from host
 VOLUME ["/etc/mqttwarn"]
 
-# set conf path
+# Set default configuration path
 ENV MQTTWARNINI="/etc/mqttwarn/mqttwarn.ini"
 
-# run process
+# Invoke program
 CMD mqttwarn
-

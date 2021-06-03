@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- [build] Fix unwanted cache hits when automatically building Docker images
+
 
 2021-06-03 0.21.0
 =================
