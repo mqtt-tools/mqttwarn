@@ -131,3 +131,18 @@ The name `mqttwarn-local` is not meaningful, other than making it obvious when
 you run it that you are using your own personal image. You can use any name you
 like, but avoid `mqttwarn` otherwise it's easily confused with the official
 images.
+
+
+## Installing additional Python packages into Docker image
+
+In order to use `mqttwarn` with additional Python modules not included in the
+baseline image, you will need to build custom Docker images based on the
+canonical `jpmens/mqttwarn`.
+
+We prepared an example which outlines how this would work with the Slack SDK.
+By using the `Dockerfile.mqttwarn-slack`, this command will build a Docker
+image called `mqttwarn-slack`, which includes the Slack SDK:
+
+```shell
+docker build --tag=mqttwarn-slack --file=Dockerfile.mqttwarn-slack .
+```

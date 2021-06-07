@@ -1,0 +1,19 @@
+# Docker build file for mqttwarn, with Slack SDK.
+# Based on https://hub.docker.com/r/jpmens/mqttwarn.
+#
+# Invoke like:
+#
+#   docker build --tag=mqttwarn-slack --file=Dockerfile.mqttwarn-slack .
+#
+
+# Derive from upstream image.
+FROM jpmens/mqttwarn:0.23.0
+
+# Make package installation run as "root" user
+USER root
+
+# Install Slack SDK.
+RUN pip install mqttwarn[slack]
+
+# Make process run as "mqttwarn" user
+USER mqttwarn
