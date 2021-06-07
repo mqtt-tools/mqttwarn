@@ -1,3 +1,9 @@
+.. image:: https://github.com/jpmens/mqttwarn/workflows/Tests/badge.svg
+   :target: https://github.com/jpmens/mqttwarn/actions?workflow=Tests
+
+.. image:: https://codecov.io/gh/jpmens/mqttwarn/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/jpmens/mqttwarn
+
 .. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/master.svg?style=svg
     :target: https://circleci.com/gh/jpmens/mqttwarn/tree/master
 
