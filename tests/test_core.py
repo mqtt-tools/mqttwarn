@@ -3,6 +3,7 @@
 import io
 import os
 import json
+import tempfile
 
 from builtins import str
 import logging
@@ -124,7 +125,8 @@ def test_message_file():
         'value': 42.42,
     }
 
-    outputfile = '/tmp/mqttwarn-test.01'
+    tmpdir = tempfile.gettempdir()
+    outputfile = os.path.join(tmpdir, 'mqttwarn-test.01')
     if os.path.exists(outputfile):
         os.unlink(outputfile)
 
@@ -153,7 +155,8 @@ def test_message_file_unicode():
         'item': 'Räuber Hotzenplotz'
     }
 
-    outputfile = '/tmp/mqttwarn-test.02'
+    tmpdir = tempfile.gettempdir()
+    outputfile = os.path.join(tmpdir, 'mqttwarn-test.02')
     if os.path.exists(outputfile):
         os.unlink(outputfile)
 
