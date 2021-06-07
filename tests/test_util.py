@@ -55,7 +55,7 @@ def test_parse_cron_options():
 #@pytest.mark.slow
 def test_timeout():
 
-    duration = 0.005
+    duration = 0.1
     below_duration = duration - old_div(duration, 2)
     above_duration = duration + old_div(duration, 2)
 
@@ -72,7 +72,7 @@ def test_timeout():
     # FIXME: Better catch and report the exception?
     # FIXME: Derive "timeout_secs" from "duration"
     with pytest.raises(ValueError) as excinfo:
-        timeout(errfunc, timeout_secs=0.10, default='foobar')
+        timeout(errfunc, timeout_secs=0.3, default='foobar')
         excinfo.message == 'Something went wrong'
 
 
