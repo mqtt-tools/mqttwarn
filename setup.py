@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
+# (c) 2014-2021 The mqttwarn developers
 import os
 from setuptools import setup, find_packages
 
@@ -115,6 +115,24 @@ extras = {
         'tox>=3.14.2',
     ],
 }
+
+# Convenience extra to install all dependencies
+extras_all = []
+for extra, packages in extras.items():
+    # FIXME: Skip all packages needing compilation.
+    # https://github.com/commx/python-rrdtool/issues/36
+    if extra in ["mysql", "rrdtool"]:
+        continue
+    for package in packages:
+        extras_all.append(package)
+extras["all"] = extras_all
+
+extras["test"] = [
+    'pytest>=4.6.7',
+    'pytest-cov>=2.8.1',
+    'lovely.testlayers>=0.7.1',
+    'tox>=3.14.2',
+]
 
 setup(name='mqttwarn',
       version='0.23.0',
