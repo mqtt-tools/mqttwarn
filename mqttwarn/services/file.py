@@ -6,6 +6,7 @@ __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import io
+import tempfile
 
 
 def plugin(srv, item):
@@ -21,6 +22,9 @@ def plugin(srv, item):
     # While it may contain more than one item (e.g. pushover)
     # the `file' service carries one only, i.e. a path name
     filename = item.addrs[0].format(**item.data)
+
+    # Interpolate some variables into filename.
+    filename = filename.replace("$TMPDIR", tempfile.gettempdir())
 
     srv.logging.info("Writing to file `%s'" % (filename))
 
