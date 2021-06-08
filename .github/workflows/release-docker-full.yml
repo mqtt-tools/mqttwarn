@@ -2,7 +2,7 @@
 #
 # Derived from:
 # https://github.com/crate/cratedb-prometheus-adapter/blob/main/.github/workflows/release.yml
-name: Release Docker Standard
+name: Release Docker Full
 
 on:
   schedule:
@@ -15,7 +15,7 @@ on:
     branches: [ master ]
 
 env:
-  GHCR_IMAGE_NAME: jpmens/mqttwarn-standard
+  GHCR_IMAGE_NAME: jpmens/mqttwarn-full
 
 jobs:
   docker:
@@ -77,7 +77,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: Dockerfile
+          file: Dockerfile.full
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
