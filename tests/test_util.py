@@ -52,28 +52,24 @@ def test_parse_cron_options():
     assert parse_cron_options('60; now=true') == {'now': 'true', 'interval': 60.0}
 
 
-#@pytest.mark.slow
 def test_timeout():
 
-    duration = 0.1
-    below_duration = duration - old_div(duration, 2)
-    above_duration = duration + old_div(duration, 2)
-
     def func():
-        time.sleep(duration)
+        time.sleep(0.3)
         return 42
 
     def errfunc():
         raise ValueError('Something went wrong')
 
-    assert timeout(func, timeout_secs=below_duration) is False
-    assert timeout(func, timeout_secs=above_duration) == 42
+    assert timeout(func, timeout_secs=0.1) is False
+    assert timeout(func, timeout_secs=0.5) == 42
 
     # FIXME: Better catch and report the exception?
     # FIXME: Derive "timeout_secs" from "duration"
     with pytest.raises(ValueError) as excinfo:
-        timeout(errfunc, timeout_secs=0.3, default='foobar')
-        excinfo.message == 'Something went wrong'
+        timeout(errfunc, timeout_secs=0.1, default='foobar')
+
+    assert str(excinfo.value) == 'Something went wrong'
 
 
 def test_sanitize_function_name():
