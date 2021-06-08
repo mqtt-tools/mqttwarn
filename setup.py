@@ -63,11 +63,13 @@ extras = {
         'Pastebin>=1.1.2',
     ],
     'postgres': [
-        'psycopg2>=2.7.4',
+        'psycopg2-binary>=2.7.4',
     ],
-    'prowl': [
-        'prowlpy>=0.52',
-    ],
+    # `prowlpy` is not on PyPI, let's migrate to `pyprowl`.
+    # https://github.com/jpmens/mqttwarn/issues/507
+    #'prowl': [
+    #    'prowlpy>=0.52',
+    #],
     'pushbullet': [
         'PushbulletPythonLibrary>=2.3',
     ],
@@ -107,12 +109,6 @@ extras = {
     ],
     'slixmpp': [
         'slixmpp>=1.5.2',
-    ],
-    'test': [
-        'pytest>=4.6.7',
-        'pytest-cov>=2.8.1',
-        'lovely.testlayers>=0.7.1',
-        'tox>=3.14.2',
     ],
 }
 
