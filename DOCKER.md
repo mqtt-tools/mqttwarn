@@ -21,10 +21,10 @@ Choose one of those Docker images.
 export IMAGE=jpmens/mqttwarn
 
 # The standard image on GHCR.
-export IMAGE=ghcr.io/earthobservations/mqttwarn-standard:latest
+export IMAGE=ghcr.io/jpmens/mqttwarn-standard:latest
 
 # The full image on GHCR.
-export IMAGE=ghcr.io/earthobservations/mqttwarn-full:latest
+export IMAGE=ghcr.io/jpmens/mqttwarn-full:latest
 ```
 
 ## Interactively
