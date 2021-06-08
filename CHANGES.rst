@@ -8,12 +8,14 @@ in progress
 
 - [prowl] Update service plugin to use "pyprowl" instead of "prowlpy"
 - [core] Make "functions" setting in configuration file optional
+- [ci] Build and publish Docker multi-platform images
 
 2021-06-08 0.23.1
 =================
 
 - [ci] Run software tests and Docker image building on GitHub Actions (GHA)
 - [ci] Publish Docker images to GitHub Container Registry (GHCR)
+
 
 2021-06-03 0.23.0
 =================
