@@ -7,6 +7,26 @@ You need to install only the Docker executable.
 You can run the image as a service, i.e. in the background, or you can 
 run it interactively, perhaps to help diagnose a problem.
 
+Docker images are automatically published to:
+
+- https://hub.docker.com/r/jpmens/mqttwarn
+- https://github.com/orgs/jpmens/packages/container/package/mqttwarn-standard
+- https://github.com/orgs/jpmens/packages/container/package/mqttwarn-full
+
+## Choosing the Docker image
+
+Choose one of those Docker images.
+```shell
+# The standard image on Docker Hub.
+export IMAGE=jpmens/mqttwarn
+
+# The standard image on GHCR.
+export IMAGE=ghcr.io/earthobservations/mqttwarn-standard:latest
+
+# The full image on GHCR.
+export IMAGE=ghcr.io/earthobservations/mqttwarn-full:latest
+```
+
 ## Interactively
 
 In order to verify `mqttwarn` works appropriately with the current
@@ -17,8 +37,8 @@ the necessary steps needed to create a configuration and run it.
 
 Within an empty folder, create a baseline `mqttwarn.ini` file:
 ```shell
-docker run -it --rm --volume=$PWD:/etc/mqttwarn jpmens/mqttwarn mqttwarn make-config > mqttwarn.ini
-docker run -it --rm --volume=$PWD:/etc/mqttwarn jpmens/mqttwarn mqttwarn make-samplefuncs > samplefuncs.py
+docker run -it --rm --volume=$PWD:/etc/mqttwarn $IMAGE mqttwarn make-config > mqttwarn.ini
+docker run -it --rm --volume=$PWD:/etc/mqttwarn $IMAGE mqttwarn make-samplefuncs > samplefuncs.py
 ```
 
 Then, assuming your MQTT broker runs on `localhost`, amend the `mqttwarn.ini` like:
@@ -28,14 +48,14 @@ hostname     = 'host.docker.internal'
 
 Now, invoke `mqttwarn`:
 ```shell
-docker run -it --rm --volume=$PWD:/etc/mqttwarn jpmens/mqttwarn
+docker run -it --rm --volume=$PWD:/etc/mqttwarn $IMAGE
 ```
 
 `Ctrl-C` will stop it. You can start and stop it as often as you like, here,
 probably editing the `.ini` file as you go.
 
 Note that you can run a local copy of the image, if you've built one (see below),
-by replacing `jpmens/mqttwarn` with `mqttwarn-local` in the following examples.
+by replacing `$IMAGE` with `mqttwarn-local` in the following examples.
 
 
 ## As a service
@@ -45,7 +65,7 @@ This is the typical way of running `mqttwarn`.
 From the folder containing your `mqttwarn.ini` file, run `mqttwarn` in the
 background:
 ```shell
-docker run --name=mqttwarn --detach --rm --volume=$PWD:/etc/mqttwarn jpmens/mqttwarn
+docker run --name=mqttwarn --detach --rm --volume=$PWD:/etc/mqttwarn $IMAGE
 ```
 
 Follow the log:
@@ -109,7 +129,7 @@ Then add this argument to `docker run`:
 ### A full example
 
 ```shell
-docker run -it --rm --volume=$PWD:/etc/mqttwarn --link=mosquitto jpmens/mqttwarn
+docker run -it --rm --volume=$PWD:/etc/mqttwarn --link=mosquitto $IMAGE
 ```
 
 
