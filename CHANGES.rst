@@ -7,6 +7,12 @@ in progress
 ===========
 
 
+2021-06-08 0.23.1
+=================
+
+- [ci] Run software tests and Docker image building on GitHub Actions (GHA)
+- [ci] Publish Docker images to GitHub Container Registry (GHCR)
+
 2021-06-03 0.23.0
 =================
 
