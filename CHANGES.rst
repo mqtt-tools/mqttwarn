@@ -6,6 +6,7 @@ mqttwarn changelog
 in progress
 ===========
 
+- [prowl] Update service plugin to use "pyprowl" instead of "prowlpy"
 
 2021-06-08 0.23.1
 =================
