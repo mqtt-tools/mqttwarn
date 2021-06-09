@@ -65,11 +65,9 @@ extras = {
     'postgres': [
         'psycopg2-binary>=2.7.4',
     ],
-    # `prowlpy` is not on PyPI, let's migrate to `pyprowl`.
-    # https://github.com/jpmens/mqttwarn/issues/507
-    #'prowl': [
-    #    'prowlpy>=0.52',
-    #],
+    'prowl': [
+        'pyprowl>=3.0.1',
+    ],
     'pushbullet': [
         'PushbulletPythonLibrary>=2.3',
     ],
@@ -191,9 +189,6 @@ setup(name='mqttwarn',
       install_requires=requires,
       extras_require=extras,
       tests_require=extras['test'],
-      dependency_links=[
-          'https://github.com/jacobb/prowlpy/archive/master.tar.gz#egg=prowlpy'
-      ],
       entry_points={
           'console_scripts': [
               'mqttwarn = mqttwarn.commands:run',

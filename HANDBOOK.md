@@ -2089,10 +2089,10 @@ targets = {
 ![Prowl](assets/prowl.jpg)
 
 Requires:
-* [prowlpy](https://github.com/jacobb/prowlpy). Setup:
+* [pyprowl](https://pypi.org/project/pyprowl/). Setup:
 
 ```
-pip install --upgrade 'https://github.com/jacobb/prowlpy/archive/master.tar.gz#egg=prowlpy'
+pip install pyprowl
 ```
 
 
