@@ -7,6 +7,7 @@ in progress
 ===========
 
 - [prowl] Update service plugin to use "pyprowl" instead of "prowlpy"
+- [core] Make "functions" setting in configuration file optional
 
 2021-06-08 0.23.1
 =================
