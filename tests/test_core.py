@@ -11,7 +11,8 @@ import logging
 import pytest
 
 from mqttwarn.core import make_service, decode_payload
-from tests import configfile, configfile_v2
+from tests import configfile, configfile_v2, configfile_no_functions, configfile_bad_functions, \
+    configfile_empty_functions
 from tests.util import core_bootstrap, send_message
 
 
@@ -227,3 +228,53 @@ def test_xform_func(caplog):
         # Proof that the message has been routed to the "log" plugin properly
         assert "'value': 42.42" in caplog.text, caplog.text
         assert "'datamap-key': 'datamap-value'" in caplog.text, caplog.text
+
+
+def test_config_no_functions(caplog):
+    """
+    Test a configuration file which has no `functions` setting.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT
+        core_bootstrap(configfile=configfile_no_functions)
+
+        # Signal mocked MQTT message to the core machinery for processing
+        send_message(topic='test/log-1', payload='{"name": "temperature", "value": 42.42}')
+
+        # Proof that the message has been routed to the "log" plugin properly
+        assert "temperature: 42.42" in caplog.text, caplog.text
+
+
+def test_config_empty_functions(caplog):
+    """
+    Test a configuration file which has an empty `functions` setting.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT
+        core_bootstrap(configfile=configfile_empty_functions)
+
+        # Signal mocked MQTT message to the core machinery for processing
+        send_message(topic='test/log-1', payload='{"name": "temperature", "value": 42.42}')
+
+        # Proof that the message has been routed to the "log" plugin properly
+        assert "temperature: 42.42" in caplog.text, caplog.text
+
+
+def test_config_bad_functions(caplog):
+    """
+    Test a configuration file which has no `functions` setting.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrapping the machinery with invalid path to functions file should croak.
+        with pytest.raises(OSError) as excinfo:
+            core_bootstrap(configfile=configfile_bad_functions)
+
+        error_message = str(excinfo.value)
+        assert "UNKNOWN FILE REFERENCE" in error_message
+        assert "not found" in error_message

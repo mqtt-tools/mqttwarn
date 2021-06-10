@@ -84,20 +84,23 @@ class Config(RawConfigParser):
 
         self.loglevelnumber = self.level2number(self.loglevel)
 
-        # Load function file as given (backward-compatibility).
-        if os.path.isfile(self.functions):
-            functions_file = self.functions
+        if self.functions is not None and self.functions.strip() != "":
 
-        # Load function file as given if path is absolute.
-        elif os.path.isabs(self.functions):
-            functions_file = self.functions
+            logger.info("Loading user-defined functions from %s" % self.functions)
 
-        # Load function file relative to path of configuration file if path is relative.
-        else:
-            functions_file = os.path.join(self.configuration_path, self.functions)
+            # Load function file as given (backward-compatibility).
+            if os.path.isfile(self.functions):
+                functions_file = self.functions
 
-        self.functions = load_functions(functions_file)
+            # Load function file as given if path is absolute.
+            elif os.path.isabs(self.functions):
+                functions_file = self.functions
 
+            # Load function file relative to path of configuration file if path is relative.
+            else:
+                functions_file = os.path.join(self.configuration_path, self.functions)
+
+            self.functions = load_functions(functions_file)
 
     def level2number(self, level):
 
