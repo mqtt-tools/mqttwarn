@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2021 The mqttwarn developers
 import os
+import platform
+
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -110,23 +112,40 @@ extras = {
     ],
 }
 
-# Convenience extra to install all dependencies
+
+# Convenience extra to install *all* dependencies for building a `mqttwarn-full` distribution.
 extras_all = []
 for extra, packages in extras.items():
-    # FIXME: Skip all packages needing compilation.
+
+    # FIXME: Skip specific packages having build issues.
     # https://github.com/commx/python-rrdtool/issues/36
     if extra in ["mysql", "rrdtool"]:
         continue
+
+    # FIXME: Skip specific packages on specific platforms,
+    #        because they would also need a build toolchain.
+    machine = platform.uname()[4]
+    if machine in ["armv7l", "aarch64"] and extra in ["postgres", "slixmpp", "ssh"]:
+        continue
+
+    # FIXME: The `cryptography` package is not available as binary wheel on arm32v7.
+    if machine in ["armv7l"] and extra in ["apprise"]:
+        continue
+
     for package in packages:
         extras_all.append(package)
+
 extras["all"] = extras_all
 
+
+# Packages needed for running the tests.
 extras["test"] = [
     'pytest>=4.6.7',
     'pytest-cov>=2.8.1',
     'lovely.testlayers>=0.7.1',
     'tox>=3.14.2',
 ]
+
 
 setup(name='mqttwarn',
       version='0.23.1',
