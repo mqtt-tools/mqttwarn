@@ -272,7 +272,7 @@ def test_config_bad_functions(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrapping the machinery with invalid path to functions file should croak.
-        with pytest.raises(OSError) as excinfo:
+        with pytest.raises(IOError) as excinfo:
             core_bootstrap(configfile=configfile_bad_functions)
 
         error_message = str(excinfo.value)
