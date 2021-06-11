@@ -6,6 +6,9 @@ mqttwarn changelog
 in progress
 ===========
 
+2021-06-12 0.24.0
+=================
+
 - [prowl] Update service plugin to use "pyprowl" instead of "prowlpy"
 - [core] Make "functions" setting in configuration file optional
 - [ci] Build and publish Docker multi-platform images
