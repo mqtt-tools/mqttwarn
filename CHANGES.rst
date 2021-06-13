@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- [ci] Build Docker images for riscv64 and mips64
+
 2021-06-12 0.24.0
 =================
 
