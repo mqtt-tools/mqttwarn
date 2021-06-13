@@ -1,0 +1,8 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: mikicz/tox-base
+    steps:
+      - checkout
+      - run: tox
