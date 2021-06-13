@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+command="/usr/local/bin/mqttwarn"
+command_args="${MQTTWARN_OPTIONS}"
+command_background=yes
+pidfile=/run/mqttwarn.pid
+
+name="mqttwarn"
+description="mqttwarn pluggable mqtt notification service"
+
+depend() {
+  need net
+}

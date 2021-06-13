@@ -10,7 +10,7 @@ import re
 # Run mqttwarn::
 #
 #   export MQTTWARNINI=examples/homie/homie.ini
-#   ./mqttwarn.py
+#   mqttwarn
 #
 # Send some homie-like data::
 #

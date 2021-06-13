@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # hiveeyes-schwarmalarm function extensions for mqttwarn
 # https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
+from builtins import object
+from past.builtins import cmp
+from builtins import str
 import re
 import json
 from datetime import datetime
@@ -18,7 +21,7 @@ from collections import deque, defaultdict
 # Run mqttwarn::
 #
 #   export MQTTWARNINI=examples/hiveeyes/hiveeyes.ini
-#   ./mqttwarn.py
+#   mqttwarn
 #
 # Trigger an alarm by simulating a weight loss event::
 #

@@ -1,0 +1,9 @@
+*
+!etc
+!mqttwarn
+!tests
+!setup.py
+!MANIFEST.in
+!*.ini
+!*.md
+!*.rst
