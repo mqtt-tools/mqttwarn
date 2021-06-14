@@ -12,7 +12,7 @@ on:
       - '*.*.*'
   workflow_dispatch:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   GHCR_IMAGE_NAME: jpmens/mqttwarn-full

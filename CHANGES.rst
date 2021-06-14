@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- Rename repository default branch to "main"
+
 2021-06-12 0.24.0
 =================
 
@@ -211,7 +213,7 @@ in progress
 =================
 - Add foundation for unit tests based on pytest
 - Add test harness
-- Integrate changes from the master branch
+- Integrate changes from the main branch
 - Improve documentation, add a more compact ``README.rst`` and
   move the detailed documentation to ``HANDBOOK.md`` for now.
 - First release on PyPI

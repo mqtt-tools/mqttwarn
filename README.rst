@@ -1,11 +1,11 @@
 .. image:: https://github.com/jpmens/mqttwarn/workflows/Tests/badge.svg
    :target: https://github.com/jpmens/mqttwarn/actions?workflow=Tests
 
-.. image:: https://codecov.io/gh/jpmens/mqttwarn/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/jpmens/mqttwarn/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/jpmens/mqttwarn
 
-.. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/master.svg?style=svg
-    :target: https://circleci.com/gh/jpmens/mqttwarn/tree/master
+.. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/main.svg?style=svg
+    :target: https://circleci.com/gh/jpmens/mqttwarn/tree/main
 
 .. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
@@ -32,7 +32,7 @@ mqttwarn
 
 To *warn*, *alert*, or *notify*.
 
-.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/master/assets/google-definition.jpg
+.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/main/assets/google-definition.jpg
     :target: #
 
 
@@ -56,7 +56,7 @@ You can enjoy the alphabetical list of plugins within the handbook_services_.
 
 A picture says a thousand words.
 
-.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/master/assets/mqttwarn.png
+.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/main/assets/mqttwarn.png
     :target: #
 
 
@@ -78,9 +78,9 @@ For example, you may wish to submit an alarm published as text to the
 MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 
 
-.. _handbook: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md
-.. _Docker handbook: https://github.com/jpmens/mqttwarn/blob/master/DOCKER.md
-.. _handbook_services: https://github.com/jpmens/mqttwarn/blob/master/HANDBOOK.md#supported-notification-services
+.. _handbook: https://github.com/jpmens/mqttwarn/blob/main/HANDBOOK.md
+.. _Docker handbook: https://github.com/jpmens/mqttwarn/blob/main/DOCKER.md
+.. _handbook_services: https://github.com/jpmens/mqttwarn/blob/main/HANDBOOK.md#supported-notification-services
 
 
 *************
@@ -177,15 +177,15 @@ Running as system daemon
 - Alternatively, have a look at `mqttwarn.service`_, the systemd unit configuration file for *mqttwarn*.
 
 .. _Supervisor: https://jpmens.net/2014/02/13/in-my-toolbox-supervisord/
-.. _supervisor.ini: https://github.com/jpmens/mqttwarn/blob/master/etc/supervisor.ini
-.. _mqttwarn.service: https://github.com/jpmens/mqttwarn/blob/master/etc/mqttwarn.service
+.. _supervisor.ini: https://github.com/jpmens/mqttwarn/blob/main/etc/supervisor.ini
+.. _mqttwarn.service: https://github.com/jpmens/mqttwarn/blob/main/etc/mqttwarn.service
 
 
 Running in a development sandbox
 ================================
 For hacking_ on mqttwarn, please install it in development mode.
 
-.. _hacking: https://github.com/jpmens/mqttwarn/blob/master/doc/hacking.rst
+.. _hacking: https://github.com/jpmens/mqttwarn/blob/main/doc/hacking.rst
 
 
 
@@ -206,7 +206,7 @@ These links will guide you to the source code of *mqttwarn* and its documentatio
 
 - `mqttwarn on GitHub <https://github.com/jpmens/mqttwarn>`_
 - `mqttwarn on the Python Package Index (PyPI) <https://pypi.org/project/mqttwarn/>`_
-- `mqttwarn documentation <https://github.com/jpmens/mqttwarn/tree/master/doc>`_
+- `mqttwarn documentation <https://github.com/jpmens/mqttwarn/tree/main/doc>`_
 
 
 Requirements
@@ -244,7 +244,7 @@ Please also recognize the licenses of third-party components.
 
 .. _issue: https://github.com/jpmens/mqttwarn/issues/new
 .. _EPL-2.0: https://www.eclipse.org/legal/epl-2.0/
-.. _LICENSE: https://github.com/jpmens/mqttwarn/blob/master/LICENSE
+.. _LICENSE: https://github.com/jpmens/mqttwarn/blob/main/LICENSE
 
 
 ***************
@@ -279,7 +279,7 @@ ported to Python 3 during that phase. You are welcome to participate!
 We outlined the tasks for the next releases within the backlog_.
 They might be transferred into GitHub issues progressively, if applicable.
 
-.. _backlog: https://github.com/jpmens/mqttwarn/blob/master/doc/backlog.rst
+.. _backlog: https://github.com/jpmens/mqttwarn/blob/main/doc/backlog.rst
 
 
 Legal stuff
