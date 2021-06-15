@@ -9,7 +9,7 @@ import pytest
 from mqttwarn.util import Struct, Formatter, asbool, parse_cron_options, timeout, sanitize_function_name, \
     load_module_from_file, load_module_by_name, \
     load_functions, load_function, get_resource_content, exception_traceback
-from tests import funcfile, configfile, bad_funcfile
+from tests import funcfile_good, configfile_full, funcfile_bad
 
 
 def test_struct():
@@ -110,7 +110,7 @@ def test_load_module_by_name_bad():
 def test_load_functions():
 
     # Load valid functions file
-    py_mod = load_functions(filepath=funcfile)
+    py_mod = load_functions(filepath=funcfile_good)
     assert py_mod is not None
 
     # No-op
@@ -124,28 +124,28 @@ def test_load_functions():
 
     # Load functions file that is not a python file
     with pytest.raises(ValueError) as excinfo:
-        load_functions(filepath=configfile)
-    assert str(excinfo.value) == "'{}' does not have the .py or .pyc extension".format(configfile)
+        load_functions(filepath=configfile_full)
+    assert str(excinfo.value) == "'{}' does not have the .py or .pyc extension".format(configfile_full)
 
     # Load bad functions file
     with pytest.raises(Exception):
-        load_functions(filepath=bad_funcfile)
+        load_functions(filepath=funcfile_bad)
 
 
 def test_load_function():
 
     # Load valid functions file
-    py_mod = load_functions(filepath=funcfile)
+    py_mod = load_functions(filepath=funcfile_good)
     assert py_mod is not None
 
     # Load valid function
     func = load_function(name='foobar', py_mod=py_mod)
     assert func is not None
 
-    # Load invalid function, function name does not exist in "funcfile"
+    # Load invalid function, function name does not exist in "funcfile_good"
     with pytest.raises(AttributeError) as excinfo:
         load_function(name='unknown', py_mod=py_mod)
-    assert re.match("Function 'unknown' does not exist in '.*{}c?'".format(funcfile), str(excinfo.value))
+    assert re.match("Function 'unknown' does not exist in '.*{}c?'".format(funcfile_good), str(excinfo.value))
 
 
 def test_get_resource_content():

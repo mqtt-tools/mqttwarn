@@ -11,7 +11,7 @@ import logging
 import pytest
 
 from mqttwarn.core import make_service, decode_payload
-from tests import configfile, configfile_v2, configfile_no_functions, configfile_bad_functions, \
+from tests import configfile_full, configfile_service_loading, configfile_no_functions, configfile_unknown_functions, \
     configfile_empty_functions
 from tests.util import core_bootstrap, send_message
 
@@ -29,7 +29,7 @@ def test_bootstrap(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT
-        core_bootstrap(configfile=configfile)
+        core_bootstrap(configfile=configfile_full)
 
         # Proof that mqttwarn loaded all services properly
         assert 'Successfully loaded service "file"' in caplog.text, caplog.text
@@ -46,7 +46,7 @@ def test_decode_payload_foo(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT.
-        core_bootstrap(configfile=configfile)
+        core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding an unconfigured thing yields nothing sensible.
         outcome = decode_payload(section='foo', topic='bar', payload='baz')
@@ -60,7 +60,7 @@ def test_decode_payload_json(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT.
-        core_bootstrap(configfile=configfile)
+        core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding a valid JSON payload decodes it appropriately.
         outcome = decode_payload(section='foo', topic='bar', payload='{"baz": "qux"}')
@@ -74,7 +74,7 @@ def test_decode_payload_datamap(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT.
-        core_bootstrap(configfile=configfile)
+        core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding a valid JSON payload decodes it appropriately.
         outcome = decode_payload(section='test/datamap', topic='bar', payload='{"baz": "qux"}')
@@ -88,7 +88,7 @@ def test_decode_payload_alldata(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT.
-        core_bootstrap(configfile=configfile)
+        core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding a valid JSON payload decodes it appropriately.
         outcome = decode_payload(section='test/alldata', topic='bar', payload='{"baz": "qux"}')
@@ -106,7 +106,7 @@ def test_message_log(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT
-        core_bootstrap(configfile=configfile)
+        core_bootstrap(configfile=configfile_full)
 
         # Signal mocked MQTT message to the core machinery for processing
         send_message(topic='test/log-1', payload='{"name": "temperature", "value": 42.42}')
@@ -132,7 +132,7 @@ def test_message_file():
         os.unlink(outputfile)
 
     # Bootstrap the core machinery without MQTT.
-    core_bootstrap(configfile=configfile)
+    core_bootstrap(configfile=configfile_full)
 
     # Signal mocked MQTT message to the core machinery for processing.
     send_message(topic='test/file-1', payload=json.dumps(data))
@@ -162,7 +162,7 @@ def test_message_file_unicode():
         os.unlink(outputfile)
 
     # Bootstrap the core machinery without MQTT.
-    core_bootstrap(configfile=configfile)
+    core_bootstrap(configfile=configfile_full)
 
     # Signal mocked MQTT message to the core machinery for processing.
     send_message(topic='test/file-2', payload=json.dumps(data))
@@ -173,7 +173,7 @@ def test_message_file_unicode():
         assert u'Räuber Hotzenplotz' in content, content
 
 
-@pytest.mark.parametrize("configfile", [configfile, configfile_v2])
+@pytest.mark.parametrize("configfile", [configfile_full, configfile_service_loading])
 def test_plugin_module(caplog, configfile):
     """
     Check if loading a service module with dotted name works.
@@ -191,7 +191,7 @@ def test_plugin_module(caplog, configfile):
         assert 'Plugin invoked' in caplog.text, caplog.text
 
 
-@pytest.mark.parametrize("configfile", [configfile, configfile_v2])
+@pytest.mark.parametrize("configfile", [configfile_full, configfile_service_loading])
 def test_plugin_file(caplog, configfile):
     """
     Check if loading a service module from a file works.
@@ -220,7 +220,7 @@ def test_xform_func(caplog):
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT
-        core_bootstrap(configfile=configfile)
+        core_bootstrap(configfile=configfile_full)
 
         # Signal mocked MQTT message to the core machinery for processing
         send_message(topic='test/log-2', payload='{"name": "temperature", "value": 42.42}')
@@ -273,7 +273,7 @@ def test_config_bad_functions(caplog):
 
         # Bootstrapping the machinery with invalid path to functions file should croak.
         with pytest.raises(IOError) as excinfo:
-            core_bootstrap(configfile=configfile_bad_functions)
+            core_bootstrap(configfile=configfile_unknown_functions)
 
         error_message = str(excinfo.value)
         assert "UNKNOWN FILE REFERENCE" in error_message
