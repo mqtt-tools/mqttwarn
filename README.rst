@@ -4,9 +4,6 @@
 .. image:: https://codecov.io/gh/jpmens/mqttwarn/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/jpmens/mqttwarn
 
-.. image:: https://circleci.com/gh/jpmens/mqttwarn/tree/main.svg?style=svg
-    :target: https://circleci.com/gh/jpmens/mqttwarn/tree/main
-
 .. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
 
