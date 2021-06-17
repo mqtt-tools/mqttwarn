@@ -708,7 +708,8 @@ def bootstrap(config=None, scriptname=None):
     invoker = FunctionInvoker(config=config, srv=make_service(mqttc=None, name='mqttwarn.context'))
     context = RuntimeContext(config=config, invoker=invoker)
     cf = config
-    SCRIPTNAME = scriptname
+    if scriptname is not None:
+        SCRIPTNAME = scriptname
 
 
 def run_plugin(config=None, name=None, data=None):

@@ -7,6 +7,7 @@ in progress
 ===========
 
 - Rename repository default branch to "main"
+- Fix "http" service plugin
 
 2021-06-12 0.24.0
 =================
