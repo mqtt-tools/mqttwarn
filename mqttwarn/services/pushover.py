@@ -34,11 +34,6 @@ class PushoverError(Exception): pass
 def pushover(image, **kwargs):
     assert 'message' in kwargs
 
-    if not 'token' in kwargs:
-        kwargs['token'] = os.environ['PUSHOVER_TOKEN']
-    if not 'user' in kwargs:
-        kwargs['user'] = os.environ['PUSHOVER_USER']
-
     url = urljoin(PUSHOVER_API, "messages.json")
     headers = { 'User-Agent': 'mqttwarn' }
 
@@ -70,9 +65,18 @@ def plugin(srv, item):
 
     try:
         userkey = addrs[0]
-        appkey  = addrs[1]
+        token   = addrs[1]
     except:
-        srv.logging.warn("No pushover userkey/appkey configured for target `%s'" % (item.target))
+        srv.logging.warning("Invalid address configuration for target `%s'" % (item.target))
+        return False
+
+    if userkey is None and "PUSHOVER_USER" in os.environ:
+        userkey = os.environ["PUSHOVER_USER"].strip()
+    if token is None and "PUSHOVER_TOKEN" in os.environ:
+        token = os.environ["PUSHOVER_TOKEN"].strip()
+
+    if not userkey or not token:
+        srv.logging.warning("No pushover credentials configured for target `%s'" % (item.target))
         return False
 
     params = {
@@ -84,7 +88,7 @@ def plugin(srv, item):
         params['sound'] = addrs[2]
 
     if len(addrs) > 3:
-        params['sound'] = addrs[3]
+        params['devices'] = addrs[3]
 
     if title is not None:
         params['title'] = title
@@ -112,22 +116,22 @@ def plugin(srv, item):
             authuser = item.data['user']
             authpass = item.data['password']
             if authtype == 'digest':
-                image = requests.get(imageurl, stream=True,auth=HTTPDigestAuth(authuser, authpass)).raw
+                image = requests.get(imageurl, stream=True, auth=HTTPDigestAuth(authuser, authpass)).raw
             else:
-                image = requests.get(imageurl, stream=True,auth=HTTPBasicAuth(authuser, authpass)).raw
+                image = requests.get(imageurl, stream=True, auth=HTTPBasicAuth(authuser, authpass)).raw
         else:
             image = requests.get(imageurl, stream=True).raw
     elif 'imagebase64' in item.data:
         imagebase64 = item.data['imagebase64']
         srv.logging.debug("Image (base64 encoded) detected")
-        image = base64.decodestring(imagebase64)
+        image = base64.decodebytes(imagebase64)
 
     try:
         srv.logging.debug("Sending pushover notification to %s [%s]...." % (item.target, params))
-        pushover(image=image, user=userkey, token=appkey, **params)
+        pushover(image=image, user=userkey, token=token, **params)
         srv.logging.debug("Successfully sent pushover notification")
     except Exception as e:
-        srv.logging.warn("Error sending pushover notification: %s" % e)
+        srv.logging.warning("Error sending pushover notification: %s" % e)
         return False
 
     return True

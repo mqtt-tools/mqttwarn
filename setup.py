@@ -149,6 +149,8 @@ extras["test"] = [
     'tox>=3.14.2',
     'surrogate==0.1',
     'dataclasses; python_version<"3.7"',
+    'requests-toolbelt>=0.9.1,<1',
+    'responses>=0.13.3,<1',
 ]
 
 
