@@ -53,6 +53,7 @@ class ProcessorItem:
     target: str = None
     config: Dict = None
     addrs: List[str] = None
+    priority: int = None
     topic: str = None
     title: str = None
     message: Union[str, bytes] = None

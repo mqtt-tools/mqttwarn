@@ -2161,7 +2161,6 @@ and one or more _application keys_ which you configure in the targets definition
 ```ini
 [config:pushover]
 callback = None
-device = cellphone1,cellphone2
 targets = {
     'nagios'     : ['userkey1', 'appkey1', 'sound1'],
     'alerts'     : ['userkey2', 'appkey2'],
