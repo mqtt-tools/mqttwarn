@@ -19,18 +19,18 @@ def plugin(srv, item):
     try:
         cert_file, key_file = addrs
     except:
-        srv.logging.warn("Incorrect service configuration")
+        srv.logging.warning("Incorrect service configuration")
         return False
 
-    if 'payload' not in data or 'apns_token' not in data:
-        srv.logging.warn("Cannot notify via APNS: payload or apns_token are missing")
+    if 'apns_token' not in data:
+        srv.logging.warning("Cannot notify via APNS: apns_token is missing")
         return False
 
     apns_token = data['apns_token']
-    payload = data['payload']
 
     custom = {}
     try:
+        payload = data['payload']
         mdata = json.loads(payload)
         if 'custom' in mdata:
             custom = mdata['custom']
@@ -41,5 +41,7 @@ def plugin(srv, item):
 
     pload = Payload(alert=text, custom=custom, sound="default", badge=1)
     apns.gateway_server.send_notification(apns_token, pload)
+
+    srv.logging.debug("Successfully published APNS notification to %s" % apns_token)
 
     return True

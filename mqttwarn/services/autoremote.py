@@ -36,7 +36,7 @@ def plugin(srv, item):
         srv.logging.debug("Successfully sent to autoremote service")
 
     except Exception as e:
-        srv.logging.warning("Failed to send message to autoremote service" % e)
+        srv.logging.warning("Failed to send message to autoremote service: %s" % e)
         return False
 
     return True
