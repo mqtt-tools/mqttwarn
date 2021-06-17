@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" Text To Speach (TSS) for Chromecast devices, including Google Home Speakers
+"""
+Text To Speech (TTS) for Chromecast devices, including Google Home Speakers
 
-NOTE at the time of this plugin creation, pychromecast is Python3 ONLY
-pip install pychromecast - results in a zeroconf install that is
-not supported under Python 2.7; `def current_time_millis() -> float:`
+pip install pychromecast
 
-Old versions may be possible, see https://github.com/skorokithakis/catt
-version 0.5.6, which may help with exact requirements
+See also https://github.com/skorokithakis/catt.
 """
 
 __author__ = 'Chris Clark <clach04()gmail.com>'
@@ -16,11 +14,7 @@ __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-
 
 
 import os
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    # Probably Python2
-    from urllib import urlencode
+from urllib.parse import urlencode
 
 
 def plugin(srv, item):

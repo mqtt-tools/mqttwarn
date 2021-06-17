@@ -10,6 +10,9 @@ in progress
 - Fix "http" service plugin
 - Improve machinery to launch a notification service plugin standalone.
   Now, it works without any ``mqttwarn.ini`` configuration file at all.
+- Begin adding tests for services
+- Drop official support for Python 2
+
 
 2021-06-12 0.24.0
 =================
@@ -17,6 +20,7 @@ in progress
 - [prowl] Update service plugin to use "pyprowl" instead of "prowlpy"
 - [core] Make "functions" setting in configuration file optional
 - [ci] Build and publish Docker multi-platform images
+
 
 2021-06-08 0.23.1
 =================

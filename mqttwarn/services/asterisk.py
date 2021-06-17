@@ -36,17 +36,20 @@ def plugin(srv, item):
         srv.logging.info("Call {}".format(response))
         manager.logoff()
     except asterisk.manager.ManagerSocketException as e:
-        srv.logging.error("Error connecting to the manage: {}".format(e))
+        srv.logging.error("Error connecting to the manager: {}".format(e))
+        return False
     except asterisk.manager.ManagerAuthException as e:
         srv.logging.error("Error logging in to the manager: {}".format(e))
+        return False
     except asterisk.manager.ManagerException as e:
         srv.logging.error("Error: {}".format(e))
+        return False
 
+    # Remember to clean up
     finally:
-    # remember to clean up
         try:
             manager.close()
-        except asterisk.manager.ManagerSocketException:
+        except asterisk.manager.ManagerSocketException:  # pragma: no cover
             pass
     
     return True

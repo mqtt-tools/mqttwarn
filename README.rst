@@ -215,7 +215,7 @@ Requirements
 ============
 You'll need at least the following components:
 
-* Python. The program should work on Python 2, Python 3 and PyPy.
+* Python. The program should work on Python 3 and PyPy3.
 * An MQTT broker. We recommend Mosquitto_.
 * Some more Python modules to satisfy service dependencies defined in the ``setup.py`` file.
 

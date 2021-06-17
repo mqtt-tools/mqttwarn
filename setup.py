@@ -35,6 +35,9 @@ extras = {
     'celery': [
         'celery',
     ],
+    'chromecast': [
+        'pychromecast>=7.5.0',
+    ],
     'dnsupdate': [
         'dnspython>=1.15.0',
     ],
@@ -144,6 +147,8 @@ extras["test"] = [
     'pytest-cov>=2.8.1',
     'lovely.testlayers>=0.7.1',
     'tox>=3.14.2',
+    'surrogate==0.1',
+    'dataclasses; python_version<"3.7"',
 ]
 
 
@@ -168,7 +173,6 @@ setup(name='mqttwarn',
         "Operating System :: Unix",
         "Operating System :: MacOS",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",

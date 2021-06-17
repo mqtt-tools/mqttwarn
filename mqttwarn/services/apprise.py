@@ -16,8 +16,8 @@ def plugin(srv, item):
     addresses = item.addrs
 
     if not addresses:
-        srv.logging.warn("Skipped sending notification to Apprise %s, "
-                         "no addresses configured" % (item.target))
+        srv.logging.warning("Skipped sending notification to Apprise %s, "
+                            "no addresses configured" % (item.target))
         return False
 
     sender = item.config.get('sender')

@@ -29,12 +29,13 @@ def plugin(srv, item):
             "accessCode": item.addrs[0]
         })
 
-        requests.post(url="https://api.notifymyecho.com/v1/NotifyMe", data=body)
+        response = requests.post(url="https://api.notifymyecho.com/v1/NotifyMe", data=body)
+        response.raise_for_status()
 
         srv.logging.debug("Successfully sent to NotifyMe service.")
 
     except Exception as e:
-        srv.logging.warning("Failed to send message to NotifyMe service." % e)
+        srv.logging.warning("Failed to send message to NotifyMe service: %s" % e)
         return False
 
     return True
