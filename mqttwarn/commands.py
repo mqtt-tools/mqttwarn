@@ -11,7 +11,7 @@ import logging
 from docopt import docopt
 
 from mqttwarn import __version__
-from mqttwarn.configuration import load_configuration
+from mqttwarn.configuration import load_configuration, Config
 from mqttwarn.core import bootstrap, connect, cleanup, run_plugin
 from mqttwarn.util import get_resource_content
 
@@ -25,7 +25,7 @@ def run():
     Usage:
       {program} [make-config]
       {program} [make-samplefuncs]
-      {program} [--plugin=] [--data=]
+      {program} [--config=] [--plugin=] [--data=]
       {program} --version
       {program} (-h | --help)
 
@@ -68,7 +68,7 @@ def run():
         data = json.loads(options['--data'])
 
         # Launch service plugin in standalone mode
-        launch_plugin_standalone(plugin, data)
+        launch_plugin_standalone(plugin, data, configfile=options.get("--config"))
 
 
     # Run mqttwarn in service mode when no command line arguments are given
@@ -76,13 +76,24 @@ def run():
         run_mqttwarn()
 
 
-def launch_plugin_standalone(plugin, data):
+def launch_plugin_standalone(plugin, data, configfile=None):
+
     # Load configuration file
+    does_not_exist = False
     scriptname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
-    config = load_configuration(name=scriptname)
+    try:
+        config = load_configuration(configfile=configfile, name=scriptname)
+    except FileNotFoundError:
+        does_not_exist = True
+        config = Config()
+        section = "config:{}".format(plugin)
+        config.add_section(section)
 
     # Setup logging
     setup_logging(config)
+    if does_not_exist:
+        logger.info('Configuration file "{}" does not exist, using default settings'.format(configfile))
+
     logger.info('Running service plugin "{}" with data "{}"'.format(plugin, data))
 
     # Launch service plugin

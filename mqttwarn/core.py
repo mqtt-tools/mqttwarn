@@ -751,3 +751,5 @@ def run_plugin(config=None, name=None, data=None):
     module = service_plugins[name]['module']
     response = module.plugin(srv, item)
     logger.info('Plugin response: {}'.format(response))
+    if response is False:
+        sys.exit(1)

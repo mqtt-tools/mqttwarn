@@ -8,6 +8,8 @@ in progress
 
 - Rename repository default branch to "main"
 - Fix "http" service plugin
+- Improve machinery to launch a notification service plugin standalone.
+  Now, it works without any ``mqttwarn.ini`` configuration file at all.
 
 2021-06-12 0.24.0
 =================
