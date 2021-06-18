@@ -26,16 +26,19 @@ class Config(RawConfigParser):
             'NONE'  : None,
         }
 
-    def __init__(self, configuration_file, defaults=None):
+    def __init__(self, configuration_file=None, defaults=None):
 
         defaults = defaults or {}
 
-        RawConfigParser.__init__(self)
-        f = codecs.open(configuration_file, 'r', encoding='utf-8')
-        self.read_file(f)
-        f.close()
+        self.configuration_path = None
 
-        self.configuration_path = os.path.dirname(configuration_file)
+        RawConfigParser.__init__(self)
+        if configuration_file is not None:
+            f = codecs.open(configuration_file, 'r', encoding='utf-8')
+            self.read_file(f)
+            f.close()
+
+            self.configuration_path = os.path.dirname(configuration_file)
 
         ''' set defaults '''
         self.hostname     = 'localhost'
@@ -48,8 +51,8 @@ class Config(RawConfigParser):
         self.cleansession = False
         self.protocol     = 3
 
-        self.logformat    = '%(asctime)-15s %(levelname)-8s [%(name)-25s] %(message)s'
-        self.logfile      = None
+        self.logformat    = '%(asctime)-15s %(levelname)-8s [%(name)-26s] %(message)s'
+        self.logfile      = "stream://sys.stderr"
         self.loglevel     = 'DEBUG'
 
         self.functions    = None
@@ -170,7 +173,7 @@ class Config(RawConfigParser):
             Cannot use config.items() because I want each value to be
             retrieved with g() as above '''
 
-        d = None
+        d = {}
         if self.has_section(section):
             d = dict((key, self.g(section, key))
                 for (key) in self.options(section) if key not in ['targets', 'module'])
@@ -183,7 +186,7 @@ def load_configuration(configfile=None, name='mqttwarn'):
         configfile = os.getenv(name.upper() + 'INI', name + '.ini')
 
     if not os.path.exists(configfile):
-        raise ValueError('Configuration file "{}" does not exist'.format(configfile))
+        raise FileNotFoundError('Configuration file "{}" does not exist'.format(configfile))
 
     defaults = {
         'clientid': name,

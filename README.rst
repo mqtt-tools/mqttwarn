@@ -154,9 +154,12 @@ To supply a different configuration file or log file, optionally use::
 
 Running notification plugins
 ============================
-For debugging or other purposes, you might want to directly run a notification plugin
-without the dispatching and transformation machinery of *mqttwarn*.
-We have you covered, just try this to launch the plugin standalone by passing essential information using JSON::
+For debugging, or other purposes, you might want to directly run an individual
+notification plugin without the dispatching and transformation machinery of
+*mqttwarn*.
+
+We have you covered. To launch a plugin standalone, those commands will give
+you an idea how to pass relevant information on the command line using JSON::
 
     # Launch "log" service plugin
     mqttwarn --plugin=log --data='{"message": "Hello world", "addrs": ["crit"]}'
@@ -164,8 +167,10 @@ We have you covered, just try this to launch the plugin standalone by passing es
     # Launch "file" service plugin
     mqttwarn --plugin=file --data='{"message": "Hello world\n", "addrs": ["/tmp/mqttwarn.err"]}'
 
+    # Launch "pushover" service plugin
+    mqttwarn --plugin=pushover --data='{"title": "About", "message": "Hello world", "addrs": ["userkey", "token"], "priority": 6}'
 
-Please note this feature is a work in progress, so expect there to be dragons.
+The ``--config`` parameter can be used to optionally specify a configuration file.
 
 
 Running as system daemon
