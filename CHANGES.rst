@@ -6,6 +6,10 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2021-06-18 0.25.0
+=================
+
 - Rename repository default branch to "main"
 - Fix "http" service plugin
 - Improve machinery to launch a notification service plugin standalone.
