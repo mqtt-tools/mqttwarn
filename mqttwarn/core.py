@@ -470,7 +470,8 @@ def processor(worker_id=None):
         transform_data = job.data
         item['data'] = dict(list(transform_data.items()))
 
-        item['title'] = xform(context.get_config(section, 'title'), SCRIPTNAME, transform_data)
+        origin_title = "{}: {}".format(SCRIPTNAME, topic)
+        item['title'] = xform(context.get_config(section, 'title'), origin_title, transform_data)
         item['image'] = xform(context.get_config(section, 'image'), '', transform_data)
         item['message'] = xform(context.get_config(section, 'format'), job.payload, transform_data)
 
