@@ -174,6 +174,7 @@ you an idea how to pass relevant information on the command line using JSON::
     mqttwarn --plugin=ssh --config='{"host": "ssh.example.org", "port": 22, "user": "foo", "password": "bar"}' --options='{"addrs": ["command with substitution %s"], "payload": "{\"args\": \"192.168.0.1\"}"}'
 
     # Launch "cloudflare_zone" service plugin from "mqttwarn-contrib", passing "--config" parameters via command line
+    pip install mqttwarn-contrib
     mqttwarn --plugin=mqttwarn_contrib.services.cloudflare_zone --config='{"auth-email": "foo", "auth-key": "bar"}' --options='{"addrs": ["0815", "www.example.org", ""], "message": "192.168.0.1"}'
 
 
