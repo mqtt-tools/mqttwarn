@@ -191,7 +191,6 @@ def load_configuration(configfile=None, name='mqttwarn'):
     defaults = {
         'clientid': name,
         'lwt': 'clients/{}'.format(name),
-        'logfile': os.getenv(name.upper() + 'LOG', name + '.log'),
     }
 
     return Config(configfile, defaults=defaults)

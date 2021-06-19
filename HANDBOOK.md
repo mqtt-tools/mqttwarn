@@ -110,9 +110,19 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   cleansession = False
   
   ; logging
+
+  ; Log format
   logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
-  logfile   = 'mqttwarn.log'
+
+  ; Send log to STDERR (default)
+  logfile   = 'stream://sys.stderr'
   
+  ; Write log output to file
+  ; logfile   = 'mqttwarn.log'
+
+  ; Turn off logging completely
+  ; logfile   = false
+
   ; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
   loglevel     = DEBUG
   
