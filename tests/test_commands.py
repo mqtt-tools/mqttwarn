@@ -1,4 +1,7 @@
 import os
+import sys
+
+import pytest
 
 
 def test_command_dump_config(capfd):
@@ -22,6 +25,10 @@ def test_command_dump_samplefuncs(capfd):
 
 
 def test_command_standalone_plugin(capfd):
+
+    # FIXME: Make it work on Windows.
+    if sys.platform.startswith("win"):
+        raise pytest.xfail("Skipping test, fails on Windows")
 
     command = """mqttwarn --plugin=log --options='{"message": "Hello world", "addrs": ["crit"]}'"""
 
