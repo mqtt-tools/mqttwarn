@@ -40,7 +40,7 @@ def send_message(topic=None, payload=None):
     on_message(None, None, message)
 
     # Give the machinery some time to process the message
-    time.sleep(0.05)
+    time.sleep(0.10)
 
 
 @dataclass
