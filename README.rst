@@ -1,8 +1,8 @@
 .. image:: https://github.com/jpmens/mqttwarn/workflows/Tests/badge.svg
-   :target: https://github.com/jpmens/mqttwarn/actions?workflow=Tests
+    :target: https://github.com/jpmens/mqttwarn/actions?workflow=Tests
 
 .. image:: https://codecov.io/gh/jpmens/mqttwarn/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/jpmens/mqttwarn
+    :target: https://codecov.io/gh/jpmens/mqttwarn
 
 .. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
@@ -20,7 +20,6 @@
 |
 
 .. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
-    :target: #
 
 
 ########
@@ -30,7 +29,6 @@ mqttwarn
 To *warn*, *alert*, or *notify*.
 
 .. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/main/assets/google-definition.jpg
-    :target: #
 
 
 
