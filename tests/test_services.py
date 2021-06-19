@@ -7,7 +7,7 @@ from unittest.mock import call, PropertyMock
 from surrogate import surrogate
 
 from mqttwarn.util import load_module_by_name, load_module_from_file
-from tests.util import ProcessorItem as Item
+from mqttwarn.model import ProcessorItem as Item
 
 
 def test_alexa_notify_me_success(srv, caplog):

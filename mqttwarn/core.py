@@ -470,7 +470,8 @@ def processor(worker_id=None):
         transform_data = job.data
         item['data'] = dict(list(transform_data.items()))
 
-        item['title'] = xform(context.get_config(section, 'title'), SCRIPTNAME, transform_data)
+        origin_title = "{}: {}".format(SCRIPTNAME, topic)
+        item['title'] = xform(context.get_config(section, 'title'), origin_title, transform_data)
         item['image'] = xform(context.get_config(section, 'image'), '', transform_data)
         item['message'] = xform(context.get_config(section, 'format'), job.payload, transform_data)
 
@@ -712,7 +713,7 @@ def bootstrap(config=None, scriptname=None):
         SCRIPTNAME = scriptname
 
 
-def run_plugin(config=None, name=None, data=None):
+def run_plugin(config=None, name=None, options=None):
     """
     Run service plugins directly without the
     dispatching and transformation machinery.
@@ -722,9 +723,9 @@ def run_plugin(config=None, name=None, data=None):
     the innards of mqttwarn interact so it might also please
     newcomers as a "learning the guts of mqttwarn" example.
 
-    :param config: The configuration object
-    :param name:   The name of the service plugin, e.g. "log" or "file"
-    :param data:   The data to be converged into an appropriate item Struct object instance
+    :param config:   The configuration object
+    :param name:     The name of the service plugin, e.g. "log" or "file"
+    :param options:  The data to be converged into an appropriate item Struct object instance
     """
 
     # Bootstrap mqttwarn core
@@ -740,7 +741,7 @@ def run_plugin(config=None, name=None, data=None):
     srv = make_service(mqttc=None, name=service_logger_name)
 
     # Build a mimikry item instance for feeding to the service plugin
-    item = Struct(**data)
+    item = Struct(**options)
     # TODO: Read configuration optionally from data.
     item.config = config.config('config:' + name)
     item.service = srv

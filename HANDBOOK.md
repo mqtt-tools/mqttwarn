@@ -110,9 +110,19 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   cleansession = False
   
   ; logging
+
+  ; Log format
   logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
-  logfile   = 'mqttwarn.log'
+
+  ; Send log to STDERR (default)
+  logfile   = 'stream://sys.stderr'
   
+  ; Write log output to file
+  ; logfile   = 'mqttwarn.log'
+
+  ; Turn off logging completely
+  ; logfile   = false
+
   ; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
   loglevel     = DEBUG
   
@@ -628,9 +638,10 @@ targets  = {
     'speaker' : ['Living Room'],
     }
 
+# Command line test
+# mqttwarn --plugin=chromecast --options='{"message": "Hello world", "addrs": ["Living Room"]}'
 # echo 'Hello world' | mosquitto_pub -t 'chromecast/say' -l
 # echo '{"message": "Hello world", "addrs": ["Living Room"]}' | mosquitto_pub -t 'chromecast/say' -l
-# command line test;  mqttwarn --plugin=chromecast --data='{"message": "Hello world", "addrs": ["Living Room"]}'
 [chromecast/say]
 targets = chromecast:speaker
 

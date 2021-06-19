@@ -1,8 +1,8 @@
 .. image:: https://github.com/jpmens/mqttwarn/workflows/Tests/badge.svg
-   :target: https://github.com/jpmens/mqttwarn/actions?workflow=Tests
+    :target: https://github.com/jpmens/mqttwarn/actions?workflow=Tests
 
 .. image:: https://codecov.io/gh/jpmens/mqttwarn/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/jpmens/mqttwarn
+    :target: https://codecov.io/gh/jpmens/mqttwarn
 
 .. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
@@ -20,7 +20,6 @@
 |
 
 .. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
-    :target: #
 
 
 ########
@@ -30,7 +29,6 @@ mqttwarn
 To *warn*, *alert*, or *notify*.
 
 .. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/main/assets/google-definition.jpg
-    :target: #
 
 
 
@@ -162,15 +160,24 @@ We have you covered. To launch a plugin standalone, those commands will give
 you an idea how to pass relevant information on the command line using JSON::
 
     # Launch "log" service plugin
-    mqttwarn --plugin=log --data='{"message": "Hello world", "addrs": ["crit"]}'
+    mqttwarn --plugin=log --options='{"message": "Hello world", "addrs": ["crit"]}'
 
     # Launch "file" service plugin
-    mqttwarn --plugin=file --data='{"message": "Hello world\n", "addrs": ["/tmp/mqttwarn.err"]}'
+    mqttwarn --plugin=file --options='{"message": "Hello world\n", "addrs": ["/tmp/mqttwarn.err"]}'
 
     # Launch "pushover" service plugin
-    mqttwarn --plugin=pushover --data='{"title": "About", "message": "Hello world", "addrs": ["userkey", "token"], "priority": 6}'
+    mqttwarn --plugin=pushover --options='{"title": "About", "message": "Hello world", "addrs": ["userkey", "token"], "priority": 6}'
 
-The ``--config`` parameter can be used to optionally specify a configuration file.
+    # Launch "ssh" service plugin from the command line
+    mqttwarn --plugin=ssh --config='{"host": "ssh.example.org", "port": 22, "user": "foo", "password": "bar"}' --options='{"addrs": ["command with substitution %s"], "payload": "{\"args\": \"192.168.0.1\"}"}'
+
+    # Launch "cloudflare_zone" service plugin from "mqttwarn-contrib", passing "--config" parameters via command line
+    pip install mqttwarn-contrib
+    mqttwarn --plugin=mqttwarn_contrib.services.cloudflare_zone --config='{"auth-email": "foo", "auth-key": "bar"}' --options='{"addrs": ["0815", "www.example.org", ""], "message": "192.168.0.1"}'
+
+
+Also, the ``--config-file`` parameter can be used to optionally specify the
+path to a configuration file.
 
 
 Running as system daemon

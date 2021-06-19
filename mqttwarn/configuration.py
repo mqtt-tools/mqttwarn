@@ -124,7 +124,7 @@ class Config(RawConfigParser):
     def g(self, section, key, default=None):
         try:
             val = self.get(section, key)
-            if val.upper() in self.specials:
+            if isinstance(val, str) and val.upper() in self.specials:
                 return self.specials[val.upper()]
             return ast.literal_eval(val)
         except NoOptionError:
@@ -191,7 +191,6 @@ def load_configuration(configfile=None, name='mqttwarn'):
     defaults = {
         'clientid': name,
         'lwt': 'clients/{}'.format(name),
-        'logfile': os.getenv(name.upper() + 'LOG', name + '.log'),
     }
 
     return Config(configfile, defaults=defaults)

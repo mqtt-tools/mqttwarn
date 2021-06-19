@@ -7,6 +7,26 @@ in progress
 ===========
 
 
+2021-06-19 0.26.1
+=================
+
+- Attempt to fix README on Docker Hub
+
+
+2021-06-19 0.26.0
+=================
+
+- When title is not set in configuration settings, use ``mqttwarn: {topic}``
+  instead of ``mqttwarn`` only. Thanks, Rob!
+- Add launch configuration for VSCode. Thanks, David!
+- Use STDERR as default log target
+- Stop including the "tests" folder into the sdist package
+- Add "mqttwarn-contrib" package to the list of "extra" dependencies
+- Improve launching service plugins interactively from the command line
+  Now, there are two options "--config" and "--options" to be able to
+  obtain all relevant bits of information from the command line.
+
+
 2021-06-18 0.25.0
 =================
 

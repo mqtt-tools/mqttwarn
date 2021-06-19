@@ -113,6 +113,11 @@ extras = {
     'slixmpp': [
         'slixmpp>=1.5.2',
     ],
+    # More notification plugins from the community.
+    # https://github.com/daq-tools/mqttwarn-contrib
+    'contrib': [
+        'mqttwarn-contrib',
+    ],
 }
 
 
@@ -155,7 +160,7 @@ extras["test"] = [
 
 
 setup(name='mqttwarn',
-      version='0.25.0',
+      version='0.26.1',
       description='mqttwarn - subscribe to MQTT topics and notify pluggable services',
       long_description=README,
       license="EPL 2.0",
