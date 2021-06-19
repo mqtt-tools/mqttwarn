@@ -8,6 +8,7 @@ in progress
 
 - When title is not set in configuration settings, use ``mqttwarn: {topic}``
   instead of ``mqttwarn`` only. Thanks, Rob!
+- Add launch configuration for VSCode. Thanks, David!
 
 
 2021-06-18 0.25.0
