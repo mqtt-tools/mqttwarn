@@ -162,15 +162,20 @@ We have you covered. To launch a plugin standalone, those commands will give
 you an idea how to pass relevant information on the command line using JSON::
 
     # Launch "log" service plugin
-    mqttwarn --plugin=log --data='{"message": "Hello world", "addrs": ["crit"]}'
+    mqttwarn --plugin=log --options='{"message": "Hello world", "addrs": ["crit"]}'
 
     # Launch "file" service plugin
-    mqttwarn --plugin=file --data='{"message": "Hello world\n", "addrs": ["/tmp/mqttwarn.err"]}'
+    mqttwarn --plugin=file --options='{"message": "Hello world\n", "addrs": ["/tmp/mqttwarn.err"]}'
 
     # Launch "pushover" service plugin
-    mqttwarn --plugin=pushover --data='{"title": "About", "message": "Hello world", "addrs": ["userkey", "token"], "priority": 6}'
+    mqttwarn --plugin=pushover --options='{"title": "About", "message": "Hello world", "addrs": ["userkey", "token"], "priority": 6}'
 
-The ``--config`` parameter can be used to optionally specify a configuration file.
+    # Launch "cloudflare_zone" service plugin from "mqttwarn-contrib", passing "--config" parameters via command line
+    mqttwarn --plugin=mqttwarn_contrib.services.cloudflare_zone --config='{"auth-email": "foo", "auth-key": "bar"}' --options='{"addrs": ["0815", "www.example.org", ""], "message": "192.168.0.1"}'
+
+
+Also, the ``--config-file`` parameter can be used to optionally specify the
+path to a configuration file.
 
 
 Running as system daemon
