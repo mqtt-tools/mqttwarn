@@ -3,3 +3,5 @@ exclude .bumpversion.cfg
 recursive-include mqttwarn *.ini *.py
 prune examples
 prune vendor
+prune templates
+prune tests
