@@ -124,7 +124,7 @@ class Config(RawConfigParser):
     def g(self, section, key, default=None):
         try:
             val = self.get(section, key)
-            if val.upper() in self.specials:
+            if isinstance(val, str) and val.upper() in self.specials:
                 return self.specials[val.upper()]
             return ast.literal_eval(val)
         except NoOptionError:
