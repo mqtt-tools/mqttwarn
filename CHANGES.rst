@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- Improve documentation about logging on Docker
+
 
 2022-08-21 0.29.0
 =================

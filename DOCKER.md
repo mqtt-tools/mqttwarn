@@ -89,6 +89,9 @@ configuration file:
 ### Log file
 
 By default, the log output will be sent to STDERR.
+```ini
+logfile   = stream://sys.stderr
+```
 
 If you would like to log to a file on the host instead, add this to your
 `mqttwarn.ini` file:
@@ -103,6 +106,31 @@ Add this argument to `docker run`:
 `mqttwarn.log` will be created in your current folder, and appended to each
 time the container is executed. You can delete the file between subsequent
 invocations.
+
+*Warning:* By default, Docker will log everything, and it does not rotate or
+clean itself.  When running under Docker daemon, add the following defaults
+to your `/etc/docker/daemon.json` to control you logs:
+```json
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+```
+
+It also might be possible to add a `logging` entry to your individual `docker-compose.yml`
+file for `mqttwarn`, rather than changing it at the system level:
+```yml
+logging:
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+    env: "os"
+```
+
 
 
 ### If your MQTT Broker is also running in Docker on the same host
