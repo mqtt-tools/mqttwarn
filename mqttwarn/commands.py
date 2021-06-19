@@ -130,7 +130,10 @@ def setup_logging(config):
     LOGFORMAT = config.logformat
 
     # Send log messages to sys.stderr by configuring "logfile = stream://sys.stderr"
-    if LOGFILE.startswith('stream://'):
+    if not LOGFILE:
+        pass
+
+    elif LOGFILE.startswith('stream://'):
         LOGFILE = LOGFILE.replace('stream://', '')
         logging.basicConfig(stream=eval(LOGFILE), level=LOGLEVEL, format=LOGFORMAT)
 
