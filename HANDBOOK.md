@@ -638,9 +638,10 @@ targets  = {
     'speaker' : ['Living Room'],
     }
 
+# Command line test
+# mqttwarn --plugin=chromecast --options='{"message": "Hello world", "addrs": ["Living Room"]}'
 # echo 'Hello world' | mosquitto_pub -t 'chromecast/say' -l
 # echo '{"message": "Hello world", "addrs": ["Living Room"]}' | mosquitto_pub -t 'chromecast/say' -l
-# command line test;  mqttwarn --plugin=chromecast --data='{"message": "Hello world", "addrs": ["Living Room"]}'
 [chromecast/say]
 targets = chromecast:speaker
 

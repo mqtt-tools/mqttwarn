@@ -50,7 +50,7 @@ Goals for 0.21.0
 Goals for 1.0.0
 ***************
 - [o] Make mqttwarn completely unicode-safe
-- [o] Make "mqttwarn --plugin=log --data=" obtain JSON data from STDIN
+- [o] Make "mqttwarn --plugin=log --options=" obtain JSON data from STDIN
 - [o] Translate documentation into reStructuredText format,
       render it using Sphinx and optionally publish to readthedocs.org.
 - [o] Add support for Python 3
