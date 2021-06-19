@@ -16,6 +16,8 @@ from tests import (
     configfile_service_loading,
     configfile_unknown_functions,
 )
+
+
 from tests.util import core_bootstrap, send_message
 
 
@@ -282,3 +284,31 @@ def test_config_bad_functions(caplog):
         error_message = str(excinfo.value)
         assert "UNKNOWN FILE REFERENCE" in error_message
         assert "not found" in error_message
+
+
+def inactive_test_status_publish(caplog):
+    """
+    Aim to test the `status_publish` feature.
+    Test the core connection method.
+
+    Note:
+        We need figure out how ot mock a connection to a non-existent MQTT server.
+    """
+
+    from unittest import mock
+    from unittest.mock import call, PropertyMock
+    from mqttwarn.core import connect
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT
+        core_bootstrap(configfile=configfile_full)
+
+        mqtt_publish_mock = mock.MagicMock()
+        mqttc = mqtt_publish_mock
+
+        # Signal mocked MQTT message to the core machinery for processing
+        outcome = connect().mqttc = mqtt_publish_mock
+
+        # Proof that the message has been routed to the "log" plugin properly
+        #assert assertion here to verify the connection
