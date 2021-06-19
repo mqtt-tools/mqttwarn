@@ -6,6 +6,13 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2021-06-19 0.26.1
+=================
+
+- Attempt to fix README on Docker Hub
+
+
 2021-06-19 0.26.0
 =================
 
