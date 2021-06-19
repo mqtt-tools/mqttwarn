@@ -10,6 +10,7 @@ in progress
   instead of ``mqttwarn`` only. Thanks, Rob!
 - Add launch configuration for VSCode. Thanks, David!
 - Use STDERR as default log target
+- Stop including the "tests" folder into the sdist package
 
 
 2021-06-18 0.25.0
