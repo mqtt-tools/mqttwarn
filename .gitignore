@@ -20,3 +20,5 @@ funcs.py
 .pytest_results
 .coverage
 .tox
+.vscode/.env
+.vscode/run.ini
