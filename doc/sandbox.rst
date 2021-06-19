@@ -46,6 +46,17 @@ will be able to launch the ``mqttwarn`` entrypoint without further ado.
 
 Otherwise, setup the virtualenv manually by invoking those commands::
 
+    # On Linux
     python3 -m venv .venv
     source .venv/bin/activate
+
+    # On Windows
+    python -m venv .venv
+    .venv/Scripts/activate
+
     pip install --editable=.[test] --upgrade
+
+For properly configuring a virtualenv, please also read those fine resources:
+
+- https://code.visualstudio.com/docs/python/environments
+- https://medium.com/@kylehayes/using-a-python-virtualenv-environment-with-vscode-b5f057f44c6a
