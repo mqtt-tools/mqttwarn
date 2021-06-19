@@ -9,8 +9,11 @@ from builtins import str
 import logging
 
 import pytest
+from unittest import mock
+from unittest.mock import call, PropertyMock
 
-from mqttwarn.core import make_service, decode_payload
+
+from mqttwarn.core import make_service, decode_payload, connect
 from tests import configfile_full, configfile_service_loading, configfile_no_functions, configfile_unknown_functions, \
     configfile_empty_functions
 from tests.util import core_bootstrap, send_message
@@ -278,3 +281,23 @@ def test_config_bad_functions(caplog):
         error_message = str(excinfo.value)
         assert "UNKNOWN FILE REFERENCE" in error_message
         assert "not found" in error_message
+
+# def test_connect(caplog):
+#     """
+#     Test the core connection method - could not figureout how ot mock a connection to a 
+#     non existent mqtt server
+#     """
+
+#     with caplog.at_level(logging.DEBUG):
+
+#         # Bootstrap the core machinery without MQTT
+#         core_bootstrap(configfile=configfile_full)
+
+#         mqtt_publish_mock = mock.MagicMock()
+#         mqttc = mqtt_publish_mock
+
+#         # Signal mocked MQTT message to the core machinery for processing
+#         outcome = connect().mqttc = mqtt_publish_mock
+
+#         # Proof that the message has been routed to the "log" plugin properly
+#         #assert assertion here to verify the connection

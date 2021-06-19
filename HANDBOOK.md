@@ -132,6 +132,9 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   ; name the service providers you will be using.
   launch   = file, log, osxnotify, mysql, smtp
 
+  ; Publish the current mqttwarn version to the topic (retained)
+  publishversion = mqttwarn/version
+
 
   ; optional: TLS parameters. (Don't forget to set the port number for
   ; TLS (probably 8883).
@@ -164,6 +167,18 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   
   You should launch every service you want to use from your topic/target definitions here.
   
+  ###### `publishversion`
+
+  A topic that, when it exists, mqttwarn will publish it's current version as a retained payload.
+  Useful for automated updates (docker watchtower and the like)
+
+  For example:
+  ```
+  root@mymachine:~$  mosquitto_sub -v -t mqttwarn/version
+  mqttwarn/version 0.25.0
+  ```
+
+
   #### The `[config:xxx]` sections
   
   Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
