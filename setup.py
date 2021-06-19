@@ -35,6 +35,9 @@ extras = {
     'celery': [
         'celery',
     ],
+    'chromecast': [
+        'pychromecast>=7.5.0',
+    ],
     'dnsupdate': [
         'dnspython>=1.15.0',
     ],
@@ -144,11 +147,15 @@ extras["test"] = [
     'pytest-cov>=2.8.1',
     'lovely.testlayers>=0.7.1',
     'tox>=3.14.2',
+    'surrogate==0.1',
+    'dataclasses; python_version<"3.7"',
+    'requests-toolbelt>=0.9.1,<1',
+    'responses>=0.13.3,<1',
 ]
 
 
 setup(name='mqttwarn',
-      version='0.24.0',
+      version='0.25.0',
       description='mqttwarn - subscribe to MQTT topics and notify pluggable services',
       long_description=README,
       license="EPL 2.0",
@@ -168,7 +175,6 @@ setup(name='mqttwarn',
         "Operating System :: Unix",
         "Operating System :: MacOS",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",

@@ -5,7 +5,7 @@ __author__    = 'Bram Hendrickx'
 __copyright__ = 'Copyright 2016 Bram Hendrickx'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-Original script by Bram Hendrickx. https://github.com/jpmens/mqttwarn/blob/master/services/ifttt.py
+Original script by Bram Hendrickx. https://github.com/jpmens/mqttwarn/blob/main/mqttwarn/services/ifttt.py
 Modified to work with the autoremote api https://joaoapps.com/autoremote/
 """
 
@@ -36,7 +36,7 @@ def plugin(srv, item):
         srv.logging.debug("Successfully sent to autoremote service")
 
     except Exception as e:
-        srv.logging.warning("Failed to send message to autoremote service" % e)
+        srv.logging.warning("Failed to send message to autoremote service: %s" % e)
         return False
 
     return True

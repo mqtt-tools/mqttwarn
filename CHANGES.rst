@@ -6,12 +6,25 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2021-06-18 0.25.0
+=================
+
+- Rename repository default branch to "main"
+- Fix "http" service plugin
+- Improve machinery to launch a notification service plugin standalone.
+  Now, it works without any ``mqttwarn.ini`` configuration file at all.
+- Begin adding tests for services
+- Drop official support for Python 2
+
+
 2021-06-12 0.24.0
 =================
 
 - [prowl] Update service plugin to use "pyprowl" instead of "prowlpy"
 - [core] Make "functions" setting in configuration file optional
 - [ci] Build and publish Docker multi-platform images
+
 
 2021-06-08 0.23.1
 =================
@@ -211,7 +224,7 @@ in progress
 =================
 - Add foundation for unit tests based on pytest
 - Add test harness
-- Integrate changes from the master branch
+- Integrate changes from the main branch
 - Improve documentation, add a more compact ``README.rst`` and
   move the detailed documentation to ``HANDBOOK.md`` for now.
 - First release on PyPI

@@ -35,20 +35,22 @@ def plugin(srv, item):
         srv.logging.error("target `carbon': cannot split string")
         return False
 
-    if len(parts) == 1:
+    parts_count = len(parts)
+    if parts_count == 1:
         metric_name = item.data.get('topic', 'ohno').replace('/', '.')
         value = parts[0]
         tics = int(time.time())
+    elif parts_count == 2:
+        metric_name = parts[0]
+        value = parts[1]
+        tics = int(time.time())
+    elif parts_count == 3:
+        metric_name = parts[0]
+        value = parts[1]
+        tics = int(parts[2])
     else:
-        if len(parts) == 2:
-            metric_name = parts[0]
-            value = parts[1]
-            tics = int(time.time())
-        else:
-            if len(parts) == 3:
-                metric_name = parts[0]
-                value = parts[1]
-                tics = int(parts[2])
+        srv.logging.error("target `carbon': error decoding message")
+        return False
 
     if metric_name.startswith('.'):     # omit dot there caused by useless leading slash in topic
         metric_name = metric_name[1:]

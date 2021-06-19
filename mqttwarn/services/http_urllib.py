@@ -75,8 +75,9 @@ def plugin(srv, item):
                 resource = url
 
             request = urllib.request.Request(resource)
-            request.add_header('User-agent', srv.SCRIPTNAME)
 
+            if srv.SCRIPTNAME is not None:
+                request.add_header('User-agent', srv.SCRIPTNAME)
             if auth is not None:
                 request.add_header("Authorization", "Basic %s" % auth)
 
@@ -107,9 +108,12 @@ def plugin(srv, item):
 
 
             request.data = encoded_params.encode('utf-8')
-            request.add_header('User-agent', srv.SCRIPTNAME)
+
+            if srv.SCRIPTNAME is not None:
+                request.add_header('User-agent', srv.SCRIPTNAME)
             if auth is not None:
                 request.add_header("Authorization", "Basic %s" % auth)
+
             srv.logging.debug("before send")
             resp = urllib.request.urlopen(request, timeout=timeout)
             data = resp.read()

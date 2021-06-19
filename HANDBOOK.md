@@ -2161,7 +2161,6 @@ and one or more _application keys_ which you configure in the targets definition
 ```ini
 [config:pushover]
 callback = None
-device = cellphone1,cellphone2
 targets = {
     'nagios'     : ['userkey1', 'appkey1', 'sound1'],
     'alerts'     : ['userkey2', 'appkey2'],
@@ -3063,11 +3062,20 @@ Below are a number of example scenarios where custom functions are being used.
 Consider the following configuration snippet in addition to the configuration
 of the `mqtt` service shown above:
 
+Add this to a custom Python file, like, e.g. `/etc/mqttwarn/myfunctions.py`.
 ```python
 def lookup_data(data, srv=None):
     if type(data) == dict and 'fruit' in data:
             return "Ananas"
     return None
+```
+
+Register that file by saying:
+
+```ini
+[defaults]
+; path to file containing self-defined functions for formatmap and datamap
+functions = 'myfunctions.py'
 ```
 
 Then, in the section defining the topic we listen on:
@@ -3079,16 +3087,23 @@ Then, in the section defining the topic we listen on:
 format =  lookup_data()
 ```
 
-We've replaced the `formatmap` entry for the topic by a function which you
-define within the _functions_ file you configure as `functions` in `mqttwarn.ini` configuration file. These functions
-are invoked with decoded JSON `data` passed to them as a _dict_. The string returned
-by the function returned string replaces the outgoing `message`:
+Here, we replaced the `formatmap` entry for the topic by a custom function.
+
+These functions are invoked with decoded JSON `data` passed to them as a
+_dict_. The string returned  by the function returned string replaces the
+outgoing `message`:
 
 ```
 in/a1 {"fruit":"pineapple", "price": 131, "tst" : "1391779336"}
 out/food Ananas
 out/fruit/pineapple Ananas
 ```
+
+You can define custom functions in a Python file which you configure as
+`functions` in the `[default]` section of the `mqttwarn.ini` configuration
+file, as outlined above. When relative file names are given, they will be
+resolved from the directory of the `mqttwarn.ini` file, which is, by default,
+the `/etc/mqttwarn` folder.
 
 If a function operating on a message (i.e. within `format =`) returns `None` or an empty string, the target notification is suppressed.
 
@@ -3412,7 +3427,12 @@ plugins, there are two options.
 ### Service plugin from package
 
 This configuration snippet outlines how to load a custom plugin from a Python
-module referenced in "dotted" notation.
+module referenced in "dotted" notation. Modules will be searched for in all
+directories listed in [`sys.path`]. Custom directories can be added by using the
+[`PYTHONPATH`] environment variable.
+
+[`sys.path`]: https://docs.python.org/3/library/sys.html#sys.path
+[`PYTHONPATH`]: https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH
 
 ```ini
 [defaults]
@@ -3433,7 +3453,9 @@ targets = {
 ### Service plugin from file
 
 This configuration snippet outlines how to load a custom plugin from a Python
-file referenced by file name.
+file referenced by file name. When relative file names are given, they will be
+resolved from the directory of the `mqttwarn.ini` file, which is, by default,
+the `/etc/mqttwarn` folder.
 
 ```ini
 [defaults]
