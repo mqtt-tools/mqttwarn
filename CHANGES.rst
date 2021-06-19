@@ -16,6 +16,7 @@ in progress
 - Pushover service plugin: Enable passing of parameters ``html``, ``url``, ``url_title``
 - Add test for exercising configuration file scaffolding
 - Improve README regarding configuration file scaffolding on Windows 10/PowerShell
+- Improve support for VSCode
 
 
 2021-10-31 0.28.1

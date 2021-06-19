@@ -13,7 +13,6 @@ services/winscp.rnd
 .vs/VSWorkspaceState.json
 .vs/ProjectSettings.json
 f.01
-.vscode/settings.json
 funcs.py
 .pytest_cache
 .pytest_results
