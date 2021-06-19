@@ -113,6 +113,11 @@ extras = {
     'slixmpp': [
         'slixmpp>=1.5.2',
     ],
+    # More notification plugins from the community.
+    # https://github.com/daq-tools/mqttwarn-contrib
+    'contrib': [
+        'mqttwarn-contrib',
+    ],
 }
 
 

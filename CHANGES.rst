@@ -11,6 +11,7 @@ in progress
 - Add launch configuration for VSCode. Thanks, David!
 - Use STDERR as default log target
 - Stop including the "tests" folder into the sdist package
+- Add "mqttwarn-contrib" package to the list of "extra" dependencies
 
 
 2021-06-18 0.25.0
