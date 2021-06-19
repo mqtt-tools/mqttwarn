@@ -20,6 +20,7 @@ from pkg_resources import resource_filename
 
 import paho.mqtt.client as paho
 
+from mqttwarn import __version__
 from mqttwarn.context import RuntimeContext, FunctionInvoker
 from mqttwarn.cron import PeriodicThread
 from mqttwarn.util import \
@@ -627,6 +628,10 @@ def connect():
     # Update our runtime context (used by functions etc) now we have a connected MQTT client
     context.invoker.srv.mqttc = mqttc
 
+    # if publishversion configuration entry exists, use it to publish the current mqttwarn version
+    if cf.publishversion:
+        mqttc.publish(cf.publishversion,__version__,retain=True)
+        
     # Launch worker threads to operate on queue
     start_workers()
 

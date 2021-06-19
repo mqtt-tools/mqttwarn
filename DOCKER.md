@@ -107,6 +107,31 @@ Add this argument to `docker run`:
 time the container is executed. You can delete the file between subsequent
 invocations.
 
+Logging can also be sent to stdout and displayed in docker by changing the logfile parameter of the `mqttwarn.ini` file as follows:
+```ini
+logfile   = stream://sys.stderr
+```
+*Warning* By default, docker will log everything and it does not rotate or clean itself.  When running under docker daemon add the following defaults to your `/etc/docker/daemon.json` to control you logs:
+```json
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}```
+
+It also might be possible to add a `logging` entry to your individual docker-compose file for mqttwarn, rather than change it at a system level:
+```yml
+logging:
+  driver: "json-file"
+  options:
+    max-size: 10m
+    max-file: "3"
+    env: "os"
+```
+
+
 
 ### If your MQTT Broker is also running in Docker on the same host
 
