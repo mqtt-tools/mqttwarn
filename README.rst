@@ -17,6 +17,9 @@
 .. image:: https://img.shields.io/pypi/status/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
 
+.. image:: https://img.shields.io/pypi/dm/mqttwarn.svg?label=PyPI%20downloads
+    :target: https://pypi.org/project/mqttwarn/
+
 |
 
 .. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
