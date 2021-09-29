@@ -51,7 +51,8 @@ def plugin(srv, item):
         req = urllib.request.Request(url, jsoncommand)
         req.add_header("Content-type", "application/json")
         if xbmcpassword is not None:
-            base64string = base64.encodestring('%s:%s' % (xbmcusername, xbmcpassword))[:-1]
+            credentials = '%s:%s' % (xbmcusername, xbmcpassword)
+            base64string = base64.b64encode(credentials.encode('utf-8')).decode('utf-8')
             authheader = "Basic %s" % base64string
             req.add_header("Authorization", authheader)
         response = urllib.request.urlopen(req, timeout = 2)
