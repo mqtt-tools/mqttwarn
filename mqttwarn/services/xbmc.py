@@ -52,8 +52,8 @@ def plugin(srv, item):
         req.add_header("Content-type", "application/json")
         if xbmcpassword is not None:
             credentials = '%s:%s' % (xbmcusername, xbmcpassword)
-            base64string = base64.b64encode(credentials.encode('utf-8')).decode()
-            authheader = "Basic %s" % base64string
+            basicauth_token = base64.b64encode(credentials.encode('utf-8')).decode()
+            authheader = "Basic %s" % basicauth_token
             req.add_header("Authorization", authheader)
         response = urllib.request.urlopen(req, timeout = 2)
         srv.logging.debug("Successfully sent XBMC notification")

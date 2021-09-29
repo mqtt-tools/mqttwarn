@@ -27,10 +27,11 @@ def plugin(srv, item):
     params = item.addrs[2]
     timeout = item.config.get('timeout', 60)
 
-    auth = None
+    basicauth_token = None
     try:
         username, password = item.addrs[3]
-        auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
+        credentials = '%s:%s' % (username, password)
+        basicauth_token = base64.b64encode(credentials.encode('utf-8')).decode()
     except:
         pass
 
@@ -78,8 +79,8 @@ def plugin(srv, item):
 
             if srv.SCRIPTNAME is not None:
                 request.add_header('User-agent', srv.SCRIPTNAME)
-            if auth is not None:
-                request.add_header("Authorization", "Basic %s" % auth)
+            if basicauth_token is not None:
+                request.add_header("Authorization", "Basic %s" % basicauth_token)
 
             resp = urllib.request.urlopen(request, timeout=timeout)
             data = resp.read()
@@ -111,8 +112,8 @@ def plugin(srv, item):
 
             if srv.SCRIPTNAME is not None:
                 request.add_header('User-agent', srv.SCRIPTNAME)
-            if auth is not None:
-                request.add_header("Authorization", "Basic %s" % auth)
+            if basicauth_token is not None:
+                request.add_header("Authorization", "Basic %s" % basicauth_token)
 
             srv.logging.debug("before send")
             resp = urllib.request.urlopen(request, timeout=timeout)

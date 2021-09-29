@@ -7,6 +7,13 @@ in progress
 ===========
 
 
+2021-09-29 0.26.2
+=================
+
+- Fix HTTP basic authentication for Python 3 in plugins for HTTP, XBMC and Ionic.
+  Thanks, @sumnerboy12!
+
+
 2021-06-19 0.26.1
 =================
 
