@@ -60,10 +60,13 @@ def plugin(srv, item):
         handler = urllib.request.HTTPHandler()
         opener = urllib.request.build_opener(handler)
 
+        credentials = '%s:' % (appsecret)
+        basicauth_token = base64.b64encode(credentials.encode('utf-8')).decode()
+
         data = json.dumps(data)
         request = urllib.request.Request(resource, data=data.encode("utf-8"))
         request.add_header('X-Ionic-Application-Id', appid)
-        request.add_header("Authorization", "Basic %s" % base64.encodestring('%s:' % appsecret).replace('\n', ''))
+        request.add_header("Authorization", "Basic %s" % basicauth_token)
         request.add_header("Content-Type", 'application/json')
 
         connection = opener.open(request, timeout=5)
