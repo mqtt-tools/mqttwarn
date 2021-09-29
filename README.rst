@@ -243,6 +243,11 @@ spelling mistake and then send us a pull request or create an issue_.
 
 Thanks in advance for your efforts, we really appreciate any help or feedback.
 
+See Also
+========
+
+
+- `Community contributions to mqttwarn <https://github.com/daq-tools/mqttwarn-contrib>`_
 
 Licenses
 ========
