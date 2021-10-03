@@ -18,10 +18,26 @@ def plugin(srv, item):
     # item.config is brought in from the configuration file
     config = item.config
 
-    # addrs is a list[] associated with a particular target.
-    # While it may contain more than one item (e.g. pushover)
-    # the `file' service carries one only, i.e. a path name
-    filename = item.addrs[0].format(**item.data)
+    # Evaluate global parameters.
+    newline = False
+    overwrite = False
+    if type(config) == dict and 'append_newline' in config and config['append_newline']:
+        newline = True
+    if type(config) == dict and 'overwrite' in config and config['overwrite']:
+        overwrite = True
+
+    # `item.addrs` is either a dict or a list associated with a particular target.
+    # While lists may contain more than one item (e.g., for the pushover target),
+    # the `file` service only allows for single items, the path name.
+    # When it's a dict, additional parameters can be obtained to augment the
+    # behavior of the write operation on a per-file basis.
+    if isinstance(item.addrs, dict):
+        filename = item.addrs['path'].format(**item.data)
+        # Evaluate per-file parameters.
+        newline = item.addrs.get('append_newline', newline)
+        overwrite = item.addrs.get('overwrite', overwrite)
+    else:
+        filename = item.addrs[0].format(**item.data)
 
     # Interpolate some variables into filename.
     filename = filename.replace("$TMPDIR", tempfile.gettempdir())
@@ -32,9 +48,9 @@ def plugin(srv, item):
     # else the original payload
     text = item.message
 
-    if type(config) == dict and 'append_newline' in config and config['append_newline']:
+    if newline:
         text += "\n"
-    if type(config) == dict and 'overwrite' in config and config['overwrite']:
+    if overwrite:
         mode = "w"
 
     try:
