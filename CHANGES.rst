@@ -9,6 +9,8 @@ in progress
 - IRCcat: Fix and improve service. Thanks, @JanKoppe.
 - IRCcat: Add newline character after message. Thanks again, @JanKoppe.
 - CI: Run tests on Python 3.10
+- Allow parameters of the ``file`` service to be defined on a per-file basis.
+  Thanks, @Gulaschcowboy!
 
 
 2021-09-29 0.26.2

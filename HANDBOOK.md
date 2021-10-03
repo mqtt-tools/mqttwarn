@@ -814,9 +814,12 @@ Requires:
 
 ### `file`
 
-The `file` service can be used for logging incoming topics, archiving, etc. Each message is written to a path specified in the targets list. Note that files are opened for appending and then closed on each notification.
+The `file` service can be used for logging incoming topics, archiving, etc.
+Each message is written to a path specified in the targets list. Note that
+files are opened for appending and then closed on each notification.
 
-Supposing we wish to archive all incoming messages to the branch `arch/#` to a file `/data/arch`, we could configure the following:
+Supposing we wish to archive all incoming messages to the branch `arch/#`
+to a file `/data/arch`, we could configure the following:
 
 ```ini
 [config:file]
@@ -827,8 +830,21 @@ targets = {
    }
 ```
 
-If `append_newline` is True, a newline character is unconditionally appended to the string written to the file. If `overwrite` is True, the file is opened for truncation upon writing (i.e. the file will contain the last message only).
+If `append_newline` is `True`, a newline character is unconditionally appended
+to the string written to the file. If `overwrite` is `True`, the file is opened
+for truncation upon writing (i.e. the file will contain the last message only).
 
+Both parameters can also be specified on a per-file basis. In order to do that,
+the corresponding configuration snippet would look like this:
+
+```ini
+[config:file]
+targets = {
+    'log-me'    : {'path': '/data/arch', 'append_newline': True, 'overwrite': False},
+   }
+```
+
+Per-item parameters take precedence over global parameters.
 
 ### `freeswitch`
 
