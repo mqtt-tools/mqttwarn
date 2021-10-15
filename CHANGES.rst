@@ -7,6 +7,7 @@ in progress
 ===========
 
 - IRCcat: Fix and improve service. Thanks, @JanKoppe.
+- IRCcat: Add newline character after message. Thanks again, @JanKoppe.
 
 
 2021-09-29 0.26.2
