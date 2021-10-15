@@ -1255,9 +1255,9 @@ time         entity   room      temperature  topic
 
 ### `irccat`
 
-The `irccat` target fires a message off to a listening [irccat](https://github.com/RJ/irccat/tree/master) which has a connection open on one or more IRC channels.
+The `irccat` target fires a message off to a listening [IRCcat](https://github.com/RJ/irccat) which has a connection open on one or more IRC channels.
 
-Each target has to be configured with the address, TCP port and channel name of the particular _irccat_ it should target.
+Each target has to be configured with the address, TCP port and channel name of the particular _IRCcat_ instance it should target.
 
 ```ini
 [config:irccat]

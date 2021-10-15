@@ -14,28 +14,30 @@ def plugin(srv, item):
     try:
         addr, port, channel = item.addrs
     except:
-        srv.logging.warn("Incorrect target configuration")
+        srv.logging.warning("Incorrect target configuration")
         return False
 
     message = item.message
 
+    # Optionally apply coloring.
     color = None
-    priority = item.priority
-    if priority == 1:
+    if item.priority == 1:
         color = '%GREEN'
-    if priority == 2:
+    elif item.priority == 2:
         color = '%RED'
+    if color is not None:
+        message = color + message
+
+    srv.logging.debug("Sending to IRCcat: %s" % (message))
 
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((addr, port))
-        if color is not None:
-            sock.send(color)
-        sock.send(message)
+        sock.send(message.encode())
         sock.close()
 
     except Exception as e:
-        srv.logging.error("Error sending IRCCAT notification to %s:%s [%s]: %s" % (item.target, addr, port, e))
+        srv.logging.error("Error sending IRCcat notification to %s:%s [%s]: %s" % (item.target, addr, port, e))
         return False
 
     return True
