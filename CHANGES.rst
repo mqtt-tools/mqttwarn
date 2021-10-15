@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- IRCcat: Fix and improve service. Thanks, @JanKoppe.
+
 
 2021-09-29 0.26.2
 =================
