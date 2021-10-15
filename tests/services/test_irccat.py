@@ -29,7 +29,7 @@ def test_irccat_normal_success(srv, caplog):
         assert socket_mock.mock_calls == [
             call(socket.AF_INET, socket.SOCK_STREAM),
             call().connect(("localhost", 12345)),
-            call().send(b"\xe2\x9a\xbd Notification message \xe2\x9a\xbd"),
+            call().send(b"\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
             call().close(),
         ]
 
@@ -59,7 +59,7 @@ def test_irccat_green_success(srv, caplog):
         assert socket_mock.mock_calls == [
             call(socket.AF_INET, socket.SOCK_STREAM),
             call().connect(("localhost", 12345)),
-            call().send(b"%GREEN\xe2\x9a\xbd Notification message \xe2\x9a\xbd"),
+            call().send(b"%GREEN\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
             call().close(),
         ]
 
@@ -89,7 +89,7 @@ def test_irccat_red_success(srv, caplog):
         assert socket_mock.mock_calls == [
             call(socket.AF_INET, socket.SOCK_STREAM),
             call().connect(("localhost", 12345)),
-            call().send(b"%RED\xe2\x9a\xbd Notification message \xe2\x9a\xbd"),
+            call().send(b"%RED\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
             call().close(),
         ]
 
@@ -156,4 +156,3 @@ def test_irccat_connect_fails(srv, caplog):
                 "Error sending IRCcat notification to test:localhost [12345]: something failed"
                 in caplog.messages
             )
-    

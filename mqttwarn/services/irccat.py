@@ -30,6 +30,10 @@ def plugin(srv, item):
 
     srv.logging.debug("Sending to IRCcat: %s" % (message))
 
+    # Apparently, a trailing newline is needed.
+    # https://github.com/jpmens/mqttwarn/issues/547#issuecomment-944632712
+    message += "\n"
+
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((addr, port))
