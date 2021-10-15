@@ -8,6 +8,7 @@ in progress
 
 - IRCcat: Fix and improve service. Thanks, @JanKoppe.
 - IRCcat: Add newline character after message. Thanks again, @JanKoppe.
+- CI: Run tests on Python 3.10
 
 
 2021-09-29 0.26.2
