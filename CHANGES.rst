@@ -11,6 +11,7 @@ in progress
 - CI: Run tests on Python 3.10
 - Allow parameters of the ``file`` service to be defined on a per-file basis.
   Thanks, @Gulaschcowboy!
+- Add software tests for ``file`` service.
 
 
 2021-09-29 0.26.2

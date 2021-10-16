@@ -40,7 +40,8 @@ def plugin(srv, item):
         filename = item.addrs[0].format(**item.data)
 
     # Interpolate some variables into filename.
-    filename = filename.replace("$TMPDIR", tempfile.gettempdir())
+    if "$TMPDIR" in filename:
+        filename = filename.replace("$TMPDIR", tempfile.gettempdir())
 
     srv.logging.info("Writing to file `%s'" % (filename))
 
