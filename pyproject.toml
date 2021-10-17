@@ -1,0 +1,9 @@
+[tool.isort]
+profile = "black"
+#src_paths = ["mqttwarn", "examples", "tests"]
+src_paths = ["test"]
+
+[tool.black]
+line-length = 99
+include = '\.pyi?$'
+exclude = 'tests/etc/functions_bad.py'

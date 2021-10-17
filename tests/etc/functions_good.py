@@ -7,13 +7,13 @@ def foobar():
 
 
 def xform_func(data):
-    data['datamap-key'] = 'datamap-value'
+    data["datamap-key"] = "datamap-value"
     return data
 
 
 def datamap_dummy(topic):
-    return {'datamap-key': 'datamap-value'}
+    return {"datamap-key": "datamap-value"}
 
 
 def alldata_dummy(topic):
-    return {'alldata-key': 'alldata-value'}
+    return {"alldata-key": "alldata-value"}
