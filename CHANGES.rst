@@ -6,6 +6,10 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2021-10-17 0.27.0
+=================
+
 - IRCcat: Fix and improve service. Thanks, @JanKoppe.
 - IRCcat: Add newline character after message. Thanks again, @JanKoppe.
 - CI: Run tests on Python 3.10
