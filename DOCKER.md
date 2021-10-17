@@ -9,22 +9,22 @@ run it interactively, perhaps to help diagnose a problem.
 
 Docker images are automatically published to:
 
-- https://hub.docker.com/r/jpmens/mqttwarn
 - https://github.com/orgs/jpmens/packages/container/package/mqttwarn-standard
 - https://github.com/orgs/jpmens/packages/container/package/mqttwarn-full
+- ~~https://hub.docker.com/r/jpmens/mqttwarn~~ (not automatically updated)
 
 ## Choosing the Docker image
 
 Choose one of those Docker images.
 ```shell
-# The standard image on Docker Hub.
-export IMAGE=jpmens/mqttwarn
-
 # The standard image on GHCR.
 export IMAGE=ghcr.io/jpmens/mqttwarn-standard:latest
 
 # The full image on GHCR.
 export IMAGE=ghcr.io/jpmens/mqttwarn-full:latest
+
+# The standard image on Docker Hub.
+export IMAGE=jpmens/mqttwarn
 ```
 
 ## Interactively
@@ -157,7 +157,7 @@ images.
 
 In order to use `mqttwarn` with additional Python modules not included in the
 baseline image, you will need to build custom Docker images based on the
-canonical `jpmens/mqttwarn`.
+canonical `ghcr.io/jpmens/mqttwarn-standard:latest`.
 
 We prepared an example which outlines how this would work with the Slack SDK.
 By using the `Dockerfile.mqttwarn-slack`, this command will build a Docker
@@ -166,3 +166,11 @@ image called `mqttwarn-slack`, which includes the Slack SDK:
 ```shell
 docker build --tag=mqttwarn-slack --file=Dockerfile.mqttwarn-slack .
 ```
+
+## The "full" image, including all dependencies
+
+If you prefer not to fiddle with those details, but instead want to run a full
+image including dependencies for all modules, we have you covered. Alongside
+the standard image, there is also `ghcr.io/jpmens/mqttwarn-full:latest`.
+
+The `standard` image weighs in with about 130 MB, the `full` image has 230 MB.
