@@ -7,7 +7,7 @@
 #
 
 # Derive from upstream image.
-FROM jpmens/mqttwarn:0.23.0
+FROM ghcr.io/jpmens/mqttwarn-standard:0.27.0
 
 # Make package installation run as "root" user
 USER root
