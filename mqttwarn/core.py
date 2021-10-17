@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2021 The mqttwarn developers
+import platform
 from builtins import object
 from past.builtins import cmp
 from builtins import chr
@@ -629,11 +630,8 @@ def connect():
     # Update our runtime context (used by functions etc) now we have a connected MQTT client
     context.invoker.srv.mqttc = mqttc
 
-    try:
-        if cf.publishversion:
-            mqttc.publish(cf.publishversion,__version__,retain=True)
-    except: 
-        pass
+    # Publish status information to `mqttwarn/$SYS` topic.
+    publish_status_information()
 
     # Launch worker threads to operate on queue
     start_workers()
@@ -652,6 +650,45 @@ def connect():
         if not exit_flag:
             logger.warning("MQTT server disconnected, trying to reconnect each %s seconds" % reconnect_interval)
             time.sleep(reconnect_interval)
+
+
+def publish_status_information():
+    """
+    Implement `$SYS` topic, like Mosquitto's "Broker Status".
+    https://mosquitto.org/man/mosquitto-8.html#idm289
+
+    Idea from Mosquitto::
+
+      $ mosquitto_sub -t '$SYS/broker/version' -v
+      $SYS/broker/version mosquitto version 2.0.10
+
+    Synopsis::
+
+      $ mosquitto_sub -t 'mqttwarn/$SYS/#' -v
+
+      mqttwarn/$SYS/version 0.26.2
+      mqttwarn/$SYS/platform darwin
+      mqttwarn/$SYS/python/version 3.9.7
+
+    """
+    if cf.has_option("defaults", "status_publish") and cf.status_publish:
+
+        status_topic = cf.g("defaults", "status_topic", "mqttwarn/$SYS")
+        logger.info(f"Publishing status information to {status_topic}")
+
+        # Items are tuples of (subtopic, message)
+        publications = [
+            ("version", __version__),
+            ("platform", sys.platform),
+            ("python/version", platform.python_version()),
+        ]
+        try:
+            for publication in publications:
+                subtopic, message = publication
+                mqttc.publish(status_topic + "/" + subtopic, message, retain=True)
+
+        except:
+            logger.exception("Unable to publish status information")
 
 
 def start_workers():

@@ -12,6 +12,7 @@ in progress
 - Allow parameters of the ``file`` service to be defined on a per-file basis.
   Thanks, @Gulaschcowboy!
 - Add software tests for ``file`` service.
+- Add feature to publish mqttwarn status information. Thanks, @psyciknz!
 
 
 2021-09-29 0.26.2
