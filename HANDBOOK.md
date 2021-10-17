@@ -33,288 +33,288 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Press](#press)
   
 
-  ## Getting started
+## Getting started
 
-  ### Configuration
-  
-  I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
-  
-  ```ini
-  [defaults]
-  hostname  = 'localhost'
-  port      = 1883
-  
-  ; name the service providers you will be using.
-  launch	 = file, log
-  
-  [config:file]
-  append_newline = True
-  targets = {
-      'mylog'     : ['/tmp/mqtt.log']
-      }
-  
-  [config:log]
-  targets = {
-      'info'   : [ 'info' ]
-    }
-  
-  [test/+]
-  targets = file:mylog, log:info
-  ```
-  
-  **Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
-  
-  Launch `mqttwarn` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
-  
-  ```
-  mosquitto_pub -t test/1 -m "Hello"
-  mosquitto_pub -t test/name -m '{ "name" : "Jane" }'
-  ```
-  
-  and our output file `/tmp/mqtt.log` should contain the payload of both messages:
-  
-  ```shell
-  Hello
-  { "name" : "Jane" }
-  ```
-  
-  Both payloads where copied verbatim to the target.
-  
-  Stop _mqttwarn_, and add the following line to the `[test/+]` section:
-  
-  ```ini
-  format  = -->{name}<--
-  ```
-  
-  What we are configuring _mqttwarn_ to do here, is to try and decode the incoming JSON payload and format the output in such a way as that the JSON `name` element is copied to the output (surrounded with a bit of sugar to illustrate the fact that we can output whatever text we want).
-  
-  If you repeat the publish of the second message, you should see the following in your output file `/tmp/mqtt.log`:
-  
-  ```
-  -->Jane<--
-  ```
-  
-  #### The `[defaults]` section
-  
-  Most of the options in the configuration file have sensible defaults, and/or ought to be self-explanatory:
-  
-  ```ini
-  [defaults]
-  hostname     = 'localhost'         ; default
-  port         = 1883
-  username     = None
-  password     = None
-  clientid     = 'mqttwarn'
-  lwt          = 'clients/mqttwarn'  ; lwt payload is '0' or '1'
-  skipretained = True
-  cleansession = False
-  
-  ; logging
+### Configuration
 
-  ; Log format
-  logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
 
-  ; Send log to STDERR (default)
-  logfile   = 'stream://sys.stderr'
-  
-  ; Write log output to file
-  ; logfile   = 'mqttwarn.log'
+```ini
+[defaults]
+hostname  = 'localhost'
+port      = 1883
 
-  ; Turn off logging completely
-  ; logfile   = false
+; name the service providers you will be using.
+launch	 = file, log
 
-  ; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
-  loglevel     = DEBUG
-  
-  ; path to file containing self-defined functions for formatmap, alldata, and datamap
-  functions = 'myfuncs.py'
-  
-  ; name the service providers you will be using.
-  launch   = file, log, osxnotify, mysql, smtp
+[config:file]
+append_newline = True
+targets = {
+  'mylog'     : ['/tmp/mqtt.log']
+  }
 
-  ; Publish mqttwarn status information (retained)
-  status_publish = True
-  ; status_topic = mqttwarn/$SYS
+[config:log]
+targets = {
+  'info'   : [ 'info' ]
+}
 
+[test/+]
+targets = file:mylog, log:info
+```
 
-  ; optional: TLS parameters. (Don't forget to set the port number for
-  ; TLS (probably 8883).
-  ; You will need to set at least `ca_certs' if you want TLS support and
-  ; tls = True
-  ; ca_certs: path to the Certificate Authority certificate file (concatenated
-  ;           PEM file)
-  ; tls_version: currently one of 'tlsv1_1', 'tlsv1_2' (or 'sslv3', 'tlsv1' deprecated)
-  ; tls_insecure: True or False (False is default): Do or do not verify
-  ;               broker's certificate CN
-  ; certfile: path to PEM encode client certificate file
-  ; keyfile: path to PEM encode client private key file
-  tls = True
-  ca_certs = '/path/to/ca-certs.pem'
-  certfile = '/path/to/client.crt'
-  keyfile = '/path/to/client.key'
-  tls_version = 'tlsv1'
-  tls_insecure = False
-  
-  ```
-  
-  ###### `functions`
-  
-  The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
-  
-  ###### `launch`
-  
-  In the `launch` option you specify a list of comma-separated _service_ names  
-  defined within the `[config:xxx]` sections which should be launched.
-  
-  You should launch every service you want to use from your topic/target definitions here.
-  
-  ###### `status_publish`
+**Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
 
-  Like with Mosquitto's `$SYS` topic, `mqttwarn` can publish status information to the broker.
-  This is useful for automated updates (Docker Swarm, Watchtower, etc.).
+Launch `mqttwarn` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
 
-  To enable status information publishing, configure `status_publish = True`. The other option,
-  `status_topic`, defaults to `status_topic = mqttwarn/$SYS`.
-  The messages will be published with the `retained` flag.
+```
+mosquitto_pub -t test/1 -m "Hello"
+mosquitto_pub -t test/name -m '{ "name" : "Jane" }'
+```
 
-  For example:
-  ```
-  root@mymachine:~$ mosquitto_sub -t 'mqttwarn/$SYS/#' -v
-  mqttwarn/$SYS/version 0.26.2
-  mqttwarn/$SYS/platform darwin
-  mqttwarn/$SYS/python/version 3.9.7
-  ```
+and our output file `/tmp/mqtt.log` should contain the payload of both messages:
+
+```shell
+Hello
+{ "name" : "Jane" }
+```
+
+Both payloads where copied verbatim to the target.
+
+Stop _mqttwarn_, and add the following line to the `[test/+]` section:
+
+```ini
+format  = -->{name}<--
+```
+
+What we are configuring _mqttwarn_ to do here, is to try and decode the incoming JSON payload and format the output in such a way as that the JSON `name` element is copied to the output (surrounded with a bit of sugar to illustrate the fact that we can output whatever text we want).
+
+If you repeat the publish of the second message, you should see the following in your output file `/tmp/mqtt.log`:
+
+```
+-->Jane<--
+```
+
+#### The `[defaults]` section
+
+Most of the options in the configuration file have sensible defaults, and/or ought to be self-explanatory:
+
+```ini
+[defaults]
+hostname     = 'localhost'         ; default
+port         = 1883
+username     = None
+password     = None
+clientid     = 'mqttwarn'
+lwt          = 'clients/mqttwarn'  ; lwt payload is '0' or '1'
+skipretained = True
+cleansession = False
+
+; logging
+
+; Log format
+logformat = '%(asctime)-15s %(levelname)-5s [%(module)s] %(message)s'
+
+; Send log to STDERR (default)
+logfile   = 'stream://sys.stderr'
+
+; Write log output to file
+; logfile   = 'mqttwarn.log'
+
+; Turn off logging completely
+; logfile   = false
+
+; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
+loglevel     = DEBUG
+
+; path to file containing self-defined functions for formatmap, alldata, and datamap
+functions = 'myfuncs.py'
+
+; name the service providers you will be using.
+launch   = file, log, osxnotify, mysql, smtp
+
+; Publish mqttwarn status information (retained)
+status_publish = True
+; status_topic = mqttwarn/$SYS
 
 
-  #### The `[config:xxx]` sections
-  
-  Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
-  has a mandatory option called `targets`, which is a dictionary of target names, each
-  pointing to an array of "addresses". Address formats depend on the particular service.
-  
-  The Python module name for this service will be derived
-  a) from the name of the definition itself, i.e. the `xxx` part, or
-  b) from the value of the `module` option within that configuration section.
-  
-  - When the module name is a plain string, it will be resolved as a filename inside the  
-    built-in `mqttwarn/services` directory.
-  - When the module name contains a dot, it will be resolved as an absolute dotted reference.
-  
-  Example:
-  A service called `filetruncate` - and referenced as such in the `launch` option -
-  may have `module = file`, in which case the service works like a regular `file`
-  service, with its own distinct set of service options. It is thus possible to
-  have several different service configurations for the same underlying service,
-  with different configurations, e.g. one for files that should have notifications
-  appended, and one for files that should get truncated before writes.
-  
-  As an example for `module` consider this INI file in which we want two services of type log. We actually _launch_ an `xxxlog` (which doesn't physically exist), but due to the `module=log` setting in its configuration it is instantiated:
-  
-  ```ini
-  [defaults]
-  hostname  = 'localhost'  ; default
-  port      = 1883
-  
-  launch	 = log, xxxlog
-  
-  [config:log]
-  targets = {
-      'debug'  : [ 'debug' ],
-    }
-  
-  [config:xxxlog]
-  # Note how the xxxlog is instantiated from log and both must be launched
-  module = log
-  targets = {
-      'debug'  : [ 'debug' ],
-    }
-  
-  
-  [topic/1]
-  targets = log:debug, xxxlog:debug
-  ```
-  
-  #### The `[failover]` section
-  
-  There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection.
-  
-  This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_.
-  
-  Below is an example which will log any failover events to an error log, and display them on all XBMC targets:
-  
-  ```ini
-  [failover]
-  targets  = log:error, xbmc
-  title    = mqttwarn
-  ```
-  
-  #### The `[__topic__]` sections
-  
-  All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topics
-  to subscribe to. _mqttwarn_ handles each message received on this subscription
-  by handing it off to one or more service targets.
-  
-  Section names must be unique and must specify the name of the topic to be processed. If the section block does not have a `topic` option,
-  then the section name will be used.
+; optional: TLS parameters. (Don't forget to set the port number for
+; TLS (probably 8883).
+; You will need to set at least `ca_certs' if you want TLS support and
+; tls = True
+; ca_certs: path to the Certificate Authority certificate file (concatenated
+;           PEM file)
+; tls_version: currently one of 'tlsv1_1', 'tlsv1_2' (or 'sslv3', 'tlsv1' deprecated)
+; tls_insecure: True or False (False is default): Do or do not verify
+;               broker's certificate CN
+; certfile: path to PEM encode client certificate file
+; keyfile: path to PEM encode client private key file
+tls = True
+ca_certs = '/path/to/ca-certs.pem'
+certfile = '/path/to/client.crt'
+keyfile = '/path/to/client.key'
+tls_version = 'tlsv1'
+tls_insecure = False
 
-  Consider the following example:
-  
-  ```ini
-  [icinga/+/+]
-  targets = log:info, file:f01, mysql:nagios
-  
-  [my/special]
-  targets = mysql:m1, log:info
+```
 
-  [my/other/special]
-  topic = another/topic
-  targets = log:debug
-  ```
+###### `functions`
+
+The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
+
+###### `launch`
+
+In the `launch` option you specify a list of comma-separated _service_ names  
+defined within the `[config:xxx]` sections which should be launched.
+
+You should launch every service you want to use from your topic/target definitions here.
+
+###### `status_publish`
+
+Like with Mosquitto's `$SYS` topic, `mqttwarn` can publish status information to the broker.
+This is useful for automated updates (Docker Swarm, Watchtower, etc.).
+
+To enable status information publishing, configure `status_publish = True`. The other option,
+`status_topic`, defaults to `status_topic = mqttwarn/$SYS`.
+The messages will be published with the `retained` flag.
+
+For example:
+```
+root@mymachine:~$ mosquitto_sub -t 'mqttwarn/$SYS/#' -v
+mqttwarn/$SYS/version 0.26.2
+mqttwarn/$SYS/platform darwin
+mqttwarn/$SYS/python/version 3.9.7
+```
+
+
+#### The `[config:xxx]` sections
+
+Sections called `[config:xxx]` configure settings for a service _xxx_. Each of these sections
+has a mandatory option called `targets`, which is a dictionary of target names, each
+pointing to an array of "addresses". Address formats depend on the particular service.
+
+The Python module name for this service will be derived
+a) from the name of the definition itself, i.e. the `xxx` part, or
+b) from the value of the `module` option within that configuration section.
+
+- When the module name is a plain string, it will be resolved as a filename inside the  
+  built-in `mqttwarn/services` directory.
+- When the module name contains a dot, it will be resolved as an absolute dotted reference.
   
-  MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received
-  at `my/special` will be stored in a `mysql` target and will be logged at level "INFO".  Messages received
-  at `another/topic` (not at `my/other/special`) will be logged at level "DEBUG".
+Example:
+A service called `filetruncate` - and referenced as such in the `launch` option -
+may have `module = file`, in which case the service works like a regular `file`
+service, with its own distinct set of service options. It is thus possible to
+have several different service configurations for the same underlying service,
+with different configurations, e.g. one for files that should have notifications
+appended, and one for files that should get truncated before writes.
   
-  When a message is received at a topic with more than one matching section it will be
-  directed to the targets in all matching sections.  For consistency, it's a good practice
-  to explicitly provide `topic` options to all such sections.
-  
-  Targets can be also defined as a dictionary containing the pairs of topic and targets. In that case message matching the section can be dispatched in more flexible ways to selected targets. Consider the following example:
-  
-  ```ini
-  [#]
-  targets = {
-      '/#': 'file:0',
-      '/test/#': 'file:1',
-      '/test/out/#': 'file:2',
-      '/test/out/+': 'file:3',
-      '/test/out/+/+': 'file:4',
-      '/test/out/+/state': 'file:5',
-      '/test/out/FL_power_consumption/state': [ 'file:6', 'file:7' ],
-      '/test/out/BR_ambient_power_sensor/state': 'file:8',
-    }
-  ```
-  
-  With the message dispatching configuration the message is dispatched to the targets matching the most specific topic. If the message is received at `/test/out/FL_power_consumption/state` it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state` will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
-  The dispatcher mechanism is always trying to find the most specific match.
-  It allows to define the wide topic with default targets while some more specific topic can be handled differently. It gives additional flexibility in a message routing.
-  
-  Each of these sections has a number of optional (`O`) or mandatory (`M`)
-  options:
-  
-  | Option        |  M/O   | Description                                    |
-  | ------------- | :----: | ---------------------------------------------- |
-  | `targets`     |   M    | service targets for this SUB                   |
-  | `topic`       |   O    | topic to subscribe to (overrides section name) |
-  | `filter`      |   O    | function name to suppress this msg             |
-  | `datamap`     |   O    | function name parse topic name to dict         |
-  | `alldata`     |   O    | function to merge topic, and payload with more |
-  | `format`      |   O    | function or string format for output           |
-  | `priority`    |   O    | used by certain targets (see below). May be func()  |
-  | `title`       |   O    | used by certain targets (see below). May be func()  |
-  | `image`       |   O    | used by certain targets (see below). May be func()  |
-  | `template`    |   O    | use Jinja2 template instead of `format`        |
-  | `qos`         |   O    | MQTT QoS for subscription (dflt: 0)            |
+As an example for `module` consider this INI file in which we want two services of type log. We actually _launch_ an `xxxlog` (which doesn't physically exist), but due to the `module=log` setting in its configuration it is instantiated:
+
+```ini
+[defaults]
+hostname  = 'localhost'  ; default
+port      = 1883
+
+launch	 = log, xxxlog
+
+[config:log]
+targets = {
+  'debug'  : [ 'debug' ],
+}
+
+[config:xxxlog]
+# Note how the xxxlog is instantiated from log and both must be launched
+module = log
+targets = {
+  'debug'  : [ 'debug' ],
+}
+
+
+[topic/1]
+targets = log:debug, xxxlog:debug
+```
+
+#### The `[failover]` section
+
+There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection.
+
+This allows you to setup a target for receiving errors generated within _mqttwarn_. The message is handled like any other with an error code passed as the `topic` and the error details as the `message`. You can use formatting and transformations as well as filters, just like any other _topic_.
+
+Below is an example which will log any failover events to an error log, and display them on all XBMC targets:
+
+```ini
+[failover]
+targets  = log:error, xbmc
+title    = mqttwarn
+```
+
+#### The `[__topic__]` sections
+
+All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topics
+to subscribe to. _mqttwarn_ handles each message received on this subscription
+by handing it off to one or more service targets.
+
+Section names must be unique and must specify the name of the topic to be processed. If the section block does not have a `topic` option,
+then the section name will be used.
+
+Consider the following example:
+
+```ini
+[icinga/+/+]
+targets = log:info, file:f01, mysql:nagios
+
+[my/special]
+targets = mysql:m1, log:info
+
+[my/other/special]
+topic = another/topic
+targets = log:debug
+```
+
+MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received
+at `my/special` will be stored in a `mysql` target and will be logged at level "INFO".  Messages received
+at `another/topic` (not at `my/other/special`) will be logged at level "DEBUG".
+
+When a message is received at a topic with more than one matching section it will be
+directed to the targets in all matching sections.  For consistency, it's a good practice
+to explicitly provide `topic` options to all such sections.
+
+Targets can be also defined as a dictionary containing the pairs of topic and targets. In that case message matching the section can be dispatched in more flexible ways to selected targets. Consider the following example:
+
+```ini
+[#]
+targets = {
+  '/#': 'file:0',
+  '/test/#': 'file:1',
+  '/test/out/#': 'file:2',
+  '/test/out/+': 'file:3',
+  '/test/out/+/+': 'file:4',
+  '/test/out/+/state': 'file:5',
+  '/test/out/FL_power_consumption/state': [ 'file:6', 'file:7' ],
+  '/test/out/BR_ambient_power_sensor/state': 'file:8',
+}
+```
+
+With the message dispatching configuration the message is dispatched to the targets matching the most specific topic. If the message is received at `/test/out/FL_power_consumption/state` it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state` will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
+The dispatcher mechanism is always trying to find the most specific match.
+It allows to define the wide topic with default targets while some more specific topic can be handled differently. It gives additional flexibility in a message routing.
+
+Each of these sections has a number of optional (`O`) or mandatory (`M`)
+options:
+
+| Option        |  M/O   | Description                                    |
+| ------------- | :----: | ---------------------------------------------- |
+| `targets`     |   M    | service targets for this SUB                   |
+| `topic`       |   O    | topic to subscribe to (overrides section name) |
+| `filter`      |   O    | function name to suppress this msg             |
+| `datamap`     |   O    | function name parse topic name to dict         |
+| `alldata`     |   O    | function to merge topic, and payload with more |
+| `format`      |   O    | function or string format for output           |
+| `priority`    |   O    | used by certain targets (see below). May be func()  |
+| `title`       |   O    | used by certain targets (see below). May be func()  |
+| `image`       |   O    | used by certain targets (see below). May be func()  |
+| `template`    |   O    | use Jinja2 template instead of `format`        |
+| `qos`         |   O    | MQTT QoS for subscription (dflt: 0)            |
 
 
 ## Supported Notification Services
