@@ -111,8 +111,13 @@ Container image
 ***************
 
 For running ``mqttwarn`` on a container infrastructure like Docker or
-Kubernetes, there are images on Docker Hub called ``jpmens/mqttwarn``.
-To read more about this topic, please follow up on the `Docker handbook`_.
+Kubernetes, corresponding images are automatically published to the
+GitHub Container Registry (GHCR).
+
+- ``ghcr.io/earthobservations/wetterdienst-standard:latest``
+- ``ghcr.io/earthobservations/wetterdienst-full:latest``
+
+To learn more about this topic, please follow up reading the `Docker handbook`_.
 
 
 *************

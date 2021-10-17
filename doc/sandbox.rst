@@ -17,6 +17,10 @@ Invoke software tests::
 
     make test
 
+Invoke software tests, with coverage::
+
+    make test-coverage
+
 Install extras::
 
     source .venv/bin/activate
@@ -31,7 +35,7 @@ You can also add multiple extras, all at once::
 Using VSCode
 ************
 
-To install the free, non-telemetry version of Microsoft VSCode::
+For installing the free, non-telemetry version of Microsoft VSCode, invoke::
 
     brew install --cask vscodium
 

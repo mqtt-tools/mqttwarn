@@ -12,11 +12,11 @@
 # 4. Define the location to the custom functions file within "mqttwarn.ini":
 #
 # functions = 'funcs.py'
-version: '3.7'
+version: '3'
 
 services:
   mqttwarn:
-    image: jpmens/mqttwarn
+    image: ghcr.io/jpmens/mqttwarn-full:latest
     container_name: mqttwarn
     restart: always
     volumes:
