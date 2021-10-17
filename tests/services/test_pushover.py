@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
+# (c) 2021 The mqttwarn developers
 import base64
 import logging
 import os
 from unittest import mock
 
 import responses
-from requests_toolbelt import MultipartDecoder
-
-from mqttwarn.util import load_module_from_file
 from mqttwarn.model import ProcessorItem as Item
+from mqttwarn.util import load_module_from_file
+from requests_toolbelt import MultipartDecoder
 
 
 def add_successful_mock_response():
@@ -47,9 +48,7 @@ def test_pushover_success(srv, caplog):
         outcome = module.plugin(srv, item)
 
         assert len(responses.calls) == 1
-        assert (
-            responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
-        )
+        assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
         assert (
             responses.calls[0].request.body
             == "user=userkey2&token=appkey2&retry=60&expire=3600&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
@@ -84,9 +83,7 @@ def test_pushover_success_with_credentials_from_environment(srv, caplog):
         outcome = module.plugin(srv, item)
 
         assert len(responses.calls) == 1
-        assert (
-            responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
-        )
+        assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
         assert (
             responses.calls[0].request.body
             == "user=userkey2&token=appkey2&retry=60&expire=3600&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
@@ -303,9 +300,7 @@ def test_pushover_success_with_imageurl_and_basic_authentication(srv, caplog):
         outcome = module.plugin(srv, item)
 
         # Proof authentication on image request.
-        assert (
-            responses.calls[0].request.headers["Authorization"] == "Basic Zm9vOmJhcg=="
-        )
+        assert responses.calls[0].request.headers["Authorization"] == "Basic Zm9vOmJhcg=="
 
         # Check response status.
         assert responses.calls[1].response.status_code == 200
@@ -507,9 +502,7 @@ def test_pushover_failure_response_error(srv, caplog):
 
         assert len(responses.calls) == 1
 
-        assert (
-            responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
-        )
+        assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
         assert (
             responses.calls[0].request.body
             == "user=userkey2&token=appkey2&retry=60&expire=3600&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
@@ -521,6 +514,4 @@ def test_pushover_failure_response_error(srv, caplog):
 
         assert outcome is False
         assert "Sending pushover notification to test" in caplog.text
-        assert (
-            "Error sending pushover notification: b'{\"status\": 999}'" in caplog.text
-        )
+        assert "Error sending pushover notification: b'{\"status\": 999}'" in caplog.text

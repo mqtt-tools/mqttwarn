@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*-
 # (c) 2018-2020 The mqttwarn developers
 import io
-import os
 import json
-import tempfile
-
-from builtins import str
 import logging
+import os
+import tempfile
+from builtins import str
 
 import pytest
-
-from mqttwarn.core import make_service, decode_payload
-from tests import configfile_full, configfile_service_loading, configfile_no_functions, configfile_unknown_functions, \
-    configfile_empty_functions
+from mqttwarn.core import decode_payload, make_service
+from tests import (
+    configfile_empty_functions,
+    configfile_full,
+    configfile_no_functions,
+    configfile_service_loading,
+    configfile_unknown_functions,
+)
 from tests.util import core_bootstrap, send_message
 
 
 def test_make_service():
-    service = make_service(name='foo')
-    assert '<mqttwarn.core.Service object at' in str(service)
+    service = make_service(name="foo")
+    assert "<mqttwarn.core.Service object at" in str(service)
 
 
 def test_bootstrap(caplog):
@@ -35,10 +38,10 @@ def test_bootstrap(caplog):
         assert 'Successfully loaded service "file"' in caplog.text, caplog.text
         assert 'Successfully loaded service "log"' in caplog.text, caplog.text
 
-        assert 'Starting 1 worker threads' in caplog.text, caplog.text
+        assert "Starting 1 worker threads" in caplog.text, caplog.text
 
         # Capturing the last message does not work. Why?
-        #assert 'Job queue has 0 items to process' in caplog.text, caplog.text
+        # assert 'Job queue has 0 items to process' in caplog.text, caplog.text
 
 
 def test_decode_payload_foo(caplog):
@@ -49,10 +52,10 @@ def test_decode_payload_foo(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding an unconfigured thing yields nothing sensible.
-        outcome = decode_payload(section='foo', topic='bar', payload='baz')
-        assert outcome['topic'] == 'bar'
-        assert outcome['payload'] == 'baz'
-        assert 'Cannot decode JSON object, payload=baz' in caplog.text, caplog.text
+        outcome = decode_payload(section="foo", topic="bar", payload="baz")
+        assert outcome["topic"] == "bar"
+        assert outcome["payload"] == "baz"
+        assert "Cannot decode JSON object, payload=baz" in caplog.text, caplog.text
 
 
 def test_decode_payload_json(caplog):
@@ -63,10 +66,10 @@ def test_decode_payload_json(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding a valid JSON payload decodes it appropriately.
-        outcome = decode_payload(section='foo', topic='bar', payload='{"baz": "qux"}')
-        assert outcome['topic'] == 'bar'
-        assert outcome['payload'] == '{"baz": "qux"}'
-        assert outcome['baz'] == 'qux'
+        outcome = decode_payload(section="foo", topic="bar", payload='{"baz": "qux"}')
+        assert outcome["topic"] == "bar"
+        assert outcome["payload"] == '{"baz": "qux"}'
+        assert outcome["baz"] == "qux"
 
 
 def test_decode_payload_datamap(caplog):
@@ -77,10 +80,10 @@ def test_decode_payload_datamap(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding a valid JSON payload decodes it appropriately.
-        outcome = decode_payload(section='test/datamap', topic='bar', payload='{"baz": "qux"}')
-        assert outcome['topic'] == 'bar'
-        assert outcome['baz'] == 'qux'
-        assert outcome['datamap-key'] == 'datamap-value'
+        outcome = decode_payload(section="test/datamap", topic="bar", payload='{"baz": "qux"}')
+        assert outcome["topic"] == "bar"
+        assert outcome["baz"] == "qux"
+        assert outcome["datamap-key"] == "datamap-value"
 
 
 def test_decode_payload_alldata(caplog):
@@ -91,10 +94,10 @@ def test_decode_payload_alldata(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding a valid JSON payload decodes it appropriately.
-        outcome = decode_payload(section='test/alldata', topic='bar', payload='{"baz": "qux"}')
-        assert outcome['topic'] == 'bar'
-        assert outcome['baz'] == 'qux'
-        assert outcome['alldata-key'] == 'alldata-value'
+        outcome = decode_payload(section="test/alldata", topic="bar", payload='{"baz": "qux"}')
+        assert outcome["topic"] == "bar"
+        assert outcome["baz"] == "qux"
+        assert outcome["alldata-key"] == "alldata-value"
 
 
 def test_message_log(caplog):
@@ -109,7 +112,7 @@ def test_message_log(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Signal mocked MQTT message to the core machinery for processing
-        send_message(topic='test/log-1', payload='{"name": "temperature", "value": 42.42}')
+        send_message(topic="test/log-1", payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
         assert "temperature: 42.42" in caplog.text, caplog.text
@@ -122,12 +125,12 @@ def test_message_file():
     """
 
     data = {
-        'name': 'temperature',
-        'value': 42.42,
+        "name": "temperature",
+        "value": 42.42,
     }
 
     tmpdir = tempfile.gettempdir()
-    outputfile = os.path.join(tmpdir, 'mqttwarn-test.01')
+    outputfile = os.path.join(tmpdir, "mqttwarn-test.01")
     if os.path.exists(outputfile):
         os.unlink(outputfile)
 
@@ -135,7 +138,7 @@ def test_message_file():
     core_bootstrap(configfile=configfile_full)
 
     # Signal mocked MQTT message to the core machinery for processing.
-    send_message(topic='test/file-1', payload=json.dumps(data))
+    send_message(topic="test/file-1", payload=json.dumps(data))
 
     # Proof that the message has been written to the designated file properly.
     with open(outputfile) as f:
@@ -152,12 +155,10 @@ def test_message_file_unicode():
     to proof charset encoding is also handled properly.
     """
 
-    data = {
-        'item': 'Räuber Hotzenplotz'
-    }
+    data = {"item": "Räuber Hotzenplotz"}
 
     tmpdir = tempfile.gettempdir()
-    outputfile = os.path.join(tmpdir, 'mqttwarn-test.02')
+    outputfile = os.path.join(tmpdir, "mqttwarn-test.02")
     if os.path.exists(outputfile):
         os.unlink(outputfile)
 
@@ -165,12 +166,12 @@ def test_message_file_unicode():
     core_bootstrap(configfile=configfile_full)
 
     # Signal mocked MQTT message to the core machinery for processing.
-    send_message(topic='test/file-2', payload=json.dumps(data))
+    send_message(topic="test/file-2", payload=json.dumps(data))
 
     # Proof that the message has been written to the designated file properly.
-    with io.open(outputfile, mode='rt', encoding='utf-8') as f:
+    with io.open(outputfile, mode="rt", encoding="utf-8") as f:
         content = f.read()
-        assert u'Räuber Hotzenplotz' in content, content
+        assert u"Räuber Hotzenplotz" in content, content
 
 
 @pytest.mark.parametrize("configfile", [configfile_full, configfile_service_loading])
@@ -185,10 +186,13 @@ def test_plugin_module(caplog, configfile):
         core_bootstrap(configfile=configfile)
 
         # Signal mocked MQTT message to the core machinery for processing
-        send_message(topic='test/plugin-module', payload='{"name": "temperature", "value": 42.42}')
+        send_message(
+            topic="test/plugin-module",
+            payload='{"name": "temperature", "value": 42.42}',
+        )
 
         # Proof that the message has been routed to the "log" plugin properly
-        assert 'Plugin invoked' in caplog.text, caplog.text
+        assert "Plugin invoked" in caplog.text, caplog.text
 
 
 @pytest.mark.parametrize("configfile", [configfile_full, configfile_service_loading])
@@ -203,10 +207,10 @@ def test_plugin_file(caplog, configfile):
         core_bootstrap(configfile=configfile)
 
         # Signal mocked MQTT message to the core machinery for processing
-        send_message(topic='test/plugin-file', payload='{"name": "temperature", "value": 42.42}')
+        send_message(topic="test/plugin-file", payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
-        assert 'Plugin invoked' in caplog.text, caplog.text
+        assert "Plugin invoked" in caplog.text, caplog.text
 
 
 def test_xform_func(caplog):
@@ -223,7 +227,7 @@ def test_xform_func(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Signal mocked MQTT message to the core machinery for processing
-        send_message(topic='test/log-2', payload='{"name": "temperature", "value": 42.42}')
+        send_message(topic="test/log-2", payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
         assert "'value': 42.42" in caplog.text, caplog.text
@@ -241,7 +245,7 @@ def test_config_no_functions(caplog):
         core_bootstrap(configfile=configfile_no_functions)
 
         # Signal mocked MQTT message to the core machinery for processing
-        send_message(topic='test/log-1', payload='{"name": "temperature", "value": 42.42}')
+        send_message(topic="test/log-1", payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
         assert "temperature: 42.42" in caplog.text, caplog.text
@@ -258,7 +262,7 @@ def test_config_empty_functions(caplog):
         core_bootstrap(configfile=configfile_empty_functions)
 
         # Signal mocked MQTT message to the core machinery for processing
-        send_message(topic='test/log-1', payload='{"name": "temperature", "value": 42.42}')
+        send_message(topic="test/log-1", payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
         assert "temperature: 42.42" in caplog.text, caplog.text

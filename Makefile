@@ -14,6 +14,8 @@ $(eval pytest       := $(venvpath)/bin/pytest)
 $(eval bumpversion  := $(venvpath)/bin/bumpversion)
 $(eval twine        := $(venvpath)/bin/twine)
 $(eval sphinx       := $(venvpath)/bin/sphinx-build)
+$(eval isort        := $(venvpath)/bin/isort)
+$(eval black        := $(venvpath)/bin/black)
 
 # Setup Python virtualenv
 setup-virtualenv:
@@ -41,6 +43,17 @@ test-coverage: install-tests
 		--cov-report term-missing \
 		--cov-report html:.pytest_results/htmlcov \
 		--cov-report xml:.pytest_results/coverage.xml
+
+
+# ----------------------
+# Linting and Formatting
+# ----------------------
+format: install-releasetools
+	@echo "Running isort"
+	@$(isort) tests
+	@echo "Running black"
+	@$(black) tests
+
 
 # -------
 # Release

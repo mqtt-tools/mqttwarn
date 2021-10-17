@@ -2,10 +2,9 @@
 # (c) 2018-2021 The mqttwarn developers
 import time
 
-from paho.mqtt.client import MQTTMessage
-
 from mqttwarn.configuration import load_configuration
-from mqttwarn.core import bootstrap, on_message, load_services, start_workers
+from mqttwarn.core import bootstrap, load_services, on_message, start_workers
+from paho.mqtt.client import MQTTMessage
 
 
 def core_bootstrap(configfile=None):
@@ -17,10 +16,10 @@ def core_bootstrap(configfile=None):
     config = load_configuration(configfile)
 
     # Bootstrap mqttwarn.core
-    bootstrap(config=config, scriptname='testdrive')
+    bootstrap(config=config, scriptname="testdrive")
 
     # Load services
-    services = config.getlist('defaults', 'launch')
+    services = config.getlist("defaults", "launch")
     load_services(services)
 
     # Launch worker threads to operate on queue
@@ -30,9 +29,9 @@ def core_bootstrap(configfile=None):
 def send_message(topic=None, payload=None):
 
     # Mock an instance of an Eclipse Paho MQTTMessage
-    message = MQTTMessage(mid=42, topic=topic.encode('utf-8'))
+    message = MQTTMessage(mid=42, topic=topic.encode("utf-8"))
     if payload is not None:
-        message.payload = payload.encode('utf-8')
+        message.payload = payload.encode("utf-8")
 
     # Signal the message to the machinery
     on_message(None, None, message)
