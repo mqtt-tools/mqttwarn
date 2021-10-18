@@ -323,7 +323,8 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [alexa-notify-me](#alexa-notify-me)
 * [amqp](#amqp)
 * [apns](#apns)
-* [apprise](#apprise)
+* [apprise_single](#apprise_single)
+* [apprise_multi](#apprise_multi)
 * [asterisk](#asterisk)
 * [autoremote](#autoremote)
 * [carbon](#carbon)
@@ -513,26 +514,24 @@ would thus emit the APNS notification to the specified device.
 Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
 
 
-### `apprise`
+### `apprise_single`
 
-The `apprise` service interacts with the [Apprise] Python module,
+The `apprise_single` service interacts with the [Apprise] Python module,
 which in turn can talk to a plethora of popular notification services.
 Please read their documentation about more details.
 
-The following discussion assumes a payload like this is published via MQTT:
+The following configuration snippet example expects a payload like this to be
+published to the MQTT broker:
 ```bash
-echo '{"device": "foobar"}' | mosquitto_pub -t 'apprise/foo' -l
+echo '{"device": "foobar", "name": "temperature", "number": 42.42}' | mosquitto_pub -t 'apprise/single/foo' -l
 ```
-
-This configuration snippet will activate two service plugins
-`apprise-mail` and `apprise-json`, both using the Apprise module.
 
 ```ini
 [defaults]
 launch    = apprise-mail, apprise-json, apprise-discord
 
 [config:apprise-mail]
-; Submit emails for notifying users.
+; Dispatch message as e-mail.
 ; https://github.com/caronc/apprise/wiki/Notify_email
 module   = 'apprise'
 baseuri  = 'mailtos://smtp_username:smtp_password@mail.example.org'
@@ -543,22 +542,62 @@ targets  = {
     }
 
 [config:apprise-json]
-; Post message to HTTP endpoint, in JSON format.
+; Dispatch message to HTTP endpoint, in JSON format.
 ; https://github.com/caronc/apprise/wiki/Notify_Custom_JSON
 module   = 'apprise'
 baseuri  = 'json://localhost:1234/mqtthook'
 
 [config:apprise-discord]
-; Post message to Discord channel, via Webhook.
+; Dispatch message to Discord channel, via Webhook.
 ; https://github.com/caronc/apprise/wiki/Notify_discord
 ; https://discord.com/developers/docs/resources/webhook
 ; discord://{WebhookID}/{WebhookToken}/
 module   = 'apprise'
 baseuri  = 'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js'
 
-[apprise-test]
-topic    = apprise/#
+[apprise-single-test]
+topic    = apprise/single/#
 targets  = apprise-mail:demo, apprise-json, apprise-discord
+format   = Alarm from {device}: {payload}
+title    = Alarm from {device}
+```
+
+### `apprise_multi`
+
+The `apprise_multi` service interacts with the [Apprise] Python module,
+which in turn can talk to a plethora of popular notification services.
+Please read their documentation about more details.
+
+The idea behind this variant is to publish messages to different Apprise
+plugins within a single configuration snippet, containing multiple recipients.
+
+The following configuration snippet example expects a payload like this to be
+published to the MQTT broker:
+```bash
+echo '{"device": "foobar", "name": "temperature", "number": 42.42}' | mosquitto_pub -t 'apprise/multi/foo' -l
+```
+
+```ini
+[defaults]
+launch    = apprise-multi
+
+[config:apprise-multi]
+; Dispatch message to multiple Apprise plugins.
+module   = 'apprise_multi'
+targets = {
+   'demo-http'        : [ { 'baseuri':  'json://localhost:1234/mqtthook' }, { 'baseuri':  'json://daq.example.org:5555/foobar' } ],
+   'demo-discord'     : [ { 'baseuri':  'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js' } ],
+   'demo-mailto'      : [ {
+          'baseuri':  'mailtos://smtp_username:smtp_password@mail.example.org',
+          'recipients': ['foo@example.org', 'bar@example.org'],
+          'sender': 'monitoring@example.org',
+          'sender_name': 'Example Monitoring',
+          } ],
+   }
+
+[apprise-multi-test]
+topic    = apprise/multi/#
+targets  = apprise-multi:demo-http, apprise-multi:demo-discord, apprise-multi:demo-mailto
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```

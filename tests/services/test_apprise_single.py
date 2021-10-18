@@ -16,7 +16,7 @@ def test_apprise_success(apprise_asset, apprise_mock, srv, caplog):
 
     with caplog.at_level(logging.DEBUG):
 
-        module = load_module_from_file("mqttwarn/services/apprise.py")
+        module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
         item = Item(
             config={"baseuri": "mailtos://smtp_username:smtp_password@mail.example.org"},
@@ -57,7 +57,7 @@ def test_apprise_success_no_addresses(apprise_asset, apprise_mock, srv, caplog):
 
     with caplog.at_level(logging.DEBUG):
 
-        module = load_module_from_file("mqttwarn/services/apprise.py")
+        module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
         item = Item(
             config={"baseuri": "json://localhost:1234/mqtthook"},
@@ -69,18 +69,13 @@ def test_apprise_success_no_addresses(apprise_asset, apprise_mock, srv, caplog):
 
         assert apprise_mock.mock_calls == [
             call(asset=mock.ANY),
-            call().add(
-                "json://localhost:1234/mqtthook"
-            ),
+            call().add("json://localhost:1234/mqtthook"),
             call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
             call().notify().__bool__(),
         ]
 
         assert outcome is True
-        assert (
-            "Sending notification to Apprise. target=None, addresses=[]"
-            in caplog.messages
-        )
+        assert "Sending notification to Apprise. target=None, addresses=[]" in caplog.messages
         assert "Successfully sent message using Apprise" in caplog.messages
 
 
@@ -101,7 +96,7 @@ def test_apprise_failure_notify(srv, caplog):
             "apprise.Apprise", side_effect=[mock_connection], create=True
         ) as mock_client:
             with mock.patch("apprise.AppriseAsset", create=True) as mock_asset:
-                module = load_module_from_file("mqttwarn/services/apprise.py")
+                module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
                 item = Item(
                     config={"baseuri": "mailtos://smtp_username:smtp_password@mail.example.org"},
@@ -147,7 +142,7 @@ def test_apprise_error(srv, caplog):
             "apprise.Apprise", side_effect=[mock_connection], create=True
         ) as mock_client:
             with mock.patch("apprise.AppriseAsset", create=True) as mock_asset:
-                module = load_module_from_file("mqttwarn/services/apprise.py")
+                module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
                 item = Item(
                     config={"baseuri": "mailtos://smtp_username:smtp_password@mail.example.org"},
@@ -171,9 +166,12 @@ def test_apprise_error(srv, caplog):
                 assert outcome is False
                 assert (
                     "Sending notification to Apprise. target=test, addresses=['foo@example.org', 'bar@example.org']"
-                    in caplog.text
+                    in caplog.messages
                 )
-                assert "Error sending message to test: something failed" in caplog.text
+                assert (
+                    "Sending message using Apprise failed. target=test, error=something failed"
+                    in caplog.messages
+                )
 
 
 @surrogate("apprise")
@@ -183,7 +181,7 @@ def test_apprise_success_with_sender(apprise_asset, apprise_mock, srv, caplog):
 
     with caplog.at_level(logging.DEBUG):
 
-        module = load_module_from_file("mqttwarn/services/apprise.py")
+        module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
         item = Item(
             config={
