@@ -31,7 +31,7 @@ def test_apprise_success(apprise_asset, apprise_mock, srv, caplog):
         assert apprise_mock.mock_calls == [
             call(asset=mock.ANY),
             call().add(
-                "mailtos://smtp_username:smtp_password@mail.example.org?from=None&to=foo@example.org,bar@example.org"
+                "mailtos://smtp_username:smtp_password@mail.example.org?to=foo%40example.org%2Cbar%40example.org"
             ),
             call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
             call().notify().__bool__(),
@@ -39,7 +39,7 @@ def test_apprise_success(apprise_asset, apprise_mock, srv, caplog):
 
         assert outcome is True
         assert (
-            "Sending notification to Apprise test, addresses: ['foo@example.org', 'bar@example.org']"
+            "Sending notification to Apprise. target=test, addresses=['foo@example.org', 'bar@example.org']"
             in caplog.text
         )
         assert "Successfully sent message using Apprise" in caplog.text
@@ -48,28 +48,40 @@ def test_apprise_success(apprise_asset, apprise_mock, srv, caplog):
 @surrogate("apprise")
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
-def test_apprise_failure_no_addresses(apprise_asset, apprise_mock, srv, caplog):
+def test_apprise_success_no_addresses(apprise_asset, apprise_mock, srv, caplog):
+    """
+    Some Apprise notifiers don't need any target address information.
+    Proof that also works by processing an `Item` with no `target`
+    and `addrs` attributes supplied.
+    """
 
     with caplog.at_level(logging.DEBUG):
 
         module = load_module_from_file("mqttwarn/services/apprise.py")
 
         item = Item(
-            config={"baseuri": "mailtos://smtp_username:smtp_password@mail.example.org"},
-            target="test",
-            addrs=[],
+            config={"baseuri": "json://localhost:1234/mqtthook"},
             title="⚽ Message title ⚽",
             message="⚽ Notification message ⚽",
         )
 
         outcome = module.plugin(srv, item)
 
-        assert apprise_mock.mock_calls == []
+        assert apprise_mock.mock_calls == [
+            call(asset=mock.ANY),
+            call().add(
+                "json://localhost:1234/mqtthook"
+            ),
+            call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
+            call().notify().__bool__(),
+        ]
 
-        assert outcome is False
+        assert outcome is True
         assert (
-            "Skipped sending notification to Apprise test, no addresses configured" in caplog.text
+            "Sending notification to Apprise. target=None, addresses=[]"
+            in caplog.messages
         )
+        assert "Successfully sent message using Apprise" in caplog.messages
 
 
 @surrogate("apprise")
@@ -106,13 +118,13 @@ def test_apprise_failure_notify(srv, caplog):
                 ]
                 assert mock_connection.mock_calls == [
                     call.add(
-                        "mailtos://smtp_username:smtp_password@mail.example.org?from=None&to=foo@example.org,bar@example.org"
+                        "mailtos://smtp_username:smtp_password@mail.example.org?to=foo%40example.org%2Cbar%40example.org"
                     ),
                 ]
 
                 assert outcome is False
                 assert (
-                    "Sending notification to Apprise test, addresses: ['foo@example.org', 'bar@example.org']"
+                    "Sending notification to Apprise. target=test, addresses=['foo@example.org', 'bar@example.org']"
                     in caplog.text
                 )
                 assert "Sending message using Apprise failed" in caplog.text
@@ -152,13 +164,13 @@ def test_apprise_error(srv, caplog):
                 ]
                 assert mock_connection.mock_calls == [
                     call.add(
-                        "mailtos://smtp_username:smtp_password@mail.example.org?from=None&to=foo@example.org,bar@example.org"
+                        "mailtos://smtp_username:smtp_password@mail.example.org?to=foo%40example.org%2Cbar%40example.org"
                     ),
                 ]
 
                 assert outcome is False
                 assert (
-                    "Sending notification to Apprise test, addresses: ['foo@example.org', 'bar@example.org']"
+                    "Sending notification to Apprise. target=test, addresses=['foo@example.org', 'bar@example.org']"
                     in caplog.text
                 )
                 assert "Error sending message to test: something failed" in caplog.text
@@ -190,7 +202,7 @@ def test_apprise_success_with_sender(apprise_asset, apprise_mock, srv, caplog):
         assert apprise_mock.mock_calls == [
             call(asset=mock.ANY),
             call().add(
-                "mailtos://smtp_username:smtp_password@mail.example.org?from=example@example.org&to=foo@example.org,bar@example.org&name=Max Mustermann"
+                "mailtos://smtp_username:smtp_password@mail.example.org?from=example%40example.org&to=foo%40example.org%2Cbar%40example.org&name=Max+Mustermann"
             ),
             call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
             call().notify().__bool__(),

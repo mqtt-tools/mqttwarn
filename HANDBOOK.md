@@ -529,9 +529,11 @@ This configuration snippet will activate two service plugins
 
 ```ini
 [defaults]
-launch    = apprise-mail, apprise-json
+launch    = apprise-mail, apprise-json, apprise-discord
 
 [config:apprise-mail]
+; Submit emails for notifying users.
+; https://github.com/caronc/apprise/wiki/Notify_email
 module   = 'apprise'
 baseuri  = 'mailtos://smtp_username:smtp_password@mail.example.org'
 sender   = 'monitoring@example.org'
@@ -541,12 +543,22 @@ targets  = {
     }
 
 [config:apprise-json]
+; Post message to HTTP endpoint, in JSON format.
+; https://github.com/caronc/apprise/wiki/Notify_Custom_JSON
 module   = 'apprise'
 baseuri  = 'json://localhost:1234/mqtthook'
 
+[config:apprise-discord]
+; Post message to Discord channel, via Webhook.
+; https://github.com/caronc/apprise/wiki/Notify_discord
+; https://discord.com/developers/docs/resources/webhook
+; discord://{WebhookID}/{WebhookToken}/
+module   = 'apprise'
+baseuri  = 'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js'
+
 [apprise-test]
 topic    = apprise/#
-targets  = apprise-mail:demo, apprise-json
+targets  = apprise-mail:demo, apprise-json, apprise-discord
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
