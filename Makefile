@@ -29,15 +29,15 @@ setup-virtualenv:
 # Run the main test suite
 test:
 	@test -e $(pytest) || $(MAKE) install-tests
-	@$(pytest) tests -m 'not slow'
+	@$(pytest) -vvv tests -m 'not slow'
 
 test-refresh: install-tests test
 
 test-junit: install-tests
-	@$(pytest) tests --junit-xml .pytest_results/pytest.xml
+	@$(pytest) -vvv tests --junit-xml .pytest_results/pytest.xml
 
 test-coverage: install-tests
-	@$(pytest) tests \
+	@$(pytest) -vvv tests \
 		--junit-xml .pytest_results/pytest.xml \
 		--cov mqttwarn --cov-branch \
 		--cov-report term-missing \
