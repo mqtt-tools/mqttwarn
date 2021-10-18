@@ -543,10 +543,6 @@ targets  = {
 [config:apprise-json]
 module   = 'apprise'
 baseuri  = 'json://localhost:1234/mqtthook'
-; Surrogate for satisfying machinery. 
-targets  = {
-    'n/a' : [''],
-    }
 
 [apprise-test]
 topic    = apprise/#
