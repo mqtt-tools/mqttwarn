@@ -13,6 +13,8 @@ in progress
 - ``apprise_single`` service: Accept omitted/empty `addrs` attribute.
 - ``apprise_single`` service: Improve query parameter serialization.
 - ``apprise_multi`` service: New plugin. Thanks, @psyciknz!
+  The idea behind this variant is to publish messages to different Apprise
+  plugins within a single configuration snippet, containing multiple recipients.
 
 
 2021-10-17 0.27.0
