@@ -16,8 +16,6 @@ from tests import (
     configfile_service_loading,
     configfile_unknown_functions,
 )
-
-
 from tests.util import core_bootstrap, send_message
 
 
@@ -296,7 +294,8 @@ def inactive_test_status_publish(caplog):
     """
 
     from unittest import mock
-    from unittest.mock import call, PropertyMock
+    from unittest.mock import PropertyMock, call
+
     from mqttwarn.core import connect
 
     with caplog.at_level(logging.DEBUG):
@@ -311,4 +310,4 @@ def inactive_test_status_publish(caplog):
         outcome = connect().mqttc = mqtt_publish_mock
 
         # Proof that the message has been routed to the "log" plugin properly
-        #assert assertion here to verify the connection
+        # assert assertion here to verify the connection
