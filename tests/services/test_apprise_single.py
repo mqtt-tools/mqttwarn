@@ -208,3 +208,32 @@ def test_apprise_success_with_sender(apprise_asset, apprise_mock, srv, caplog):
 
         assert outcome is True
         assert "Successfully sent message using Apprise" in caplog.text
+
+
+@surrogate("apprise")
+@mock.patch("apprise.Apprise", create=True)
+@mock.patch("apprise.AppriseAsset", create=True)
+def test_apprise_success_backward_compat(apprise_asset, apprise_mock, srv, caplog):
+
+    with caplog.at_level(logging.DEBUG):
+
+        module = load_module_from_file("mqttwarn/services/apprise.py")
+
+        item = Item(
+            config={"baseuri": "json://localhost:1234/mqtthook"},
+            title="⚽ Message title ⚽",
+            message="⚽ Notification message ⚽",
+        )
+
+        outcome = module.plugin(srv, item)
+
+        assert apprise_mock.mock_calls == [
+            call(asset=mock.ANY),
+            call().add("json://localhost:1234/mqtthook"),
+            call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
+            call().notify().__bool__(),
+        ]
+
+        assert outcome is True
+        assert "Sending notification to Apprise. target=None, addresses=[]" in caplog.messages
+        assert "Successfully sent message using Apprise" in caplog.messages
