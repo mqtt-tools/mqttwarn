@@ -10,6 +10,8 @@ in progress
   This helps for service plugins like Apprise to make the configuration
   snippet more compact. Now, service configurations can omit the ``targets``
   option altogether.
+- Apprise service: Accept omitted/empty `addrs` attribute.
+- Apprise service: Improve query parameter serialization.
 
 
 2021-10-17 0.27.0
