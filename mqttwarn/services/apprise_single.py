@@ -12,7 +12,7 @@ import apprise
 
 
 def plugin(srv, item):
-    """Send a message to Apprise plugin(s)."""
+    """Send a message to a single Apprise plugin."""
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
@@ -60,5 +60,5 @@ def plugin(srv, item):
             return False
 
     except Exception as e:
-        srv.logging.error("Error sending message to %s: %s" % (item.target, e))
+        srv.logging.error("Sending message using Apprise failed. target=%s, error=%s" % (item.target, e))
         return False

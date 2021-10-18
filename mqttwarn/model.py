@@ -12,7 +12,7 @@ class ProcessorItem:
 
     service: str = None
     target: str = None
-    config: Dict = None
+    config: Dict = field(default_factory=dict)
     addrs: List[str] = field(default_factory=list)
     priority: int = None
     topic: str = None
