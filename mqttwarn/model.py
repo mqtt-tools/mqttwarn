@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2021 The mqttwarn developers
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Union
 
 
@@ -13,7 +13,7 @@ class ProcessorItem:
     service: str = None
     target: str = None
     config: Dict = None
-    addrs: List[str] = None
+    addrs: List[str] = field(default_factory=list)
     priority: int = None
     topic: str = None
     title: str = None

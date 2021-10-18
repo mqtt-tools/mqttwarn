@@ -454,12 +454,18 @@ def processor(worker_id=None):
             q_in.task_done()
             continue
 
+        # Be more graceful with jobs w/o any target address information (2021-10-18 [amo]).
+        if target is None:
+            addrs = []
+        else:
+            addrs = service_targets[target]
+
         item = {
             'service'       : service,
             'section'       : section,
             'target'        : target,
             'config'        : service_config,
-            'addrs'         : service_targets[target],
+            'addrs'         : addrs,
             'topic'         : topic,
             'payload'       : job.payload,
             'data'          : None,

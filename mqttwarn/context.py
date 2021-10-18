@@ -102,17 +102,12 @@ class RuntimeContext(object):
         return dict(config)
 
     def get_service_targets(self, service):
+        # Be more graceful with jobs w/o any target address information (2021-10-18 [amo]).
         try:
-            targets = self.config.getdict('config:' + service, 'targets')
-            if type(targets) != dict:
-                logger.error("No targets for service `%s'" % service)
+            targets = self.config.getdict('config:' + service, 'targets') or [None]
+            return targets
         except:
-            logger.error("No targets for service `%s'" % service)
-
-        if targets is None:
-            return {}
-
-        return dict(targets)
+            logger.exception("Unable to access targets for service `%s'" % service)
 
 
 @attr.s
