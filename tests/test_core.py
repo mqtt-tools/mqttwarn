@@ -194,7 +194,7 @@ def test_plugin_module(caplog, configfile):
         )
 
         # Proof that the message has been routed to the "log" plugin properly
-        assert "Plugin invoked" in caplog.text, caplog.text
+        assert "Plugin invoked" in caplog.messages
 
 
 @pytest.mark.parametrize("configfile", [configfile_full, configfile_service_loading])
@@ -212,7 +212,7 @@ def test_plugin_file(caplog, configfile):
         send_message(topic="test/plugin-file", payload='{"name": "temperature", "value": 42.42}')
 
         # Proof that the message has been routed to the "log" plugin properly
-        assert "Plugin invoked" in caplog.text, caplog.text
+        assert "Plugin invoked" in caplog.messages
 
 
 def test_xform_func(caplog):

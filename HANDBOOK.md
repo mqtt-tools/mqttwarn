@@ -533,7 +533,7 @@ launch    = apprise-mail, apprise-json, apprise-discord
 [config:apprise-mail]
 ; Dispatch message as e-mail.
 ; https://github.com/caronc/apprise/wiki/Notify_email
-module   = 'apprise'
+module   = 'apprise_single'
 baseuri  = 'mailtos://smtp_username:smtp_password@mail.example.org'
 sender   = 'monitoring@example.org'
 sender_name = 'Example Monitoring'
@@ -544,7 +544,7 @@ targets  = {
 [config:apprise-json]
 ; Dispatch message to HTTP endpoint, in JSON format.
 ; https://github.com/caronc/apprise/wiki/Notify_Custom_JSON
-module   = 'apprise'
+module   = 'apprise_single'
 baseuri  = 'json://localhost:1234/mqtthook'
 
 [config:apprise-discord]
