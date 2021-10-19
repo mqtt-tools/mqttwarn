@@ -6,6 +6,10 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2021-10-19 0.28.0
+=================
+
 - Allow dispatching of messages with no target address information.
   This helps for service plugins like Apprise to make the configuration
   snippet more compact. Now, service configurations can omit the ``targets``
