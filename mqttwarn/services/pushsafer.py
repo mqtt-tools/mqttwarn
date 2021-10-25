@@ -79,28 +79,28 @@ def plugin(srv, item):
     if len(addrs) > 3:
         params['s'] = addrs[3]
 
-    if len(addrs) > 3:
+    if len(addrs) > 4:
         params['v'] = addrs[4]
 
-    if len(addrs) > 4:
+    if len(addrs) > 5:
         params['u'] = addrs[5]
 
-    if len(addrs) > 5:
+    if len(addrs) > 6:
         params['ut'] = addrs[6]
 
-    if len(addrs) > 6:
+    if len(addrs) > 7:
         params['l'] = addrs[7]
 
-    if len(addrs) > 7:
+    if len(addrs) > 8:
         params['pr'] = addrs[8]
 
-    if len(addrs) > 8:
+    if len(addrs) > 9:
         params['re'] = addrs[9]
 
-    if len(addrs) > 9:
+    if len(addrs) > 10:
         params['ex'] = addrs[10]
 
-    if len(addrs) > 10:
+    if len(addrs) > 11:
         params['a'] = addrs[11]
 
     if title is not None:
