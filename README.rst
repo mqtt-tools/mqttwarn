@@ -248,15 +248,13 @@ spelling mistake and then send us a pull request or create an issue_.
 
 Thanks in advance for your efforts, we really appreciate any help or feedback.
 
-See Also
-========
-
-
-- `Community contributions to mqttwarn <https://github.com/daq-tools/mqttwarn-contrib>`_
+There are also some extensions to mqttwarn not included in the core package.
+Yet, they are bundled into another package, ``mqttwarn-contrib``, see also
+`community contributions to mqttwarn <https://pypi.org/project/mqttwarn-contrib/>`_.
 
 Licenses
 ========
-This software is copyright © 2014-2019 Jan-Piet Mens and contributors. All rights reserved.
+This software is copyright © 2014-2021 Jan-Piet Mens and contributors. All rights reserved.
 
 It is and will always be **free and open source software**.
 
