@@ -5,6 +5,11 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2021-10-31 0.28.1
+=================
+
 - Fix documentation about Docker images. Thanks, @psyciknz!
 - Fix enumerating ``addrs`` in pushsafer service. Thanks, @ykuzmenko!
 
