@@ -22,9 +22,6 @@ export IMAGE=ghcr.io/jpmens/mqttwarn-standard:latest
 
 # The full image on GHCR.
 export IMAGE=ghcr.io/jpmens/mqttwarn-full:latest
-
-# The standard image on Docker Hub.
-export IMAGE=jpmens/mqttwarn
 ```
 
 ## Interactively
