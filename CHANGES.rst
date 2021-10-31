@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- Fix documentation about Docker images
 
 
 2021-10-19 0.28.0

@@ -114,8 +114,8 @@ For running ``mqttwarn`` on a container infrastructure like Docker or
 Kubernetes, corresponding images are automatically published to the
 GitHub Container Registry (GHCR).
 
-- ``ghcr.io/earthobservations/wetterdienst-standard:latest``
-- ``ghcr.io/earthobservations/wetterdienst-full:latest``
+- ``ghcr.io/jpmens/mqttwarn-standard:latest``
+- ``ghcr.io/jpmens/mqttwarn-full:latest``
 
 To learn more about this topic, please follow up reading the `Docker handbook`_.
 
