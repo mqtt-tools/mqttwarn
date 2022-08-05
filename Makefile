@@ -62,7 +62,7 @@ format: install-releasetools
 # Release this piece of software
 # Synopsis:
 #   make release bump=minor  (major,minor,patch)
-release: bumpversion push sdist pypi-upload
+release: bumpversion push build pypi-upload
 
 
 # -------------
@@ -84,8 +84,8 @@ bumpversion: install-releasetools
 push:
 	git push && git push --tags
 
-sdist:
-	@$(python) setup.py sdist
+build: install-releasetools
+	@$(python) -m build
 
 pypi-upload: install-releasetools
 	@$(twine) upload --skip-existing dist/*.tar.gz
