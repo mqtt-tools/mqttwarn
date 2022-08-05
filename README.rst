@@ -17,8 +17,8 @@
 .. image:: https://img.shields.io/pypi/status/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
 
-.. image:: https://img.shields.io/pypi/dm/mqttwarn.svg?label=PyPI%20downloads
-    :target: https://pypi.org/project/mqttwarn/
+.. image:: https://pepy.tech/badge/mqttwarn/month
+    :target: https://pepy.tech/project/mqttwarn
 
 |
 
