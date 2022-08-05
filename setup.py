@@ -9,14 +9,14 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 
 requires = [
-    'six>=1.13.0',
-    'paho-mqtt>=1.4.0',
-    'jinja2>=2.10.1',
-    'attrs>=19.3.0',
-    'docopt>=0.6.2',
-    'requests>=2.22.0',
-    'future>=0.18.2',
-    'configparser>=3.5.3',
+    'six<2',
+    'paho-mqtt<2',
+    'jinja2<3',
+    'attrs<23',
+    'docopt<1',
+    'requests<3',
+    'future<1',
+    'configparser<4',
 ]
 
 extras = {
