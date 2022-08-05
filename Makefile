@@ -91,10 +91,10 @@ pypi-upload: install-releasetools
 	@$(twine) upload --skip-existing dist/*.tar.gz
 
 install-doctools: setup-virtualenv
-	@$(pip) install --quiet --requirement requirements-docs.txt --upgrade
+	@$(pip) install --requirement requirements-docs.txt --upgrade
 
 install-releasetools: setup-virtualenv
-	@$(pip) install --quiet --requirement requirements-release.txt --upgrade
+	@$(pip) install --requirement requirements-release.txt --upgrade
 
 install-tests: setup-virtualenv
 	@$(pip) install --editable=.[test] --upgrade
