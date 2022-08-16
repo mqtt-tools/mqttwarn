@@ -2281,6 +2281,21 @@ NOTE: `callback` is an optional URL for pushover to [ack messages](https://pusho
 | `title`       |   O    | application title (dflt: pushover dflt) |
 | `priority`    |   O    | priority. (dflt: pushover setting)     |
 
+Users can enable Pushover's [HTML styling](https://pushover.net/api#html) or [Supplementary URLs](https://pushover.net/api#urls) support in messages by adding the `html`, `url`, and `url_title` keys to the data object:
+
+```ini
+[config:pushover]
+callback = None
+alldata = PushoverAllData()
+```
+
+```
+def PushoverAllData(topic, data, srv=None):
+	return {
+		'url': 'https://somedomain/path',
+	}
+```
+
 The pushover service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.
 

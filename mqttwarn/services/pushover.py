@@ -105,6 +105,11 @@ def plugin(srv, item):
     else:
         params['message'] = item.message
 
+    # Check for a few more Pushover API parameters
+    for key in ['html', 'url', 'url_title']:
+        if key in item.data:
+            params[key] = item.data[key]
+
     # check if there is an image contained in a JSON payload
     # (support either an image URL or base64 encoded image)
     image = None
