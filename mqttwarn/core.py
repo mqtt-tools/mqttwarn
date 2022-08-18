@@ -26,7 +26,7 @@ from mqttwarn.context import RuntimeContext, FunctionInvoker
 from mqttwarn.cron import PeriodicThread
 from mqttwarn.util import \
     load_function, load_module_from_file, load_module_by_name, timeout, \
-    parse_cron_options, sanitize_function_name, Struct, Formatter, asbool, exception_traceback
+    parse_cron_options, sanitize_function_name, Struct, Formatter, asbool
 
 try:
     import json
@@ -371,13 +371,13 @@ def xform(function, orig_value, transform_data):
             try:
                 res = context.invoker.datamap(function_name, transform_data)
                 return res
-            except Exception as e:
-                logger.warning("Cannot invoke %s(): %s" % (function_name, e))
+            except Exception:
+                logger.exception(f"Invoking function '{function_name}' failed")
 
         try:
             res = Formatter().format(function, **transform_data)
-        except Exception as e:
-            logger.exception("Formatting message failed")
+        except Exception:
+            logger.exception(f"Formatting message with function '{function}' failed")
 
     if isinstance(res, str):
         res = res.replace("\\n", "\n")
@@ -449,8 +449,8 @@ def processor(worker_id=None):
                                 "non-existing target '{target}' in service '{service}'".format(**locals())
                 raise KeyError(error_message)
 
-        except Exception as ex:
-            logger.error("Cannot handle service=%s, target=%s: %s\n%s" % (service, target, ex, exception_traceback()))
+        except Exception:
+            logger.exception(f"Cannot handle service={service}, target={target}")
             q_in.task_done()
             continue
 
@@ -515,8 +515,8 @@ def processor(worker_id=None):
                     service_logger_name = 'mqttwarn.services.{}'.format(service)
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
-            except Exception as e:
-                logger.exception("Cannot invoke service for `%s'" % service)
+            except Exception:
+                logger.exception(f"Invoking service '{service}' failed")
 
             if not notified:
                 logger.warning("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))
@@ -556,8 +556,8 @@ def load_services(services):
                 service_plugins[service]['module'] = load_module_by_name(module)
                 logger.info('Successfully loaded service "{}" from module "{}"'.format(service, module))
                 continue
-            except Exception as ex:
-                logger.exception('Unable to load service "{}" from module "{}": {}'.format(service, module, ex))
+            except Exception:
+                logger.exception('Loading service "{}" from module "{}" failed'.format(service, module))
 
         # Load built-in service module.
         else:
@@ -576,8 +576,8 @@ def load_services(services):
                 service_plugins[service]['module'] = load_module_from_file(modulefile)
                 logger.info('Successfully loaded service "{}"'.format(service))
                 success = True
-            except Exception as ex:
-                logger.exception('Unable to load service "{}" from file "{}": {}'.format(service, modulefile, ex))
+            except Exception:
+                logger.exception(f'Loading service "{service}" from file "{modulefile}" failed')
 
         if not success:
             logger.critical('Unable to load service "{}"'.format(service))
@@ -629,8 +629,8 @@ def connect():
     try:
         mqttc.connect(cf.hostname, int(cf.port), 60)
 
-    except Exception as e:
-        logger.error("Cannot connect to MQTT broker at %s:%d: %s" % (cf.hostname, int(cf.port), e))
+    except Exception:
+        logger.exception("Cannot connect to MQTT broker at %s:%d" % (cf.hostname, int(cf.port)))
         sys.exit(2)
 
     # Update our runtime context (used by functions etc) now we have a connected MQTT client
