@@ -155,7 +155,7 @@ def on_connect(mosq, userdata, flags, result_code):
     5: Refused - not authorised (MQTT v3.1 broker only)
     """
     if result_code == 0:
-        logger.debug("Connected to MQTT broker, subscribing to topics...")
+        logger.debug("Connected to MQTT broker, subscribing to topics")
         if not cf.cleansession:
             logger.debug("Cleansession==False; previous subscriptions for clientid %s remain active on broker" % cf.clientid)
 
@@ -195,7 +195,7 @@ def on_disconnect(mosq, userdata, result_code):
     if result_code == 0:
         logger.info("Clean disconnection from broker")
     else:
-        send_failover("brokerdisconnected", "Broker connection lost. Will attempt to reconnect in 5s...")
+        send_failover("brokerdisconnected", "Broker connection lost. Will attempt to reconnect in 5s")
         time.sleep(5)
 
 
@@ -218,7 +218,7 @@ def on_message(mosq, userdata, msg):
         # Get the topic for this section (usually the section name but optionally overridden)
         match_topic = context.get_topic(section)
         if paho.topic_matches_sub(match_topic, topic):
-            logger.debug("Section [%s] matches message on %s. Processing..." % (section, topic))
+            logger.debug("Section [%s] matches message on %s, processing it" % (section, topic))
             # Check for any message filters
             if context.is_filtered(section, topic, payload):
                 logger.debug("Filter in section [%s] has skipped message on %s" % (section, topic))
@@ -401,7 +401,7 @@ def decode_payload(section, topic, payload):
     # function obtains the topic string as well as the payload and any
     # existing transformation data, and it can do 'things' with all.
     # This is the way it should originally have been, but I can no
-    # longer fix the original ... (legacy)
+    # longer fix the original (legacy).
 
     all_data = context.get_all_data(section, topic, transform_data)
     if all_data is not None and isinstance(all_data, dict):
@@ -439,7 +439,7 @@ def processor(worker_id=None):
 
         # Sanity checks.
         # If service configuration or targets can not be obtained successfully,
-        # log a sensible error message, fail the job and carry on with the next job.
+        # log a sensible error message, fail the job, and carry on with the next job.
         try:
             service_config  = context.get_service_config(service)
             service_targets = context.get_service_targets(service)
@@ -525,7 +525,7 @@ def processor(worker_id=None):
 
         q_in.task_done()
 
-    logger.debug("Thread exiting...")
+    logger.debug("Thread exiting")
 
 
 def load_services(services):
@@ -595,7 +595,7 @@ def connect():
     try:
         services = cf.getlist('defaults', 'launch')
     except:
-        logger.error("No services configured. Aborting")
+        logger.error("No services configured, aborting")
         sys.exit(2)
 
     load_services(services)
@@ -603,7 +603,7 @@ def connect():
     # Initialize MQTT broker connection
     mqttc = paho.Client(cf.clientid, clean_session=cf.cleansession, protocol=cf.protocol)
 
-    logger.debug("Attempting connection to MQTT broker %s:%d..." % (cf.hostname, int(cf.port)))
+    logger.debug("Attempting connection to MQTT broker %s:%d" % (cf.hostname, int(cf.port)))
     mqttc.on_connect = on_connect
     mqttc.on_message = on_message
     mqttc.on_disconnect = on_disconnect
@@ -614,10 +614,10 @@ def connect():
 
     # set the lwt before connecting
     if cf.lwt is not None:
-        logger.debug("Setting LWT to %s..." % (cf.lwt))
+        logger.debug("Setting LWT to %s" % (cf.lwt))
         mqttc.will_set(cf.lwt, payload=LWTDEAD, qos=0, retain=True)
 
-    # Delays will be: 3, 6, 12, 24, 30, 30, ...
+    # Delays will be: 3, 6, 12, 24, 30, 30, etc.
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
 
     if cf.tls == True:
@@ -735,7 +735,7 @@ def cleanup(signum=None, frame=None):
         logger.debug("Cancel %s timer" % ptname)
         ptlist[ptname].cancel()
 
-    logger.debug("Disconnecting from MQTT broker...")
+    logger.debug("Disconnecting from MQTT broker")
     if cf.lwt is not None:
         mqttc.publish(cf.lwt, LWTDEAD, qos=0, retain=True)
     mqttc.loop_stop()
