@@ -319,7 +319,7 @@ def send_to_targets(section, topic, payload):
                 continue
 
         # skip targets with invalid services
-        if not service in service_plugins:
+        if service not in service_plugins:
             logger.error("Invalid configuration: topic '%s' points to non-existing service '%s'" % (topic, service))
             continue
 
