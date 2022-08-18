@@ -11,7 +11,6 @@ from mqttwarn.util import (
     Formatter,
     Struct,
     asbool,
-    exception_traceback,
     get_resource_content,
     load_function,
     load_functions,
@@ -173,14 +172,3 @@ def test_load_function():
 def test_get_resource_content():
     payload = get_resource_content("mqttwarn.examples", "basic/mqttwarn.ini")
     assert "[defaults]" in payload
-
-
-def test_exception_traceback():
-
-    # Get exception from ``sys.exc_info()``
-    try:
-        raise ValueError("Something reasonable")
-
-    except Exception as ex:
-        tb = exception_traceback()
-        assert "ValueError: Something reasonable" in tb

@@ -5,6 +5,9 @@ mqttwarn changelog
 
 in progress
 ===========
+- Improve error handling: Remove the ``exception_traceback()`` helper function
+  again, and use ``logger.exception()`` instead.
+
 
 
 2021-10-31 0.28.1
