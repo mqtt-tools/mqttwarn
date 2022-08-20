@@ -20,9 +20,9 @@ def plugin(srv, item):
 
     server      = item.config['server']
     sender      = item.config['sender']
-    starttls    = item.config['starttls']
-    username    = item.config['username']
-    password    = item.config['password']
+    starttls    = item.config.get('starttls')
+    username    = item.config.get('username')
+    password    = item.config.get('password')
 
     if item.config.get("htmlmsg"):
         msg = MIMEMultipart('alternative')
