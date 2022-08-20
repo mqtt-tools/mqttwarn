@@ -10,6 +10,7 @@ in progress
 - Improve error messages: Remove all ellipsis
 - SMTP service plugin: Add software tests
 - SMTP service plugin: Fix evaluation of ``htmlmsg`` parameter
+- SMTP service plugin: Add support for minimal configuration w/o TLS and AUTH
 
 
 

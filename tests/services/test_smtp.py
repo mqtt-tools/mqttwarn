@@ -209,3 +209,46 @@ def test_smtp_submit_error(srv, caplog):
         "Error sending notification to SMTP recipient test, addresses: "
         "['foo@example.org', 'bar@example.org']. Exception: Something failed" in caplog.messages
     )
+
+
+def test_smtp_minimal(srv, caplog):
+    """
+    Verify that a minimal configuration also works, without encryption (STARTTLS) and
+    authentication (SMTP AUTH).
+
+    This scenario can support you when submitting e-mail to a dummy SMTP server on
+    your workstation for testing purposes. It is not suitable for production use.
+    """
+
+    module = load_module_from_file("mqttwarn/services/smtp.py")
+
+    item = Item(
+        config={
+            "server": "localhost:25",
+            "sender": "mqttwarn <mqttwarn@localhost>",
+        },
+        target="test",
+        addrs=["foo@example.org"],
+        message="Notification message",
+    )
+
+    item = Struct(**item.asdict())
+
+    with caplog.at_level(logging.DEBUG):
+        with mock.patch("smtplib.SMTP", create=True) as smtplib_mock:
+            outcome = module.plugin(srv, item)
+            assert smtplib_mock.mock_calls == [
+                call("localhost:25"),
+                call().set_debuglevel(0),
+                call().ehlo(),
+                call().sendmail(
+                    "mqttwarn <mqttwarn@localhost>",
+                    ["foo@example.org"],
+                    mock.ANY,
+                ),
+                call().quit(),
+            ]
+
+        assert outcome is True
+        assert "Sending SMTP notification to test, addresses: ['foo@example.org']" in caplog.text
+        assert "Successfully sent SMTP notification" in caplog.text
