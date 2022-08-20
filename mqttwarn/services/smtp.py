@@ -24,7 +24,7 @@ def plugin(srv, item):
     username    = item.config['username']
     password    = item.config['password']
 
-    if 'htmlmsg' in item.config:
+    if item.config.get("htmlmsg"):
         msg = MIMEMultipart('alternative')
         msg.attach(MIMEText(item.message, 'plain'))
         msg.attach(MIMEText(item.message, 'html'))
