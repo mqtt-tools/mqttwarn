@@ -148,8 +148,8 @@ extras["all"] = extras_all
 
 # Packages needed for running the tests.
 extras["test"] = [
-    'pytest>=4.6.7',
-    'pytest-cov>=2.8.1',
+    'pytest<8',
+    'pytest-cov<4',
     'lovely.testlayers>=0.7.1',
     'tox>=3.14.2',
     'surrogate==0.1',

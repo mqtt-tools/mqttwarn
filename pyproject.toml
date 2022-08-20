@@ -7,3 +7,24 @@ src_paths = ["test"]
 line-length = 99
 include = '\.pyi?$'
 exclude = 'tests/etc/functions_bad.py'
+
+[tool.pytest.ini_options]
+minversion = "2.0"
+addopts = "-rsfEX -p pytester --strict-markers --verbosity=3 --cov --cov-report=term-missing --cov-report=xml"
+log_level = "DEBUG"
+log_cli_level = "DEBUG"
+testpaths = ["tests"]
+xfail_strict = true
+markers = [
+]
+
+[tool.coverage.run]
+branch = true
+source = ["mqttwarn"]
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+omit = [
+    "mqttwarn/vendor/*",
+]

@@ -18,4 +18,5 @@ funcs.py
 .pytest_cache
 .pytest_results
 .coverage
+coverage.xml
 .tox

@@ -37,12 +37,7 @@ test-junit: install-tests
 	@$(pytest) -vvv tests --junit-xml .pytest_results/pytest.xml
 
 test-coverage: install-tests
-	@$(pytest) -vvv tests \
-		--junit-xml .pytest_results/pytest.xml \
-		--cov mqttwarn --cov-branch \
-		--cov-report term-missing \
-		--cov-report html:.pytest_results/htmlcov \
-		--cov-report xml:.pytest_results/coverage.xml
+	@$(pytest) --cov-report html:.pytest_results/htmlcov
 
 
 # ----------------------
