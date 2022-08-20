@@ -8,6 +8,7 @@ in progress
 - Improve error handling: Remove the ``exception_traceback()`` helper function
   again, and use ``logger.exception()`` instead.
 - Improve error messages: Remove all ellipsis
+- SMTP service plugin: Add software tests
 
 
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2021 The mqttwarn developers
+import dataclasses
 from dataclasses import dataclass, field
 from typing import Dict, List, Union
 
@@ -19,3 +20,6 @@ class ProcessorItem:
     title: str = None
     message: Union[str, bytes] = None
     data: Dict = None
+
+    def asdict(self):
+        return dataclasses.asdict(self)
