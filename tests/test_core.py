@@ -8,7 +8,7 @@ import tempfile
 from builtins import str
 
 import pytest
-from mqttwarn.core import decode_payload, make_service
+from mqttwarn.core import decode_payload, make_service, render_template
 from tests import (
     configfile_empty_functions,
     configfile_full,
@@ -311,3 +311,20 @@ def inactive_test_status_publish(caplog):
 
         # Proof that the message has been routed to the "log" plugin properly
         # assert assertion here to verify the connection
+
+
+def test_render_template():
+    tplvars = {
+        "name": "foo",
+        "number": 42,
+        "payload": {"foo": "bar"},
+        "_dthhmm": 1234567890,
+    }
+    response = render_template("demo.j2", tplvars)
+    assert response == """
+------------------------------------------------------------
+Name.................: FOO
+Number...............: 42
+Timestamp............: 1234567890
+Original payload.....: {'foo': 'bar'}
+""".strip()

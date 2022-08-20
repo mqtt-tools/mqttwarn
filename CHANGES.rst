@@ -11,7 +11,7 @@ in progress
 - SMTP service plugin: Add software tests
 - SMTP service plugin: Fix evaluation of ``htmlmsg`` parameter
 - SMTP service plugin: Add support for minimal configuration w/o TLS and AUTH
-
+- Update dependencies: Use Jinja2 3.x; Remove configparser, it is built into Python 3
 
 
 2021-10-31 0.28.1
