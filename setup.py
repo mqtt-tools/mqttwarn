@@ -11,12 +11,11 @@ README = open(os.path.join(here, 'README.rst')).read()
 requires = [
     'six<2',
     'paho-mqtt<2',
-    'jinja2<3',
+    'jinja2<4',
     'attrs<23',
     'docopt<1',
     'requests<3',
     'future<1',
-    'configparser<4',
 ]
 
 extras = {
@@ -150,8 +149,8 @@ extras["all"] = extras_all
 extras["test"] = [
     'pytest<8',
     'pytest-cov<4',
-    'lovely.testlayers>=0.7.1',
-    'tox>=3.14.2',
+    'lovely.testlayers<1',
+    'tox<4',
     'surrogate==0.1',
     'dataclasses; python_version<"3.7"',
     'requests-toolbelt>=0.9.1,<1',
