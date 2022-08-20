@@ -36,8 +36,7 @@ jobs:
     - name: Run tests, with coverage report
       run: |
         pip install .[test]
-        pytest --cov=mqttwarn tests
-        coverage xml
+        pytest
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
