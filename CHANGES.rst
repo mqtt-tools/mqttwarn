@@ -9,6 +9,7 @@ in progress
   again, and use ``logger.exception()`` instead.
 - Improve error messages: Remove all ellipsis
 - SMTP service plugin: Add software tests
+- SMTP service plugin: Fix evaluation of ``htmlmsg`` parameter
 
 
 
