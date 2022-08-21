@@ -4,12 +4,10 @@ from builtins import str
 import os
 import re
 import imp
-import sys
 import json
 import string
-import traceback
 import pkg_resources
-from six import StringIO, string_types
+from six import string_types
 
 try:
     import hashlib
