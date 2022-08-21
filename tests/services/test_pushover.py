@@ -130,6 +130,43 @@ def test_pushover_success_with_sound(srv, caplog):
 
 
 @responses.activate
+def test_pushover_success_with_html_and_url_and_url_title(srv, caplog):
+
+    module = load_module_from_file("mqttwarn/services/pushover.py")
+
+    item = Item(
+        config={},
+        target="test",
+        addrs=["userkey2", "appkey2"],
+        message="⚽ Notification message ⚽",
+        data={
+            "html": "<p>⚽ Notification message ⚽</p>",
+            "url": "https://example.org/foo",
+            "url_title": "Notification group 'foo'",
+        },
+    )
+
+    with caplog.at_level(logging.DEBUG):
+
+        add_successful_mock_response()
+        outcome = module.plugin(srv, item)
+
+        assert (
+            responses.calls[0].request.body
+            == "user=userkey2&token=appkey2&retry=60&expire=3600&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+            "&html=%3Cp%3E%E2%9A%BD+Notification+message+%E2%9A%BD%3C%2Fp%3E&url=https%3A%2F%2Fexample.org%2Ffoo"
+            "&url_title=Notification+group+%27foo%27"
+        )
+
+        assert responses.calls[0].response.status_code == 200
+        assert responses.calls[0].response.text == '{"status": 1}'
+
+        assert outcome is True
+        assert "Sending pushover notification to test" in caplog.text
+        assert "Successfully sent pushover notification" in caplog.text
+
+
+@responses.activate
 def test_pushover_success_with_devices(srv, caplog):
 
     module = load_module_from_file("mqttwarn/services/pushover.py")
