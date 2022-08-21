@@ -15,10 +15,6 @@ jobs:
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python-version }}
 
-    defaults:
-      run:
-        shell: bash
-
     name: Python ${{ matrix.python-version }} on OS ${{ matrix.os }}
     steps:
 
