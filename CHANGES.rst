@@ -15,6 +15,7 @@ in progress
 - Add support for Python 3.11
 - Pushover service plugin: Enable passing of parameters ``html``, ``url``, ``url_title``
 - Add test for exercising configuration file scaffolding
+- Improve README regarding configuration file scaffolding on Windows 10/PowerShell
 
 
 2021-10-31 0.28.1
