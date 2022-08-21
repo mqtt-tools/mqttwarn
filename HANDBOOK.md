@@ -526,6 +526,9 @@ published to the MQTT broker:
 echo '{"device": "foobar", "name": "temperature", "number": 42.42}' | mosquitto_pub -t 'apprise/single/foo' -l
 ```
 
+This is an example configuration snippet to submit notifications using
+Apprise to E-Mail, an HTTP endpoint, and a Discord channel.
+
 ```ini
 [defaults]
 launch    = apprise-mail, apprise-json, apprise-discord
@@ -561,6 +564,12 @@ targets  = apprise-mail:demo, apprise-json, apprise-discord
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
+
+In order to mention people within messages to Discord, you will need to use
+their numerical user identifiers like `mosquitto_pub -m "hello <@user_id> again"`.
+This is **not** their text username. A special case is mentioning everyone in a
+channel, which works like `-m "hello @everyone again"`.
+
 
 ### `apprise_multi`
 
