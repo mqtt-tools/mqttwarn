@@ -9,16 +9,25 @@ from mqttwarn.commands import run
 
 def test_command_dump_config(capfd):
 
-    command = "mqttwarn make-config"
+    command = f"{find_mqttwarn()} make-config"
     stdout, stderr = invoke_command(capfd, command)
+
+    os.system(command)
+    stdout = capfd.readouterr().out
+
     assert 'mqttwarn example configuration file "mqttwarn.ini"' in stdout, stdout
 
 
 def test_command_dump_samplefuncs(capfd):
 
-    command = "mqttwarn make-samplefuncs"
+    command = f"{find_mqttwarn()} make-samplefuncs"
     stdout, stderr = invoke_command(capfd, command)
     assert "# mqttwarn example function extensions" in stdout, stdout
+
+    os.system(command)
+    stdout = capfd.readouterr().out
+
+    assert '# mqttwarn example function extensions' in stdout, stdout
 
 
 def test_command_standalone_plugin(capfd, caplog):
@@ -28,7 +37,7 @@ def test_command_standalone_plugin(capfd, caplog):
         raise pytest.xfail("Skipping test, fails on Windows")
 
     command = [
-        "mqttwarn",
+        find_mqttwarn(),
         "--plugin=log",
         """--options={"message": "Hello world", "addrs": ["crit"]}""",
     ]
@@ -45,10 +54,8 @@ def test_command_dump_config_real(capfd):
     Proof that the configuration scaffolding will write files with UTF-8 encoding on all platforms.
     """
 
-    mqttwarn_bin = find_mqttwarn()
-
     try:
-        command = f"{mqttwarn_bin} make-config > foobar.ini"
+        command = f"{find_mqttwarn()} make-config > foobar.ini"
         exitcode = os.system(command) % 255
         assert exitcode == 0, f"Invoking command '{command}' failed"
 

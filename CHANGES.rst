@@ -17,6 +17,7 @@ in progress
 - Add test for exercising configuration file scaffolding
 - Improve README regarding configuration file scaffolding on Windows 10/PowerShell
 - Improve support for VSCode
+- Improve ``mqttwarn`` command line entry point testing
 
 
 2021-10-31 0.28.1
