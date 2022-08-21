@@ -1,4 +1,6 @@
+import os
 import shlex
+import shutil
 import sys
 
 import pytest
@@ -38,11 +40,43 @@ def test_command_standalone_plugin(capfd, caplog):
     assert "Plugin response: True" in caplog.messages
 
 
+def test_command_dump_config_real(capfd):
+    """
+    Proof that the configuration scaffolding will write files with UTF-8 encoding on all platforms.
+    """
+
+    mqttwarn_bin = find_mqttwarn()
+
+    try:
+        command = f"{mqttwarn_bin} make-config > foobar.ini"
+        exitcode = os.system(command) % 255
+        assert exitcode == 0, f"Invoking command '{command}' failed"
+
+        ini_content = open("foobar.ini", encoding="utf-8").read()
+        assert 'mqttwarn example configuration file "mqttwarn.ini"' in ini_content
+
+    finally:
+        os.unlink("foobar.ini")
+
+
+def find_mqttwarn():
+    """
+    Find `mqttwarn` executable, located within the inline virtualenv.
+    """
+
+    path_candidates = [None, ".venv/bin", r".venv\Scripts"]
+    for path_candidate in path_candidates:
+        mqttwarn_bin = shutil.which("mqttwarn", path=path_candidate)
+        if mqttwarn_bin is not None:
+            return mqttwarn_bin
+
+    raise FileNotFoundError(f"Unable to discover 'mqttwarn' executable within {path_candidates}")
+
+
 def invoke_command(capfd, command):
     if not isinstance(command, list):
         command = shlex.split(command)
     sys.argv = command
-    print("sys.argv:", sys.argv)
     run()
     stdouterr = capfd.readouterr()
     stdout = stdouterr.out
