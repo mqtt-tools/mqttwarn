@@ -5,18 +5,26 @@ mqttwarn changelog
 
 in progress
 ===========
+
+
+2022-08-21 0.29.0
+=================
+
 - Improve error handling: Remove the ``exception_traceback()`` helper function
   again, and use ``logger.exception()`` instead.
 - Improve error messages: Remove all ellipsis
 - SMTP service plugin: Add software tests
 - SMTP service plugin: Fix evaluation of ``htmlmsg`` parameter
-- SMTP service plugin: Add support for minimal configuration w/o TLS and AUTH
+- SMTP service plugin: Add support for minimal configuration w/o TLS and AUTH.
+  Thanks, @symonjim.
 - Update dependencies: Use Jinja2 3.x; Remove configparser, it is built into Python 3
 - Add support for Python 3.11
-- Pushover service plugin: Enable passing of parameters ``html``, ``url``, ``url_title``
+- Pushover service plugin: Enable passing of parameters ``html``, ``url``, ``url_title``.
+  Thanks, @jlrgraham.
 - Add test for exercising configuration file scaffolding
-- Improve README regarding configuration file scaffolding on Windows 10/PowerShell
-- Improve support for VSCode
+- Improve README regarding configuration file scaffolding on Windows 10/PowerShell.
+  Thanks, @symonjim.
+- Improve support for VSCode. Thanks, @psyciknz.
 - Improve ``mqttwarn`` command line entry point testing
 
 
