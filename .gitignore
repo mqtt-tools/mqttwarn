@@ -16,6 +16,6 @@ f.01
 funcs.py
 .pytest_cache
 .pytest_results
-.coverage
+.coverage*
 coverage.xml
 .tox
