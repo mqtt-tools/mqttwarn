@@ -7,6 +7,7 @@ in progress
 ===========
 
 - Improve documentation about logging on Docker
+- Improve launching with an additional set of ``--config`` arguments
 
 
 2022-08-21 0.29.0

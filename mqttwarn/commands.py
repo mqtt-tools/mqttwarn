@@ -109,6 +109,8 @@ def launch_plugin_standalone(plugin, options, configfile=None, config_more=None)
     # Optionally add additional config settings from command line.
     if config_more is not None:
         section = "config:{}".format(plugin)
+        if not config.has_section(section):
+            config.add_section(section)
         for key, value in config_more.items():
             config.set(section, key, value)
 
