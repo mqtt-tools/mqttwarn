@@ -1,30 +1,52 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
-__copyright__ = 'Copyright 2014 Jan-Piet Mens'
-__license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
+__author__    = 'Alexander Gräf <portalzine.projects()gmail.com>'
+__copyright__ = 'Copyright 2022 Alexander Gräf'
+__version__   = '1.0.0'
+__license__   = 'Eclipse Public License - v 2.0 - https://www.eclipse.org/legal/epl-2.0/'
 
-from pync import Notifier
+import json
+from desktop_notifier import DesktopNotifier, Urgency, Button, ReplyField
 
+notify = DesktopNotifier()
+
+def is_json(msg):
+   try:
+     json.loads(msg)
+   except ValueError as e:
+     return False
+   return True
 
 def plugin(srv, item):
-
+    # Log
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
-    text = item.message
-    application_name = item.get('title', item.topic)
+    # Load Config
+    config = item.config
 
-    # If item.data contains a URL field, use it as a target for the notification
-    url = None
-    extra_data = item.data
-    if extra_data is not None:
-        url = extra_data.get('url', None)
+    # Play Sound ?
+    playSound = True
+    if config == dict and config['sound']:
+       playSound = config['sound']
+
+    # Get Message
+    message = item.message
+    if is_json(message) == True:
+       data = json.loads(message)
+    else:
+       data = {
+         "title"  : item.get('title',item.topic),
+         "message": message
+       }
 
     try:
-        Notifier.notify(text,  title=application_name, open=url)
+        # Synchronous Notification (allows no callbacks in OSX)
+        # Asynchronous would require asyncio and require some changes to the plugin handler
+        notify.send_sync(message=data['message'], title=data['title'],sound=playSound)
+
     except Exception as e:
-        srv.logging.warning("Cannot invoke Notifier to osx: %s" % e)
+        srv.logging.warning("Invoking OSX-Notifier failed: %s" % e)
         return False
 
     return True
