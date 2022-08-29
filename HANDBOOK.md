@@ -2002,24 +2002,23 @@ Requires:
 
 ### `osxnotify`
 
-* Requires a Mac ;-) and [pync](https://github.com/setem/pync) which uses the binary [terminal-notifier](https://github.com/alloy/terminal-notifier) created by Eloy Durán.
+* For Macs only, utilizing desktop-notifier from https://github.com/samschott/desktop-notifier 
 
 ```ini
 [config:osxnotify]
 ; title = Optional title; topic if not set
+; sound = Default True [False] - Play sound? 
 targets = {
   'anything' : [ ],
   }
 ```
-
-
-| Topic option  |  M/O   | Description                                     |
-| ------------- | :----: | ----------------------------------------------- |
-| `title`       |   O    | application title (dflt: topic name)            |
-
-If `url` is defined in `items.data`, its value is passed to the notification, so that the URL is opened in the system's default Web browser when the notification is clicked. (The notification itself has no visual indication that such is possible.)
-
-Note: upon first launch, `pync` will download and extract `https://github.com/downloads/alloy/terminal-notifier/terminal-notifier_1.6.1.zip` into a directory `vendor/`.
+If the MQTT message is a JSON object, it will populate the notification title and message accordingly.
+```json
+{
+	"title" : "YourTitle",
+	"message": "YourMessage"
+}
+```
 
 ![osxnotify](assets/osxnotify.jpg)
 
