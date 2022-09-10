@@ -105,7 +105,9 @@ port         = 1883
 username     = None
 password     = None
 clientid     = 'mqttwarn'
-lwt          = 'clients/mqttwarn'  ; lwt payload is '0' or '1'
+lwt          = 'clients/mqttwarn'
+lwt_alive    = '1'
+lwt_dead     = '0'
 skipretained = True
 cleansession = False
 

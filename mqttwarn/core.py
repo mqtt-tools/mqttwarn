@@ -48,12 +48,6 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-
-# lwt values - may make these configurable later?
-LWTALIVE   = "1"
-LWTDEAD    = "0"
-
-
 # Name of calling program
 SCRIPTNAME = 'mqttwarn'
 
@@ -172,7 +166,7 @@ def on_connect(mosq, userdata, flags, result_code):
             subscribed.append(topic)
 
         if cf.lwt is not None:
-            mqttc.publish(cf.lwt, LWTALIVE, qos=0, retain=True)
+            mqttc.publish(cf.lwt, cf.lwt_alive, qos=0, retain=True)
 
     elif result_code == 1:
         logger.info("Connection refused - unacceptable protocol version")
@@ -615,7 +609,7 @@ def connect():
     # set the lwt before connecting
     if cf.lwt is not None:
         logger.debug("Setting LWT to %s" % (cf.lwt))
-        mqttc.will_set(cf.lwt, payload=LWTDEAD, qos=0, retain=True)
+        mqttc.will_set(cf.lwt, payload=cf.lwt_dead, qos=0, retain=True)
 
     # Delays will be: 3, 6, 12, 24, 30, 30, etc.
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
@@ -737,7 +731,7 @@ def cleanup(signum=None, frame=None):
 
     logger.debug("Disconnecting from MQTT broker")
     if cf.lwt is not None:
-        mqttc.publish(cf.lwt, LWTDEAD, qos=0, retain=True)
+        mqttc.publish(cf.lwt, cf.lwt_dead, qos=0, retain=True)
     mqttc.loop_stop()
     mqttc.disconnect()
 
