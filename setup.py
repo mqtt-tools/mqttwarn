@@ -149,6 +149,7 @@ extras["all"] = extras_all
 extras["test"] = [
     'pytest<8',
     'pytest-cov<4',
+    'pytest-mock<4',
     'lovely.testlayers<1',
     'tox<4',
     'surrogate==0.1',
