@@ -15,7 +15,7 @@ requires = [
     'attrs<23',
     'docopt<1',
     'requests<3',
-    'future<1',
+    'future>=0.18.0,<1',
 ]
 
 extras = {
