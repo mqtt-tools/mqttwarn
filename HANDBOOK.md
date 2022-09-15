@@ -2004,7 +2004,8 @@ Requires:
 
 ### `osxnotify`
 
-* For Macs only, utilizing desktop-notifier from https://github.com/samschott/desktop-notifier 
+* Despite its name, it is a cross-platform desktop notifier, based on
+  https://github.com/samschott/desktop-notifier.
 
 ```ini
 [config:osxnotify]
