@@ -50,8 +50,8 @@ def test_azure_iot_success_string(srv, caplog):
 
         assert outcome is True
         assert (
-            "Publishing to Azure IoT Hub for target=test (device-id): devices/device-id/messages/events/ 'bytearray(b'\\xe2\\x9a\\xbd Notification message \\xe2\\x9a\\xbd')'"
-            in caplog.text
+            "Publishing to Azure IoT Hub for target=test (device-id): devices/device-id/messages/events/ "
+            "'bytearray(b'\\xe2\\x9a\\xbd Notification message \\xe2\\x9a\\xbd')'" in caplog.text
         )
 
 
@@ -97,8 +97,8 @@ def test_azure_iot_success_bytes(srv, caplog):
 
         assert outcome is True
         assert (
-            "Publishing to Azure IoT Hub for target=test (device-id): devices/device-id/messages/events/ 'b'### Notification message ###''"
-            in caplog.text
+            "Publishing to Azure IoT Hub for target=test (device-id): devices/device-id/messages/events/ "
+            "'b'### Notification message ###''" in caplog.text
         )
 
 
@@ -161,7 +161,4 @@ def test_azure_iot_failure_mqtt_publish(srv, caplog):
         outcome = module.plugin(srv, item)
 
         assert outcome is False
-        assert (
-            "Unable to publish to Azure IoT Hub for target=test (device-id): something failed"
-            in caplog.text
-        )
+        assert "Unable to publish to Azure IoT Hub for target=test (device-id): something failed" in caplog.text

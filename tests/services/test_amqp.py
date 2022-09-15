@@ -85,7 +85,4 @@ def test_amqp_failure(srv, caplog):
 
             assert outcome is False
             assert "AMQP publish to test [name_of_exchange/my_routing_key]" in caplog.text
-            assert (
-                "Error on AMQP publish to test [name_of_exchange/my_routing_key]: something failed"
-                in caplog.text
-            )
+            assert "Error on AMQP publish to test [name_of_exchange/my_routing_key]: something failed" in caplog.text

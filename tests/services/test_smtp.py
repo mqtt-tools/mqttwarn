@@ -33,6 +33,7 @@ def test_smtp_plain(srv, caplog):
         message="Notification message",
     )
 
+    # Plugin needs a real `Struct`.
     item = Struct(**item.asdict())
 
     with caplog.at_level(logging.DEBUG):
@@ -59,10 +60,7 @@ def test_smtp_plain(srv, caplog):
             assert "Notification message" in body
 
         assert outcome is True
-        assert (
-            "Sending SMTP notification to test, addresses: ['foo@example.org', 'bar@example.org']"
-            in caplog.text
-        )
+        assert "Sending SMTP notification to test, addresses: ['foo@example.org', 'bar@example.org']" in caplog.text
         assert "Successfully sent SMTP notification" in caplog.text
 
 

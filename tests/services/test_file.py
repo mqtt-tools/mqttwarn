@@ -40,10 +40,7 @@ def test_file_success(fake_filesystem, srv, caplog, item):
 
         assert outcome is True
         assert "Writing to file `/tmp/testdrive.log'" in caplog.messages
-        assert (
-            open("/tmp/testdrive.log", mode="r", encoding="utf-8").read()
-            == "\u26bd Notification message \u26bd"
-        )
+        assert open("/tmp/testdrive.log", mode="r", encoding="utf-8").read() == "\u26bd Notification message \u26bd"
 
 
 @mock.patch("io.open", side_effect=Exception("something failed"))
@@ -148,7 +145,4 @@ def test_file_overwrite_success(fake_filesystem, srv, caplog, item):
         assert outcome1 is True
         assert outcome2 is True
         assert "Writing to file `/tmp/testdrive.log'" in caplog.messages
-        assert (
-            open("/tmp/testdrive.log", mode="r", encoding="utf-8").read()
-            == "\u26bd Notification message \u26bd"
-        )
+        assert open("/tmp/testdrive.log", mode="r", encoding="utf-8").read() == "\u26bd Notification message \u26bd"

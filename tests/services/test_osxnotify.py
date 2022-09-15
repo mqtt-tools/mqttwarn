@@ -39,9 +39,7 @@ def test_osxnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
 
         assert desktop_notifier_mock.mock_calls == [
             call(),
-            call().send_sync(
-                message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True
-            ),
+            call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
         ]
 
         assert outcome is True
@@ -98,9 +96,7 @@ def test_osxnotify_json_success(desktop_notifier_mock, srv, caplog):
 
         assert desktop_notifier_mock.mock_calls == [
             call(),
-            call().send_sync(
-                message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True
-            ),
+            call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
         ]
 
         assert outcome is True
@@ -126,9 +122,7 @@ def test_osxnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
 
         assert desktop_notifier_mock.mock_calls == [
             call(),
-            call().send_sync(
-                message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=False
-            ),
+            call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=False),
         ]
 
         assert outcome is True

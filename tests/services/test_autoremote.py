@@ -53,9 +53,7 @@ def test_autoremote_failure(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/autoremote.py")
 
-        with mock.patch(
-            "requests.get", side_effect=Exception("something failed")
-        ) as requests_mock:
+        with mock.patch("requests.get", side_effect=Exception("something failed")) as requests_mock:
             outcome = module.plugin(srv, item)
             requests_mock.assert_called_once_with(
                 "https://autoremotejoaomgcd.appspot.com/sendmessage",

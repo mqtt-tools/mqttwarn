@@ -117,8 +117,8 @@ def test_pushover_success_with_sound(srv, caplog):
         outcome = module.plugin(srv, item)
 
         assert (
-            responses.calls[0].request.body
-            == "user=userkey2&token=appkey2&retry=60&expire=3600&sound=sound1&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+            responses.calls[0].request.body == "user=userkey2&token=appkey2&retry=60&expire=3600&"
+            "sound=sound1&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
         )
 
         assert responses.calls[0].response.status_code == 200
@@ -185,8 +185,8 @@ def test_pushover_success_with_devices(srv, caplog):
         outcome = module.plugin(srv, item)
 
         assert (
-            responses.calls[0].request.body
-            == "user=userkey2&token=appkey2&retry=60&expire=3600&devices=cellphone1%2Ccellphone2&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+            responses.calls[0].request.body == "user=userkey2&token=appkey2&retry=60&expire=3600&"
+            "devices=cellphone1%2Ccellphone2&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
         )
 
         assert responses.calls[0].response.status_code == 200
@@ -198,9 +198,7 @@ def test_pushover_success_with_devices(srv, caplog):
 
 
 @responses.activate
-def test_pushover_success_with_callback_and_title_and_priority_and_alternative_message(
-    srv, caplog
-):
+def test_pushover_success_with_callback_and_title_and_priority_and_alternative_message(srv, caplog):
 
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
@@ -220,8 +218,10 @@ def test_pushover_success_with_callback_and_title_and_priority_and_alternative_m
         outcome = module.plugin(srv, item)
 
         assert (
-            responses.calls[0].request.body
-            == "user=userkey2&token=appkey2&retry=60&expire=3600&title=%E2%9A%BD+Message+title+%E2%9A%BD&priority=555&callback=https%3A%2F%2Fexample.org%2Fpushover-callback&message=%E2%9A%BD+Alternative+notification+message+%E2%9A%BD"
+            responses.calls[0].request.body == "user=userkey2&token=appkey2&retry=60&expire=3600&"
+            "title=%E2%9A%BD+Message+title+%E2%9A%BD&priority=555&"
+            "callback=https%3A%2F%2Fexample.org%2Fpushover-callback&"
+            "message=%E2%9A%BD+Alternative+notification+message+%E2%9A%BD"
         )
 
         assert responses.calls[0].response.status_code == 200
