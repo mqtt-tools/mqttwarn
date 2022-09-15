@@ -92,10 +92,8 @@ def test_apprise_failure_notify(srv, caplog):
 
         mock_connection.notify = error
 
-        with mock.patch(
-            "apprise.Apprise", side_effect=[mock_connection], create=True
-        ) as mock_client:
-            with mock.patch("apprise.AppriseAsset", create=True) as mock_asset:
+        with mock.patch("apprise.Apprise", side_effect=[mock_connection], create=True) as mock_client:
+            with mock.patch("apprise.AppriseAsset", create=True):
                 module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
                 item = Item(
@@ -138,10 +136,8 @@ def test_apprise_error(srv, caplog):
 
         mock_connection.notify = error
 
-        with mock.patch(
-            "apprise.Apprise", side_effect=[mock_connection], create=True
-        ) as mock_client:
-            with mock.patch("apprise.AppriseAsset", create=True) as mock_asset:
+        with mock.patch("apprise.Apprise", side_effect=[mock_connection], create=True) as mock_client:
+            with mock.patch("apprise.AppriseAsset", create=True):
                 module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
                 item = Item(
@@ -168,10 +164,7 @@ def test_apprise_error(srv, caplog):
                     "Sending notification to Apprise. target=test, addresses=['foo@example.org', 'bar@example.org']"
                     in caplog.messages
                 )
-                assert (
-                    "Sending message using Apprise failed. target=test, error=something failed"
-                    in caplog.messages
-                )
+                assert "Sending message using Apprise failed. target=test, error=something failed" in caplog.messages
 
 
 @surrogate("apprise")

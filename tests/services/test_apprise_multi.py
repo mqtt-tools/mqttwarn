@@ -39,7 +39,8 @@ def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
 
         assert outcome is True
         assert (
-            "Sending notification to Apprise. target=None, addresses=[{'baseuri': 'json://localhost:1234/mqtthook'}, {'baseuri': 'json://daq.example.org:5555/foobar'}]"
+            "Sending notification to Apprise. target=None, addresses=["
+            "{'baseuri': 'json://localhost:1234/mqtthook'}, {'baseuri': 'json://daq.example.org:5555/foobar'}]"
             in caplog.messages
         )
         assert "Successfully sent message using Apprise" in caplog.messages
@@ -72,7 +73,8 @@ def test_apprise_multi_mailto_success(apprise_asset, apprise_mock, srv, caplog):
         assert apprise_mock.mock_calls == [
             call(asset=mock.ANY),
             call().add(
-                "mailtos://smtp_username:smtp_password@mail.example.org?to=foo%40example.org%2Cbar%40example.org&from=monitoring%40example.org&name=Example+Monitoring"
+                "mailtos://smtp_username:smtp_password@mail.example.org"
+                "?to=foo%40example.org%2Cbar%40example.org&from=monitoring%40example.org&name=Example+Monitoring"
             ),
             call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
             call().notify().__bool__(),
@@ -80,8 +82,11 @@ def test_apprise_multi_mailto_success(apprise_asset, apprise_mock, srv, caplog):
 
         assert outcome is True
         assert (
-            "Sending notification to Apprise. target=None, addresses=[{'baseuri': 'mailtos://smtp_username:smtp_password@mail.example.org', 'recipients': ['foo@example.org', 'bar@example.org'], 'sender': 'monitoring@example.org', 'sender_name': 'Example Monitoring'}]"
-            in caplog.messages
+            "Sending notification to Apprise. target=None, addresses=["
+            "{"
+            "'baseuri': 'mailtos://smtp_username:smtp_password@mail.example.org', "
+            "'recipients': ['foo@example.org', 'bar@example.org'], "
+            "'sender': 'monitoring@example.org', 'sender_name': 'Example Monitoring'}]" in caplog.messages
         )
         assert "Successfully sent message using Apprise" in caplog.messages
 
@@ -99,10 +104,8 @@ def test_apprise_multi_failure_notify(srv, caplog):
 
         mock_connection.notify = error
 
-        with mock.patch(
-            "apprise.Apprise", side_effect=[mock_connection], create=True
-        ) as mock_client:
-            with mock.patch("apprise.AppriseAsset", create=True) as mock_asset:
+        with mock.patch("apprise.Apprise", side_effect=[mock_connection], create=True) as mock_client:
+            with mock.patch("apprise.AppriseAsset", create=True):
                 module = load_module_by_name("mqttwarn.services.apprise_multi")
 
                 item = Item(
@@ -122,8 +125,8 @@ def test_apprise_multi_failure_notify(srv, caplog):
 
                 assert outcome is False
                 assert (
-                    "Sending notification to Apprise. target=None, addresses=[{'baseuri': 'json://localhost:1234/mqtthook'}]"
-                    in caplog.messages
+                    "Sending notification to Apprise. target=None, "
+                    "addresses=[{'baseuri': 'json://localhost:1234/mqtthook'}]" in caplog.messages
                 )
                 assert "Sending message using Apprise failed" in caplog.messages
 
@@ -141,10 +144,8 @@ def test_apprise_multi_error(srv, caplog):
 
         mock_connection.notify = error
 
-        with mock.patch(
-            "apprise.Apprise", side_effect=[mock_connection], create=True
-        ) as mock_client:
-            with mock.patch("apprise.AppriseAsset", create=True) as mock_asset:
+        with mock.patch("apprise.Apprise", side_effect=[mock_connection], create=True) as mock_client:
+            with mock.patch("apprise.AppriseAsset", create=True):
                 module = load_module_by_name("mqttwarn.services.apprise_multi")
 
                 item = Item(
@@ -164,10 +165,7 @@ def test_apprise_multi_error(srv, caplog):
 
                 assert outcome is False
                 assert (
-                    "Sending notification to Apprise. target=None, addresses=[{'baseuri': 'json://localhost:1234/mqtthook'}]"
-                    in caplog.messages
+                    "Sending notification to Apprise. target=None, "
+                    "addresses=[{'baseuri': 'json://localhost:1234/mqtthook'}]" in caplog.messages
                 )
-                assert (
-                    "Sending message using Apprise failed. target=None, error=something failed"
-                    in caplog.messages
-                )
+                assert "Sending message using Apprise failed. target=None, error=something failed" in caplog.messages

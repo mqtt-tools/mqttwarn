@@ -20,7 +20,6 @@ from mqttwarn.util import (
     sanitize_function_name,
     timeout,
 )
-from past.utils import old_div
 from tests import configfile_full, funcfile_bad, funcfile_good
 
 
@@ -35,14 +34,12 @@ def test_struct():
 
 
 def test_formatter_basic():
-    result = Formatter().format("{foo}", **{u"foo": u"Räuber Hotzenplotz"}).encode("utf-8")
+    result = Formatter().format("{foo}", **{"foo": "Räuber Hotzenplotz"}).encode("utf-8")
     assert result == b"R\xc3\xa4uber Hotzenplotz"
 
 
 def test_formatter_json():
-    result = (
-        Formatter().format("{foo!j}", **{u"foo": {u"bar": u"Räuber Hotzenplotz"}}).encode("utf-8")
-    )
+    result = Formatter().format("{foo!j}", **{"foo": {"bar": "Räuber Hotzenplotz"}}).encode("utf-8")
     assert result == b'{"bar": "R\\u00e4uber Hotzenplotz"}'
 
 
@@ -103,10 +100,7 @@ def test_load_module_from_file_good():
 def test_load_module_from_file_bad():
     with pytest.raises(IOError) as excinfo:
         load_module_from_file("mqttwarn/services/unknown.py")
-        assert (
-            str(excinfo.value)
-            == "IOError: [Errno 2] No such file or directory: 'mqttwarn/services/unknown.py'"
-        )
+        assert str(excinfo.value) == "IOError: [Errno 2] No such file or directory: 'mqttwarn/services/unknown.py'"
 
 
 def test_load_module_by_name_good():
@@ -141,9 +135,7 @@ def test_load_functions():
     # Load functions file that is not a python file
     with pytest.raises(ValueError) as excinfo:
         load_functions(filepath=configfile_full)
-    assert str(excinfo.value) == "'{}' does not have the .py or .pyc extension".format(
-        configfile_full
-    )
+    assert str(excinfo.value) == "'{}' does not have the .py or .pyc extension".format(configfile_full)
 
     # Load bad functions file
     with pytest.raises(Exception):

@@ -142,9 +142,7 @@ def test_irccat_connect_fails(srv, caplog):
 
         mock_connection.connect = error
 
-        with mock.patch(
-            "socket.socket", side_effect=[mock_connection], create=True
-        ) as socket_mock:
+        with mock.patch("socket.socket", side_effect=[mock_connection], create=True) as socket_mock:
 
             outcome = module.plugin(srv, item)
             assert socket_mock.mock_calls == [
@@ -152,7 +150,4 @@ def test_irccat_connect_fails(srv, caplog):
             ]
 
             assert outcome is False
-            assert (
-                "Error sending IRCcat notification to test:localhost [12345]: something failed"
-                in caplog.messages
-            )
+            assert "Error sending IRCcat notification to test:localhost [12345]: something failed" in caplog.messages

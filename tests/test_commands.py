@@ -27,7 +27,7 @@ def test_command_dump_samplefuncs(capfd):
     os.system(command)
     stdout = capfd.readouterr().out
 
-    assert '# mqttwarn example function extensions' in stdout, stdout
+    assert "# mqttwarn example function extensions" in stdout, stdout
 
 
 def test_command_standalone_plugin(capfd, caplog):
