@@ -1,12 +1,28 @@
+# =========================
+# Linter and code formatter
+# =========================
+
 [tool.isort]
 profile = "black"
 #src_paths = ["mqttwarn", "examples", "tests"]
 src_paths = ["test"]
 
 [tool.black]
-line-length = 99
+line-length = 120
 include = '\.pyi?$'
 exclude = 'tests/etc/functions_bad.py'
+
+[tool.ruff]
+line-length = 120
+# ignore = ["F821"]
+exclude = [
+  "tests/etc/functions_bad.py"
+]
+
+
+# ==================
+# Test configuration
+# ==================
 
 [tool.pytest.ini_options]
 minversion = "2.0"
@@ -28,3 +44,24 @@ show_missing = true
 omit = [
     "mqttwarn/vendor/*",
 ]
+
+
+
+# ===================
+# Tasks configuration
+# ===================
+
+[tool.poe.tasks]
+format = [
+  {cmd="black tests"},
+  {cmd="isort tests"},
+]
+check-style = [
+  {cmd="ruff tests"},
+  {cmd="black --check tests"},
+  {cmd="isort --check tests"},
+]
+test = [
+  {cmd="pytest"},
+]
+build = {cmd="python -m build"}

@@ -159,6 +159,15 @@ extras["test"] = [
     'pyfakefs>=4.5,<5',
 ]
 
+# Packages needed for development and running CI.
+extras["develop"] = [
+    'isort<6',
+    'black<23',
+    'build<1',
+    'poethepoet<1',
+    'ruff; python_version>="3.7"',
+]
+
 
 setup(name='mqttwarn',
       version='0.29.1',

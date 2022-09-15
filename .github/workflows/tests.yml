@@ -29,9 +29,18 @@ jobs:
         cache: 'pip'
         cache-dependency-path: 'setup.py'
 
-    - name: Run tests, with coverage report
+    - name: Setup project
       run: |
-        pip install .[test]
+        # Install package in editable mode.
+        pip install --editable=.[test,develop]
+
+    - name: Check code style
+      if: matrix.python-version != '3.6'
+      run: |
+        poe check-style
+
+    - name: Run tests
+      run: |
         pytest
 
     - name: Upload coverage to Codecov

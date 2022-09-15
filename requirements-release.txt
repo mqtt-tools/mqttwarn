@@ -1,6 +1,3 @@
-build
 bump2version
 twine
 keyring
-isort
-black
