@@ -61,7 +61,7 @@ extras = {
         'pynsca>=1.6',
     ],
     'osxnotify': [
-        'pync>=1.6.1',
+        'desktop-notifier<4',
     ],
     'pastebinpub': [
         'Pastebin>=1.1.2',
