@@ -19,7 +19,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-branch = true
+branch = false
 source = ["mqttwarn"]
 
 [tool.coverage.report]

@@ -27,8 +27,8 @@ def plugin(srv, item):
 
     # Play Sound ?
     playSound = True
-    if config == dict and config['sound']:
-       playSound = config['sound']
+    if isinstance(config, dict):
+       playSound = config.get('sound', True)
 
     # Get Message
     message = item.message
@@ -40,6 +40,7 @@ def plugin(srv, item):
          "message": message
        }
 
+    srv.logging.debug("Sending desktop notification")
     try:
         # Synchronous Notification (allows no callbacks in OSX)
         # Asynchronous would require asyncio and require some changes to the plugin handler
