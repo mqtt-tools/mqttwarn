@@ -16,6 +16,7 @@ $(eval twine        := $(venvpath)/bin/twine)
 $(eval sphinx       := $(venvpath)/bin/sphinx-build)
 $(eval isort        := $(venvpath)/bin/isort)
 $(eval black        := $(venvpath)/bin/black)
+$(eval poe          := $(venvpath)/bin/poe)
 
 # Setup Python virtualenv
 setup-virtualenv:
@@ -27,9 +28,8 @@ setup-virtualenv:
 # -------
 
 # Run the main test suite
-test:
-	@test -e $(pytest) || $(MAKE) install-tests
-	@$(pytest) -vvv tests -m 'not slow'
+test: install-tests
+	@$(poe) test
 
 test-refresh: install-tests test
 
@@ -44,10 +44,7 @@ test-coverage: install-tests
 # Linting and Formatting
 # ----------------------
 format: install-releasetools
-	@echo "Running isort"
-	@$(isort) tests
-	@echo "Running black"
-	@$(black) tests
+	$(poe) format
 
 
 # -------
@@ -92,6 +89,6 @@ install-releasetools: setup-virtualenv
 	@$(pip) install --requirement requirements-release.txt --upgrade
 
 install-tests: setup-virtualenv
-	@$(pip) install --editable=.[test] --upgrade
+	@test -e $(pytest) || $(pip) install --editable=.[test,develop] --upgrade
 	@touch $(venvpath)/bin/activate
 	@mkdir -p .pytest_results
