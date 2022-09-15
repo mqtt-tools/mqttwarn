@@ -1,7 +1,7 @@
 import pytest
 
-# Import fixtures
-from mqttwarn.testing.fixtures import mqttwarn_service as srv  # noqa
+# Import custom fixtures.
+from mqttwarn.testing.fixtures import mqttwarn_service as srv  # noqa:F401
 
 
 @pytest.fixture

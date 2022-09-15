@@ -34,6 +34,7 @@ log_cli_level = "DEBUG"
 testpaths = ["tests"]
 xfail_strict = true
 markers = [
+  "e2e",  # Full end-to-end system tests, needing an MQTT broker.
 ]
 
 [tool.coverage.run]

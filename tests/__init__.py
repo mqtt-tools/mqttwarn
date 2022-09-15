@@ -5,6 +5,7 @@
 configfile_full = "tests/etc/full.ini"
 configfile_service_loading = "tests/etc/service-loading.ini"
 configfile_no_functions = "tests/etc/no-functions.ini"
+configfile_status_publish = "tests/etc/status-publish.ini"
 configfile_empty_functions = "tests/etc/empty-functions.ini"
 configfile_unknown_functions = "tests/etc/unknown-functions.ini"
 funcfile_good = "tests/etc/functions_good.py"

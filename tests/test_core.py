@@ -284,36 +284,6 @@ def test_config_bad_functions(caplog):
         assert "not found" in error_message
 
 
-def inactive_test_status_publish(caplog):
-    """
-    Aim to test the `status_publish` feature.
-    Test the core connection method.
-
-    TODO: This is not finished.
-
-    Note:
-        We need figure out how ot mock a connection to a non-existent MQTT server.
-    """
-
-    # from unittest import mock
-
-    # from mqttwarn.core import connect
-
-    with caplog.at_level(logging.DEBUG):
-
-        # Bootstrap the core machinery without MQTT
-        core_bootstrap(configfile=configfile_full)
-
-        # mqtt_publish_mock = mock.MagicMock()
-        # mqttc = mqtt_publish_mock
-
-        # Signal mocked MQTT message to the core machinery for processing
-        # outcome = connect().mqttc = mqtt_publish_mock
-
-        # Proof that the message has been routed to the "log" plugin properly
-        # assert assertion here to verify the connection
-
-
 def test_render_template():
     tplvars = {
         "name": "foo",
