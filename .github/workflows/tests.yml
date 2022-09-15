@@ -21,6 +21,16 @@ jobs:
     - name: Acquire sources
       uses: actions/checkout@v3
 
+    # https://github.com/docker-practice/actions-setup-docker
+    # - name: Install Docker
+    #   if: runner.os == 'Linux'
+    #   uses: docker-practice/actions-setup-docker@master
+
+    - name: Display Docker version
+      if: runner.os == 'Linux'
+      run: |
+        docker version
+
     - name: Setup Python
       uses: actions/setup-python@v4
       with:

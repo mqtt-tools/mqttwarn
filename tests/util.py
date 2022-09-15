@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # (c) 2018-2021 The mqttwarn developers
-import time
+import threading
 
+import paho
 from mqttwarn.configuration import load_configuration
 from mqttwarn.core import bootstrap, load_services, on_message, start_workers
 from paho.mqtt.client import MQTTMessage
@@ -37,4 +38,21 @@ def send_message(topic=None, payload=None):
     on_message(None, None, message)
 
     # Give the machinery some time to process the message
-    time.sleep(0.10)
+    delay()
+
+
+def delay(seconds=0.05):
+    """
+    Wait for designated number of seconds.
+    """
+    threading.Event().wait(seconds)
+
+
+def mqtt_process(mqttc: paho.mqtt.client.Client, loops=2):
+    """
+    Process network events for Paho MQTT client library. Wait a bit before and after.
+    """
+    delay()
+    for _ in range(loops):
+        mqttc.loop()
+    delay()
