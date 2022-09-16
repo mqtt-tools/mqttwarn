@@ -16,7 +16,7 @@ exclude = 'tests/etc/functions_bad.py'
 line-length = 120
 # ignore = ["F821"]
 exclude = [
-  "tests/etc/functions_bad.py"
+  "./tests/etc/functions_bad.py"
 ]
 
 
