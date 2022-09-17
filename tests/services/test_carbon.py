@@ -8,7 +8,7 @@ from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
 
-def test_carbon_success_metric_value_timestamp(srv, caplog):
+def test_carbon_success_metric_value_timestamp(mocker, srv, caplog):
 
     item = Item(
         target="test",
@@ -21,8 +21,7 @@ def test_carbon_success_metric_value_timestamp(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/carbon.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -36,7 +35,7 @@ def test_carbon_success_metric_value_timestamp(srv, caplog):
         assert "Sending to carbon: foo 42.42 1623887596" in caplog.text
 
 
-def test_carbon_success_metric_value(srv, caplog):
+def test_carbon_success_metric_value(mocker, srv, caplog):
 
     item = Item(target="test", addrs=["localhost", 2003], message="foo 42.42", data={})
 
@@ -44,8 +43,7 @@ def test_carbon_success_metric_value(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/carbon.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -59,7 +57,7 @@ def test_carbon_success_metric_value(srv, caplog):
         assert "Sending to carbon: foo 42.42" in caplog.text
 
 
-def test_carbon_success_value(srv, caplog):
+def test_carbon_success_value(mocker, srv, caplog):
 
     item = Item(target="test", addrs=["localhost", 2003], message="42.42", data={})
 
@@ -67,8 +65,7 @@ def test_carbon_success_value(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/carbon.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -82,7 +79,7 @@ def test_carbon_success_value(srv, caplog):
         assert "Sending to carbon: ohno 42.42" in caplog.text
 
 
-def test_carbon_success_value_metric_from_topic(srv, caplog):
+def test_carbon_success_value_metric_from_topic(mocker, srv, caplog):
 
     item = Item(
         target="test",
@@ -95,8 +92,7 @@ def test_carbon_success_value_metric_from_topic(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/carbon.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -110,7 +106,7 @@ def test_carbon_success_value_metric_from_topic(srv, caplog):
         assert "Sending to carbon: foo.bar 42.42" in caplog.text
 
 
-def test_carbon_success_value_metric_from_topic_with_leading_slash(srv, caplog):
+def test_carbon_success_value_metric_from_topic_with_leading_slash(mocker, srv, caplog):
 
     item = Item(
         target="test",
@@ -123,8 +119,7 @@ def test_carbon_success_value_metric_from_topic_with_leading_slash(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/carbon.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -185,7 +180,7 @@ def test_carbon_failure_invalid_message_format(srv, caplog):
         assert "target `carbon': error decoding message" in caplog.text
 
 
-def test_carbon_failure_connect(srv, caplog):
+def test_carbon_failure_connect(mocker, srv, caplog):
 
     item = Item(
         target="test",
@@ -198,10 +193,11 @@ def test_carbon_failure_connect(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/carbon.py")
 
+        socket_mock = mocker.patch("socket.socket")
+
+        # Inject exception to be raised on `socket.connect`.
         attrs = {"connect.side_effect": Exception("something failed")}
-        socket_mock = mock.MagicMock()
         socket_mock.return_value = mock.MagicMock(**attrs)
-        module.socket.socket = socket_mock
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [call(), call().connect(("localhost", 2003))]

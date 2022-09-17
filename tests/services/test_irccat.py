@@ -8,7 +8,7 @@ from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
 
-def test_irccat_normal_success(srv, caplog):
+def test_irccat_normal_success(mocker, srv, caplog):
     import socket
 
     item = Item(
@@ -22,8 +22,7 @@ def test_irccat_normal_success(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -37,7 +36,7 @@ def test_irccat_normal_success(srv, caplog):
         assert "Sending to IRCcat: ⚽ Notification message ⚽" in caplog.messages
 
 
-def test_irccat_green_success(srv, caplog):
+def test_irccat_green_success(mocker, srv, caplog):
     import socket
 
     item = Item(
@@ -52,8 +51,7 @@ def test_irccat_green_success(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -67,7 +65,7 @@ def test_irccat_green_success(srv, caplog):
         assert "Sending to IRCcat: %GREEN⚽ Notification message ⚽" in caplog.messages
 
 
-def test_irccat_red_success(srv, caplog):
+def test_irccat_red_success(mocker, srv, caplog):
     import socket
 
     item = Item(
@@ -82,8 +80,7 @@ def test_irccat_red_success(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == [
@@ -97,7 +94,7 @@ def test_irccat_red_success(srv, caplog):
         assert "Sending to IRCcat: %RED⚽ Notification message ⚽" in caplog.messages
 
 
-def test_irccat_config_invalid(srv, caplog):
+def test_irccat_config_invalid(mocker, srv, caplog):
 
     item = Item(
         target="test",
@@ -110,8 +107,7 @@ def test_irccat_config_invalid(srv, caplog):
 
         module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        socket_mock = mock.MagicMock()
-        module.socket.socket = socket_mock
+        socket_mock = mocker.patch("socket.socket")
 
         outcome = module.plugin(srv, item)
         assert socket_mock.mock_calls == []
