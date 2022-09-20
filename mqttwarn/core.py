@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2022 The mqttwarn developers
 from builtins import object
-from past.builtins import cmp
+from functools import total_ordering
+
 from builtins import chr
 from builtins import str
 import os
@@ -105,6 +106,7 @@ def make_service(mqttc=None, name=None):
     return service
 
 
+@total_ordering
 class Job(object):
 
     def __init__(self, prio, service, section, topic, payload, data, target):
@@ -119,8 +121,17 @@ class Job(object):
         logger.debug("New `%s:%s' job: %s" % (service, target, topic))
         return
 
-    def __cmp__(self, other):
-        return cmp(self.prio, other.prio)
+    # The `__cmp__()` special method is no longer honored in Python 3.
+    # https://portingguide.readthedocs.io/en/latest/comparisons.html#rich-comparisons
+
+    def __eq__(self, other):
+        return self.prio == other.prio
+
+    def __ne__(self, other):
+        return not (self.prio == other.prio)
+
+    def __lt__(self, other):
+        return self.prio < other.prio
 
 
 def render_template(filename, data):
