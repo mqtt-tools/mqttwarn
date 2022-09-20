@@ -14,8 +14,7 @@ exclude = 'tests/etc/functions_bad.py'
 
 [tool.ruff]
 line-length = 120
-# ignore = ["F821"]
-exclude = [
+extend-exclude = [
   "./tests/etc/functions_bad.py"
 ]
 
