@@ -637,6 +637,11 @@ def connect():
     # Launch worker threads to operate on queue
     start_workers()
 
+    return mqttc
+
+
+def subscribe_forever():
+    mqttc = connect()
     while not exit_flag:
         reconnect_interval = 5
 

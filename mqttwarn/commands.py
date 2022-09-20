@@ -12,7 +12,7 @@ from docopt import docopt
 
 from mqttwarn import __version__
 from mqttwarn.configuration import load_configuration, Config
-from mqttwarn.core import bootstrap, connect, cleanup, run_plugin
+from mqttwarn.core import bootstrap, subscribe_forever, cleanup, run_plugin
 from mqttwarn.util import get_resource_content
 
 logger = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ def run_mqttwarn():
     bootstrap(config=config, scriptname=scriptname)
 
     # Connect to broker and start listening
-    connect()
+    subscribe_forever()
 
 
 def setup_logging(config):
