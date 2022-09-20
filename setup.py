@@ -164,6 +164,7 @@ extras["develop"] = [
     'isort<6',
     'black<23',
     'build<1',
+    'mypy<1',
     'poethepoet<1',
     'ruff==0.0.40; python_version>="3.7"',
 ]

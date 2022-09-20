@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2021 The mqttwarn developers
-import platform
+# (c) 2014-2022 The mqttwarn developers
 from builtins import object
 from past.builtins import cmp
 from builtins import chr
@@ -11,18 +10,17 @@ import time
 import socket
 import logging
 import threading
+import typing as t
+
+import mqttwarn.configuration
 from mqttwarn.model import StatusInformation
-try:
-    from queue import Queue
-except ImportError:
-    # Backward-compatibility for Python 2
-    from Queue import Queue
+
+from queue import Queue
 from datetime import datetime
 from pkg_resources import resource_filename
 
 import paho.mqtt.client as paho
 
-from mqttwarn import __version__
 from mqttwarn.context import RuntimeContext, FunctionInvoker
 from mqttwarn.cron import PeriodicThread
 from mqttwarn.util import \
@@ -32,7 +30,7 @@ from mqttwarn.util import \
 try:
     import json
 except ImportError:
-    import simplejson as json
+    import simplejson as json  # type: ignore
 
 
 
@@ -53,24 +51,24 @@ logger = logging.getLogger(__name__)
 SCRIPTNAME = 'mqttwarn'
 
 # Global runtime context object
-context = None
+context: t.Optional[RuntimeContext] = None
 
 # Global configuration object
-cf = None
+cf: t.Optional[mqttwarn.configuration.Config] = None
 
 # Global handle to MQTT client
-mqttc = None
+mqttc: t.Optional[paho.Client] = None
 
 
 # Initialize processor queue
-q_in = Queue(maxsize=0)
+q_in: Queue = Queue(maxsize=0)
 exit_flag = False
 
 # Instances of PeriodicThread objects
 ptlist = {}
 
 # Instances of loaded service plugins
-service_plugins = {}
+service_plugins: t.Dict[str, t.Dict[str, t.Any]] = dict()
 
 
 # Class with helper functions which is passed to each plugin

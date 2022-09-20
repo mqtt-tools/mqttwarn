@@ -18,6 +18,9 @@ extend-exclude = [
   "./tests/etc/functions_bad.py"
 ]
 
+[tool.mypy]
+ignore_missing_imports = true
+
 
 # ==================
 # Test configuration
@@ -59,6 +62,7 @@ check-style = [
   {cmd="ruff tests"},
   {cmd="black --check tests"},
   {cmd="isort --check tests"},
+  {cmd="mypy --install-types --non-interactive mqttwarn/core.py"},
 ]
 test = [
   {cmd="pytest"},
