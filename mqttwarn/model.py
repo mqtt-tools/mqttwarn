@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# (c) 2021 The mqttwarn developers
+# (c) 2021-2022 The mqttwarn developers
 import dataclasses
 import platform
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 from mqttwarn import __version__
 
 
@@ -14,15 +14,15 @@ class ProcessorItem:
     A processor item for feeding information into service handlers.
     """
 
-    service: str = None
-    target: str = None
+    service: Optional[str] = None
+    target: Optional[str] = None
     config: Dict = field(default_factory=dict)
     addrs: List[Union[str, Dict[str, str]]] = field(default_factory=list)
-    priority: int = None
-    topic: str = None
-    title: str = None
-    message: Union[str, bytes] = None
-    data: Dict = None
+    priority: Optional[int] = None
+    topic: Optional[str] = None
+    title: Optional[str] = None
+    message: Optional[Union[str, bytes]] = None
+    data: Optional[Dict] = None
 
     def asdict(self):
         return dataclasses.asdict(self)
