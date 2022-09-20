@@ -524,6 +524,11 @@ def processor(worker_id=None):
 
 
 def load_services(services):
+
+    if services is None:
+        logger.warning("No services defined")
+        return
+
     for service in services:
         service_plugins[service] = {}
 
