@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- Fix job sorting by priority after migration to Python 3
+
 
 2022-08-22 0.29.1
 =================
