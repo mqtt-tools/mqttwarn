@@ -28,7 +28,7 @@ Install extras::
 
 You can also add multiple extras, all at once::
 
-    pip install --editable=.[asterisk,nsca,osxnotify,tootpaste,xmpp]
+    pip install --editable=.[asterisk,nsca,desktopnotify,tootpaste,xmpp]
 
 
 ************

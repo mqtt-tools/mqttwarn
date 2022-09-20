@@ -47,7 +47,7 @@ def plugin(srv, item):
         notify.send_sync(message=data['message'], title=data['title'],sound=playSound)
 
     except Exception as e:
-        srv.logging.warning("Invoking OSX-Notifier failed: %s" % e)
+        srv.logging.warning("Invoking desktop notifier failed: %s" % e)
         return False
 
     return True

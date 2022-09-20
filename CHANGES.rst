@@ -13,6 +13,11 @@ in progress
 - Improve documentation about logging on Docker
 - Improve launching with an additional set of ``--config`` arguments
 
+Breaking changes
+----------------
+- Rework and rename service plugin ``osxnotify`` to ``desktopnotify``, it
+  should work on all popular operating systems now. Thanks, @portalzine.
+
 
 2022-08-21 0.29.0
 =================

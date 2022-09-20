@@ -132,7 +132,7 @@ loglevel     = DEBUG
 functions = 'myfuncs.py'
 
 ; name the service providers you will be using.
-launch   = file, log, osxnotify, mysql, smtp
+launch   = file, log, desktopnotify, mysql, smtp
 
 ; Publish mqttwarn status information (retained)
 status_publish = True
@@ -363,7 +363,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [mythtv](#mythtv)
 * [nntp](#nntp)
 * [nsca](#nsca)
-* [osxnotify](#osxnotify)
+* [desktopnotify](#desktopnotify)
 * [osxsay](#osxsay)
 * [pastebinpub](#pastebinpub)
 * [pipe](#pipe)
@@ -2002,13 +2002,13 @@ def check_temperature(data):
 Requires:
 * [pynsca](https://github.com/djmitche/pynsca).
 
-### `osxnotify`
+### `desktopnotify`
 
-* Despite its name, it is a cross-platform desktop notifier, based on
-  https://github.com/samschott/desktop-notifier.
+It invokes desktop notifications, using the fine 
+[desktop-notifier](https://github.com/samschott/desktop-notifier).
 
 ```ini
-[config:osxnotify]
+[config:desktopnotify]
 ; title = Optional title; topic if not set
 ; sound = Default True [False] - Play sound? 
 targets = {
@@ -2023,7 +2023,7 @@ If the MQTT message is a JSON object, it will populate the notification title an
 }
 ```
 
-![osxnotify](assets/osxnotify.jpg)
+![desktopnotify](assets/desktopnotify.jpg)
 
 ### `osxsay`
 
@@ -3093,7 +3093,7 @@ format = "I'll have a {fruit} if it costs {price}"
 
 The result is:
 
-![OSX notifier](assets/osxnotify.jpg)
+![OSX notifier](assets/desktopnotify.jpg)
 
 You associate MQTT topic branches to applications in the configuration file (copy `mqttwarn.ini.sample` to `mqttwarn.ini` for use). In other words, you can accomplish, say, following mappings:
 
