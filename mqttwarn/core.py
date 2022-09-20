@@ -11,6 +11,7 @@ import time
 import socket
 import logging
 import threading
+from mqttwarn.model import StatusInformation
 try:
     from queue import Queue
 except ImportError:
@@ -677,10 +678,11 @@ def publish_status_information():
         logger.info(f"Publishing status information to {status_topic}")
 
         # Items are tuples of (subtopic, message)
+        si = StatusInformation()
         publications = [
-            ("version", __version__),
-            ("platform", sys.platform),
-            ("python/version", platform.python_version()),
+            ("version", si.mqttwarn_version),
+            ("platform", si.os_platform),
+            ("python/version", si.python_version),
         ]
         try:
             for publication in publications:
