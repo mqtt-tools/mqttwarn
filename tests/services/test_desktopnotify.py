@@ -21,9 +21,9 @@ def desktop_notifier_mock(mocker):
         yield notifier
 
 
-def test_osxnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
+def test_desktopnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
 
-    module = load_module_by_name("mqttwarn.services.osxnotify")
+    module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     item = Item(
         title="⚽ Notification title ⚽",
@@ -46,9 +46,9 @@ def test_osxnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
         assert "Sending desktop notification" in caplog.messages
 
 
-def test_osxnotify_vanilla_failure(desktop_notifier_mock, srv, caplog):
+def test_desktopnotify_vanilla_failure(desktop_notifier_mock, srv, caplog):
 
-    module = load_module_by_name("mqttwarn.services.osxnotify")
+    module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     item = Item(
         title="⚽ Notification title ⚽",
@@ -69,12 +69,12 @@ def test_osxnotify_vanilla_failure(desktop_notifier_mock, srv, caplog):
 
         assert outcome is False
         assert "Sending desktop notification" in caplog.messages
-        assert "Invoking OSX-Notifier failed: Something failed" in caplog.messages
+        assert "Invoking desktop notifier failed: Something failed" in caplog.messages
 
 
-def test_osxnotify_json_success(desktop_notifier_mock, srv, caplog):
+def test_desktopnotify_json_success(desktop_notifier_mock, srv, caplog):
 
-    module = load_module_by_name("mqttwarn.services.osxnotify")
+    module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     json_message = json.dumps(
         dict(
@@ -103,9 +103,9 @@ def test_osxnotify_json_success(desktop_notifier_mock, srv, caplog):
         assert "Sending desktop notification" in caplog.messages
 
 
-def test_osxnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
+def test_desktopnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
 
-    module = load_module_by_name("mqttwarn.services.osxnotify")
+    module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     item = Item(
         title="⚽ Notification title ⚽",

@@ -103,7 +103,7 @@ You can also add support for a specific service plugin::
 
 You can also add support for multiple services, all at once::
 
-    pip install --upgrade 'mqttwarn[apprise,asterisk,nsca,osxnotify,tootpaste,xmpp]'
+    pip install --upgrade 'mqttwarn[apprise,asterisk,nsca,desktopnotify,tootpaste,xmpp]'
 
 
 ***************

@@ -60,7 +60,7 @@ extras = {
     'nsca': [
         'pynsca>=1.6',
     ],
-    'osxnotify': [
+    'desktopnotify': [
         'desktop-notifier<4',
     ],
     'pastebinpub': [
