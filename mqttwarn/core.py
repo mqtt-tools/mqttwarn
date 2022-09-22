@@ -179,17 +179,17 @@ def on_connect(mosq, userdata, flags, result_code):
             mqttc.publish(cf.lwt, cf.lwt_alive, qos=0, retain=True)
 
     elif result_code == 1:
-        logger.info("Connection refused - unacceptable protocol version")
+        logger.error("Connection refused - unacceptable protocol version")
     elif result_code == 2:
-        logger.info("Connection refused - identifier rejected")
+        logger.error("Connection refused - identifier rejected")
     elif result_code == 3:
-        logger.info("Connection refused - server unavailable")
+        logger.error("Connection refused - server unavailable")
     elif result_code == 4:
-        logger.info("Connection refused - bad user name or password")
+        logger.error("Connection refused - bad user name or password")
     elif result_code == 5:
-        logger.info("Connection refused - not authorised")
+        logger.error("Connection refused - not authorised")
     else:
-        logger.warning("Connection failed - result code %d" % (result_code))
+        logger.error("Connection failed - result code %d" % (result_code))
 
 
 def on_disconnect(mosq, userdata, result_code):
