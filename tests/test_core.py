@@ -8,7 +8,7 @@ import tempfile
 from builtins import str
 
 import pytest
-from mqttwarn.core import decode_payload, make_service, render_template
+from mqttwarn.core import decode_payload, make_service, on_connect, render_template
 from tests import (
     configfile_empty_functions,
     configfile_full,
@@ -302,3 +302,15 @@ Timestamp............: 1234567890
 Original payload.....: {'foo': 'bar'}
 """.strip()
     )
+
+
+def test_on_connect(caplog):
+    for result_code in range(1, 6):
+        on_connect(mosq=None, userdata=None, flags=None, result_code=result_code)
+    assert caplog.record_tuples == [
+        ("mqttwarn.core", 40, "Connection refused - unacceptable protocol version"),
+        ("mqttwarn.core", 40, "Connection refused - identifier rejected"),
+        ("mqttwarn.core", 40, "Connection refused - server unavailable"),
+        ("mqttwarn.core", 40, "Connection refused - bad user name or password"),
+        ("mqttwarn.core", 40, "Connection refused - not authorised"),
+    ]
