@@ -36,8 +36,8 @@ def plugin(srv, item):
     msg['X-Mailer']     = srv.SCRIPTNAME
 
     if not smtp_addresses:
-        srv.logging.warn("Skipped sending SMTP notification to %s, "
-                         "no addresses configured" % (item.target))
+        srv.logging.warning("Skipped sending SMTP notification to %s, "
+                            "no addresses configured" % (item.target))
         return False
 
     try:
@@ -53,8 +53,8 @@ def plugin(srv, item):
         server.quit()
         srv.logging.debug("Successfully sent SMTP notification")
     except Exception as e:
-        srv.logging.warn("Error sending notification to SMTP recipient %s, addresses: %s. "
-                         "Exception: %s" % (item.target, smtp_addresses, e))
+        srv.logging.warning("Error sending notification to SMTP recipient %s, addresses: %s. "
+                            "Exception: %s" % (item.target, smtp_addresses, e))
         return False
 
     return True
