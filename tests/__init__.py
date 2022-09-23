@@ -3,6 +3,7 @@
 
 # Configuration- and function files used by the test harness
 configfile_full = "tests/etc/full.ini"
+configfile_invalid = "tests/etc/invalid.ini"
 configfile_cron_valid = "tests/etc/cron-valid.ini"
 configfile_cron_invalid = "tests/etc/cron-invalid.ini"
 configfile_dict_router = "tests/etc/dict-router.ini"
