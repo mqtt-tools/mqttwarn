@@ -2,6 +2,7 @@
 # (c) 2018-2021 The mqttwarn developers
 import threading
 
+import mqttwarn
 import paho
 from mqttwarn.configuration import load_configuration
 from mqttwarn.core import bootstrap, load_services, on_message, start_workers
@@ -10,8 +11,12 @@ from paho.mqtt.client import MQTTMessage
 
 def core_bootstrap(configfile=None):
     """
-    Bootstrap the core machinery without MQTT
+    Bootstrap the core machinery without MQTT.
     """
+
+    # If mqttwarn was already invoked beforehand, reset "exit flag".
+    # TODO: Get rid of global variables.
+    mqttwarn.core.exit_flag = False
 
     # Load configuration file
     config = load_configuration(configfile)
