@@ -30,9 +30,8 @@ from mqttwarn.util import \
 
 try:
     import json
-except ImportError:
+except ImportError:  # pragma: nocover
     import simplejson as json  # type: ignore
-
 
 
 HAVE_JINJA = True
@@ -240,7 +239,7 @@ def send_failover(reason, message):
 
 
 def send_to_targets(section, topic, payload):
-    if cf.has_section(section) == False:
+    if cf.has_section(section) is False:
         logger.warning("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
         return
 
@@ -250,15 +249,17 @@ def send_to_targets(section, topic, payload):
     dispatcher_dict = cf.getdict(section, 'targets')
     function_name = sanitize_function_name(context.get_config(section, 'targets'))
 
+    # `targets` is a function symbol.
     if function_name is not None:
         targetlist = context.get_topic_targets(section, topic, data)
         if not isinstance(targetlist, list):
             targetlist_type = type(targetlist)
-            logger.error('Topic target definition by function "{function_name}" ' \
-                         'in section "{section}" is empty or incorrect. Should be a list. ' \
+            logger.error('Topic target definition by function "{function_name}" '
+                         'in section "{section}" is empty or incorrect. Should be a list. '
                          'targetlist={targetlist}, type={targetlist_type}'.format(**locals()))
             return
 
+    # `targets` is a dictionary.
     elif isinstance(dispatcher_dict, dict):
         def get_key(item):
             # precede a key with the number of topic levels and then use reverse alphabetic sort order
@@ -519,8 +520,8 @@ def processor(worker_id=None):
                     service_logger_name = 'mqttwarn.services.{}'.format(service)
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
-            except Exception:
-                logger.exception(f"Invoking service '{service}' failed")
+            except Exception as ex:
+                logger.exception(f"Invoking service '{service}' failed: {ex}")
 
             if not notified:
                 logger.warning("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get('topic')))
@@ -661,10 +662,10 @@ def subscribe_forever():
 
         try:
             mqttc.loop_forever()
-        except socket.error:
-            pass
-        except:
-            # FIXME: add logging with trace
+        except socket.error as ex:
+            logger.exception(f"Connection to MQTT broker lost: {ex.__class__.__name__}({ex})")
+        except Exception as ex:
+            logger.exception(f"Connection to MQTT broker lost: {ex.__class__.__name__}({ex})")
             raise
 
         if not exit_flag:
@@ -731,8 +732,8 @@ def start_workers():
                 func = load_function(name=name, py_mod=cf.functions)
                 cron_options = parse_cron_options(val)
                 interval = cron_options['interval']
-                logger.debug('Scheduling function "{name}" as periodic task ' \
-                              'to run each {interval} seconds via [cron] section'.format(name=name, interval=interval))
+                logger.info("Scheduling periodic task '{name}' to run each "
+                            "{interval} seconds via [cron] section".format(name=name, interval=interval))
                 service = make_service(mqttc=mqttc, name='mqttwarn.cron')
                 ptlist[name] = PeriodicThread(callback=func, period=interval, name=name, srv=service, now=asbool(cron_options.get('now')))
                 ptlist[name].start()
@@ -747,7 +748,7 @@ def cleanup(signum=None, frame=None):
     in the event of a SIGTERM or SIGINT.
     """
     for ptname in ptlist:
-        logger.debug("Cancel %s timer" % ptname)
+        logger.info(f"Cancelling periodic task '{ptname}'")
         ptlist[ptname].cancel()
 
     logger.debug("Disconnecting from MQTT broker")
@@ -759,11 +760,13 @@ def cleanup(signum=None, frame=None):
     logger.info("Waiting for queue to drain")
     q_in.join()
 
-    # Send exit signal to subsystems _after_ queue was drained
+    # Send exit signal to subsystems _after_ queue was drained.
+    # TODO: Refactor this elsewhere.
     global exit_flag
     exit_flag = True
 
-    logger.debug("Exiting on signal %d", signum)
+    # TODO: Refactor this elsewhere.
+    logger.debug(f"Exiting on signal {signum}")
     sys.exit(signum)
 
 
