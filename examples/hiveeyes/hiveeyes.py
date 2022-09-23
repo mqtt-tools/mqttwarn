@@ -2,12 +2,11 @@
 # hiveeyes-schwarmalarm function extensions for mqttwarn
 # https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
 from builtins import object
-from past.builtins import cmp
 from builtins import str
 import re
 import json
 from datetime import datetime
-from pprint import pformat, pprint
+from pprint import pformat
 from collections import deque, defaultdict
 
 
@@ -185,6 +184,12 @@ def hiveeyes_schwarmalarm_filter(topic, message):
     to trigger notification only if delta is greater threshold.
     Also, perform data-loss bookkeeping.
     """
+
+    def cmp(a, b):
+        """
+        https://docs.python.org/3.0/whatsnew/3.0.html#ordering-comparisons
+        """
+        return (a > b) - (a < b)
 
     if not (topic.endswith('data.json') or topic.endswith('message-json')):
         return True
