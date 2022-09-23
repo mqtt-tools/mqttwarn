@@ -34,7 +34,7 @@ class RuntimeContext(object):
             if self.config.has_option(section, 'targets'):
                 sections.append(section)
             else:
-                logger.warn("Section `%s' has no targets defined" % section)
+                logger.warning("Section `%s' has no targets defined" % section)
         return sections
 
     def get_topic(self, section):
@@ -60,7 +60,7 @@ class RuntimeContext(object):
             try:
                 return self.invoker.filter(filterfunc, topic, payload, section)
             except Exception as e:
-                logger.warn("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, e))
+                logger.warning("Cannot invoke filter function %s defined in %s: %s" % (filterfunc, section, e))
         return False
 
     def get_topic_data(self, section, topic):
@@ -69,7 +69,7 @@ class RuntimeContext(object):
             try:
                 return self.invoker.datamap(name, topic)
             except Exception as e:
-                logger.warn("Cannot invoke datamap function %s defined in %s: %s" % (name, section, e))
+                logger.warning("Cannot invoke datamap function %s defined in %s: %s" % (name, section, e))
         return None
 
     def get_all_data(self, section, topic, data):
@@ -78,7 +78,7 @@ class RuntimeContext(object):
             try:
                 return self.invoker.alldata(name, topic, data)
             except Exception as e:
-                logger.warn("Cannot invoke alldata function %s defined in %s: %s" % (name, section, e))
+                logger.warning("Cannot invoke alldata function %s defined in %s: %s" % (name, section, e))
         return None
 
     def get_topic_targets(self, section, topic, data):
@@ -91,7 +91,7 @@ class RuntimeContext(object):
                 return self.invoker.topic_target_list(name, topic, data)
             except Exception as ex:
                 error = repr(ex)
-                logger.warn('Error invoking topic targets function "{name}" ' \
+                logger.warning('Error invoking topic targets function "{name}" ' \
                              'defined in section "{section}": {error}'.format(**locals()))
         return None
 
