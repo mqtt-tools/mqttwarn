@@ -603,11 +603,15 @@ def test_subscribe_forever_fails_socket_error(caplog, mocker):
 
     assert connect.mock_calls == [call(), call().loop_forever()]
 
-    assert caplog.record_tuples == [
-        ("mqttwarn.core", 40, "Connection to MQTT broker lost: OSError(Something failed)"),
-    ] or caplog.record_tuples == [
-        ("mqttwarn.core", 30, "MQTT server disconnected, trying to reconnect each 5 seconds"),
-    ]
+    assert (
+        "mqttwarn.core",
+        40,
+        "Connection to MQTT broker lost: OSError(Something failed)",
+    ) in caplog.record_tuples or (
+        "mqttwarn.core",
+        30,
+        "MQTT server disconnected, trying to reconnect each 5 seconds",
+    ) in caplog.record_tuples
 
 
 def test_subscribe_forever_fails_unknown_error(caplog, mocker):
