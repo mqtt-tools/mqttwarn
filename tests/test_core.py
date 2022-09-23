@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2018-2022 The mqttwarn developers
+import configparser
 import io
 import json
 import logging
@@ -26,6 +27,7 @@ from tests import (
     configfile_dict_router,
     configfile_empty_functions,
     configfile_full,
+    configfile_invalid,
     configfile_no_functions,
     configfile_no_targets,
     configfile_service_loading,
@@ -690,3 +692,13 @@ def test_cron_without_functions(caplog):
     with pytest.raises(AssertionError) as ex:
         core_bootstrap(configfile=configfile_cron_invalid)
     assert ex.match("Python module must be given")
+
+
+def test_invalid_config(caplog):
+    """
+    Verify that mqttwarn croaks when using an invalid configuration file.
+    """
+
+    with pytest.raises(configparser.ParsingError) as ex:
+        core_bootstrap(configfile=configfile_invalid)
+    assert ex.match("Source contains parsing errors")
