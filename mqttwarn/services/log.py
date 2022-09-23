@@ -9,6 +9,8 @@ __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-
 def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
+    assert isinstance(item.addrs, list), "`item.addrs` is not a list"
+
     level = item.addrs[0]
 
     text = item.message
@@ -24,7 +26,7 @@ def plugin(srv, item):
     try:
         levels[level]("%s", text)
     except Exception as e:
-        srv.logging.warn("Cannot invoke service log with level `%s': %s" % (level, e))
+        srv.logging.error("Cannot invoke service log with level `%s': %s" % (level, e))
         return False
 
     return True
