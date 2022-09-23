@@ -9,6 +9,7 @@ import socket
 import tempfile
 import threading
 from builtins import str
+from concurrent.futures import ThreadPoolExecutor
 from unittest import mock
 from unittest.mock import call
 
@@ -627,10 +628,14 @@ def test_subscribe_forever_fails_unknown_error(caplog, mocker):
     # Invoke `subscribe_forever` and terminate right away using `exit_flag`.
     connect = mocker.patch("mqttwarn.core.connect")
     connect.return_value = mock.MagicMock(**{"loop_forever.side_effect": ValueError("Something failed")})
-    t = threading.Thread(target=subscribe_forever)
-    t.start()
-    mocker.patch("mqttwarn.core.exit_flag", True)
-    t.join()
+
+    # Invoke `subscribe_forever` in a different thread, but get hold of its exception through a `Future`.
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(subscribe_forever)
+        mocker.patch("mqttwarn.core.exit_flag", True)
+        with pytest.raises(ValueError) as ex:
+            future.result(timeout=1)
+        assert ex.match("Something failed")
 
     assert connect.mock_calls == [call(), call().loop_forever()]
 
