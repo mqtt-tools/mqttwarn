@@ -281,26 +281,6 @@ When a message is received at a topic with more than one matching section it wil
 directed to the targets in all matching sections.  For consistency, it's a good practice
 to explicitly provide `topic` options to all such sections.
 
-Targets can be also defined as a dictionary containing the pairs of topic and targets. In that case message matching the section can be dispatched in more flexible ways to selected targets. Consider the following example:
-
-```ini
-[#]
-targets = {
-  '/#': 'file:0',
-  '/test/#': 'file:1',
-  '/test/out/#': 'file:2',
-  '/test/out/+': 'file:3',
-  '/test/out/+/+': 'file:4',
-  '/test/out/+/state': 'file:5',
-  '/test/out/FL_power_consumption/state': [ 'file:6', 'file:7' ],
-  '/test/out/BR_ambient_power_sensor/state': 'file:8',
-}
-```
-
-With the message dispatching configuration the message is dispatched to the targets matching the most specific topic. If the message is received at `/test/out/FL_power_consumption/state` it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state` will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
-The dispatcher mechanism is always trying to find the most specific match.
-It allows to define the wide topic with default targets while some more specific topic can be handled differently. It gives additional flexibility in a message routing.
-
 Each of these sections has a number of optional (`O`) or mandatory (`M`)
 options:
 
@@ -317,6 +297,37 @@ options:
 | `image`       |   O    | used by certain targets (see below). May be func()  |
 | `template`    |   O    | use Jinja2 template instead of `format`        |
 | `qos`         |   O    | MQTT QoS for subscription (dflt: 0)            |
+
+
+##### Targets as dictionary
+
+Targets can be also defined as a dictionary containing the pairs of topic and targets.
+In that case message matching the section can be dispatched in more flexible ways to
+selected targets. Consider the following example:
+
+```ini
+[#]
+targets = {
+  '/#': 'file:0',
+  '/test/#': 'file:1',
+  '/test/out/#': 'file:2',
+  '/test/out/+': 'file:3',
+  '/test/out/+/+': 'file:4',
+  '/test/out/+/state': 'file:5',
+  '/test/out/FL_power_consumption/state': [ 'file:6', 'file:7' ],
+  '/test/out/BR_ambient_power_sensor/state': 'file:8',
+  }
+```
+**Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
+
+With the message dispatching configuration the message is dispatched to the targets matching
+the most specific topic. If the message is received at `/test/out/FL_power_consumption/state`
+it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state`
+will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
+
+The dispatcher mechanism is always trying to find the most specific match. It allows to define
+the wide topic with default targets while some more specific topic can be handled differently.
+It gives additional flexibility in a message routing.
 
 
 ## Supported Notification Services
