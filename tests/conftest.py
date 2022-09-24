@@ -1,4 +1,5 @@
 import importlib
+import shutil
 import sys
 
 import pytest
@@ -30,3 +31,18 @@ def without_jinja():
     # Restore `jinja2` package.
     sys.modules["jinja2"] = backup
     importlib.reload(sys.modules["mqttwarn.core"])
+
+
+@pytest.fixture
+def mqttwarn_bin():
+    """
+    Find `mqttwarn` executable, located within the inline virtualenv.
+    """
+
+    path_candidates = [None, ".venv/bin", r".venv\Scripts"]
+    for path_candidate in path_candidates:
+        mqttwarn_bin = shutil.which("mqttwarn", path=path_candidate)
+        if mqttwarn_bin is not None:
+            return mqttwarn_bin
+
+    raise FileNotFoundError(f"Unable to discover 'mqttwarn' executable within {path_candidates}")

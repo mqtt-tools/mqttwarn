@@ -1,15 +1,24 @@
 import os
-import shlex
-import shutil
 import sys
+from unittest.mock import patch
 
 import pytest
-from mqttwarn.commands import run
+from tests.util import invoke_command
 
 
-def test_command_dump_config(capfd):
+def test_mqttwarn_main(capsys):
+    """
+    Test the `mqttwarn.__main__` module.
+    """
+    with patch("sys.argv", "mqttwarn -h"):
+        with pytest.raises(SystemExit):
+            import mqttwarn.__main__  # noqa:F401
+    assert "Usage:" in capsys.readouterr().out
 
-    command = f"{find_mqttwarn()} make-config"
+
+def test_command_dump_config(mqttwarn_bin, capfd):
+
+    command = f"{mqttwarn_bin} make-config"
     stdout, stderr = invoke_command(capfd, command)
 
     os.system(command)
@@ -18,9 +27,9 @@ def test_command_dump_config(capfd):
     assert 'mqttwarn example configuration file "mqttwarn.ini"' in stdout, stdout
 
 
-def test_command_dump_samplefuncs(capfd):
+def test_command_dump_samplefuncs(mqttwarn_bin, capfd):
 
-    command = f"{find_mqttwarn()} make-samplefuncs"
+    command = f"{mqttwarn_bin} make-samplefuncs"
     stdout, stderr = invoke_command(capfd, command)
     assert "# mqttwarn example function extensions" in stdout, stdout
 
@@ -30,14 +39,14 @@ def test_command_dump_samplefuncs(capfd):
     assert "# mqttwarn example function extensions" in stdout, stdout
 
 
-def test_command_standalone_plugin(capfd, caplog):
+def test_command_standalone_plugin(mqttwarn_bin, capfd, caplog):
 
     # FIXME: Make it work on Windows.
     if sys.platform.startswith("win"):
         raise pytest.xfail("Skipping test, fails on Windows")
 
     command = [
-        find_mqttwarn(),
+        mqttwarn_bin,
         "--plugin=log",
         """--options={"message": "Hello world", "addrs": ["crit"]}""",
     ]
@@ -49,13 +58,13 @@ def test_command_standalone_plugin(capfd, caplog):
     assert "Plugin response: True" in caplog.messages
 
 
-def test_command_dump_config_real(capfd):
+def test_command_dump_config_real(mqttwarn_bin, capfd):
     """
     Proof that the configuration scaffolding will write files with UTF-8 encoding on all platforms.
     """
 
     try:
-        command = f"{find_mqttwarn()} make-config > foobar.ini"
+        command = f"{mqttwarn_bin} make-config > foobar.ini"
         exitcode = os.system(command) % 255
         assert exitcode == 0, f"Invoking command '{command}' failed"
 
@@ -64,28 +73,3 @@ def test_command_dump_config_real(capfd):
 
     finally:
         os.unlink("foobar.ini")
-
-
-def find_mqttwarn():
-    """
-    Find `mqttwarn` executable, located within the inline virtualenv.
-    """
-
-    path_candidates = [None, ".venv/bin", r".venv\Scripts"]
-    for path_candidate in path_candidates:
-        mqttwarn_bin = shutil.which("mqttwarn", path=path_candidate)
-        if mqttwarn_bin is not None:
-            return mqttwarn_bin
-
-    raise FileNotFoundError(f"Unable to discover 'mqttwarn' executable within {path_candidates}")
-
-
-def invoke_command(capfd, command):
-    if not isinstance(command, list):
-        command = shlex.split(command)
-    sys.argv = command
-    run()
-    stdouterr = capfd.readouterr()
-    stdout = stdouterr.out
-    stderr = stdouterr.err
-    return stdout, stderr
