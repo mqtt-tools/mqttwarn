@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
+# (c) 2014-2022 The mqttwarn developers
 from builtins import str
+import hashlib
 import os
 import re
 import imp
@@ -8,13 +9,6 @@ import json
 import string
 import pkg_resources
 from six import string_types
-
-try:
-    import hashlib
-    md = hashlib.md5
-except ImportError:
-    import md5
-    md = md5.new
 
 
 class Struct:
@@ -158,7 +152,7 @@ def load_module_from_file(path):
     """
     try:
         fp = open(path, 'rb')
-        digest = md(path.encode('utf-8')).hexdigest()
+        digest = hashlib.md5(path.encode('utf-8')).hexdigest()
         return imp.load_source(digest, path, fp)
     finally:
         try:
@@ -197,10 +191,11 @@ def import_module(name, path=None):
 
     if remaining_names is None:
         return module
+
     if hasattr(module, remaining_names):
         return getattr(module, remaining_names)
-
-    return import_module(remaining_names, path=module.__path__)
+    else:
+        return import_module(remaining_names, path=module.__path__)
 
 
 def load_functions(filepath=None):
