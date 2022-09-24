@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-# (c) 2018-2019 The mqttwarn developers
+# (c) 2018-2022 The mqttwarn developers
 from __future__ import division
 
+import py_compile
 import re
 import time
 from builtins import str
@@ -12,6 +13,7 @@ from mqttwarn.util import (
     Struct,
     asbool,
     get_resource_content,
+    import_module,
     load_function,
     load_functions,
     load_module_by_name,
@@ -142,6 +144,20 @@ def test_load_functions():
         load_functions(filepath=funcfile_bad)
 
 
+def test_load_functions_pyc(tmp_path):
+    """
+    Verify loading valid byte-compiled functions file (.pyc) succeeds.
+
+    https://docs.python.org/3/library/py_compile.html
+    """
+
+    funcfile_pyc = str(tmp_path.joinpath("funcfile.pyc"))
+    py_compile.compile(file=funcfile_good, cfile=funcfile_pyc)
+
+    py_mod = load_functions(filepath=funcfile_pyc)
+    assert py_mod is not None
+
+
 def test_load_function():
 
     # Load valid functions file
@@ -164,3 +180,14 @@ def test_load_function():
 def test_get_resource_content():
     payload = get_resource_content("mqttwarn.examples", "basic/mqttwarn.ini")
     assert "[defaults]" in payload
+
+
+def test_import_module():
+    """
+    Proof that the `import_module` function works as intended.
+    """
+    symbol = import_module("mqttwarn.services.amqp")
+    assert symbol.__name__ == "amqp"
+
+    symbol = import_module("mqttwarn.services.amqp.plugin")
+    assert symbol.__name__ == "plugin"
