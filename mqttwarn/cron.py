@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
+# (c) 2014-2022 The mqttwarn developers
 from builtins import object
 import logging
 import threading
 
 logger = logging.getLogger(__name__)
 
+
 # This class, shamelessly stolen from https://gist.github.com/cypreess/5481681
-# The `srv' bits are added for mqttwarn
-class PeriodicThread(object):
+# The `srv` bits are added for mqttwarn
+class PeriodicThread:
     """
     Python periodic Thread using Timer with instant cancellation
     """
@@ -31,7 +32,7 @@ class PeriodicThread(object):
         """
 
         # Schedule periodic task to run right now
-        if self.now == True:
+        if self.now is True:
             self._run()
 
         # Schedule periodic task with designated interval
@@ -51,8 +52,8 @@ class PeriodicThread(object):
         """
         try:
             self.run()
-        except Exception as e:
-            logger.exception("Exception in running periodic thread")
+        except Exception:
+            logger.exception(f"Exception while running periodic thread '{self.name}'")
         finally:
             with self.schedule_lock:
                 if not self.stop:
