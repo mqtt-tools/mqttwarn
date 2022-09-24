@@ -90,7 +90,8 @@ def test_decode_payload_json(caplog):
         assert outcome["baz"] == "qux"
 
 
-def test_decode_payload_datamap(caplog):
+@pytest.mark.parametrize("section", ["test/datamap-1", "test/datamap-2"])
+def test_decode_payload_datamap(section, caplog):
 
     with caplog.at_level(logging.DEBUG):
 
@@ -98,7 +99,7 @@ def test_decode_payload_datamap(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Proof that decoding a valid JSON payload decodes it appropriately.
-        outcome = decode_payload(section="test/datamap", topic="bar", payload='{"baz": "qux"}')
+        outcome = decode_payload(section=section, topic="bar", payload='{"baz": "qux"}')
         assert outcome["topic"] == "bar"
         assert outcome["baz"] == "qux"
         assert outcome["datamap-key"] == "datamap-value"
@@ -118,7 +119,8 @@ def test_decode_payload_alldata(caplog):
         assert outcome["alldata-key"] == "alldata-value"
 
 
-def test_filter_valid_accept(caplog):
+@pytest.mark.parametrize("topic", ["test/filter-1", "test/filter-2"])
+def test_filter_valid_accept(topic, caplog):
     """
     Verify that applying a filter function works.
     """
@@ -129,22 +131,23 @@ def test_filter_valid_accept(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Signal mocked MQTT message to the core machinery for processing.
-        send_message(topic="test/filter", payload="accept")
+        send_message(topic=topic, payload="accept")
 
         # Proof that the message has been routed to the "log" plugin properly.
-        assert ("mqttwarn.core", 10, "Message received on test/filter: accept") in caplog.record_tuples
+        assert ("mqttwarn.core", 10, f"Message received on {topic}: accept") in caplog.record_tuples
         assert (
             "mqttwarn.core",
             10,
-            "Section [test/filter] matches message on test/filter, processing it",
+            f"Section [{topic}] matches message on {topic}, processing it",
         ) in caplog.record_tuples
 
-        assert ("mqttwarn.core", 10, "New `log:info' job: test/filter") in caplog.record_tuples
+        assert ("mqttwarn.core", 10, f"New `log:info' job: {topic}") in caplog.record_tuples
         assert ("mqttwarn.core", 20, "Invoking service plugin for `log'") in caplog.record_tuples
         assert ("mqttwarn.services.log", 20, "accept") in caplog.record_tuples
 
 
-def test_filter_valid_reject(caplog):
+@pytest.mark.parametrize("topic", ["test/filter-1", "test/filter-2"])
+def test_filter_valid_reject(topic, caplog):
     """
     Verify that applying a filter function works.
     """
@@ -155,20 +158,20 @@ def test_filter_valid_reject(caplog):
         core_bootstrap(configfile=configfile_full)
 
         # Signal mocked MQTT message to the core machinery for processing.
-        send_message(topic="test/filter", payload="reject")
+        send_message(topic=topic, payload="reject")
 
         # Proof that the message has been routed to the "log" plugin properly.
-        assert ("mqttwarn.core", 10, "Message received on test/filter: reject") in caplog.record_tuples
+        assert ("mqttwarn.core", 10, f"Message received on {topic}: reject") in caplog.record_tuples
         assert (
             "mqttwarn.core",
             10,
-            "Section [test/filter] matches message on test/filter, processing it",
+            f"Section [{topic}] matches message on {topic}, processing it",
         ) in caplog.record_tuples
 
         assert (
             "mqttwarn.core",
             20,
-            "Filter in section [test/filter] has skipped message on test/filter",
+            f"Filter in section [{topic}] has skipped message on {topic}",
         ) in caplog.record_tuples
 
 
@@ -303,7 +306,7 @@ def test_xform_func(caplog):
 
         # Proof that the message has been routed to the "log" plugin properly
         assert "'value': 42.42" in caplog.text, caplog.text
-        assert "'datamap-key': 'datamap-value'" in caplog.text, caplog.text
+        assert "'xform-key': 'xform-value'" in caplog.text, caplog.text
 
 
 def test_config_no_functions(caplog):
