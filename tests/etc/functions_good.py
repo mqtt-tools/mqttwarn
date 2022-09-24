@@ -27,6 +27,11 @@ def alldata_dummy(topic):
     return {"alldata-key": "alldata-value"}
 
 
+def filter_dummy(topic, message, section, srv):
+    do_skip = "reject" in message
+    return do_skip
+
+
 def get_targets_valid(srv, topic, data):
     return ["log:info"]
 

@@ -118,6 +118,60 @@ def test_decode_payload_alldata(caplog):
         assert outcome["alldata-key"] == "alldata-value"
 
 
+def test_filter_valid_accept(caplog):
+    """
+    Verify that applying a filter function works.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT.
+        core_bootstrap(configfile=configfile_full)
+
+        # Signal mocked MQTT message to the core machinery for processing.
+        send_message(topic="test/filter", payload="accept")
+
+        # Proof that the message has been routed to the "log" plugin properly.
+        assert ("mqttwarn.core", 10, "Message received on test/filter: accept") in caplog.record_tuples
+        assert (
+            "mqttwarn.core",
+            10,
+            "Section [test/filter] matches message on test/filter, processing it",
+        ) in caplog.record_tuples
+
+        assert ("mqttwarn.core", 10, "New `log:info' job: test/filter") in caplog.record_tuples
+        assert ("mqttwarn.core", 20, "Invoking service plugin for `log'") in caplog.record_tuples
+        assert ("mqttwarn.services.log", 20, "accept") in caplog.record_tuples
+
+
+def test_filter_valid_reject(caplog):
+    """
+    Verify that applying a filter function works.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT.
+        core_bootstrap(configfile=configfile_full)
+
+        # Signal mocked MQTT message to the core machinery for processing.
+        send_message(topic="test/filter", payload="reject")
+
+        # Proof that the message has been routed to the "log" plugin properly.
+        assert ("mqttwarn.core", 10, "Message received on test/filter: reject") in caplog.record_tuples
+        assert (
+            "mqttwarn.core",
+            10,
+            "Section [test/filter] matches message on test/filter, processing it",
+        ) in caplog.record_tuples
+
+        assert (
+            "mqttwarn.core",
+            20,
+            "Filter in section [test/filter] has skipped message on test/filter",
+        ) in caplog.record_tuples
+
+
 def test_message_log(caplog):
     """
     Submit a message to the "log" plugin and proof
