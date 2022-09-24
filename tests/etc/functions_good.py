@@ -15,19 +15,28 @@ def cronfunc(srv):
 
 
 def xform_func(data):
-    data["datamap-key"] = "datamap-value"
+    data["xform-key"] = "xform-value"
     return data
 
 
-def datamap_dummy(topic):
+def datamap_dummy_v1(topic):
     return {"datamap-key": "datamap-value"}
 
 
-def alldata_dummy(topic):
+def datamap_dummy_v2(topic, srv):
+    return {"datamap-key": "datamap-value"}
+
+
+def alldata_dummy(topic, data, srv):
     return {"alldata-key": "alldata-value"}
 
 
-def filter_dummy(topic, message, section, srv):
+def filter_dummy_v1(topic, message):
+    do_skip = "reject" in message
+    return do_skip
+
+
+def filter_dummy_v2(topic, message, section, srv):
     do_skip = "reject" in message
     return do_skip
 
