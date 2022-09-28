@@ -549,6 +549,28 @@ def test_targets_function_broken(caplog):
         ) in caplog.record_tuples
 
 
+def test_targets_function_error(caplog):
+    """
+    Verify that mqttwarn warns correctly when resolving the targets using a function raises an exception.
+    """
+
+    with caplog.at_level(logging.DEBUG):
+
+        # Bootstrap the core machinery without MQTT.
+        core_bootstrap(configfile=configfile_full)
+
+        # Signal mocked MQTT message to the core machinery for processing.
+        send_message(topic="test/targets-function-error", payload="foobar")
+
+        # Proof that the error appears in the log output.
+        assert (
+            "mqttwarn.context",
+            30,
+            'Error invoking topic targets function "get_targets_error" defined in '
+            """section "test/targets-function-error": ValueError('Something failed')""",
+        ) in caplog.record_tuples
+
+
 def test_targets_dictionary_valid(caplog):
     """
     Verify that specifying the targets using a dictionary works.

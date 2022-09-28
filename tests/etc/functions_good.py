@@ -51,3 +51,7 @@ def get_targets_invalid(srv, topic, data):
 
 def get_targets_broken(srv, topic, data):
     return "broken"
+
+
+def get_targets_error(srv, topic, data):
+    raise ValueError("Something failed")
