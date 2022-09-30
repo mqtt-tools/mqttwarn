@@ -186,8 +186,8 @@ def test_import_module():
     """
     Proof that the `import_module` function works as intended.
     """
-    symbol = import_module("mqttwarn.services.amqp")
-    assert symbol.__name__ == "amqp"
+    symbol = import_module("mqttwarn.services.log")
+    assert symbol.__name__ == "log"
 
-    symbol = import_module("mqttwarn.services.amqp.plugin")
+    symbol = import_module("mqttwarn.services.log.plugin")
     assert symbol.__name__ == "plugin"
