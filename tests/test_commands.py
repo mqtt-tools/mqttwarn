@@ -1,22 +1,69 @@
+# -*- coding: utf-8 -*-
+# (c) 2018-2022 The mqttwarn developers
 import os
 import sys
-from unittest.mock import patch
+from unittest import mock
+from unittest.mock import Mock, patch
 
+import docopt
+import mqttwarn.commands
 import pytest
+from mqttwarn.configuration import Config
+from surrogate import surrogate
 from tests.util import invoke_command
 
 
-def test_mqttwarn_main(capsys):
+def test_mqttwarn_main_void(capsys):
     """
     Test the `mqttwarn.__main__` module.
     """
-    with patch("sys.argv", "mqttwarn -h"):
+    with patch("sys.argv", "foobar"):
+        with pytest.raises(docopt.DocoptExit) as ex:
+            import mqttwarn.__main__  # noqa:F401
+        assert ex.match("Usage:")
+
+
+def test_mqttwarn_main_help(capsys):
+    """
+    Test the `mqttwarn.__main__` module with the `-h` option.
+    """
+    with patch("sys.argv", ["mqttwarn", "-h"]):
         with pytest.raises(SystemExit):
             import mqttwarn.__main__  # noqa:F401
     assert "Usage:" in capsys.readouterr().out
 
 
+def test_run_mqttwarn(mocker, caplog):
+    """
+    Verify that `mqttwarn.commands.run_mqttwarn` works as expected.
+    """
+    mocker.patch("os.environ", {"MQTTWARNINI": "tests/etc/no-functions.ini"})
+    mocker.patch("sys.argv", ["mqttwarn"])
+    mocker.patch("mqttwarn.commands.subscribe_forever")
+    mqttwarn.commands.run_mqttwarn()
+
+    assert caplog.messages == [
+        "Starting mqttwarn",
+        "Log level is DEBUG",
+    ]
+
+
+def test_run(mocker, caplog):
+    """
+    Verify that `mqttwarn.commands.run` works as expected.
+    """
+    mocker.patch("sys.argv", ["mqttwarn"])
+    run_mqttwarn: Mock = mocker.patch("mqttwarn.commands.run_mqttwarn")
+    mqttwarn.commands.run()
+
+    run_mqttwarn.assert_called_once()
+    assert caplog.messages == []
+
+
 def test_command_dump_config(mqttwarn_bin, capfd):
+    """
+    Verify that `mqttwarn make-config` works as expected.
+    """
 
     command = f"{mqttwarn_bin} make-config"
     stdout, stderr = invoke_command(capfd, command)
@@ -28,6 +75,9 @@ def test_command_dump_config(mqttwarn_bin, capfd):
 
 
 def test_command_dump_samplefuncs(mqttwarn_bin, capfd):
+    """
+    Verify that `mqttwarn make-samplefuncs` works as expected.
+    """
 
     command = f"{mqttwarn_bin} make-samplefuncs"
     stdout, stderr = invoke_command(capfd, command)
@@ -40,6 +90,9 @@ def test_command_dump_samplefuncs(mqttwarn_bin, capfd):
 
 
 def test_command_standalone_plugin(mqttwarn_bin, capfd, caplog):
+    """
+    Verify that invoking a plugin standalone from the command line works.
+    """
 
     # FIXME: Make it work on Windows.
     if sys.platform.startswith("win"):
@@ -49,6 +102,35 @@ def test_command_standalone_plugin(mqttwarn_bin, capfd, caplog):
         mqttwarn_bin,
         "--plugin=log",
         """--options={"message": "Hello world", "addrs": ["crit"]}""",
+        """--config={"foo": "bar"}""",
+    ]
+    stdout, stderr = invoke_command(capfd, command)
+
+    assert 'Running service plugin "log" with options' in caplog.text
+    assert 'Successfully loaded service "log"' in caplog.messages
+    assert "Hello world" in caplog.messages
+    assert "Plugin response: True" in caplog.messages
+
+
+def test_command_standalone_plugin_with_configfile(mqttwarn_bin, tmp_path, capfd, caplog):
+    """
+    Verify that invoking a plugin standalone from the command line works.
+    This time, also use a `--config-file` option.
+    """
+
+    # FIXME: Make it work on Windows.
+    if sys.platform.startswith("win"):
+        raise pytest.xfail("Skipping test, fails on Windows")
+
+    ini_file = tmp_path.joinpath("empty.ini")
+    ini_file.touch()
+
+    command = [
+        mqttwarn_bin,
+        "--plugin=log",
+        f"--config-file={ini_file}",
+        '--config={"foo": "bar"}',
+        '--options={"message": "Hello world", "addrs": ["crit"]}',
     ]
     stdout, stderr = invoke_command(capfd, command)
 
@@ -73,3 +155,41 @@ def test_command_dump_config_real(mqttwarn_bin, capfd):
 
     finally:
         os.unlink("foobar.ini")
+
+
+def test_setup_logging_default(mocker):
+    """
+    Verify the default behavior of the `setup_logging` function.
+    """
+    config = Config()
+
+    with surrogate("logging"):
+        logging_mock: Mock = mocker.patch("logging.basicConfig")
+        mqttwarn.commands.setup_logging(config)
+        logging_mock.assert_called_with(
+            format="%(asctime)-15s %(levelname)-8s [%(name)-26s] %(message)s", level=10, stream=mock.ANY
+        )
+
+
+def test_setup_logging_no_logfile():
+    """
+    Verify the behavior of the `setup_logging` function, when the `logfile` setting is empty.
+    """
+    config = Config()
+    config.logfile = ""
+    mqttwarn.commands.setup_logging(config)
+
+
+def test_setup_logging_logfile_without_protocol(mocker):
+    """
+    Verify the behavior of the `setup_logging` function, when the `logfile` setting is given without protocol.
+    """
+    config = Config()
+    config.logfile = "sys.stderr"
+
+    with surrogate("logging"):
+        logging_mock: Mock = mocker.patch("logging.basicConfig")
+        mqttwarn.commands.setup_logging(config)
+        logging_mock.assert_called_with(
+            filename="sys.stderr", format="%(asctime)-15s %(levelname)-8s [%(name)-26s] %(message)s", level=10
+        )

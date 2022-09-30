@@ -13,7 +13,7 @@ from mqttwarn.configuration import load_configuration
 from mqttwarn.core import bootstrap, connect
 from mqttwarn.model import StatusInformation
 from pytest_mqtt import MqttMessage
-from tests import configfile_no_functions, configfile_status_publish
+from tests import configfile_no_functions
 from tests.util import delay, mqtt_process
 
 if os.getenv("GITHUB_ACTIONS") == "true" and sys.platform != "linux":
@@ -27,16 +27,25 @@ pytestmark = pytest.mark.e2e
 capmqtt_decode_utf8 = True
 
 
-def test_system_status_publish(mosquitto, caplog, capmqtt):
+def test_system_status_publish(mosquitto, tmp_ini, caplog, capmqtt):
     """
     A full system test verifying the `status_publish` feature.
     It approves "Does mqttwarn boot and emit system messages to `mqttwarn/$SYS` correctly?".
     """
 
+    tmp_ini.write_text(
+        """
+[defaults]
+; Publish mqttwarn status information (retained)
+status_publish = True
+status_topic = mqttwarn-testdrive/$SYS
+    """
+    )
+
     with caplog.at_level(logging.DEBUG):
 
         # Bootstrap the core machinery without MQTT.
-        config = load_configuration(configfile=configfile_status_publish)
+        config = load_configuration(configfile=tmp_ini)
         bootstrap(config=config)
 
         # Add MQTT.
