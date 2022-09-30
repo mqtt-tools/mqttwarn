@@ -199,6 +199,7 @@ def on_disconnect(mosq, userdata, result_code):
         logger.info("Clean disconnection from broker")
     else:
         send_failover("brokerdisconnected", "Broker connection lost. Will attempt to reconnect in 5s")
+        # TODO: Review this.
         time.sleep(5)
 
 
@@ -240,7 +241,7 @@ def send_failover(reason, message):
 
 def send_to_targets(section, topic, payload):
     if cf.has_section(section) is False:
-        logger.warning("Section [%s] does not exist in your INI file, skipping message on %s" % (section, topic))
+        logger.warning("Section [%s] does not exist in your INI file, skipping message on topic '%s'" % (section, topic))
         return
 
     # decode raw payload into transformation data
@@ -287,11 +288,15 @@ def send_to_targets(section, topic, payload):
             # Not found then no action. This could be configured intentionally.
             logger.debug("Dispatcher definition does not contain matching topic/target pair in section [%s]" % section)
             return
+
     else:
         targetlist = cf.getlist(section, 'targets')
+
+        # Exit if `targets` is not a `list`.
+        # TODO: Not tested yet. How can this code be reached?
         if not isinstance(targetlist, list):
-            # if targets is neither dict nor list
-            logger.error("Target definition in section [%s] is incorrect, should be a list." % section)
+            logger.error("Target definition in section [%s] is incorrect, should be dictionary or list." % section)
+            # TODO: Review this.
             cleanup(0)
             return
 
@@ -304,28 +309,28 @@ def send_to_targets(section, topic, payload):
             targetlist_resolved.append(target)
         except Exception as ex:
             error = repr(ex)
-            logger.error('Cannot interpolate transformation data into topic target "{target}": {error}. ' \
-                          'section={section}, topic={topic}, payload={payload}, data={data}'.format(**locals()))
+            logger.error(f"Cannot interpolate transformation data into topic target '{target}': {error}. "
+                         f"section={section}, topic={topic}, payload={payload}, data={data}")
     targetlist = targetlist_resolved
 
-    for t in targetlist:
-        logger.debug("Message on %s going to %s" % (topic, t))
+    for item in targetlist:
+        logger.debug("Message on %s going to %s" % (topic, item))
         # Each target is either "service" or "service:target"
         # If no target specified then notify ALL targets
-        service = t
+        service = item
         target = None
 
         # Check if this is for a specific target
-        if t.find(':') != -1:
+        if item.find(':') != -1:
             try:
-                service, target = t.split(':', 2)
+                service, target = item.split(':', 2)
             except:
-                logger.warning("Invalid target %s - should be 'service:target'" % (t))
+                logger.warning("Invalid target %s - should be 'service:target'" % (item))
                 continue
 
         # skip targets with invalid services
         if service not in service_plugins:
-            logger.error("Invalid configuration: topic '%s' points to non-existing service '%s'" % (topic, service))
+            logger.error("Invalid configuration: Topic '%s' points to non-existing service '%s'" % (topic, service))
             continue
 
         sendtos = None
@@ -591,6 +596,7 @@ def load_services(services):
 
         if not success:
             logger.critical('Unable to load service "{}"'.format(service))
+            # TODO: Review this.
             sys.exit(1)
 
 
@@ -606,6 +612,7 @@ def connect():
         services = cf.getlist('defaults', 'launch')
     except:
         logger.error("No services configured, aborting")
+        # TODO: Review this.
         sys.exit(2)
 
     load_services(services)
@@ -630,7 +637,7 @@ def connect():
     # Delays will be: 3, 6, 12, 24, 30, 30, etc.
     # mqttc.reconnect_delay_set(delay=3, delay_max=30, exponential_backoff=True)
 
-    if cf.tls == True:
+    if cf.tls is True:
         mqttc.tls_set(cf.ca_certs, cf.certfile, cf.keyfile, tls_version=cf.tls_version, ciphers=None)
 
     if cf.tls_insecure:
@@ -641,6 +648,7 @@ def connect():
 
     except Exception:
         logger.exception("Cannot connect to MQTT broker at %s:%d" % (cf.hostname, int(cf.port)))
+        # TODO: Review this.
         sys.exit(2)
 
     # Update our runtime context (used by functions etc) now we have a connected MQTT client
@@ -670,6 +678,7 @@ def subscribe_forever():
 
         if not exit_flag:
             logger.warning("MQTT server disconnected, trying to reconnect each %s seconds" % reconnect_interval)
+            # TODO: Review this.
             time.sleep(reconnect_interval)
 
 
@@ -730,16 +739,17 @@ def start_workers():
         for name, val in cf.items('cron'):
             try:
                 func = load_function(name=name, py_mod=cf.functions)
-                cron_options = parse_cron_options(val)
-                interval = cron_options['interval']
-                logger.info("Scheduling periodic task '{name}' to run each "
-                            "{interval} seconds via [cron] section".format(name=name, interval=interval))
-                service = make_service(mqttc=mqttc, name='mqttwarn.cron')
-                ptlist[name] = PeriodicThread(callback=func, period=interval, name=name, srv=service, now=asbool(cron_options.get('now')))
-                ptlist[name].start()
             except AttributeError:
                 logger.error("[cron] section has function [%s] specified, but that's not defined" % name)
                 continue
+
+            cron_options = parse_cron_options(val)
+            interval = cron_options['interval']
+            logger.info("Scheduling periodic task '{name}' to run each "
+                        "{interval} seconds via [cron] section".format(name=name, interval=interval))
+            service = make_service(mqttc=mqttc, name='mqttwarn.cron')
+            ptlist[name] = PeriodicThread(callback=func, period=interval, name=name, srv=service, now=asbool(cron_options.get('now')))
+            ptlist[name].start()
 
 
 def cleanup(signum=None, frame=None):
@@ -767,6 +777,7 @@ def cleanup(signum=None, frame=None):
 
     # TODO: Refactor this elsewhere.
     logger.debug(f"Exiting on signal {signum}")
+    # TODO: Review this.
     sys.exit(signum)
 
 
