@@ -389,11 +389,13 @@ def test_targets_function_error(caplog):
 
     # Proof that the error appears in the log output.
     assert (
-        "mqttwarn.context",
-        30,
-        'Error invoking topic targets function "get_targets_error" defined in '
-        """section "test/targets-function-error": ValueError('Something failed')""",
-    ) in caplog.record_tuples
+        """Error invoking topic targets function "get_targets_error" defined in """
+        """section "test/targets-function-error": ValueError('Something failed'""" in caplog.text
+    )
+    assert (
+        'Topic target definition by function "get_targets_error" in section '
+        '"test/targets-function-error" is empty or incorrect. Should be a list.' in caplog.text
+    )
 
 
 def test_targets_dictionary(tmp_ini, caplog):
