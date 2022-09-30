@@ -35,12 +35,14 @@ def core_bootstrap(configfile=None):
     start_workers()
 
 
-def send_message(topic=None, payload=None):
+def send_message(topic=None, payload=None, retain=False):
 
     # Mock an instance of an Eclipse Paho MQTTMessage
     message = MQTTMessage(mid=42, topic=topic.encode("utf-8"))
     if payload is not None:
         message.payload = payload.encode("utf-8")
+    if retain:
+        message.retain = True
 
     # Signal the message to the machinery
     on_message(None, None, message)

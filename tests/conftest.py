@@ -1,4 +1,5 @@
 import importlib
+import pathlib
 import shutil
 import sys
 
@@ -34,6 +35,22 @@ def without_jinja():
 
 
 @pytest.fixture
+def without_ssl():
+
+    # Emulate removal of `ssl` package.
+    # https://stackoverflow.com/a/65163627
+    backup = sys.modules["ssl"]
+    sys.modules["ssl"] = None
+    importlib.reload(sys.modules["mqttwarn.configuration"])
+
+    yield
+
+    # Restore `jinja2` package.
+    sys.modules["ssl"] = backup
+    importlib.reload(sys.modules["mqttwarn.configuration"])
+
+
+@pytest.fixture
 def mqttwarn_bin():
     """
     Find `mqttwarn` executable, located within the inline virtualenv.
@@ -46,3 +63,12 @@ def mqttwarn_bin():
             return mqttwarn_bin
 
     raise FileNotFoundError(f"Unable to discover 'mqttwarn' executable within {path_candidates}")
+
+
+@pytest.fixture()
+def tmp_ini(tmp_path) -> pathlib.Path:
+    """
+    Provide temporary INI files to test cases.
+    """
+    filepath = tmp_path.joinpath("testdrive.ini")
+    return filepath
