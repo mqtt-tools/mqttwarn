@@ -68,8 +68,9 @@ class Config(RawConfigParser):
         self.__dict__.update(defaults)
         self.__dict__.update(self.config('defaults'))
 
-        if HAVE_TLS == False:
+        if HAVE_TLS is False:
             logger.error("TLS parameters set but no TLS available (SSL)")
+            # TODO: Review this.
             sys.exit(2)
 
         if self.ca_certs is not None:
@@ -188,6 +189,8 @@ def load_configuration(configfile=None, name='mqttwarn'):
     if not os.path.exists(configfile):
         raise FileNotFoundError('Configuration file "{}" does not exist'.format(configfile))
 
+    # TODO: There should be a factory method which creates a `Config` instance,
+    #       including defaults, but without loading a configuration file.
     defaults = {
         'clientid': name,
         'lwt': 'clients/{}'.format(name),

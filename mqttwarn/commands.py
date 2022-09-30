@@ -59,13 +59,9 @@ def run():
     # Read commandline options
     options = docopt(commandline_schema, version=APP_NAME + ' ' + __version__)
 
-    # Python2/3 string encoding compat - sigh.
-    # https://stackoverflow.com/questions/2737966/how-to-change-the-stdin-and-stdout-encoding-on-python-2/58449987#58449987
+    # TODO: Review this. Why do we need it?
     utf8_writer = codecs.getwriter('utf-8')
-    if sys.version_info.major <= 2:
-        sys.stdout = utf8_writer(sys.stdout)
-    else:
-        sys.stdout = utf8_writer(sys.stdout.buffer)
+    sys.stdout = utf8_writer(sys.stdout.buffer)
 
     if options['make-config']:
         payload = get_resource_content('mqttwarn.examples', 'basic/mqttwarn.ini')
