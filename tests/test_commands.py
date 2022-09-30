@@ -140,21 +140,19 @@ def test_command_standalone_plugin_with_configfile(mqttwarn_bin, tmp_path, capfd
     assert "Plugin response: True" in caplog.messages
 
 
-def test_command_dump_config_real(mqttwarn_bin, capfd):
+def test_command_dump_config_real(mqttwarn_bin, tmp_path, capfd):
     """
     Proof that the configuration scaffolding will write files with UTF-8 encoding on all platforms.
     """
 
-    try:
-        command = f"{mqttwarn_bin} make-config > foobar.ini"
-        exitcode = os.system(command) % 255
-        assert exitcode == 0, f"Invoking command '{command}' failed"
+    ini_file = tmp_path.joinpath("testdrive.ini")
 
-        ini_content = open("foobar.ini", encoding="utf-8").read()
-        assert 'mqttwarn example configuration file "mqttwarn.ini"' in ini_content
+    command = f"{mqttwarn_bin} make-config > {ini_file}"
+    exitcode = os.system(command) % 255
+    assert exitcode == 0, f"Invoking command '{command}' failed"
 
-    finally:
-        os.unlink("foobar.ini")
+    ini_content = open(ini_file, encoding="utf-8").read()
+    assert 'mqttwarn example configuration file "mqttwarn.ini"' in ini_content
 
 
 def test_setup_logging_default(mocker):
