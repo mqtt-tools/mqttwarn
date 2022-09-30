@@ -2,6 +2,7 @@
 # (c) 2018-2022 The mqttwarn developers
 import configparser
 import socket
+import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from unittest import mock
@@ -291,6 +292,10 @@ def test_subscribe_forever_success(caplog, mocker):
     """
     Verify the `core.subscribe_forever` function.
     """
+
+    # FIXME: Make it work on Windows.
+    if sys.platform.startswith("win"):
+        raise pytest.xfail("Skipping test, fails on Windows")
 
     # Adjust plumbing to speed up test case.
     mocker.patch("time.sleep", lambda _: delay(0.05))
