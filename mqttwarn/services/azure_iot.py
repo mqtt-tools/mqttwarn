@@ -21,7 +21,7 @@ def plugin(srv, item):
     iothubname = item.config['iothubname']
     qos = int(item.config.get('qos', 0))
     if qos < 0 or qos > 1:
-        srv.logging.error("Only QoS 0 or 1 allowed for Azure IoT Hub, not '%s'." % str(qos))
+        srv.logging.error("Only QoS 0 or 1 allowed for Azure IoT Hub, not '%s'" % str(qos))
         return False
 
     # connection info...

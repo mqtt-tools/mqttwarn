@@ -23,7 +23,7 @@ def plugin(srv, item):
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
     try:
-        srv.logging.debug("Sending to NotifyMe service.")
+        srv.logging.debug("Sending to NotifyMe service")
         body = json.dumps({
             "notification": item.message,
             "accessCode": item.addrs[0]
@@ -32,7 +32,7 @@ def plugin(srv, item):
         response = requests.post(url="https://api.notifymyecho.com/v1/NotifyMe", data=body)
         response.raise_for_status()
 
-        srv.logging.debug("Successfully sent to NotifyMe service.")
+        srv.logging.debug("Successfully sent to NotifyMe service")
 
     except Exception as e:
         srv.logging.warning("Failed to send message to NotifyMe service: %s" % e)

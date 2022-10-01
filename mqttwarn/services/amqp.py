@@ -16,7 +16,7 @@ def plugin(srv, item):
     exchange, routing_key = item.addrs
 
     try:
-        srv.logging.debug("AMQP publish to %s [%s/%s]..." % (item.target, exchange, routing_key))
+        srv.logging.debug("AMQP publish to %s [%s/%s]" % (item.target, exchange, routing_key))
 
         client = puka.Client(uri)
         promise = client.connect()

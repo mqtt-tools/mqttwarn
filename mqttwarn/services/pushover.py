@@ -132,7 +132,7 @@ def plugin(srv, item):
         image = base64.decodebytes(imagebase64)
 
     try:
-        srv.logging.debug("Sending pushover notification to %s [%s]...." % (item.target, params))
+        srv.logging.debug("Sending pushover notification to %s [%s]" % (item.target, params))
         pushover(image=image, user=userkey, token=token, **params)
         srv.logging.debug("Successfully sent pushover notification")
     except Exception as e:

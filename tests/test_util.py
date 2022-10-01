@@ -8,6 +8,7 @@ import time
 from builtins import str
 
 import pytest
+
 from mqttwarn.util import (
     Formatter,
     Struct,

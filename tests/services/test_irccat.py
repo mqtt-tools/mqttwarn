@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# (c) 2021 The mqttwarn developers
-import logging
-from unittest import mock
-from unittest.mock import call
+# (c) 2021-2022 The mqttwarn developers
+from unittest.mock import Mock, call
 
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
@@ -18,22 +16,20 @@ def test_irccat_normal_success(mocker, srv, caplog):
         data={},
     )
 
-    with caplog.at_level(logging.DEBUG):
+    module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        module = load_module_from_file("mqttwarn/services/irccat.py")
+    socket_mock = mocker.patch("socket.socket")
 
-        socket_mock = mocker.patch("socket.socket")
+    outcome = module.plugin(srv, item)
+    assert socket_mock.mock_calls == [
+        call(socket.AF_INET, socket.SOCK_STREAM),
+        call().connect(("localhost", 12345)),
+        call().send(b"\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
+        call().close(),
+    ]
 
-        outcome = module.plugin(srv, item)
-        assert socket_mock.mock_calls == [
-            call(socket.AF_INET, socket.SOCK_STREAM),
-            call().connect(("localhost", 12345)),
-            call().send(b"\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
-            call().close(),
-        ]
-
-        assert outcome is True
-        assert "Sending to IRCcat: ⚽ Notification message ⚽" in caplog.messages
+    assert outcome is True
+    assert "Sending to IRCcat: ⚽ Notification message ⚽" in caplog.messages
 
 
 def test_irccat_green_success(mocker, srv, caplog):
@@ -47,22 +43,20 @@ def test_irccat_green_success(mocker, srv, caplog):
         priority=1,
     )
 
-    with caplog.at_level(logging.DEBUG):
+    module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        module = load_module_from_file("mqttwarn/services/irccat.py")
+    socket_mock = mocker.patch("socket.socket")
 
-        socket_mock = mocker.patch("socket.socket")
+    outcome = module.plugin(srv, item)
+    assert socket_mock.mock_calls == [
+        call(socket.AF_INET, socket.SOCK_STREAM),
+        call().connect(("localhost", 12345)),
+        call().send(b"%GREEN\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
+        call().close(),
+    ]
 
-        outcome = module.plugin(srv, item)
-        assert socket_mock.mock_calls == [
-            call(socket.AF_INET, socket.SOCK_STREAM),
-            call().connect(("localhost", 12345)),
-            call().send(b"%GREEN\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
-            call().close(),
-        ]
-
-        assert outcome is True
-        assert "Sending to IRCcat: %GREEN⚽ Notification message ⚽" in caplog.messages
+    assert outcome is True
+    assert "Sending to IRCcat: %GREEN⚽ Notification message ⚽" in caplog.messages
 
 
 def test_irccat_red_success(mocker, srv, caplog):
@@ -76,22 +70,20 @@ def test_irccat_red_success(mocker, srv, caplog):
         priority=2,
     )
 
-    with caplog.at_level(logging.DEBUG):
+    module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        module = load_module_from_file("mqttwarn/services/irccat.py")
+    socket_mock = mocker.patch("socket.socket")
 
-        socket_mock = mocker.patch("socket.socket")
+    outcome = module.plugin(srv, item)
+    assert socket_mock.mock_calls == [
+        call(socket.AF_INET, socket.SOCK_STREAM),
+        call().connect(("localhost", 12345)),
+        call().send(b"%RED\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
+        call().close(),
+    ]
 
-        outcome = module.plugin(srv, item)
-        assert socket_mock.mock_calls == [
-            call(socket.AF_INET, socket.SOCK_STREAM),
-            call().connect(("localhost", 12345)),
-            call().send(b"%RED\xe2\x9a\xbd Notification message \xe2\x9a\xbd\n"),
-            call().close(),
-        ]
-
-        assert outcome is True
-        assert "Sending to IRCcat: %RED⚽ Notification message ⚽" in caplog.messages
+    assert outcome is True
+    assert "Sending to IRCcat: %RED⚽ Notification message ⚽" in caplog.messages
 
 
 def test_irccat_config_invalid(mocker, srv, caplog):
@@ -103,20 +95,18 @@ def test_irccat_config_invalid(mocker, srv, caplog):
         data={},
     )
 
-    with caplog.at_level(logging.DEBUG):
+    module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        module = load_module_from_file("mqttwarn/services/irccat.py")
+    socket_mock = mocker.patch("socket.socket")
 
-        socket_mock = mocker.patch("socket.socket")
+    outcome = module.plugin(srv, item)
+    assert socket_mock.mock_calls == []
 
-        outcome = module.plugin(srv, item)
-        assert socket_mock.mock_calls == []
-
-        assert outcome is False
-        assert "Incorrect target configuration" in caplog.messages
+    assert outcome is False
+    assert "Incorrect target configuration" in caplog.messages
 
 
-def test_irccat_connect_fails(srv, caplog):
+def test_irccat_connect_fails(mocker, srv, caplog):
     import socket
 
     item = Item(
@@ -126,24 +116,16 @@ def test_irccat_connect_fails(srv, caplog):
         data={},
     )
 
-    with caplog.at_level(logging.DEBUG):
+    module = load_module_from_file("mqttwarn/services/irccat.py")
 
-        module = load_module_from_file("mqttwarn/services/irccat.py")
+    # Make the call to `socket.connect` raise an exception.
+    mock_connection = Mock(**{"connect.side_effect": Exception("something failed")})
+    socket_mock = mocker.patch("socket.socket", side_effect=[mock_connection], create=True)
 
-        # Make the call to `connect` raise an exception.
-        mock_connection = mock.MagicMock()
+    outcome = module.plugin(srv, item)
+    assert socket_mock.mock_calls == [
+        call(socket.AF_INET, socket.SOCK_STREAM),
+    ]
 
-        def error(*args, **kwargs):
-            raise Exception("something failed")
-
-        mock_connection.connect = error
-
-        with mock.patch("socket.socket", side_effect=[mock_connection], create=True) as socket_mock:
-
-            outcome = module.plugin(srv, item)
-            assert socket_mock.mock_calls == [
-                call(socket.AF_INET, socket.SOCK_STREAM),
-            ]
-
-            assert outcome is False
-            assert "Error sending IRCcat notification to test:localhost [12345]: something failed" in caplog.messages
+    assert outcome is False
+    assert "Error sending IRCcat notification to test:localhost [12345]: something failed" in caplog.messages

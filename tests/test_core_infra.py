@@ -6,9 +6,10 @@ import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from unittest import mock
-from unittest.mock import MagicMock, Mock, call
+from unittest.mock import Mock, call
 
 import pytest
+
 from mqttwarn.configuration import Config
 from mqttwarn.context import RuntimeContext
 from mqttwarn.core import (
@@ -36,13 +37,13 @@ def test_bootstrap(caplog):
     core_bootstrap(configfile=configfile_full)
 
     # Proof that mqttwarn loaded all services properly
-    assert 'Successfully loaded service "file"' in caplog.text, caplog.text
-    assert 'Successfully loaded service "log"' in caplog.text, caplog.text
+    assert 'Successfully loaded service "file"' in caplog.messages
+    assert 'Successfully loaded service "log"' in caplog.messages
 
-    assert "Starting 1 worker threads" in caplog.text, caplog.text
+    assert "Starting 1 worker threads" in caplog.messages
 
     # Capturing the last message does not work. Why?
-    # assert 'Job queue has 0 items to process' in caplog.text, caplog.text
+    # assert 'Job queue has 0 items to process' in caplog.messages
 
 
 def test_config_no_functions(caplog):
@@ -324,7 +325,7 @@ def test_subscribe_forever_fails_socket_error(caplog, mocker):
 
     # Invoke `subscribe_forever` and terminate right away using `exit_flag`.
     connect = mocker.patch("mqttwarn.core.connect")
-    connect.return_value = MagicMock(**{"loop_forever.side_effect": socket.error("Something failed")})
+    connect.return_value = Mock(**{"loop_forever.side_effect": socket.error("Something failed")})
     t = threading.Thread(target=subscribe_forever)
     t.start()
     mocker.patch("mqttwarn.core.exit_flag", True)
@@ -353,7 +354,7 @@ def test_subscribe_forever_fails_unknown_error(caplog, mocker):
 
     # Invoke `subscribe_forever` and terminate right away using `exit_flag`.
     connect = mocker.patch("mqttwarn.core.connect")
-    connect.return_value = MagicMock(**{"loop_forever.side_effect": ValueError("Something failed")})
+    connect.return_value = Mock(**{"loop_forever.side_effect": ValueError("Something failed")})
 
     # Invoke `subscribe_forever` in a different thread, but get hold of its exception through a `Future`.
     with ThreadPoolExecutor() as executor:
