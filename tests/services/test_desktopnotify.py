@@ -7,7 +7,8 @@ import pytest
 from surrogate import surrogate
 
 from mqttwarn.model import ProcessorItem as Item
-from mqttwarn.util import Struct, load_module_by_name
+from mqttwarn.model import Struct
+from mqttwarn.util import load_module_by_name
 
 
 @pytest.fixture

@@ -11,7 +11,6 @@ import pytest
 
 from mqttwarn.util import (
     Formatter,
-    Struct,
     asbool,
     get_resource_content,
     import_module,
@@ -24,16 +23,6 @@ from mqttwarn.util import (
     timeout,
 )
 from tests import configfile_full, funcfile_bad, funcfile_good
-
-
-def test_struct():
-    data = {"hello": "world"}
-    struct = Struct(**data)
-    assert struct.hello == "world"
-    assert struct.get("hello") == "world"
-    assert struct.get("unknown", default=42) == 42
-    assert repr(struct) == "<hello: 'world'>"
-    assert struct.enum() == data
 
 
 def test_formatter_basic():

@@ -7,7 +7,8 @@ from unittest.mock import call
 import pytest
 
 from mqttwarn.model import ProcessorItem as Item
-from mqttwarn.util import Struct, load_module_from_file
+from mqttwarn.model import Struct
+from mqttwarn.util import load_module_from_file
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="This test only works on Python >= 3.8")

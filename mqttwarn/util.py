@@ -6,35 +6,9 @@ import json
 import os
 import re
 import string
-from builtins import str
 
 import pkg_resources
 from six import string_types
-
-
-class Struct:
-    """
-    Convert Python dict to object?
-    http://stackoverflow.com/questions/1305532/
-    """
-
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
-
-    def __repr__(self):
-        return "<%s>" % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in list(self.__dict__.items())))
-
-    def get(self, key, default=None):
-        if key in self.__dict__ and self.__dict__[key] is not None:
-            return self.__dict__[key]
-        else:
-            return default
-
-    def enum(self):
-        item = {}
-        for (k, v) in list(self.__dict__.items()):
-            item[k] = v
-        return item
 
 
 class Formatter(string.Formatter):
