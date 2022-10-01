@@ -4,7 +4,8 @@ import dataclasses
 import platform
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Optional, Union
+
 from mqttwarn import __version__
 
 
@@ -33,6 +34,7 @@ class StatusInformation:
     """
     Different bits of information published to `mqttwarn/$SYS` when the `status_publish` feature is enabled.
     """
+
     mqttwarn_version: str = __version__
     os_platform: str = sys.platform
     python_version: str = platform.python_version()

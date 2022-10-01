@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2022 The mqttwarn developers
-from builtins import str
 import hashlib
-import os
-import re
 import imp
 import json
+import os
+import re
 import string
+from builtins import str
+
 import pkg_resources
 from six import string_types
 
@@ -16,11 +17,12 @@ class Struct:
     Convert Python dict to object?
     http://stackoverflow.com/questions/1305532/
     """
+
     def __init__(self, **entries):
         self.__dict__.update(entries)
 
     def __repr__(self):
-        return '<%s>' % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in list(self.__dict__.items())))
+        return "<%s>" % str("\n ".join("%s: %s" % (k, repr(v)) for (k, v) in list(self.__dict__.items())))
 
     def get(self, key, default=None):
         if key in self.__dict__ and self.__dict__[key] is not None:
@@ -53,7 +55,7 @@ class Formatter(string.Formatter):
 
         See also https://github.com/jpmens/mqttwarn/issues/146.
         """
-        if conversion == 'j':
+        if conversion == "j":
             value = json.dumps(value)
         return value
 
@@ -66,13 +68,12 @@ def asbool(obj):
     """
     if isinstance(obj, string_types):
         obj = obj.strip().lower()
-        if obj in ['true', 'yes', 'on', 'y', 't', '1']:
+        if obj in ["true", "yes", "on", "y", "t", "1"]:
             return True
-        elif obj in ['false', 'no', 'off', 'n', 'f', '0']:
+        elif obj in ["false", "no", "off", "n", "f", "0"]:
             return False
         else:
-            raise ValueError(
-                "String is not true/false: %r" % obj)
+            raise ValueError("String is not true/false: %r" % obj)
     return bool(obj)
 
 
@@ -90,10 +91,10 @@ def parse_cron_options(argstring):
         60; now=true
 
     """
-    parts = argstring.split(';')
-    options = {'interval': float(parts[0].strip())}
+    parts = argstring.split(";")
+    options = {"interval": float(parts[0].strip())}
     for part in parts[1:]:
-        name, value = part.split('=')
+        name, value = part.split("=")
         options[name.strip()] = value.strip()
     return options
 
@@ -135,9 +136,9 @@ def sanitize_function_name(s):
 
     if s is not None:
         try:
-            valid = re.match(r'^[\w]+\(\)', s)
+            valid = re.match(r"^[\w]+\(\)", s)
             if valid is not None:
-                func = re.sub('[()]', '', s)
+                func = re.sub("[()]", "", s)
         except:
             pass
     return func
@@ -151,8 +152,8 @@ def load_module_from_file(path):
     :return:
     """
     try:
-        fp = open(path, 'rb')
-        digest = hashlib.md5(path.encode('utf-8')).hexdigest()
+        fp = open(path, "rb")
+        digest = hashlib.md5(path.encode("utf-8")).hexdigest()
         return imp.load_source(digest, path, fp)
     finally:
         try:
@@ -181,7 +182,7 @@ def import_module(name, path=None):
     """
 
     try:
-        next_module, remaining_names = name.split('.', 1)
+        next_module, remaining_names = name.split(".", 1)
     except ValueError:
         next_module = name
         remaining_names = None
@@ -208,10 +209,10 @@ def load_functions(filepath=None):
 
     mod_name, file_ext = os.path.splitext(os.path.split(filepath)[-1])
 
-    if file_ext.lower() == '.py':
+    if file_ext.lower() == ".py":
         py_mod = imp.load_source(mod_name, filepath)
 
-    elif file_ext.lower() == '.pyc':
+    elif file_ext.lower() == ".pyc":
         py_mod = imp.load_compiled(mod_name, filepath)
 
     else:
@@ -221,8 +222,8 @@ def load_functions(filepath=None):
 
 
 def load_function(name=None, py_mod=None):
-    assert name, 'Function name must be given'
-    assert py_mod, 'Python module must be given'
+    assert name, "Function name must be given"
+    assert py_mod, "Python module must be given"
 
     func = getattr(py_mod, name, None)
 
@@ -234,4 +235,4 @@ def load_function(name=None, py_mod=None):
 
 def get_resource_content(package, filename):
     with pkg_resources.resource_stream(package, filename) as stream:
-        return stream.read().decode('utf-8')
+        return stream.read().decode("utf-8")

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
-import attr
+# (c) 2014-2022 The mqttwarn developers
 import logging
 import typing as t
 
+import attr
+
 from mqttwarn.configuration import Config
-from mqttwarn.util import sanitize_function_name, load_function
+from mqttwarn.util import load_function, sanitize_function_name
 
 logger = logging.getLogger(__name__)
 
@@ -24,29 +25,29 @@ class RuntimeContext:
     def get_sections(self):
         sections = []
         for section in self.config.sections():
-            if section == 'defaults':
+            if section == "defaults":
                 continue
-            if section == 'cron':
+            if section == "cron":
                 continue
-            if section == 'failover':
+            if section == "failover":
                 continue
-            if section.startswith('config:'):
+            if section.startswith("config:"):
                 continue
-            if self.config.has_option(section, 'targets'):
+            if self.config.has_option(section, "targets"):
                 sections.append(section)
             else:
                 logger.warning("Section `%s' has no targets defined" % section)
         return sections
 
     def get_topic(self, section):
-        if self.config.has_option(section, 'topic'):
-            return self.config.get(section, 'topic')
+        if self.config.has_option(section, "topic"):
+            return self.config.get(section, "topic")
         return section
 
     def get_qos(self, section):
         qos = 0
-        if self.config.has_option(section, 'qos'):
-            qos = int(self.config.get(section, 'qos'))
+        if self.config.has_option(section, "qos"):
+            qos = int(self.config.get(section, "qos"))
         return qos
 
     def get_config(self, section, name):
@@ -56,8 +57,8 @@ class RuntimeContext:
         return value
 
     def is_filtered(self, section, topic, payload):
-        if self.config.has_option(section, 'filter'):
-            filterfunc = sanitize_function_name( self.config.get(section, 'filter') )
+        if self.config.has_option(section, "filter"):
+            filterfunc = sanitize_function_name(self.config.get(section, "filter"))
             try:
                 return self.invoker.filter(filterfunc, topic, payload, section)
             except Exception as e:
@@ -65,8 +66,8 @@ class RuntimeContext:
         return False
 
     def get_topic_data(self, section, topic):
-        if self.config.has_option(section, 'datamap'):
-            name = sanitize_function_name(self.config.get(section, 'datamap'))
+        if self.config.has_option(section, "datamap"):
+            name = sanitize_function_name(self.config.get(section, "datamap"))
             try:
                 return self.invoker.datamap(name, topic)
             except Exception as e:
@@ -74,8 +75,8 @@ class RuntimeContext:
         return None
 
     def get_all_data(self, section, topic, data):
-        if self.config.has_option(section, 'alldata'):
-            name = sanitize_function_name(self.config.get(section, 'alldata'))
+        if self.config.has_option(section, "alldata"):
+            name = sanitize_function_name(self.config.get(section, "alldata"))
             try:
                 return self.invoker.alldata(name, topic, data)
             except Exception as e:
@@ -86,18 +87,20 @@ class RuntimeContext:
         """
         Topic targets function invoker.
         """
-        if self.config.has_option(section, 'targets'):
-            name = sanitize_function_name(self.config.get(section, 'targets'))
+        if self.config.has_option(section, "targets"):
+            name = sanitize_function_name(self.config.get(section, "targets"))
             try:
                 return self.invoker.topic_target_list(name, topic, data)
             except Exception as ex:
                 error = repr(ex)
-                logger.warning('Error invoking topic targets function "{name}" ' \
-                             'defined in section "{section}": {error}'.format(**locals()))
+                logger.warning(
+                    'Error invoking topic targets function "{name}" '
+                    'defined in section "{section}": {error}'.format(**locals())
+                )
         return None
 
     def get_service_config(self, service):
-        config = self.config.config('config:' + service)
+        config = self.config.config("config:" + service)
         if config is None:
             return {}
         return dict(config)
@@ -105,14 +108,14 @@ class RuntimeContext:
     def get_service_targets(self, service):
         # Be more graceful with jobs w/o any target address information (2021-10-18 [amo]).
         try:
-            targets = self.config.getdict('config:' + service, 'targets') or [None]
+            targets = self.config.getdict("config:" + service, "targets") or [None]
             return targets
         except:
             logger.exception("Unable to access targets for service `%s'" % service)
 
 
 @attr.s
-class FunctionInvoker(object):
+class FunctionInvoker:
     """
     This helps the ``RuntimeContext`` to dynamically invoke
     functions from a configured Python source code file.
@@ -136,7 +139,7 @@ class FunctionInvoker(object):
             try:
                 val = func(topic, self.srv)  # new version
             except TypeError:
-                val = func(topic)       # legacy
+                val = func(topic)  # legacy
         except:
             raise
 
@@ -182,7 +185,7 @@ class FunctionInvoker(object):
 
         return val
 
-    def filter(self, name, topic, payload, section=None):
+    def filter(self, name, topic, payload, section=None):  # noqa:A003
         """
         Invoke function "name" loaded from the "functions" Python module.
         Return that function's True/False.
@@ -199,7 +202,7 @@ class FunctionInvoker(object):
             try:
                 rc = func(topic, payload, section, self.srv)  # new version
             except TypeError:
-                rc = func(topic, payload)                     # legacy signature
+                rc = func(topic, payload)  # legacy signature
         except:
             raise
 
