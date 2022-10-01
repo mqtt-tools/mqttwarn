@@ -7,9 +7,8 @@ import sys
 import threading
 import time
 import typing as t
-from builtins import chr, object, str
+from builtins import chr, str
 from datetime import datetime
-from functools import total_ordering
 from queue import Queue
 
 import paho.mqtt.client as paho
@@ -18,10 +17,9 @@ from pkg_resources import resource_filename
 import mqttwarn.configuration
 from mqttwarn.context import FunctionInvoker, RuntimeContext
 from mqttwarn.cron import PeriodicThread
-from mqttwarn.model import StatusInformation
+from mqttwarn.model import Job, Service, StatusInformation, Struct
 from mqttwarn.util import (
     Formatter,
-    Struct,
     asbool,
     load_function,
     load_module_by_name,
@@ -73,24 +71,6 @@ ptlist = {}
 service_plugins: t.Dict[str, t.Dict[str, t.Any]] = dict()
 
 
-# Class with helper functions which is passed to each plugin
-# and its global instantiation
-class Service(object):
-    def __init__(self, mqttc, logger):
-
-        # Reference to MQTT client object
-        self.mqttc = mqttc
-
-        # Reference to all mqttwarn globals, for using its machinery from plugins
-        self.mwcore = globals()
-
-        # Reference to logging object
-        self.logging = logger
-
-        # Name of self ("mqttwarn", mostly)
-        self.SCRIPTNAME = SCRIPTNAME
-
-
 def make_service(mqttc=None, name=None):
     """
     Service object factory.
@@ -103,35 +83,8 @@ def make_service(mqttc=None, name=None):
     """
     name = name or "unknown"
     logger = logging.getLogger(name)
-    service = Service(mqttc, logger)
+    service = Service(mqttc=mqttc, logger=logger, mwcore=globals(), program=SCRIPTNAME)
     return service
-
-
-@total_ordering
-class Job(object):
-    def __init__(self, prio, service, section, topic, payload, data, target):
-        self.prio = prio
-        self.service = service
-        self.section = section
-        self.topic = topic
-        self.payload = payload  # raw payload
-        self.data = data  # decoded payload
-        self.target = target
-
-        logger.debug("New `%s:%s' job: %s" % (service, target, topic))
-        return
-
-    # The `__cmp__()` special method is no longer honored in Python 3.
-    # https://portingguide.readthedocs.io/en/latest/comparisons.html#rich-comparisons
-
-    def __eq__(self, other):
-        return self.prio == other.prio
-
-    def __ne__(self, other):
-        return not (self.prio == other.prio)
-
-    def __lt__(self, other):
-        return self.prio < other.prio
 
 
 def render_template(filename, data):
@@ -352,6 +305,7 @@ def send_to_targets(section, topic, payload):
             sendtos = [target]
 
         for sendto in sendtos:
+            logger.debug("New `%s:%s' job: %s" % (service, sendto, topic))
             job = Job(1, service, section, topic, payload, data, sendto)
             q_in.put(job)
 

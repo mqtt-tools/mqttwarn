@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# (c) 2022 The mqttwarn developers
+# (c) 2018-2022 The mqttwarn developers
 from copy import deepcopy
 
-from mqttwarn.core import Job, make_service
+from mqttwarn.core import make_service
+from mqttwarn.model import Job, Struct
 
 JOB_PRIO1 = dict(
     prio=1, service="service", section="section", topic="topic", payload="payload", data="data", target="target"
@@ -18,7 +19,7 @@ def test_make_service():
     Verify creation of `Service` instance.
     """
     service = make_service(name="foo")
-    assert "<mqttwarn.core.Service object at" in str(service)
+    assert "<mqttwarn.model.Service object at" in str(service)
 
 
 def test_job_equality():
@@ -49,3 +50,13 @@ def test_job_ordering_by_priority():
     job2 = Job(**JOB_PRIO2)
 
     assert sorted([job2, job1]) == [job1, job2]
+
+
+def test_struct():
+    data = {"hello": "world"}
+    struct = Struct(**data)
+    assert struct.hello == "world"
+    assert struct.get("hello") == "world"
+    assert struct.get("unknown", default=42) == 42
+    assert repr(struct) == "<hello: 'world'>"
+    assert struct.enum() == data
