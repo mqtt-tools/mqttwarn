@@ -6,6 +6,7 @@ import os
 import tempfile
 
 import pytest
+
 from mqttwarn.core import decode_payload
 from tests import configfile_full, configfile_service_loading
 from tests.util import core_bootstrap, send_message

@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-# (c) 2021 The mqttwarn developers
-import logging
-from unittest import mock
-
+# (c) 2021-2022 The mqttwarn developers
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
 
-def test_autoremote_success(srv, caplog):
+def test_autoremote_success(srv, mocker, caplog):
 
     item = Item(
         target="test",
@@ -16,31 +13,30 @@ def test_autoremote_success(srv, caplog):
         message="⚽ Notification message ⚽",
     )
 
-    with caplog.at_level(logging.DEBUG):
+    module = load_module_from_file("mqttwarn/services/autoremote.py")
 
-        module = load_module_from_file("mqttwarn/services/autoremote.py")
+    requests_mock = mocker.patch("requests.get")
 
-        with mock.patch("requests.get") as requests_mock:
-            outcome = module.plugin(srv, item)
-            requests_mock.assert_called_once_with(
-                "https://autoremotejoaomgcd.appspot.com/sendmessage",
-                params={
-                    "key": "ApiKey",
-                    "message": "⚽ Notification message ⚽",
-                    "target": "Target",
-                    "sender": "autoremote/user",
-                    "password": "Password",
-                    "ttl": "TTL",
-                    "collapseKey": "Group",
-                },
-            )
+    outcome = module.plugin(srv, item)
+    requests_mock.assert_called_once_with(
+        "https://autoremotejoaomgcd.appspot.com/sendmessage",
+        params={
+            "key": "ApiKey",
+            "message": "⚽ Notification message ⚽",
+            "target": "Target",
+            "sender": "autoremote/user",
+            "password": "Password",
+            "ttl": "TTL",
+            "collapseKey": "Group",
+        },
+    )
 
-        assert outcome is True
-        assert "Sending to autoremote service" in caplog.text
-        assert "Successfully sent to autoremote service" in caplog.text
+    assert outcome is True
+    assert "Sending to autoremote service" in caplog.messages
+    assert "Successfully sent to autoremote service" in caplog.messages
 
 
-def test_autoremote_failure(srv, caplog):
+def test_autoremote_failure(srv, mocker, caplog):
 
     item = Item(
         target="test",
@@ -49,25 +45,13 @@ def test_autoremote_failure(srv, caplog):
         message="⚽ Notification message ⚽",
     )
 
-    with caplog.at_level(logging.DEBUG):
+    module = load_module_from_file("mqttwarn/services/autoremote.py")
 
-        module = load_module_from_file("mqttwarn/services/autoremote.py")
+    requests_mock = mocker.patch("requests.get", side_effect=Exception("something failed"))
 
-        with mock.patch("requests.get", side_effect=Exception("something failed")) as requests_mock:
-            outcome = module.plugin(srv, item)
-            requests_mock.assert_called_once_with(
-                "https://autoremotejoaomgcd.appspot.com/sendmessage",
-                params={
-                    "key": "ApiKey",
-                    "message": "⚽ Notification message ⚽",
-                    "target": "Target",
-                    "sender": "autoremote/user",
-                    "password": "Password",
-                    "ttl": "TTL",
-                    "collapseKey": "Group",
-                },
-            )
+    outcome = module.plugin(srv, item)
+    requests_mock.assert_called_once()
 
-        assert outcome is False
-        assert "Sending to autoremote service" in caplog.text
-        assert "Failed to send message to autoremote service: something failed" in caplog.text
+    assert outcome is False
+    assert "Sending to autoremote service" in caplog.messages
+    assert "Failed to send message to autoremote service: something failed" in caplog.messages

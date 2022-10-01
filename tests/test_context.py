@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2022 The mqttwarn developers
 import pytest
+
 from mqttwarn.configuration import Config
 from mqttwarn.context import FunctionInvoker, RuntimeContext
 

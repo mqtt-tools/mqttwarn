@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # (c) 2022 The mqttwarn developers
 import json
-import logging
-from unittest import mock
-from unittest.mock import call
+from unittest.mock import Mock, call
 
 import pytest
+from surrogate import surrogate
+
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import Struct, load_module_by_name
-from surrogate import surrogate
 
 
 @pytest.fixture
@@ -33,20 +32,18 @@ def test_desktopnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
     # Plugin needs a real `Struct`.
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
+    outcome = module.plugin(srv, item)
 
-        outcome = module.plugin(srv, item)
+    assert desktop_notifier_mock.mock_calls == [
+        call(),
+        call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
+    ]
 
-        assert desktop_notifier_mock.mock_calls == [
-            call(),
-            call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
-        ]
-
-        assert outcome is True
-        assert "Sending desktop notification" in caplog.messages
+    assert outcome is True
+    assert "Sending desktop notification" in caplog.messages
 
 
-def test_desktopnotify_vanilla_failure(desktop_notifier_mock, srv, caplog):
+def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv, caplog):
 
     module = load_module_by_name("mqttwarn.services.desktopnotify")
 
@@ -58,18 +55,20 @@ def test_desktopnotify_vanilla_failure(desktop_notifier_mock, srv, caplog):
     # Plugin needs a real `Struct`.
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
+    # Make the `send_sync` method fail.
+    notifier_mock: Mock = mocker.patch.object(
+        module, "notify", Mock(**{"send_sync.side_effect": Exception("Something failed")})
+    )
 
-        # Make the `send_sync` method fail.
-        attrs = {"send_sync.side_effect": Exception("Something failed")}
-        notifier_mock = mock.MagicMock(**attrs)
-        module.notify = notifier_mock
+    outcome = module.plugin(srv, item)
 
-        outcome = module.plugin(srv, item)
+    assert notifier_mock.mock_calls == [
+        call.send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
+    ]
 
-        assert outcome is False
-        assert "Sending desktop notification" in caplog.messages
-        assert "Invoking desktop notifier failed: Something failed" in caplog.messages
+    assert outcome is False
+    assert "Sending desktop notification" in caplog.messages
+    assert "Invoking desktop notifier failed: Something failed" in caplog.messages
 
 
 def test_desktopnotify_json_success(desktop_notifier_mock, srv, caplog):
@@ -90,17 +89,15 @@ def test_desktopnotify_json_success(desktop_notifier_mock, srv, caplog):
     # Plugin needs a real `Struct`.
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
+    outcome = module.plugin(srv, item)
 
-        outcome = module.plugin(srv, item)
+    assert desktop_notifier_mock.mock_calls == [
+        call(),
+        call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
+    ]
 
-        assert desktop_notifier_mock.mock_calls == [
-            call(),
-            call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
-        ]
-
-        assert outcome is True
-        assert "Sending desktop notification" in caplog.messages
+    assert outcome is True
+    assert "Sending desktop notification" in caplog.messages
 
 
 def test_desktopnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
@@ -116,14 +113,12 @@ def test_desktopnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
     # Plugin needs a real `Struct`.
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
+    outcome = module.plugin(srv, item)
 
-        outcome = module.plugin(srv, item)
+    assert desktop_notifier_mock.mock_calls == [
+        call(),
+        call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=False),
+    ]
 
-        assert desktop_notifier_mock.mock_calls == [
-            call(),
-            call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=False),
-        ]
-
-        assert outcome is True
-        assert "Sending desktop notification" in caplog.messages
+    assert outcome is True
+    assert "Sending desktop notification" in caplog.messages

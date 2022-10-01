@@ -3,8 +3,9 @@
 import ssl
 from unittest.mock import Mock, call
 
-import mqttwarn.configuration
 import pytest
+
+import mqttwarn.configuration
 
 
 def test_config_with_ssl():

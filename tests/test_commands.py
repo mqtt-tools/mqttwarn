@@ -6,10 +6,11 @@ from unittest import mock
 from unittest.mock import Mock, patch
 
 import docopt
-import mqttwarn.commands
 import pytest
-from mqttwarn.configuration import Config
 from surrogate import surrogate
+
+import mqttwarn.commands
+from mqttwarn.configuration import Config
 from tests.util import invoke_command
 
 

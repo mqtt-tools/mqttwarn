@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # (c) 2022 The mqttwarn developers
-import logging
 import sys
 from unittest import mock
 from unittest.mock import call
 
 import pytest
+
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import Struct, load_module_from_file
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="This test only works on Python >= 3.8")
-def test_smtp_plain(srv, caplog):
+def test_smtp_plain(srv, mocker, caplog):
     """
     Pretend sending a plain text message with SMTP and verify API calls
     and message encoding matches the expectations.
@@ -36,36 +36,36 @@ def test_smtp_plain(srv, caplog):
     # Plugin needs a real `Struct`.
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
-        with mock.patch("smtplib.SMTP", create=True) as smtplib_mock:
-            outcome = module.plugin(srv, item)
-            assert smtplib_mock.mock_calls == [
-                call("localhost:25"),
-                call().set_debuglevel(0),
-                call().ehlo(),
-                call().starttls(),
-                call().login("foobar", "bazqux"),
-                call().sendmail(
-                    "mqttwarn <mqttwarn@localhost>",
-                    ["foo@example.org", "bar@example.org"],
-                    mock.ANY,
-                ),
-                call().quit(),
-            ]
+    smtplib_mock = mocker.patch("smtplib.SMTP", create=True)
 
-            # Specifically examine the email body.
-            body = smtplib_mock.mock_calls[5].args[2]
-            assert body.startswith('Content-Type: text/plain; charset="us-ascii"')
-            assert "Content-Transfer-Encoding: 7bit" in body
-            assert "Notification message" in body
+    outcome = module.plugin(srv, item)
+    assert smtplib_mock.mock_calls == [
+        call("localhost:25"),
+        call().set_debuglevel(0),
+        call().ehlo(),
+        call().starttls(),
+        call().login("foobar", "bazqux"),
+        call().sendmail(
+            "mqttwarn <mqttwarn@localhost>",
+            ["foo@example.org", "bar@example.org"],
+            mock.ANY,
+        ),
+        call().quit(),
+    ]
 
-        assert outcome is True
-        assert "Sending SMTP notification to test, addresses: ['foo@example.org', 'bar@example.org']" in caplog.text
-        assert "Successfully sent SMTP notification" in caplog.text
+    # Specifically examine the email body.
+    body = smtplib_mock.mock_calls[5].args[2]
+    assert body.startswith('Content-Type: text/plain; charset="us-ascii"')
+    assert "Content-Transfer-Encoding: 7bit" in body
+    assert "Notification message" in body
+
+    assert outcome is True
+    assert "Sending SMTP notification to test, addresses: ['foo@example.org', 'bar@example.org']" in caplog.messages
+    assert "Successfully sent SMTP notification" in caplog.messages
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="This test only works on Python >= 3.8")
-def test_smtp_utf8(srv, caplog):
+def test_smtp_utf8(srv, mocker, caplog):
     """
     Pretend sending a UTF-8 message with SMTP and verify API calls
     and message encoding matches the expectations.
@@ -89,21 +89,21 @@ def test_smtp_utf8(srv, caplog):
 
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
-        with mock.patch("smtplib.SMTP", create=True) as smtplib_mock:
-            outcome = module.plugin(srv, item)
+    smtplib_mock = mocker.patch("smtplib.SMTP", create=True)
 
-            # Specifically examine the email body.
-            body = smtplib_mock.mock_calls[5].args[2]
-            assert body.startswith('Content-Type: text/plain; charset="utf-8"')
-            assert "Content-Transfer-Encoding: base64" in body
-            assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+    outcome = module.plugin(srv, item)
 
-        assert outcome is True
+    # Specifically examine the email body.
+    body = smtplib_mock.mock_calls[5].args[2]
+    assert body.startswith('Content-Type: text/plain; charset="utf-8"')
+    assert "Content-Transfer-Encoding: base64" in body
+    assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+
+    assert outcome is True
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="This test only works on Python >= 3.8")
-def test_smtp_html(srv, caplog):
+def test_smtp_html(srv, mocker, caplog):
     """
     Pretend sending an HTML message with SMTP and verify API calls
     and message encoding matches the expectations.
@@ -127,18 +127,18 @@ def test_smtp_html(srv, caplog):
 
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
-        with mock.patch("smtplib.SMTP", create=True) as smtplib_mock:
-            outcome = module.plugin(srv, item)
+    smtplib_mock = mocker.patch("smtplib.SMTP", create=True)
 
-            # Specifically examine the email body.
-            body = smtplib_mock.mock_calls[5].args[2]
-            assert body.startswith("Content-Type: multipart/alternative")
-            assert 'Content-Type: text/plain; charset="utf-8"' in body
-            assert "Content-Transfer-Encoding: base64" in body
-            assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+    outcome = module.plugin(srv, item)
 
-        assert outcome is True
+    # Specifically examine the email body.
+    body = smtplib_mock.mock_calls[5].args[2]
+    assert body.startswith("Content-Type: multipart/alternative")
+    assert 'Content-Type: text/plain; charset="utf-8"' in body
+    assert "Content-Transfer-Encoding: base64" in body
+    assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+
+    assert outcome is True
 
 
 def test_smtp_no_addresses(srv, caplog):
@@ -165,14 +165,13 @@ def test_smtp_no_addresses(srv, caplog):
 
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
-        outcome = module.plugin(srv, item)
-        assert outcome is False
+    outcome = module.plugin(srv, item)
 
+    assert outcome is False
     assert "Skipped sending SMTP notification to test, no addresses configured" in caplog.messages
 
 
-def test_smtp_submit_error(srv, caplog):
+def test_smtp_submit_error(srv, mocker, caplog):
     """
     Verify the outcome of the service plugin when SMTP submission fails.
     """
@@ -195,21 +194,18 @@ def test_smtp_submit_error(srv, caplog):
 
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
-        with mock.patch("smtplib.SMTP", create=True) as smtplib_mock:
+    mocker.patch("smtplib.SMTP", create=True, side_effect=TimeoutError("Something failed"))
 
-            smtplib_mock.side_effect = TimeoutError("Something failed")
-            outcome = module.plugin(srv, item)
+    outcome = module.plugin(srv, item)
 
-        assert outcome is False
-
+    assert outcome is False
     assert (
         "Error sending notification to SMTP recipient test, addresses: "
         "['foo@example.org', 'bar@example.org']. Exception: Something failed" in caplog.messages
     )
 
 
-def test_smtp_minimal(srv, caplog):
+def test_smtp_minimal(srv, mocker, caplog):
     """
     Verify that a minimal configuration also works, without encryption (STARTTLS) and
     authentication (SMTP AUTH).
@@ -232,21 +228,21 @@ def test_smtp_minimal(srv, caplog):
 
     item = Struct(**item.asdict())
 
-    with caplog.at_level(logging.DEBUG):
-        with mock.patch("smtplib.SMTP", create=True) as smtplib_mock:
-            outcome = module.plugin(srv, item)
-            assert smtplib_mock.mock_calls == [
-                call("localhost:25"),
-                call().set_debuglevel(0),
-                call().ehlo(),
-                call().sendmail(
-                    "mqttwarn <mqttwarn@localhost>",
-                    ["foo@example.org"],
-                    mock.ANY,
-                ),
-                call().quit(),
-            ]
+    smtplib_mock = mocker.patch("smtplib.SMTP", create=True)
 
-        assert outcome is True
-        assert "Sending SMTP notification to test, addresses: ['foo@example.org']" in caplog.text
-        assert "Successfully sent SMTP notification" in caplog.text
+    outcome = module.plugin(srv, item)
+    assert smtplib_mock.mock_calls == [
+        call("localhost:25"),
+        call().set_debuglevel(0),
+        call().ehlo(),
+        call().sendmail(
+            "mqttwarn <mqttwarn@localhost>",
+            ["foo@example.org"],
+            mock.ANY,
+        ),
+        call().quit(),
+    ]
+
+    assert outcome is True
+    assert "Sending SMTP notification to test, addresses: ['foo@example.org']" in caplog.messages
+    assert "Successfully sent SMTP notification" in caplog.messages

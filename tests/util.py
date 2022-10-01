@@ -4,12 +4,13 @@ import shlex
 import threading
 from unittest.mock import patch
 
-import mqttwarn
 import paho
+from paho.mqtt.client import MQTTMessage
+
+import mqttwarn
 from mqttwarn.commands import run as run_command
 from mqttwarn.configuration import load_configuration
 from mqttwarn.core import bootstrap, load_services, on_message, start_workers
-from paho.mqtt.client import MQTTMessage
 
 
 def core_bootstrap(configfile=None):
