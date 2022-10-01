@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2019 The mqttwarn developers
 from __future__ import print_function
-import os
-import sys
-import json
+
 import codecs
-import signal
+import json
 import logging
+import os
+import signal
+import sys
 
 from docopt import docopt
 
 from mqttwarn import __version__
-from mqttwarn.configuration import load_configuration, Config
-from mqttwarn.core import bootstrap, subscribe_forever, cleanup, run_plugin
+from mqttwarn.configuration import Config, load_configuration
+from mqttwarn.core import bootstrap, cleanup, run_plugin, subscribe_forever
 from mqttwarn.util import get_resource_content
 
 logger = logging.getLogger(__name__)
 
-APP_NAME = 'mqttwarn'
+APP_NAME = "mqttwarn"
 
 
 def run():
@@ -57,32 +58,33 @@ def run():
     commandline_schema = run.__doc__.format(program=APP_NAME)
 
     # Read commandline options
-    options = docopt(commandline_schema, version=APP_NAME + ' ' + __version__)
+    options = docopt(commandline_schema, version=APP_NAME + " " + __version__)
 
     # TODO: Review this. Why do we need it?
-    utf8_writer = codecs.getwriter('utf-8')
+    utf8_writer = codecs.getwriter("utf-8")
     sys.stdout = utf8_writer(sys.stdout.buffer)
 
-    if options['make-config']:
-        payload = get_resource_content('mqttwarn.examples', 'basic/mqttwarn.ini')
+    if options["make-config"]:
+        payload = get_resource_content("mqttwarn.examples", "basic/mqttwarn.ini")
         print(payload)
 
-    elif options['make-samplefuncs']:
-        payload = get_resource_content('mqttwarn.examples', 'basic/samplefuncs.py')
+    elif options["make-samplefuncs"]:
+        payload = get_resource_content("mqttwarn.examples", "basic/samplefuncs.py")
         print(payload)
 
-    elif options['--plugin'] and options['--options']:
+    elif options["--plugin"] and options["--options"]:
 
         # Decode arguments
-        arg_plugin = options['--plugin']
-        arg_options = json.loads(options['--options'])
+        arg_plugin = options["--plugin"]
+        arg_options = json.loads(options["--options"])
         arg_config = None
-        if "--config" in options and options['--config'] is not None:
-            arg_config = json.loads(options['--config'])
+        if "--config" in options and options["--config"] is not None:
+            arg_config = json.loads(options["--config"])
 
         # Launch service plugin in standalone mode
-        launch_plugin_standalone(arg_plugin, arg_options, configfile=options.get("--config-file"), config_more=arg_config)
-
+        launch_plugin_standalone(
+            arg_plugin, arg_options, configfile=options.get("--config-file"), config_more=arg_config
+        )
 
     # Run mqttwarn in service mode when no command line arguments are given
     else:
@@ -154,8 +156,8 @@ def setup_logging(config):
     if not LOGFILE:
         pass
 
-    elif LOGFILE.startswith('stream://'):
-        LOGFILE = LOGFILE.replace('stream://', '')
+    elif LOGFILE.startswith("stream://"):
+        LOGFILE = LOGFILE.replace("stream://", "")
         logging.basicConfig(stream=eval(LOGFILE), level=LOGLEVEL, format=LOGFORMAT)
 
     # Send log messages to file by configuring "logfile = 'mqttwarn.log'"

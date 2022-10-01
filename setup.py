@@ -3,119 +3,119 @@
 import os
 import platform
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.rst')).read()
+README = open(os.path.join(here, "README.rst")).read()
 
 requires = [
-    'six<2',
-    'paho-mqtt<2',
-    'jinja2<4',
-    'attrs<23',
-    'docopt<1',
-    'requests<3',
-    'future>=0.18.0,<1',
+    "six<2",
+    "paho-mqtt<2",
+    "jinja2<4",
+    "attrs<23",
+    "docopt<1",
+    "requests<3",
+    "future>=0.18.0,<1",
 ]
 
 extras = {
-    'amqp': [
-        'puka>=0.0.7',
+    "amqp": [
+        "puka>=0.0.7",
     ],
-    'apns': [
-        'apns>=2.0.1',
+    "apns": [
+        "apns>=2.0.1",
     ],
-    'apprise': [
-        'apprise>=0.8.9',
+    "apprise": [
+        "apprise>=0.8.9",
     ],
-    'asterisk': [
-        'pyst2>=0.5.0',
+    "asterisk": [
+        "pyst2>=0.5.0",
     ],
-    'celery': [
-        'celery',
+    "celery": [
+        "celery",
     ],
-    'chromecast': [
-        'pychromecast>=7.5.0',
+    "chromecast": [
+        "pychromecast>=7.5.0",
     ],
-    'dnsupdate': [
-        'dnspython>=1.15.0',
+    "dnsupdate": [
+        "dnspython>=1.15.0",
     ],
-    'fbchat': [
-        'fbchat>=1.3.6',
+    "fbchat": [
+        "fbchat>=1.3.6",
     ],
-    'gss': [
-        'gdata>=2.0.18',
+    "gss": [
+        "gdata>=2.0.18",
     ],
-    'gss2': [
-        'gspread>=2.1.1',
-        'oauth2client>=4.1.2',
+    "gss2": [
+        "gspread>=2.1.1",
+        "oauth2client>=4.1.2",
         #'google-api-python-client>=1.7.11',
     ],
-    'mysql': [
-        'mysql',
+    "mysql": [
+        "mysql",
     ],
-    'nma': [
-        'PyNMA>=1.0',
+    "nma": [
+        "PyNMA>=1.0",
     ],
-    'nsca': [
-        'pynsca>=1.6',
+    "nsca": [
+        "pynsca>=1.6",
     ],
-    'desktopnotify': [
-        'desktop-notifier<4',
+    "desktopnotify": [
+        "desktop-notifier<4",
     ],
-    'pastebinpub': [
-        'Pastebin>=1.1.2',
+    "pastebinpub": [
+        "Pastebin>=1.1.2",
     ],
-    'postgres': [
-        'psycopg2-binary>=2.7.4',
+    "postgres": [
+        "psycopg2-binary>=2.7.4",
     ],
-    'prowl': [
-        'pyprowl>=3.0.1',
+    "prowl": [
+        "pyprowl>=3.0.1",
     ],
-    'pushbullet': [
-        'PushbulletPythonLibrary>=2.3',
+    "pushbullet": [
+        "PushbulletPythonLibrary>=2.3",
     ],
-    'redispub': [
-        'redis>=2.10.6',
+    "redispub": [
+        "redis>=2.10.6",
     ],
-    'rrdtool': [
-        'rrdtool>=0.1.12',
+    "rrdtool": [
+        "rrdtool>=0.1.12",
     ],
-    'serial': [
-        'pyserial>=3.4',
+    "serial": [
+        "pyserial>=3.4",
     ],
-    'slack': [
-        'slack-sdk>=3.1.0',
+    "slack": [
+        "slack-sdk>=3.1.0",
     ],
-    'ssh': [
-        'paramiko>=2.4.1',
+    "ssh": [
+        "paramiko>=2.4.1",
     ],
-    'tootpaste': [
-        'Mastodon.py>=1.2.2',
+    "tootpaste": [
+        "Mastodon.py>=1.2.2",
     ],
-    'twilio': [
-        'twilio>=6.11.0',
+    "twilio": [
+        "twilio>=6.11.0",
     ],
-    'twitter': [
-        'python-twitter>=3.4.1',
+    "twitter": [
+        "python-twitter>=3.4.1",
     ],
-    'websocket': [
-        'websocket-client>=0.47.0',
+    "websocket": [
+        "websocket-client>=0.47.0",
     ],
-    'xively': [
-        'xively-python',
+    "xively": [
+        "xively-python",
     ],
-    'xmpp': [
-        'xmpppy>=0.6.1',
-        'dnspython>=1.16.0',
+    "xmpp": [
+        "xmpppy>=0.6.1",
+        "dnspython>=1.16.0",
     ],
-    'slixmpp': [
-        'slixmpp>=1.5.2',
+    "slixmpp": [
+        "slixmpp>=1.5.2",
     ],
     # More notification plugins from the community.
     # https://github.com/daq-tools/mqttwarn-contrib
-    'contrib': [
-        'mqttwarn-contrib',
+    "contrib": [
+        "mqttwarn-contrib",
     ],
 }
 
@@ -147,35 +147,36 @@ extras["all"] = extras_all
 
 # Packages needed for running the tests.
 extras["test"] = [
-    'pytest<8',
-    'pytest-cov<4',
-    'pytest-mock<4',
-    'pytest-mqtt<1',
-    'tox<4',
-    'surrogate==0.1',
+    "pytest<8",
+    "pytest-cov<4",
+    "pytest-mock<4",
+    "pytest-mqtt<1",
+    "tox<4",
+    "surrogate==0.1",
     'dataclasses; python_version<"3.7"',
-    'requests-toolbelt>=0.9.1,<1',
-    'responses>=0.13.3,<1',
-    'pyfakefs>=4.5,<5',
+    "requests-toolbelt>=0.9.1,<1",
+    "responses>=0.13.3,<1",
+    "pyfakefs>=4.5,<5",
 ]
 
 # Packages needed for development and running CI.
 extras["develop"] = [
-    'isort<6',
-    'black<23',
-    'build<1',
-    'mypy<1',
-    'poethepoet<1',
-    'ruff==0.0.40; python_version>="3.7"',
+    "isort<6",
+    "black<23",
+    "build<1",
+    "mypy<1",
+    "poethepoet<1",
+    'ruff==0.0.52; python_version>="3.7"',
 ]
 
 
-setup(name='mqttwarn',
-      version='0.29.1',
-      description='mqttwarn - subscribe to MQTT topics and notify pluggable services',
-      long_description=README,
-      license="EPL 2.0",
-      classifiers=[
+setup(
+    name="mqttwarn",
+    version="0.29.1",
+    description="mqttwarn - subscribe to MQTT topics and notify pluggable services",
+    long_description=README,
+    license="EPL 2.0",
+    classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Environment :: Plugins",
@@ -214,27 +215,26 @@ setup(name='mqttwarn',
         "Topic :: System :: Systems Administration",
         "Topic :: Text Processing",
         "Topic :: Utilities",
-      ],
-      author='Jan-Piet Mens, Ben Jones, Andreas Motl',
-      author_email='jpmens@gmail.com',
-      url='https://github.com/jpmens/mqttwarn',
-      keywords='mqtt notification plugins data acquisition push transformation engine ' +
-               'mosquitto ',
-      packages=find_packages(),
-      include_package_data=True,
-      package_data={
-        'mqttwarn': [
-          '*.ini',
+    ],
+    author="Jan-Piet Mens, Ben Jones, Andreas Motl",
+    author_email="jpmens@gmail.com",
+    url="https://github.com/jpmens/mqttwarn",
+    keywords="mqtt notification plugins data acquisition push transformation engine " + "mosquitto ",
+    packages=find_packages(),
+    include_package_data=True,
+    package_data={
+        "mqttwarn": [
+            "*.ini",
         ],
-      },
-      zip_safe=False,
-      test_suite='tests',
-      install_requires=requires,
-      extras_require=extras,
-      tests_require=extras['test'],
-      entry_points={
-          'console_scripts': [
-              'mqttwarn = mqttwarn.commands:run',
-          ],
-      },
+    },
+    zip_safe=False,
+    test_suite="tests",
+    install_requires=requires,
+    extras_require=extras,
+    tests_require=extras["test"],
+    entry_points={
+        "console_scripts": [
+            "mqttwarn = mqttwarn.commands:run",
+        ],
+    },
 )

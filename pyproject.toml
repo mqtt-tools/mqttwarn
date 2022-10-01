@@ -4,16 +4,46 @@
 
 [tool.isort]
 profile = "black"
+extend_skip_glob = [
+  # Always.
+  ".*",
+  "__pycache__",
+  # Temporary.
+  "examples",
+  "contrib",
+  "mqttwarn/examples",
+  "mqttwarn/services",
+  "mqttwarn/vendor",
+]
 
 [tool.black]
 line-length = 120
-include = '\.pyi?$'
-exclude = 'tests/etc/functions_bad.py'
+extend-exclude = """
+  # Always.
+  ^/tests/etc/functions_bad.py |
+  # Temporary.
+  ^/examples |
+  ^/contrib |
+  ^/mqttwarn/examples |
+  ^/mqttwarn/services |
+  ^/mqttwarn/vendor
+"""
 
 [tool.ruff]
 line-length = 120
+ignore = [
+  "E722"  # Do not use bare `except`
+]
 extend-exclude = [
-  "./tests/etc/functions_bad.py"
+  # Always.
+  ".venv*",
+  "tests/etc/functions_bad.py",
+  # Temporary.
+  "examples",
+  "contrib",
+  "mqttwarn/examples",
+  "mqttwarn/services",
+  "mqttwarn/vendor",
 ]
 
 [tool.mypy]
@@ -54,13 +84,13 @@ omit = [
 
 [tool.poe.tasks]
 format = [
-  {cmd="black tests"},
-  {cmd="isort tests"},
+  {cmd="black ."},
+  {cmd="isort ."},
 ]
 check-style = [
-  {cmd="ruff tests"},
-  {cmd="black --check tests"},
-  {cmd="isort --check tests"},
+  {cmd="ruff ."},
+  {cmd="black --check ."},
+  {cmd="isort --check ."},
   {cmd="mypy --install-types --non-interactive mqttwarn/core.py"},
 ]
 test = [
