@@ -26,7 +26,7 @@ extras = {
         "apns>=2.0.1",
     ],
     "apprise": [
-        "apprise>=0.8.9",
+        "apprise<2",
     ],
     "asterisk": [
         "pyst2>=0.5.0",
@@ -157,7 +157,7 @@ extras["test"] = [
     "requests-toolbelt>=0.9.1,<1",
     "responses>=0.13.3,<1",
     "pyfakefs>=4.5,<5",
-]
+] + extras["all"]
 
 # Packages needed for development and running CI.
 extras["develop"] = [

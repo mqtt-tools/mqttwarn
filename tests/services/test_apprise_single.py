@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2021-2022 The mqttwarn developers
 from unittest import mock
-from unittest.mock import call
+from unittest.mock import Mock, call
 
 from surrogate import surrogate
 
@@ -9,11 +9,12 @@ from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
 
-@surrogate("apprise")
-@mock.patch("apprise.Apprise", create=True)
-@mock.patch("apprise.AppriseAsset", create=True)
-def test_apprise_success(apprise_asset, apprise_mock, srv, caplog):
+def test_apprise_success(srv, mocker, caplog):
 
+    # Mock the SMTP library.
+    mock_smtp: Mock = mocker.patch("smtplib.SMTP")
+
+    # Load the plugin.
     module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
     item = Item(
@@ -26,11 +27,13 @@ def test_apprise_success(apprise_asset, apprise_mock, srv, caplog):
 
     outcome = module.plugin(srv, item)
 
-    assert apprise_mock.mock_calls == [
-        call(asset=mock.ANY),
-        call().add("mailtos://smtp_username:smtp_password@mail.example.org?to=foo%40example.org%2Cbar%40example.org"),
-        call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
-        call().notify().__bool__(),
+    assert mock_smtp.mock_calls == [
+        call("mail.example.org", 587, None, timeout=15),
+        call().starttls(),
+        call().login("smtp_username", "smtp_password"),
+        call().sendmail("smtp_username@mail.example.org", ["foo@example.org"], mock.ANY),
+        call().sendmail("smtp_username@mail.example.org", ["bar@example.org"], mock.ANY),
+        call().quit(),
     ]
 
     assert outcome is True
