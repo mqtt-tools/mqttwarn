@@ -6,7 +6,23 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2022-10-05 0.30.0
+=================
+
+- Make LWT alive/dead payload configurable. Thanks, @sumnerboy12.
+- Upgrade to ``future>=0.18.0,<1``. Thanks, @arieroos.
+- Several adjustments to log messages
+- Several improvements to the test harness, code coverage, project tooling,
+  code linting and formatting, and CI
+- Refactoring of some data model components
 - Fix job sorting by priority after migration to Python 3
+- Remove some Python 2 compatibility snippets. mqttwarn is Python 3 only.
+
+Breaking changes
+----------------
+- Rework and rename service plugin ``osxnotify`` to ``desktopnotify``, it
+  should work on all popular operating systems now. Thanks, @portalzine.
 
 
 2022-08-22 0.29.1
@@ -14,11 +30,6 @@ in progress
 
 - Improve documentation about logging on Docker
 - Improve launching with an additional set of ``--config`` arguments
-
-Breaking changes
-----------------
-- Rework and rename service plugin ``osxnotify`` to ``desktopnotify``, it
-  should work on all popular operating systems now. Thanks, @portalzine.
 
 
 2022-08-21 0.29.0
