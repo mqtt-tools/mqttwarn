@@ -97,8 +97,10 @@ def test_smtp_utf8(srv, mocker, caplog):
     # Specifically examine the email body.
     body = smtplib_mock.mock_calls[5].args[2]
     assert body.startswith('Content-Type: text/plain; charset="utf-8"')
-    assert "Content-Transfer-Encoding: base64" in body
-    assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+    if "Content-Transfer-Encoding: base64" in body:
+        assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+    elif "Content-Transfer-Encoding: quoted-printable" in body:
+        assert "=E2=9A=BD Notification message =E2=9A=BD" in body
 
     assert outcome is True
 
@@ -136,8 +138,11 @@ def test_smtp_html(srv, mocker, caplog):
     body = smtplib_mock.mock_calls[5].args[2]
     assert body.startswith("Content-Type: multipart/alternative")
     assert 'Content-Type: text/plain; charset="utf-8"' in body
-    assert "Content-Transfer-Encoding: base64" in body
-    assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+
+    if "Content-Transfer-Encoding: base64" in body:
+        assert "4pq9IE5vdGlmaWNhdGlvbiBtZXNzYWdlIOKavQ==" in body
+    elif "Content-Transfer-Encoding: quoted-printable" in body:
+        assert "=E2=9A=BD Notification message =E2=9A=BD" in body
 
     assert outcome is True
 
