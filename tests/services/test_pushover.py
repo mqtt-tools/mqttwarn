@@ -219,7 +219,7 @@ def test_pushover_success_with_api_retry_expire_from_config_with_data_override(s
         target="test",
         addrs=["userkey2", "appkey2"],
         message="⚽ Notification message ⚽",
-        data={"retry": 15, "expire": 900},
+        data={"retry": 90, "expire": 900},
     )
 
     add_successful_mock_response()
@@ -229,7 +229,31 @@ def test_pushover_success_with_api_retry_expire_from_config_with_data_override(s
     assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
     assert (
         responses.calls[0].request.body
-        == "user=userkey2&token=appkey2&retry=15&expire=900&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+        == "user=userkey2&token=appkey2&retry=90&expire=900&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+    )
+
+
+@responses.activate
+def test_pushover_success_with_api_retry_expire_from_config_with_data_override_out_of_range_values(srv, caplog):
+
+    module = load_module_from_file("mqttwarn/services/pushover.py")
+
+    item = Item(
+        config={"api_retry": 45, "api_expire": 1800},
+        target="test",
+        addrs=["userkey2", "appkey2"],
+        message="⚽ Notification message ⚽",
+        data={"retry": 15, "expire": 900000},
+    )
+
+    add_successful_mock_response()
+    outcome = module.plugin(srv, item)
+
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
+    assert (
+        responses.calls[0].request.body
+        == "user=userkey2&token=appkey2&retry=30&expire=10800&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
     )
 
 

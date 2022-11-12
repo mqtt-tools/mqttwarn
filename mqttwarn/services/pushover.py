@@ -126,6 +126,15 @@ def plugin(srv, item):
         if key in item.data:
             params[key] = item.data[key]
 
+    if params['retry'] < 30:
+        srv.logging.warning("Pushover retry values less than 30 seconds are not permitted, increasing to 30.")
+        params['retry'] = 30
+
+    if params['expire'] > 10800:
+        srv.logging.warning("Pushover retry values greater than 10800 are not permitted, decreasing to 10800.")
+        params['expire'] = 10800
+
+
     # check if there is an image contained in a JSON payload
     # (support either an image URL or base64 encoded image)
     image = None
