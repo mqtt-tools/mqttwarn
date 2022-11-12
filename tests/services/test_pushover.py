@@ -182,6 +182,8 @@ def test_pushover_success_with_api_retry_expire_from_config(srv, caplog):
         == "user=userkey2&token=appkey2&retry=45&expire=1800&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
     )
 
+    assert outcome is True
+
 
 @responses.activate
 def test_pushover_success_with_api_retry_expire_from_environment(srv, mocker, caplog):
@@ -208,6 +210,8 @@ def test_pushover_success_with_api_retry_expire_from_environment(srv, mocker, ca
         == "user=userkey2&token=appkey2&retry=45&expire=1800&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
     )
 
+    assert outcome is True
+
 
 @responses.activate
 def test_pushover_success_with_api_retry_expire_from_config_with_data_override(srv, caplog):
@@ -232,6 +236,8 @@ def test_pushover_success_with_api_retry_expire_from_config_with_data_override(s
         == "user=userkey2&token=appkey2&retry=90&expire=900&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
     )
 
+    assert outcome is True
+
 
 @responses.activate
 def test_pushover_success_with_api_retry_expire_from_config_with_data_override_out_of_range_values(srv, caplog):
@@ -255,6 +261,8 @@ def test_pushover_success_with_api_retry_expire_from_config_with_data_override_o
         responses.calls[0].request.body
         == "user=userkey2&token=appkey2&retry=30&expire=10800&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
     )
+
+    assert outcome is True
 
 
 @responses.activate
