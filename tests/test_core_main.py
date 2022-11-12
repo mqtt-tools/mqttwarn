@@ -139,7 +139,7 @@ def test_filter_valid_reject(mocker, topic, caplog):
     core_bootstrap(configfile=configfile_full)
 
     # Adjust `filteredmessagesloglevel` configuration setting.
-    mocker.patch("mqttwarn.core.cf.filteredmessagesloglevel", 'DEBUG')
+    mocker.patch("mqttwarn.core.cf.filteredmessagesloglevel", "DEBUG")
     mocker.patch("mqttwarn.core.cf.filteredmessagesloglevelnumber", 10)
 
     # Signal mocked MQTT message to the core machinery for processing.

@@ -183,7 +183,7 @@ def on_message(mosq, userdata, msg):
             if context.is_filtered(section, topic, payload):
                 logger.log(
                     cf.filteredmessagesloglevelnumber,
-                    "Filter in section [%s] has skipped message on %s" % (section, topic)
+                    "Filter in section [%s] has skipped message on %s" % (section, topic),
                 )
                 continue
             # Send the message to any targets specified
