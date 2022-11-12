@@ -2323,7 +2323,7 @@ a `message` and either an `imageurl` or `imagebase64` encoded image.
 
 The default values for PushOver's API `expire` and `retry` settings can be adjusted either by setting the `api_expire` / `api_retry` keys in the config section, or via the `PUSHOVER_API_RETRY` / `PUSHOVER_API_EXPIRE` environmental variables.
 The configuration settings will take prescience over environmental variables.  The default values are 60 and 3600 respectively.
-These settings can futerh be set on a per-message basis by setting the `expire` and `retry` keys in the data object:
+These settings can further be set on a per-message basis by setting the `expire` and `retry` keys in the data object:
 
 ```ini
 [config:pushover]
