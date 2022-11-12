@@ -181,7 +181,7 @@ def on_message(mosq, userdata, msg):
             logger.debug("Section [%s] matches message on %s, processing it" % (section, topic))
             # Check for any message filters
             if context.is_filtered(section, topic, payload):
-                logger.debug("Filter in section [%s] has skipped message on %s" % (section, topic))
+                logger.log(cf.filteredmessagesloglevelnumber, "Filter in section [%s] has skipped message on %s" % (section, topic))
                 continue
             # Send the message to any targets specified
             send_to_targets(section, topic, payload)

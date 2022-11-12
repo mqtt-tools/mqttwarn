@@ -128,6 +128,29 @@ def test_message_log(caplog):
     assert "temperature: 42.42" in caplog.text, caplog.text
 
 
+@pytest.mark.parametrize("topic", ["test/filter-1"])
+def test_filter_valid_reject(mocker, topic, caplog):
+    """
+    Verify that setting the filteredmessagesloglevel config option changes the log level of the "Filter in section" message.
+    """
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=configfile_full)
+
+    # Adjust `filteredmessagesloglevel` configuration setting.
+    mocker.patch("mqttwarn.core.cf.filteredmessagesloglevel", 'DEBUG')
+    mocker.patch("mqttwarn.core.cf.filteredmessagesloglevelnumber", 10)
+
+    # Signal mocked MQTT message to the core machinery for processing.
+    send_message(topic=topic, payload="reject")
+
+    # Proof that the message has been properly rejected by the `filter` function.
+    assert ("mqttwarn.core", 10, f"Message received on {topic}: reject") in caplog.record_tuples
+    assert ("mqttwarn.core", 10, f"Section [{topic}] matches message on {topic}, processing it") in caplog.record_tuples
+
+    assert ("mqttwarn.core", 10, f"Filter in section [{topic}] has skipped message on {topic}") in caplog.record_tuples
+
+
 def test_message_log_skip_retained(mocker, caplog):
     """
     Submit a message with retained flag and check if it will get discarded when the
