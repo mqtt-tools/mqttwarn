@@ -160,6 +160,80 @@ def test_pushover_success_with_html_and_url_and_url_title(srv, caplog):
 
 
 @responses.activate
+def test_pushover_success_with_api_retry_expire_from_config(srv, caplog):
+
+    module = load_module_from_file("mqttwarn/services/pushover.py")
+
+    item = Item(
+        config={"api_retry": 45, "api_expire": 1800},
+        target="test",
+        addrs=["userkey2", "appkey2"],
+        message="⚽ Notification message ⚽",
+        data={},
+    )
+
+    add_successful_mock_response()
+    outcome = module.plugin(srv, item)
+
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
+    assert (
+        responses.calls[0].request.body
+        == "user=userkey2&token=appkey2&retry=45&expire=1800&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+    )
+
+
+@responses.activate
+def test_pushover_success_with_api_retry_expire_from_environment(srv, mocker, caplog):
+
+    mocker.patch.dict(os.environ, {"PUSHOVER_API_RETRY": "45", "PUSHOVER_API_EXPIRE": "1800"})
+
+    module = load_module_from_file("mqttwarn/services/pushover.py")
+
+    item = Item(
+        config={},
+        target="test",
+        addrs=["userkey2", "appkey2"],
+        message="⚽ Notification message ⚽",
+        data={},
+    )
+
+    add_successful_mock_response()
+    outcome = module.plugin(srv, item)
+
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
+    assert (
+        responses.calls[0].request.body
+        == "user=userkey2&token=appkey2&retry=45&expire=1800&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+    )
+
+
+@responses.activate
+def test_pushover_success_with_api_retry_expire_from_config_with_data_override(srv, caplog):
+
+    module = load_module_from_file("mqttwarn/services/pushover.py")
+
+    item = Item(
+        config={"api_retry": 45, "api_expire": 1800},
+        target="test",
+        addrs=["userkey2", "appkey2"],
+        message="⚽ Notification message ⚽",
+        data={"retry": 15, "expire": 900},
+    )
+
+    add_successful_mock_response()
+    outcome = module.plugin(srv, item)
+
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.url == "https://api.pushover.net/1/messages.json"
+    assert (
+        responses.calls[0].request.body
+        == "user=userkey2&token=appkey2&retry=15&expire=900&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
+    )
+
+
+@responses.activate
 def test_pushover_success_with_devices(srv, caplog):
 
     module = load_module_from_file("mqttwarn/services/pushover.py")
