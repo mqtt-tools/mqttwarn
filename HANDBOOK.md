@@ -2337,7 +2337,7 @@ alldata = PushoverAllData()
 def PushoverAllData(topic, data, srv=None):
 	return {
 		'expire': 120,
-        'retry': 3600,
+		'retry': 3600,
 	}
 ```
 
