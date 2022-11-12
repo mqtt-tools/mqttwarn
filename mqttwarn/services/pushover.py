@@ -131,7 +131,7 @@ def plugin(srv, item):
         params['retry'] = 30
 
     if params['expire'] > 10800:
-        srv.logging.warning("Pushover retry values greater than 10800 are not permitted, decreasing to 10800.")
+        srv.logging.warning("Pushover expire values greater than 10800 are not permitted, decreasing to 10800.")
         params['expire'] = 10800
 
 
