@@ -2321,6 +2321,26 @@ def PushoverAllData(topic, data, srv=None):
 The pushover service will accept a payload with either a simple text message, or a json payload which contains
 a `message` and either an `imageurl` or `imagebase64` encoded image.
 
+The default values for PushOver's API `expire` and `retry` settings can be adjusted either by setting the `api_expire` / `api_retry` keys in the config section, or via the `PUSHOVER_API_RETRY` / `PUSHOVER_API_EXPIRE` environmental variables.
+The configuration settings will take prescience over environmental variables.  The default values are 60 and 3600 respectively.
+These settings can further be set on a per-message basis by setting the `expire` and `retry` keys in the data object:
+
+```ini
+[config:pushover]
+callback = None
+api_expire = 30
+api_retry = 1800
+alldata = PushoverAllData()
+```
+
+```
+def PushoverAllData(topic, data, srv=None):
+	return {
+		'expire': 120,
+		'retry': 3600,
+	}
+```
+
 Further, the imageurl payload, can have the additional parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
 
 The following payloads are valid;
