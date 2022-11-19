@@ -8,7 +8,7 @@ import tempfile
 import pytest
 
 from mqttwarn.core import decode_payload
-from tests import configfile_full, configfile_service_loading
+from tests import configfile_full, configfile_service_loading, configfile_logging_levels
 from tests.util import core_bootstrap, send_message
 
 
@@ -136,11 +136,7 @@ def test_filter_valid_reject(mocker, topic, caplog):
     """
 
     # Bootstrap the core machinery without MQTT.
-    core_bootstrap(configfile=configfile_full)
-
-    # Adjust `filteredmessagesloglevel` configuration setting.
-    mocker.patch("mqttwarn.core.cf.filteredmessagesloglevel", "DEBUG")
-    mocker.patch("mqttwarn.core.cf.filteredmessagesloglevelnumber", 10)
+    core_bootstrap(configfile=configfile_logging_levels)
 
     # Signal mocked MQTT message to the core machinery for processing.
     send_message(topic=topic, payload="reject")
