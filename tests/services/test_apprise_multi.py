@@ -17,6 +17,7 @@ def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
         addrs=[
             {"baseuri": "json://localhost:1234/mqtthook"},
             {"baseuri": "json://daq.example.org:5555/foobar"},
+            {"baseuri": "ntfy://user:password@ntfy.example.org/topic1/topic2"},
         ],
         title="⚽ Message title ⚽",
         message="⚽ Notification message ⚽",
@@ -28,6 +29,7 @@ def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
         call(asset=mock.ANY),
         call().add("json://localhost:1234/mqtthook"),
         call().add("json://daq.example.org:5555/foobar"),
+        call().add("ntfy://user:password@ntfy.example.org/topic1/topic2"),
         call().notify(body="⚽ Notification message ⚽", title="⚽ Message title ⚽"),
         call().notify().__bool__(),
     ]
@@ -35,8 +37,10 @@ def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
     assert outcome is True
     assert (
         "Sending notification to Apprise. target=None, addresses=["
-        "{'baseuri': 'json://localhost:1234/mqtthook'}, {'baseuri': 'json://daq.example.org:5555/foobar'}]"
-        in caplog.messages
+        "{'baseuri': 'json://localhost:1234/mqtthook'}, "
+        "{'baseuri': 'json://daq.example.org:5555/foobar'}, "
+        "{'baseuri': 'ntfy://user:password@ntfy.example.org/topic1/topic2'}"
+        "]" in caplog.messages
     )
     assert "Successfully sent message using Apprise" in caplog.messages
 

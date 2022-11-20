@@ -189,6 +189,11 @@ you an idea how to pass relevant information on the command line using JSON::
     pip install mqttwarn-contrib
     mqttwarn --plugin=mqttwarn_contrib.services.cloudflare_zone --config='{"auth-email": "foo", "auth-key": "bar"}' --options='{"addrs": ["0815", "www.example.org", ""], "message": "192.168.0.1"}'
 
+    # Submit notification to "ntfy", using Apprise service plugin.
+    mqttwarn --plugin=apprise \
+        --config='{"baseuri": "ntfy://user:password@ntfy.example.org/topic1/topic2"}' \
+        --options='{"addrs": [], "title": "Example notification", "message": "Hello world"}'
+
 
 Also, the ``--config-file`` parameter can be used to optionally specify the
 path to a configuration file.

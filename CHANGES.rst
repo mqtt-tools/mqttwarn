@@ -11,6 +11,8 @@ in progress
   level for filtered messages. Thanks, @jlrgraham.
 - CI and tests: Improvements and maintenance
 - Documentation: Improve section about Apprise
+- Documentation: Notifications to ntfy via Apprise. Thanks, @binwiederhier, @particledecay,
+  and @caronc.
 
 2022-10-05 0.30.0
 =================
