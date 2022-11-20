@@ -3,8 +3,6 @@
 from unittest import mock
 from unittest.mock import Mock, call
 
-from surrogate import surrogate
-
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
@@ -44,7 +42,6 @@ def test_apprise_success(srv, mocker, caplog):
     assert "Successfully sent message using Apprise" in caplog.messages
 
 
-@surrogate("apprise")
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_success_no_addresses(apprise_asset, apprise_mock, srv, caplog):
@@ -76,7 +73,6 @@ def test_apprise_success_no_addresses(apprise_asset, apprise_mock, srv, caplog):
     assert "Successfully sent message using Apprise" in caplog.messages
 
 
-@surrogate("apprise")
 def test_apprise_failure_notify(srv, caplog):
 
     mock_connection = mock.MagicMock()
@@ -118,7 +114,6 @@ def test_apprise_failure_notify(srv, caplog):
             assert "Sending message using Apprise failed" in caplog.messages
 
 
-@surrogate("apprise")
 def test_apprise_error(srv, caplog):
 
     mock_connection = mock.MagicMock()
@@ -160,7 +155,6 @@ def test_apprise_error(srv, caplog):
             assert "Sending message using Apprise failed. target=test, error=something failed" in caplog.messages
 
 
-@surrogate("apprise")
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_success_with_sender(apprise_asset, apprise_mock, srv, caplog):
@@ -194,7 +188,6 @@ def test_apprise_success_with_sender(apprise_asset, apprise_mock, srv, caplog):
     assert "Successfully sent message using Apprise" in caplog.messages
 
 
-@surrogate("apprise")
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_success_backward_compat(apprise_asset, apprise_mock, srv, caplog):

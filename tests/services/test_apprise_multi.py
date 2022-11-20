@@ -3,13 +3,10 @@
 from unittest import mock
 from unittest.mock import call
 
-from surrogate import surrogate
-
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_by_name
 
 
-@surrogate("apprise")
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
@@ -44,7 +41,6 @@ def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
     assert "Successfully sent message using Apprise" in caplog.messages
 
 
-@surrogate("apprise")
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_multi_mailto_success(apprise_asset, apprise_mock, srv, caplog):
@@ -87,7 +83,6 @@ def test_apprise_multi_mailto_success(apprise_asset, apprise_mock, srv, caplog):
     assert "Successfully sent message using Apprise" in caplog.messages
 
 
-@surrogate("apprise")
 def test_apprise_multi_failure_notify(srv, caplog):
 
     mock_connection = mock.MagicMock()
@@ -125,7 +120,6 @@ def test_apprise_multi_failure_notify(srv, caplog):
             assert "Sending message using Apprise failed" in caplog.messages
 
 
-@surrogate("apprise")
 def test_apprise_multi_error(srv, caplog):
 
     mock_connection = mock.MagicMock()
