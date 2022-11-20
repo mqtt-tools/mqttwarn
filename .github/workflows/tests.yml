@@ -10,10 +10,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev"]
         exclude:
+
+          # Breaks on building `winsdk`
           - os: "windows-latest"
             python-version: "3.6"
+
+          # Takes ages on building `winsdk`
+          - os: "windows-latest"
+            python-version: "3.12-dev"
     env:
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python-version }}
