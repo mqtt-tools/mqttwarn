@@ -148,7 +148,7 @@ extras["all"] = extras_all
 # Packages needed for running the tests.
 extras["test"] = [
     "pytest<8",
-    "pytest-cov<4",
+    "pytest-cov<5",
     "pytest-mock<4",
     "pytest-mqtt<1",
     "tox<4",
