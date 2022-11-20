@@ -61,6 +61,7 @@ jobs:
     - name: Setup project
       run: |
         # Install package in editable mode.
+        pip install wheel
         pip install --editable=.[test,develop]
 
     - name: Check code style
