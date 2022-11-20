@@ -339,6 +339,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [alexa-notify-me](#alexa-notify-me)
 * [amqp](#amqp)
 * [apns](#apns)
+* [apprise_about](#apprise_about)
 * [apprise_single](#apprise_single)
 * [apprise_multi](#apprise_multi)
 * [asterisk](#asterisk)
@@ -530,11 +531,25 @@ would thus emit the APNS notification to the specified device.
 Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
 
 
+### `apprise_about`
+
+The `apprise_single` and `apprise_multi` service plugins interact with the [Apprise]
+Python module, which in turn can talk to a plethora of popular notification services.
+
+[Apprise Notification Services] has a complete list of notification services supported
+by Apprise.
+
+Notification services are addressed by URL, see [Apprise URL Basics].
+Please consult the Apprise documentation about more details.
+
+[Apprise]: https://github.com/caronc/apprise
+[Apprise URL Basics]: https://github.com/caronc/apprise/wiki/URLBasics
+[Apprise Notification Services]: https://github.com/caronc/apprise/wiki#notification-services
+
+
 ### `apprise_single`
 
-The `apprise_single` service interacts with the [Apprise] Python module,
-which in turn can talk to a plethora of popular notification services.
-Please read their documentation about more details.
+This variant can publish messages to a single Apprise plugin by URL.
 
 The following configuration snippet example expects a payload like this to be
 published to the MQTT broker:
@@ -589,12 +604,9 @@ channel, which works like `-m "hello @everyone again"`.
 
 ### `apprise_multi`
 
-The `apprise_multi` service interacts with the [Apprise] Python module,
-which in turn can talk to a plethora of popular notification services.
-Please read their documentation about more details.
-
 The idea behind this variant is to publish messages to different Apprise
-plugins within a single configuration snippet, containing multiple recipients.
+plugins within a single configuration snippet, containing multiple recipients
+at different notification services.
 
 The following configuration snippet example expects a payload like this to be
 published to the MQTT broker:
@@ -626,8 +638,6 @@ targets  = apprise-multi:demo-http, apprise-multi:demo-discord, apprise-multi:de
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
-
-[Apprise]: https://github.com/caronc/apprise
 
 
 ### `autoremote`
