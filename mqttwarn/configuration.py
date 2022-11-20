@@ -56,6 +56,8 @@ class Config(RawConfigParser):
         self.logfile = "stream://sys.stderr"
         self.loglevel = "DEBUG"
 
+        self.filteredmessagesloglevel = "INFO"
+
         self.functions = None
         self.num_workers = 1
 
@@ -88,6 +90,7 @@ class Config(RawConfigParser):
                 self.tls_version = ssl.PROTOCOL_SSLv3
 
         self.loglevelnumber = self.level2number(self.loglevel)
+        self.filteredmessagesloglevelnumber = self.level2number(self.filteredmessagesloglevel)
 
         if self.functions is not None and self.functions.strip() != "":
 

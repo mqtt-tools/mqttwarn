@@ -128,6 +128,9 @@ logfile   = 'stream://sys.stderr'
 ; one of: CRITICAL, DEBUG, ERROR, INFO, WARN
 loglevel     = DEBUG
 
+; optionally set the log level for filtered messages, defaults to INFO
+; filteredmessagesloglevel = DEBUG
+
 ; path to file containing self-defined functions for formatmap, alldata, and datamap
 functions = 'myfuncs.py'
 

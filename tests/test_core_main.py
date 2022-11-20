@@ -8,7 +8,7 @@ import tempfile
 import pytest
 
 from mqttwarn.core import decode_payload
-from tests import configfile_full, configfile_service_loading
+from tests import configfile_full, configfile_logging_levels, configfile_service_loading
 from tests.util import core_bootstrap, send_message
 
 
@@ -126,6 +126,26 @@ def test_message_log(caplog):
 
     # Proof that the message has been routed to the `log` plugin properly.
     assert "temperature: 42.42" in caplog.text, caplog.text
+
+
+@pytest.mark.parametrize("topic", ["test/filter-1"])
+def test_filter_valid_reject(mocker, topic, caplog):
+    """
+    Verify that setting the filteredmessagesloglevel config option changes the log level
+    of the "Filter in section" message.
+    """
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=configfile_logging_levels)
+
+    # Signal mocked MQTT message to the core machinery for processing.
+    send_message(topic=topic, payload="reject")
+
+    # Proof that the message has been properly rejected by the `filter` function.
+    assert ("mqttwarn.core", 10, f"Message received on {topic}: reject") in caplog.record_tuples
+    assert ("mqttwarn.core", 10, f"Section [{topic}] matches message on {topic}, processing it") in caplog.record_tuples
+
+    assert ("mqttwarn.core", 10, f"Filter in section [{topic}] has skipped message on {topic}") in caplog.record_tuples
 
 
 def test_message_log_skip_retained(mocker, caplog):
