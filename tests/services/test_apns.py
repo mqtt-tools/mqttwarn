@@ -3,13 +3,10 @@
 from unittest import mock
 from unittest.mock import call
 
-from surrogate import surrogate
-
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
 
-@surrogate("apns")
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_success(mock_apns_payload, mock_apns, srv, caplog):
@@ -43,7 +40,6 @@ def test_apns_success(mock_apns_payload, mock_apns, srv, caplog):
     assert "Successfully published APNS notification to foobar" in caplog.messages
 
 
-@surrogate("apns")
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_success_no_payload(mock_apns_payload, mock_apns, srv, caplog):
@@ -67,7 +63,6 @@ def test_apns_success_no_payload(mock_apns_payload, mock_apns, srv, caplog):
     assert "Successfully published APNS notification to foobar" in caplog.messages
 
 
-@surrogate("apns")
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_success_custom_payload(mock_apns_payload, mock_apns, srv, caplog):
@@ -101,7 +96,6 @@ def test_apns_success_custom_payload(mock_apns_payload, mock_apns, srv, caplog):
     assert "Successfully published APNS notification to foobar" in caplog.messages
 
 
-@surrogate("apns")
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_failure_invalid_config(mock_apns_payload, mock_apns, srv, caplog):
@@ -121,7 +115,6 @@ def test_apns_failure_invalid_config(mock_apns_payload, mock_apns, srv, caplog):
     assert "Incorrect service configuration" in caplog.messages
 
 
-@surrogate("apns")
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_failure_apns_token_missing(mock_apns_payload, mock_apns, srv, caplog):

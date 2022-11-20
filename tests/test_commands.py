@@ -7,7 +7,6 @@ from unittest.mock import Mock, patch
 
 import docopt
 import pytest
-from surrogate import surrogate
 
 import mqttwarn.commands
 from mqttwarn.configuration import Config
@@ -162,12 +161,11 @@ def test_setup_logging_default(mocker):
     """
     config = Config()
 
-    with surrogate("logging"):
-        logging_mock: Mock = mocker.patch("logging.basicConfig")
-        mqttwarn.commands.setup_logging(config)
-        logging_mock.assert_called_with(
-            format="%(asctime)-15s %(levelname)-8s [%(name)-26s] %(message)s", level=10, stream=mock.ANY
-        )
+    logging_mock: Mock = mocker.patch("logging.basicConfig")
+    mqttwarn.commands.setup_logging(config)
+    logging_mock.assert_called_with(
+        format="%(asctime)-15s %(levelname)-8s [%(name)-26s] %(message)s", level=10, stream=mock.ANY
+    )
 
 
 def test_setup_logging_no_logfile():
@@ -186,9 +184,8 @@ def test_setup_logging_logfile_without_protocol(mocker):
     config = Config()
     config.logfile = "sys.stderr"
 
-    with surrogate("logging"):
-        logging_mock: Mock = mocker.patch("logging.basicConfig")
-        mqttwarn.commands.setup_logging(config)
-        logging_mock.assert_called_with(
-            filename="sys.stderr", format="%(asctime)-15s %(levelname)-8s [%(name)-26s] %(message)s", level=10
-        )
+    logging_mock: Mock = mocker.patch("logging.basicConfig")
+    mqttwarn.commands.setup_logging(config)
+    logging_mock.assert_called_with(
+        filename="sys.stderr", format="%(asctime)-15s %(levelname)-8s [%(name)-26s] %(message)s", level=10
+    )

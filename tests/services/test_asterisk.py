@@ -3,13 +3,10 @@
 from unittest import mock
 from unittest.mock import Mock, call
 
-from surrogate import surrogate
-
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
 
-@surrogate("asterisk.manager")
 @mock.patch("asterisk.manager.Manager", create=True)
 def test_asterisk_success(asterisk_mock, srv, caplog):
 
@@ -66,7 +63,6 @@ class ManagerException(Exception):
     pass
 
 
-@surrogate("asterisk.manager")
 @mock.patch("asterisk.manager.Manager", create=True)
 @mock.patch("asterisk.manager.ManagerSocketException", ManagerSocketException, create=True)
 def test_asterisk_failure_no_connection(asterisk_mock, srv, caplog):
@@ -101,7 +97,6 @@ def test_asterisk_failure_no_connection(asterisk_mock, srv, caplog):
     assert "Error connecting to the manager: something failed" in caplog.messages
 
 
-@surrogate("asterisk.manager")
 @mock.patch("asterisk.manager.Manager", create=True)
 @mock.patch("asterisk.manager.ManagerSocketException", ManagerSocketException, create=True)
 @mock.patch("asterisk.manager.ManagerAuthException", ManagerAuthException, create=True)
@@ -138,7 +133,6 @@ def test_asterisk_failure_login_invalid(asterisk_mock, srv, caplog):
     assert "Error logging in to the manager: something failed" in caplog.messages
 
 
-@surrogate("asterisk.manager")
 @mock.patch("asterisk.manager.Manager", create=True)
 @mock.patch("asterisk.manager.ManagerSocketException", ManagerSocketException, create=True)
 @mock.patch("asterisk.manager.ManagerAuthException", ManagerAuthException, create=True)
@@ -188,7 +182,6 @@ def test_asterisk_failure_originate_croaks(asterisk_mock, srv, caplog):
     assert "Error: something failed" in caplog.messages
 
 
-@surrogate("asterisk.manager")
 @mock.patch("asterisk.manager.Manager", create=True)
 @mock.patch("asterisk.manager.ManagerSocketException", ManagerSocketException, create=True)
 @mock.patch("asterisk.manager.ManagerAuthException", ManagerAuthException, create=True)
