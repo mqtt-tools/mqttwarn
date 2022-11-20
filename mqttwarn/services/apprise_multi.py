@@ -23,6 +23,13 @@ def plugin(srv, item):
     try:
         srv.logging.debug("Sending notification to Apprise. target=%s, addresses=%s" % (item.target, addresses))
 
+        # Disable the Apprise rate limiting subsystem.
+        try:
+            from apprise.plugins.NotifyBase import NotifyBase
+            NotifyBase.request_rate_per_sec = 0
+        except ImportError:
+            pass
+
         # Create an Apprise instance.
         apobj = apprise.Apprise(asset=apprise.AppriseAsset(async_mode=False))
 
