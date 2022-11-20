@@ -152,7 +152,6 @@ extras["test"] = [
     "pytest-mock<4",
     "pytest-mqtt<1",
     "tox<4",
-    "surrogate==0.1",
     'dataclasses; python_version<"3.7"',
     "requests-toolbelt>=0.9.1,<1",
     "responses>=0.13.3,<1",

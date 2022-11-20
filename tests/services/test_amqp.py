@@ -2,13 +2,10 @@
 # (c) 2021-2022 The mqttwarn developers
 from unittest.mock import ANY, Mock, call
 
-from surrogate import surrogate
-
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_by_name
 
 
-@surrogate("puka")
 def test_amqp_success(srv, mocker, caplog):
     module = load_module_by_name("mqttwarn.services.amqp")
 
@@ -47,7 +44,6 @@ def test_amqp_success(srv, mocker, caplog):
     assert "Successfully published AMQP notification" in caplog.messages
 
 
-@surrogate("puka")
 def test_amqp_failure(srv, mocker, caplog):
     module = load_module_by_name("mqttwarn.services.amqp")
 

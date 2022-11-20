@@ -4,7 +4,6 @@ import json
 from unittest.mock import Mock, call
 
 import pytest
-from surrogate import surrogate
 
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.model import Struct
@@ -13,12 +12,11 @@ from mqttwarn.util import load_module_by_name
 
 @pytest.fixture
 def desktop_notifier_mock(mocker):
-    with surrogate("desktop_notifier"):
-        notifier = mocker.patch("desktop_notifier.DesktopNotifier", create=True)
-        mocker.patch("desktop_notifier.Urgency", create=True)
-        mocker.patch("desktop_notifier.Button", create=True)
-        mocker.patch("desktop_notifier.ReplyField", create=True)
-        yield notifier
+    notifier = mocker.patch("desktop_notifier.DesktopNotifier", create=True)
+    mocker.patch("desktop_notifier.Urgency", create=True)
+    mocker.patch("desktop_notifier.Button", create=True)
+    mocker.patch("desktop_notifier.ReplyField", create=True)
+    yield notifier
 
 
 def test_desktopnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
