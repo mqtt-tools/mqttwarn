@@ -378,6 +378,7 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 * [mythtv](#mythtv)
 * [nntp](#nntp)
 * [nsca](#nsca)
+* [ntfy](#ntfy)
 * [desktopnotify](#desktopnotify)
 * [osxsay](#osxsay)
 * [pastebinpub](#pastebinpub)
@@ -562,7 +563,7 @@ Apprise to E-Mail, an HTTP endpoint, and a Discord channel.
 
 ```ini
 [defaults]
-launch    = apprise-mail, apprise-json, apprise-discord
+launch    = apprise-mail, apprise-json, apprise-discord, apprise-ntfy
 
 [config:apprise-mail]
 ; Dispatch message as e-mail.
@@ -589,9 +590,16 @@ baseuri  = 'json://localhost:1234/mqtthook'
 module   = 'apprise'
 baseuri  = 'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js'
 
+[config:apprise-ntfy]
+; Dispatch message to ntfy.
+; https://github.com/caronc/apprise/wiki/URLBasics
+; https://github.com/caronc/apprise/wiki/Notify_ntfy
+module   = 'apprise_single'
+baseuri  = 'ntfy://user:password/ntfy.example.org/topic1/topic2'
+
 [apprise-single-test]
 topic    = apprise/single/#
-targets  = apprise-mail:demo, apprise-json, apprise-discord
+targets  = apprise-mail:demo, apprise-json, apprise-discord, apprise-ntfy
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
@@ -624,6 +632,7 @@ module   = 'apprise_multi'
 targets = {
    'demo-http'        : [ { 'baseuri':  'json://localhost:1234/mqtthook' }, { 'baseuri':  'json://daq.example.org:5555/foobar' } ],
    'demo-discord'     : [ { 'baseuri':  'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js' } ],
+   'demo-ntfy'        : [ { 'baseuri':  'ntfy://user:password/ntfy.example.org/topic1/topic2' } ],
    'demo-mailto'      : [ {
           'baseuri':  'mailtos://smtp_username:smtp_password@mail.example.org',
           'recipients': ['foo@example.org', 'bar@example.org'],
@@ -634,7 +643,7 @@ targets = {
 
 [apprise-multi-test]
 topic    = apprise/multi/#
-targets  = apprise-multi:demo-http, apprise-multi:demo-discord, apprise-multi:demo-mailto
+targets  = apprise-multi:demo-http, apprise-multi:demo-discord, apprise-multi:demo-mailto, apprise-multi:demo-ntfy
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
@@ -2025,6 +2034,15 @@ def check_temperature(data):
 
 Requires:
 * [pynsca](https://github.com/djmitche/pynsca).
+
+
+### `ntfy`
+
+Support for [ntfy] is provided through Apprise, see [apprise_single](#apprise_single)
+and [apprise_multi](#apprise_multi).
+
+[ntfy]: https://ntfy.sh/
+
 
 ### `desktopnotify`
 
