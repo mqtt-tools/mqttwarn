@@ -5,15 +5,24 @@
 name: Release Docker Full
 
 on:
-  schedule:
-    - cron: '0 10 * * *' # everyday at 10am
   push:
     tags:
       - '*.*.*'
-  workflow_dispatch:
   pull_request:
     branches: [ main ]
 
+  schedule:
+    - cron: '0 10 * * *' # everyday at 10am
+
+  # Allow job to be triggered manually.
+  workflow_dispatch:
+
+# Cancel in-progress jobs when pushing to the same branch.
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+# The name for the produced image at ghcr.io.
 env:
   GHCR_IMAGE_NAME: jpmens/mqttwarn-full
 
