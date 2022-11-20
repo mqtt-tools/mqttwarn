@@ -6,6 +6,11 @@ mqttwarn changelog
 in progress
 ===========
 
+- Make the PushOver API ``retry`` and ``expire`` options configurable. Thanks, @jlrgraham.
+- Add new configuration setting ``filteredmessagesloglevel``, to optionally set the log
+  level for filtered messages. Thanks, @jlrgraham.
+- CI and tests: Improvements and maintenance
+- Documentation: Improve section about Apprise
 
 2022-10-05 0.30.0
 =================
