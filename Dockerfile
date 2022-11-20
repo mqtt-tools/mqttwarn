@@ -17,6 +17,7 @@ RUN chown -R mqttwarn:mqttwarn /etc/mqttwarn
 
 # Install mqttwarn
 COPY . /src
+RUN pip install wheel
 RUN pip install /src
 
 # Make process run as "mqttwarn" user

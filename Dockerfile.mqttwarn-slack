@@ -13,6 +13,7 @@ FROM ghcr.io/jpmens/mqttwarn-standard:latest
 USER root
 
 # Install Slack SDK.
+RUN pip install wheel
 RUN pip install mqttwarn[slack]
 
 # Make process run as "mqttwarn" user
