@@ -6,6 +6,10 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2022-11-21 0.31.0
+=================
+
 - Make the PushOver API ``retry`` and ``expire`` options configurable. Thanks, @jlrgraham.
 - Add new configuration setting ``filteredmessagesloglevel``, to optionally set the log
   level for filtered messages. Thanks, @jlrgraham.
@@ -13,6 +17,7 @@ in progress
 - Documentation: Improve section about Apprise
 - Documentation: Notifications to ntfy via Apprise. Thanks, @binwiederhier, @particledecay,
   and @caronc.
+
 
 2022-10-05 0.30.0
 =================
