@@ -171,7 +171,7 @@ extras["develop"] = [
 
 setup(
     name="mqttwarn",
-    version="0.30.0",
+    version="0.31.0",
     description="mqttwarn - subscribe to MQTT topics and notify pluggable services",
     long_description=README,
     license="EPL 2.0",
