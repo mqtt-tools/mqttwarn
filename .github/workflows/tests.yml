@@ -65,6 +65,7 @@ jobs:
         pip install --editable=.[test,develop]
 
     - name: Check code style
+      # `ruff` is only available for Python>=3.7.
       if: matrix.python-version != '3.6'
       run: |
         poe check-style
