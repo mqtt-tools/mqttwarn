@@ -49,14 +49,23 @@ Description
 payloads to one or more notification services after optionally applying
 sophisticated transformations.
 
-It comes with over **70 notification handler plugins** for a wide
-range of notification services and is very open to further contributions.
-You can enjoy the alphabetical list of plugins within the handbook_services_.
-
 A picture says a thousand words.
 
 .. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/main/assets/mqttwarn.png
     :target: #
+
+
+Coverage
+========
+
+*mqttwarn* comes with **over 70 notification handler plugins** for a wide
+range of notification services and is very open to further contributions.
+You can enjoy the alphabetical list of plugins at `mqttwarn notification
+services`_.
+
+On top of that, it integrates with the excellent `Apprise`_ notification
+library. `Apprise notification services`_ has a complete list of the **80+
+notification services** supported by Apprise.
 
 
 Details

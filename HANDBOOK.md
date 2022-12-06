@@ -534,11 +534,24 @@ Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
 
 ### `apprise_about`
 
-The `apprise_single` and `apprise_multi` service plugins interact with the [Apprise]
-Python module, which in turn can talk to a plethora of popular notification services.
+The `apprise_single` and `apprise_multi` service plugins interact with the
+[Apprise] Python library, which in turn can talk to a plethora of popular
+notification services:
 
-[Apprise Notification Services] has a complete list of notification services supported
-by Apprise.
+Apprise API, AWS SES, AWS SNS, Bark, BulkSMS, Boxcar, ClickSend, DAPNET,
+DingTalk, Discord, E-Mail, Emby, Faast, FCM, Flock, Gitter, Google Chat,
+Gotify, Growl, Guilded, Home Assistant, IFTTT, Join, Kavenegar, KODI, Kumulos,
+LaMetric, Line, MacOSX, Mailgun, Mattermost, Matrix, Microsoft Windows,
+Mastodon, Microsoft Teams, MessageBird, MQTT, MSG91, MyAndroid, Nexmo,
+Nextcloud, NextcloudTalk, Notica, Notifico, ntfy, Office365, OneSignal,
+Opsgenie, PagerDuty, ParsePlatform, PopcornNotify, Prowl, Pushalot, PushBullet,
+Pushjet, Pushover, PushSafer, Reddit, Rocket.Chat, SendGrid, ServerChan, Signal,
+SimplePush, Sinch, Slack, SMSEagle, SMTP2Go, Spontit, SparkPost, Super Toasty,
+Streamlabs, Stride, Syslog, Techulus Push, Telegram, Twilio, Twitter, Twist,
+XBMC, Vonage, Webex Teams.
+
+[Apprise Notification Services] has a complete list and documentation of the
+80+ notification services supported by Apprise.
 
 Notification services are addressed by URL, see [Apprise URL Basics].
 Please consult the Apprise documentation about more details.
