@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2021 The mqttwarn developers
+# (c) 2014-2022 The mqttwarn developers
 import os
 import platform
 

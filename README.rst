@@ -265,7 +265,7 @@ Yet, they are bundled into another package, ``mqttwarn-contrib``, see also
 
 Licenses
 ========
-This software is copyright © 2014-2021 Jan-Piet Mens and contributors. All rights reserved.
+This software is copyright © 2014-2022 Jan-Piet Mens and contributors. All rights reserved.
 
 It is and will always be **free and open source software**.
 
