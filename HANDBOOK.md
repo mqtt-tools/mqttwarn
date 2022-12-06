@@ -507,14 +507,14 @@ format  = {alert}
 ```
 
 Certificate and Key files are in PEM format, and the key file must *not* be
-password-protected. (The PKCS#12 file you get as a developer can be extracted thusly:
+password-protected.
 
+If you need to extract them from a PKCS#12 file, run:
 ```
 openssl pkcs12 -in apns-CTRL.p12 -nocerts -nodes | openssl rsa > prod.key
-openssl pkcs12 -in apns-CTRL.p12 -clcerts -nokeys  > xxxx
+openssl pkcs12 -in apns-CTRL.p12 -clcerts -nokeys > xxxx
 ```
-
-then copy/paste from `xxxx` the sandbox or production certificate into `prod.crt`.)
+Then copy/paste from `xxxx` the sandbox or production certificate into `prod.crt`.
 
 The _myfuncs_ function `apnsdata()` extracts the last part of the topic into
 `apns_token`, the hex token for the target device, which is required within the
@@ -525,8 +525,8 @@ def apnsdata(topic, data, srv=None):
     return dict(apns_token = topic.split('/')[-1])
 ```
 
-A publish to topic `test/token/380757b117f15a46dff2bd0be1d57929c34124dacb28d346dedb14d3464325e5`
-would thus emit the APNS notification to the specified device.
+Publishing to topic `test/token/380757b117f15a46dff2bd0be1d57929c34124dacb28d346dedb14d3464325e5`
+will emit the APNS notification to the specified device.
 
 
 Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
@@ -1654,7 +1654,7 @@ The MySQL plugin will attempt to add a row for every message received on a given
 For instance, given a table created with `CREATE TABLE names (id INTEGER, name VARCHAR(25));` then
 the message '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }' on topic 'my/2' will be added to the table like this:
 
-```mysql
+```table
 +------+------------+
 | id   | name       |
 +------+------------+
@@ -1666,7 +1666,7 @@ The values for the 'id' and 'name' columns are assumed to be filled by the value
 
 If you added columns 'topic', 'payload' and '_dtiso' to the database, then that same message will add this row:
 
-```mysql
+```table
 +------+------------+-----------------------------------------------------+-----------------------------+-------+
 | id   | name       | payload                                             | _dtiso                      | topic |
 +------+------------+-----------------------------------------------------+-----------------------------+-------+
@@ -1729,7 +1729,7 @@ I'll now add our fallback column to the schema:
 The payload of messages which do not contain valid JSON will be coped verbatim
 to the _fallback_ column:
 
-```mysql
+```table
 +------+------+-------------+--------+
 | id   | name | full        | number |
 +------+------+-------------+--------+
@@ -1752,7 +1752,7 @@ mosquitto_pub -t my/2 -m '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }'
 
 A table named ```my_2``` will be created on the fly with the following structure and content (the table name is derived from the MQTT topic, but slashes are replaced by underscores):
 
-```mysql
+```table
 +------+------------+--------+-------------------------------------------------------+
 | id   | name       | number | payload                                               |
 +------+------------+--------+-------------------------------------------------------+
@@ -2414,7 +2414,7 @@ For the above example, I would only recommend this be used in a local MQTT serve
 ![pushover on iOS](assets/pushover.png)
 
 Requires:
-* a [pushover.net](https://pushover.net/) account
+* An account at [pushover.net](https://pushover.net/).
 
 ### `pushsafer`
 
@@ -2444,7 +2444,7 @@ For a list of available icons, sounds and other params see the
 ![pushsafer on iOS](assets/pushsafer.jpg)
 
 Requires:
-* a [pushsafer.com](https://www.pushsafer.com/) account
+* An account at [pushsafer.com](https://www.pushsafer.com/).
 
 ### `redispub`
 
@@ -2460,11 +2460,12 @@ targets = {
 ```
 
 Requires:
-* d[redis-py](https://github.com/andymccurdy/redis-py)
+* [redis-py](https://github.com/andymccurdy/redis-py)
 
 ### `rrdtool`
 
-The `rrdtool` plugin updates a round robin database created by [rrdtool](http://oss.oetiker.ch/rrdtool/) with the message payload.
+The `rrdtool` plugin updates a round-robin database created by [rrdtool] with
+the message payload.
 
 ```ini
 [config:rrdtool]
@@ -2474,7 +2475,14 @@ targets = {
     }
 ```
 
-[rrdpython's API](http://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html) expects strings and/or list of strings as parameters to the functions. Thus a list for a target simply contains the command line arguments for `rrdtool update`. The plugin will embed the message as final argument `N:<message>`, if the message is an integer number. Otherwise, it will break up the message into single words and append this list to the list supplied by the target. This leaves it to your descretion _where_ to put arguments and even - with the right data mapping and extraction in place - allows for something like
+[rrdpython's API] expects strings and/or a list of strings as parameters to the functions.
+Thus, a list for a target simply contains the command line arguments for `rrdtool update`.
+
+The plugin will embed the message as final argument `N:<message>`, if the message is an
+integer number. Otherwise, it will break up the message into single words and append this 
+list to the list supplied by the target. This leaves it to your discretion _where_ to put
+arguments and even - with the right data mapping and extraction in place - allows for 
+a configuration like:
 
 ```ini
 [config:rrdtool]
@@ -2490,6 +2498,9 @@ format = /srv/rrd/sensors/{sensor_id}.rrd -t batt {ts}:{batt}
 ```
 
 Requires the rrdtool bindings available with `pip install rrdtool`.
+
+[rrdtool]: http://oss.oetiker.ch/rrdtool/
+[rrdpython's API]: http://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html
 
 ### `serial`
 
@@ -3086,10 +3097,10 @@ which is to be handled by the plugin. `item` contains the following elements:
 item = {
     'service'       : 'string',       # name of handling service (`twitter`, `file`, ..)
     'target'        : 'string',       # name of target (`o1`, `janejol`) in service
-    'addrs'         : <list>,         # list of addresses from SERVICE_targets
+    'addrs'         : list,           # list of addresses from SERVICE_targets
     'config'        : dict,           # None or dict from SERVICE_config {}
     'topic'         : 'string',       # incoming topic branch name
-    'payload'       : <payload>       # raw message payload
+    'payload'       : 'string',       # raw message payload
     'message'       : 'string',       # formatted message (if no format string then = payload)
     'data'          : None,           # dict with transformation data
     'title'         : 'mqttwarn',     # possible title from title{}
@@ -3667,6 +3678,8 @@ This section contains some examples of how `mqttwarn` can be used with some more
 By subscribing to your [OwnTracks] topic and adding the following custom filter you can get `mqttwarn` to send notifications when your phone battery gets below a certain level;
 
 ```python
+import json
+
 def owntracks_battfilter(topic, message):
     data = dict(json.loads(message).items())
     if data['batt'] is not None:
@@ -3721,10 +3734,10 @@ The Jinja2 template looks like this:
 ```
 
 and an example JSON string returned by that template is then passed to our configured
-targets thusly:
+targets:
 
 ```json
-"host": "arduino/temp", "woohooo": 17, "tst": "2014-04-13T09:25:46.247150Z", "temperature": "22", "short_message": "Heat 22"}
+{"host": "arduino/temp", "woohooo": 17, "tst": "2014-04-13T09:25:46.247150Z", "temperature": "22", "short_message": "Heat 22"}
 ```
 
 
