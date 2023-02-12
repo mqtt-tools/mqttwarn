@@ -608,7 +608,7 @@ baseuri  = 'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js'
 ; https://github.com/caronc/apprise/wiki/URLBasics
 ; https://github.com/caronc/apprise/wiki/Notify_ntfy
 module   = 'apprise_single'
-baseuri  = 'ntfy://user:password/ntfy.example.org/topic1/topic2'
+baseuri  = 'ntfy://user:password@ntfy.example.org/topic1/topic2'
 
 [apprise-single-test]
 topic    = apprise/single/#
@@ -645,7 +645,7 @@ module   = 'apprise_multi'
 targets = {
    'demo-http'        : [ { 'baseuri':  'json://localhost:1234/mqtthook' }, { 'baseuri':  'json://daq.example.org:5555/foobar' } ],
    'demo-discord'     : [ { 'baseuri':  'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js' } ],
-   'demo-ntfy'        : [ { 'baseuri':  'ntfy://user:password/ntfy.example.org/topic1/topic2' } ],
+   'demo-ntfy'        : [ { 'baseuri':  'ntfy://user:password@ntfy.example.org/topic1/topic2' } ],
    'demo-mailto'      : [ {
           'baseuri':  'mailtos://smtp_username:smtp_password@mail.example.org',
           'recipients': ['foo@example.org', 'bar@example.org'],
