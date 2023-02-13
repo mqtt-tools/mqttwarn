@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- Modernize Docker configuration, now using Debian bullseye and Python 3.11.
+
 
 2022-11-21 0.31.0
 =================

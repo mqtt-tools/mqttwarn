@@ -5,7 +5,7 @@
 #
 #   docker build --tag=mqttwarn-local .
 #
-FROM python:3.9-slim-buster
+FROM python:3.11-slim-bullseye
 
 # Create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
