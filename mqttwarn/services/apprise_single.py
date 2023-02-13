@@ -5,10 +5,13 @@ __copyright__ = 'Copyright 2020-2021 Andreas Motl'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 # https://github.com/caronc/apprise#developers
-from urllib.parse import urlencode
 from collections import OrderedDict
 
 import apprise
+
+from mqttwarn.services.apprise_util import obtain_apprise_arguments, add_url_params, get_all_template_argument_names
+
+APPRISE_ALL_ARGUMENT_NAMES = get_all_template_argument_names()
 
 
 def plugin(srv, item):
@@ -39,6 +42,11 @@ def plugin(srv, item):
 
         # Collect URL parameters.
         params = OrderedDict()
+
+        # Obtain and apply all possible Ntfy parameters from data dictionary.
+        params.update(obtain_apprise_arguments(item, APPRISE_ALL_ARGUMENT_NAMES))
+
+        # Apply addressee information.
         if sender:
             params["from"] = sender
         if to:
@@ -46,10 +54,8 @@ def plugin(srv, item):
         if sender_name:
             params["name"] = sender_name
 
-        # Add notification services by server url.
-        uri = baseuri
-        if params:
-            uri += '?' + urlencode(params)
+        # Add parameters to Apprise notification URL.
+        uri = add_url_params(baseuri, params)
         apobj.add(uri)
 
         # Submit notification.
