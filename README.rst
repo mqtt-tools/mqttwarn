@@ -253,7 +253,7 @@ and problem reports from the community.
 
 So, if you'd like to contribute you're most welcome.
 Spend some time taking a look around, locate a bug, design issue or
-spelling mistake and then send us a pull request or create an issue_.
+spelling mistake and then send us a pull request or create an `issue`_.
 
 Thanks in advance for your efforts, we really appreciate any help or feedback.
 
@@ -323,6 +323,7 @@ Have fun!
 .. _handbook: https://github.com/jpmens/mqttwarn/blob/main/HANDBOOK.md
 .. _Hiveeyes: https://hiveeyes.org/
 .. _How do your servers talk to you?: https://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/
+.. _issue: https://github.com/jpmens/mqttwarn/issues/new
 .. _LICENSE: https://github.com/jpmens/mqttwarn/blob/main/LICENSE
 .. _Mosquitto: https://mosquitto.org
 .. _MQTTwarn\: Ein Rundum-Sorglos-Notifier: https://web.archive.org/web/20140611040637/http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312
