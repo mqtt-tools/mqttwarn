@@ -6,6 +6,10 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2023-02-13 0.32.0
+=================
+
 - Modernize Docker configuration, now using Debian bullseye and Python 3.11.
 - Improve nightly and on-PR Docker builds.
 - Add versioning based on Git tags, using ``versioningit``. This will aid in
