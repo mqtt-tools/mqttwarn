@@ -600,7 +600,7 @@ baseuri  = 'json://localhost:1234/mqtthook'
 ; https://github.com/caronc/apprise/wiki/Notify_discord
 ; https://discord.com/developers/docs/resources/webhook
 ; discord://{WebhookID}/{WebhookToken}/
-module   = 'apprise'
+module   = 'apprise_single'
 baseuri  = 'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js'
 
 [config:apprise-ntfy]
