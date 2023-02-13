@@ -11,7 +11,6 @@ $(eval venvpath     := .venv)
 $(eval pip          := $(venvpath)/bin/pip)
 $(eval python       := $(venvpath)/bin/python)
 $(eval pytest       := $(venvpath)/bin/pytest)
-$(eval minibump     := $(venvpath)/bin/minibump)
 $(eval twine        := $(venvpath)/bin/twine)
 $(eval sphinx       := $(venvpath)/bin/sphinx-build)
 $(eval isort        := $(venvpath)/bin/isort)
@@ -53,9 +52,7 @@ format: install-releasetools
 # -------
 
 # Release this piece of software
-# Synopsis:
-#   make release bump=minor  (major,minor,patch)
-release: bumpversion push build pypi-upload
+release: push build pypi-upload
 
 
 # -------------
@@ -71,9 +68,6 @@ docs-html: install-doctools
 # ===============
 # Utility targets
 # ===============
-bumpversion: install-releasetools
-	@$(minibump) bump --relax $(bump)
-
 push:
 	git push && git push --tags
 
