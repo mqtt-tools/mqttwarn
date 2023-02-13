@@ -1,28 +1,36 @@
-#############
-mqttwarn todo
-#############
-
-Task: Make mqttwarn a first citizen of the Python ecosystem.
+################
+mqttwarn backlog
+################
 
 
-****************
-Goals for 0.20.0
-****************
+************
+Iteration +1
+************
+- [o] ``--config-file`` option does not work
+- [o] Add documentation on RTD
+  https://github.com/jpmens/mqttwarn/issues/389#issuecomment-1428353079
+
+
+************
+Iteration +2
+************
 - [o] Improve software tests
 - [o] Refactor contents from "examples", "templates" and "vendor" folders
-      - The path to the "templates" folder must be specified using command line argument or environment variable.
-            Otherwise, look nearby the configuration file /path/to/mqttwarn.ini, so use /path/to/templates.
-      - Integrate existing template .j2 files into example folder?
+
+  - The path to the "templates" folder must be specified using command line argument or environment variable.
+    Otherwise, look nearby the configuration file /path/to/mqttwarn.ini, so use /path/to/templates.
+  - Integrate existing template .j2 files into example folder?
 - [o] Add some entrypoints
-      - Wire ``contrib/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
-      - Wire ``contrib/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
-      - Wire ``mqttwarn/vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
+
+  - Wire ``contrib/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
+  - Wire ``contrib/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
+  - Wire ``mqttwarn/vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
 - [o] How to address "samplefuncs.py" in relation to "mqttwarn.ini"? E.g. if the mqttwarn configuration file
-      would be ``/etc/mqttwarn/acme.ini``, should this load ``/etc/mqttwarn/samplefuncs.py`` or use the current
-      working directory for that? Or even both!?
+  would be ``/etc/mqttwarn/acme.ini``, should this load ``/etc/mqttwarn/samplefuncs.py`` or use the current
+  working directory for that? Or even both!?
 - [o] When running the mqttwarn daemon and no configuration file is given,
-      use configuration from the ".mqttwarn" folder in the current working directory.
-      When doing so, also use ".mqttwarn/templates" as the default templates folder.
+  use configuration from the ".mqttwarn" folder in the current working directory.
+  When doing so, also use ".mqttwarn/templates" as the default templates folder.
 - [o] Verify that "functions" still accepts file names as well as dotted module names
 - [o] Adapt configuration for Supervisor and systemd
 - [o] Improve documentation: Add a complete roundtrip example involving ``mosquitto_pub``
@@ -31,9 +39,9 @@ Goals for 0.20.0
 - [o] Improve logging: Let "file" service report about where it's writing to
 
 
-****************
-Goals for 0.21.0
-****************
+************
+Iteration +3
+************
 - [o] Refactor the ``mqttwarn make-config|make-samplefuncs`` machinery into a ``mqttwarn init``-style thing. Proposal::
 
       # Create folder .mqttwarn with minimal configuration (config.ini, custom.py)
@@ -50,12 +58,12 @@ Goals for 0.21.0
 Goals for 1.0.0
 ***************
 - [o] Make mqttwarn completely unicode-safe
-- [o] Make "mqttwarn --plugin=log --options=" obtain JSON data from STDIN
+- [o] Make ``mqttwarn --plugin=log --options=`` obtain JSON data from STDIN
 - [o] Translate documentation into reStructuredText format,
-      render it using Sphinx and optionally publish to readthedocs.org.
+  render it using Sphinx and optionally publish to readthedocs.org.
 - [o] Add support for Python 3
 - [o] Add activity indicator for running a) interactively (snappy) or b) daemonized (in interval).
-      Display "tps" and general activity on a per-message basis.
+  Display "tps" and general activity on a per-message basis.
 
 
 ***************
@@ -63,10 +71,7 @@ Goals for 2.0.0
 ***************
 - [o] Idea: What if we could reuse the notification plugins in the context of a ``heronotify`` entrypoint?
 - [o] Idea: It would be cool if mqttwarn could offer some kind of plugin autoconfiguration mechanism similar
-      to [Munin](http://munin-monitoring.org/)'s
-      [autoconf](http://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#autoconf) and
-      [suggest](http://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#suggest) features.
-      So, let's pretend invoking::
+  to `Munin`_'s `autoconf`_ and `suggest`_ features. So, let's pretend invoking::
 
         mqttwarn --plugin=telegram --suggest-config
 
@@ -93,5 +98,10 @@ Goals for 2.0.0
             """
             return snippet
 - [o] Think about adding further support for plugins, e.g. for provisioning databases appropriately, see also
-      https://github.com/jpmens/mqttwarn/issues/283
+  https://github.com/jpmens/mqttwarn/issues/283
 - [o] Configuration and source tree file watcher like ``pserve ... --reload``
+
+
+.. _autoconf: http://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#autoconf
+.. _Munin: http://munin-monitoring.org/
+.. _suggest: http://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#suggest
