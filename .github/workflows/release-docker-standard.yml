@@ -105,4 +105,6 @@ jobs:
 
       - name: Display git status
         run: |
+          set -x
+          git describe
           git status
