@@ -11,6 +11,8 @@ in progress
 - Add versioning based on Git tags, using ``versioningit``. This will aid in
   telling PR- and nightly releases apart from GA releases when running
   ``mqttwarn --version``.
+- Improve Apprise integration by propagating the mqttwarn data dictionary into
+  the Apprise plugin template arguments.
 
 
 2022-11-21 0.31.0

@@ -5,6 +5,9 @@ import sys
 
 import pytest
 
+# Needed to make Apprise not be mocked too much.
+from mqttwarn.services.apprise_util import get_all_template_argument_names  # noqa:F401
+
 # Import custom fixtures.
 from mqttwarn.testing.fixtures import mqttwarn_service as srv  # noqa:F401
 
