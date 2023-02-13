@@ -1,3 +1,3 @@
-bump2version
+minibump<1; python_version>='3.10'
 twine
 keyring

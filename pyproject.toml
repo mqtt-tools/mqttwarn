@@ -1,3 +1,22 @@
+# ==================
+# Build system setup
+# ==================
+
+[build-system]
+requires = [
+    "setuptools>=42",  # At least v42 of setuptools required!
+    "versioningit",
+]
+build-backend = "setuptools.build_meta"
+
+
+[tool.versioningit]
+
+[tool.versioningit.vcs]
+method = "git"
+default-tag = "0.0.0"
+
+
 # =========================
 # Linter and code formatter
 # =========================

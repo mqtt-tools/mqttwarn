@@ -1,7 +1,9 @@
 *
+!.git
 !etc
 !mqttwarn
 !tests
+!pyproject.toml
 !setup.py
 !MANIFEST.in
 !*.ini
