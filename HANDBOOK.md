@@ -554,11 +554,29 @@ XBMC, Vonage, Webex Teams.
 80+ notification services supported by Apprise.
 
 Notification services are addressed by URL, see [Apprise URL Basics].
-Please consult the Apprise documentation about more details.
+Please consult the [Apprise documentation] about more details.
+
+Apprise notification plugins obtain different kinds of configuration or
+template arguments. mqttwarn supports propagating them from either the
+``baseuri`` configuration setting, or from its data dictionary to the Apprise
+plugin invocation.
+
+So, for example, you can propagate parameters to the [Apprise Ntfy plugin]
+by either pre-setting them as URL query parameters, like 
+```
+ntfy://user:password@ntfy.example.org/topic1/topic2?email=test@example.org
+```
+or by submitting them within a JSON-formatted MQTT message, like
+```json
+{"priority": "high", "tags": "foo,bar", "click": "https://httpbin.org/headers"}
+```
+
 
 [Apprise]: https://github.com/caronc/apprise
+[Apprise documentation]: https://github.com/caronc/apprise/wiki
 [Apprise URL Basics]: https://github.com/caronc/apprise/wiki/URLBasics
 [Apprise Notification Services]: https://github.com/caronc/apprise/wiki#notification-services
+[Apprise Ntfy plugin]: https://github.com/caronc/apprise/wiki/Notify_ntfy
 
 
 ### `apprise_single`
