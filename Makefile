@@ -11,7 +11,7 @@ $(eval venvpath     := .venv)
 $(eval pip          := $(venvpath)/bin/pip)
 $(eval python       := $(venvpath)/bin/python)
 $(eval pytest       := $(venvpath)/bin/pytest)
-$(eval bumpversion  := $(venvpath)/bin/bumpversion)
+$(eval minibump     := $(venvpath)/bin/minibump)
 $(eval twine        := $(venvpath)/bin/twine)
 $(eval sphinx       := $(venvpath)/bin/sphinx-build)
 $(eval isort        := $(venvpath)/bin/isort)
@@ -21,6 +21,7 @@ $(eval poe          := $(venvpath)/bin/poe)
 # Setup Python virtualenv
 setup-virtualenv:
 	@test -e $(python) || python3 -m venv $(venvpath)
+	$(pip) install versioningit
 
 
 # -------
@@ -71,7 +72,7 @@ docs-html: install-doctools
 # Utility targets
 # ===============
 bumpversion: install-releasetools
-	@$(bumpversion) $(bump)
+	@$(minibump) bump --relax $(bump)
 
 push:
 	git push && git push --tags

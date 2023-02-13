@@ -7,6 +7,9 @@
 #
 FROM python:3.11-slim-bullseye
 
+# Install additional requirements
+RUN apt-get update && apt-get install --yes git
+
 # Create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
 WORKDIR /etc/mqttwarn
@@ -17,7 +20,7 @@ RUN chown -R mqttwarn:mqttwarn /etc/mqttwarn
 
 # Install mqttwarn
 COPY . /src
-RUN pip install wheel
+RUN pip install versioningit wheel
 RUN pip install /src
 
 # Make process run as "mqttwarn" user

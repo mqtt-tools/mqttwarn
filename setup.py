@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2022 The mqttwarn developers
+# (c) 2014-2023 The mqttwarn developers
 import os
 import platform
 
 from setuptools import find_packages, setup
+from versioningit import get_cmdclasses
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, "README.rst")).read()
@@ -16,6 +17,7 @@ requires = [
     "docopt<1",
     "requests<3",
     "future>=0.18.0,<1",
+    "importlib-metadata; python_version<'3.8'",
 ]
 
 extras = {
@@ -170,8 +172,8 @@ extras["develop"] = [
 
 
 setup(
+    cmdclass=get_cmdclasses(),
     name="mqttwarn",
-    version="0.31.0",
     description="mqttwarn - subscribe to MQTT topics and notify pluggable services",
     long_description=README,
     license="EPL 2.0",

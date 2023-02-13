@@ -7,6 +7,10 @@ in progress
 ===========
 
 - Modernize Docker configuration, now using Debian bullseye and Python 3.11.
+- Improve nightly and on-PR Docker builds.
+- Add versioning based on Git tags, using ``versioningit``. This will aid in
+  telling PR- and nightly releases apart from GA releases when running
+  ``mqttwarn --version``.
 
 
 2022-11-21 0.31.0
