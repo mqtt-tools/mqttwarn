@@ -129,7 +129,7 @@ def test_message_log(caplog):
 
 
 @pytest.mark.parametrize("topic", ["test/filter-1"])
-def test_filter_valid_reject(mocker, topic, caplog):
+def test_filter_valid_reject_filteredmessagesloglevel(mocker, topic, caplog):
     """
     Verify that setting the filteredmessagesloglevel config option changes the log level
     of the "Filter in section" message.
