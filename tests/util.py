@@ -76,3 +76,22 @@ def invoke_command(capfd, command):
         run_command()
     output = capfd.readouterr()
     return output.out, output.err
+
+
+class FakeResponse:
+    """
+    https://www.mitchellcurrie.com/blog-post/python-mock-unittesting/
+    """
+
+    status: int
+    data: bytes
+
+    def __init__(self, *, data: bytes):
+        self.data = data
+
+    def read(self):
+        self.status = 200 if self.data is not None else 404
+        return self.data
+
+    def close(self):
+        pass
