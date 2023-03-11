@@ -56,9 +56,12 @@ def plugin(srv, item):
     # 6 (if present) is the Pushsafer Title of URL
     # 7 (if present) is the Pushsafer Time in minutes, after which message automatically gets purged
     # 8 (if present) is the Pushsafer priority, integer -2, -1, 0, 1, 2
-    # 9 (if present) is the Pushsafer retry after which time (in secomds 60-10800) a message should resend
-    # 10 (if present) is the Pushsafer expire after which time (in secomds 60-10800) the retry should stopped
-    # 11 (if present) is the Pushsafer answer, 1 = Answer, 0 = no possibilty to answer
+    # 9 (if present) is the Pushsafer retry after which time (in seconds 60-10800) a message should resend
+    # 10 (if present) is the Pushsafer expire after which time (in seconds 60-10800) the retry should stopped
+    # 11 (if present) is the Pushsafer confirm after which time (in seconds 10-10800) the message should resend after it is confirmed
+    # 12 (if present) is the Pushsafer answer, 1 = Answer, 0 = no possibilty to answer
+    # 13 (if present) is the Pushsafer answeroptions, specify predefined answer options divided by a pipe character, e.g. Yes|No|Maybe
+    # 14 (if present) is the Pushsafer answerforce, 1 = force an answer, 0 = donot force an answer
 
     try:
         appkey  = addrs[0]
@@ -99,9 +102,18 @@ def plugin(srv, item):
 
     if len(addrs) > 9:
         params['ex'] = addrs[10]
-
+        
     if len(addrs) > 10:
-        params['a'] = addrs[11]
+        params['cr'] = addrs[11]
+
+    if len(addrs) > 11:
+        params['a'] = addrs[12]
+
+    if len(addrs) > 12:
+        params['ao'] = addrs[13]
+
+    if len(addrs) > 13:
+        params['af'] = addrs[14]
 
     if title is not None:
         params['t'] = title
