@@ -167,7 +167,7 @@ extras["develop"] = [
     "build<1",
     "mypy<1",
     "poethepoet<1",
-    'ruff==0.0.52; python_version>="3.7"',
+    'ruff==0.0.254; python_version>="3.7"',
 ]
 
 
