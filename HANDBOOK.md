@@ -2109,10 +2109,10 @@ In order to receive pushsafer notifications you need what is called a _private o
 ```ini
 [config:pushsafer]
 targets = {
-    'nagios'     : ['privatekey', 'Device ID', 'Icon', 'Sound', 'Vibration', 'URL', 'Url Title', 'Time2Live', 'Priority', 'Retry', 'Expire', 'Answer'],
+    'nagios'     : ['privatekey', 'Device ID', 'Icon', 'Sound', 'Vibration', 'URL', 'Url Title', 'Time2Live', 'Priority', 'Retry', 'Expire', 'Confirm', 'Answer', 'AnswerOptions', 'AnswerForce'],
     'tracking'   : ['aliaskey1'],
-    'extraphone' : ['aliaskey2', '', '', '', '', '', '', '60', '2', '60', '600', '0'],
-	'warnme'     : ['aliaskey3', '', '', '', '', '', '', '60', '1', '', '', '1']
+    'extraphone' : ['aliaskey2', '', '', '', '', '', '', '60', '2', '60', '600', '0', '0', '', '0'],
+	'warnme'     : ['aliaskey3', '', '', '', '', '', '', '60', '1', '', '', '10', '1', 'yes|no|maybe', '1']
     }
 ```
 
