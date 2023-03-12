@@ -143,12 +143,7 @@ class PushsaferParameterEncoder:
             params['s'] = addrs[3]
 
         if len(addrs) > 4:
-            # Special handling for `vibration`.
-            # With the v1 configuration layout, it should not always trigger a vibration when left empty.
-            # Therefore, a synthetic value `0` can be used to configure "device-default" vibration.
-            value = str(addrs[4])
-            if value != "":
-                params['v'] = value
+            params['v'] = addrs[4]
 
         if len(addrs) > 5:
             params['u'] = addrs[5]

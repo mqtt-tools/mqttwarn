@@ -2457,8 +2457,8 @@ In order to receive pushsafer notifications you need what is called a _private o
 targets = {
     'nagios'     : ['privatekey', 'Device ID', 'Icon', 'Sound', 'Vibration', 'URL', 'Url Title', 'Time2Live', 'Priority', 'Retry', 'Expire', 'Answer'],
     'tracking'   : ['aliaskey1'],
-    'extraphone' : ['aliaskey2', '', '', '', '0', '', '', '60', '2', '60', '600', '0'],
-	'warnme'     : ['aliaskey3', '', '', '', '0', '', '', '60', '1', '', '', '1']
+    'extraphone' : ['aliaskey2', '', '', '', '', '', '', '60', '2', '60', '600', '0'],
+	'warnme'     : ['aliaskey3', '', '', '', '', '', '', '60', '1', '', '', '1']
     }
 ```
 
@@ -2472,9 +2472,6 @@ Please note:
 - [Retry](https://www.pushsafer.com/en/pushapi_ext#API-RE)
   with [Expire](https://www.pushsafer.com/en/pushapi_ext#API-EX): 
   For configuring delivery retries, you must set both parameters.
-- [Vibration](https://www.pushsafer.com/en/pushapi_ext#API-V):
-  `vibration=0` means "device-default" vibration. This is a special value
-  used by mqttwarn, it will be translated to an empty `v=` upstream parameter.
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
