@@ -2468,7 +2468,11 @@ notify, say, one or more of your devices as well as one for your spouse.
 For a list of available icons, sounds and other params see the
 [Pushsafer API](https://www.pushsafer.com/en/pushapi).
 
-Please note that `vibration=0` means "device-default" vibration.
+Please note:
+- The default value for the [_Expire_](https://www.pushsafer.com/en/pushapi_ext#API-EX)
+  parameter is `3600`.
+  
+- `vibration=0` means "device-default" vibration.
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
