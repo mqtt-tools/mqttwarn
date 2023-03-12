@@ -5,6 +5,9 @@ __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
+import dataclasses
+from collections import OrderedDict
+
 from future import standard_library
 standard_library.install_aliases()
 import os
@@ -83,7 +86,7 @@ class PushsaferParameterEncoder:
         if isinstance(addrs, t.List):
             self.encode_v1()
         elif isinstance(addrs, t.Dict):
-            raise NotImplementedError("Pushsafer configuration layout v2 not implemented yet")
+            self.encode_v2()
         else:
             raise ValueError(f"Unable to decode Pushsafer configuration layout. type={type(addrs)}")
 
@@ -156,3 +159,82 @@ class PushsaferParameterEncoder:
             params['t'] = title
 
         self.params = params
+
+    def encode_v2(self):
+        """
+        New-style configuration layout with named parameters for Pushsafer.
+        """
+
+        addrs = self.item.addrs
+        title = self.item.title
+
+        # Decode Private or Alias Key.
+        try:
+            self.private_key = addrs["private_key"]
+        except KeyError:
+            raise PushsaferConfigurationError(f"Pushsafer private or alias key not configured")
+
+        params = {
+            'expire': 3600,
+        }
+
+        # Decode and serialize all other parameters.
+        pp = PushsaferParameters(**addrs)
+        params.update(pp.translated())
+
+        # Propagate `title` separately.
+        if title is not None:
+            params['t'] = title
+
+        self.params = params
+
+
+@dataclasses.dataclass
+class PushsaferParameters:
+    """
+    Manage available Pushsafer parameters, and map them to their short representations,
+    suitable for sending over the wire.
+
+    - https://www.pushsafer.com/en/pushapi
+    - https://www.pushsafer.com/en/pushapi_ext
+    """
+    private_key: t.Optional[str] = None
+    device: t.Optional[str] = None
+    icon: t.Optional[int] = None
+    sound: t.Optional[int] = None
+    vibration: t.Optional[int] = None
+    url: t.Optional[str] = None
+    url_title: t.Optional[str] = None
+    time_to_live: t.Optional[int] = None
+    priority: t.Optional[int] = None
+    retry: t.Optional[int] = None
+    expire: t.Optional[int] = None
+    answer: t.Optional[int] = None
+
+    PARAMETER_MAP = {
+        "device": "d",
+        "icon": "i",
+        "sound": "s",
+        "vibration": "v",
+        "url": "u",
+        "url_title": "ut",
+        "time_to_live": "l",
+        "priority": "pr",
+        "retry": "re",
+        "expire": "ex",
+        "answer": "a",
+    }
+
+    def to_dict(self) -> t.Dict[str, t.Union[str, int]]:
+        return dataclasses.asdict(self)
+
+    def translated(self) -> t.Dict[str, t.Union[str, int]]:
+        """
+        Translate parameters to their wire representations.
+        """
+        result = OrderedDict()
+        for attribute, parameter_name in self.PARAMETER_MAP.items():
+            value = getattr(self, attribute)
+            if value is not None:
+                result[parameter_name] = value
+        return result

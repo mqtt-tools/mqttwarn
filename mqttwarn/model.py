@@ -37,6 +37,12 @@ class Struct:
         return item
 
 
+# Covering old- and new-style configuration layouts. `addrs` has
+# originally been a list of strings, has been expanded to be a
+# list of dictionaries (Apprise), and to be a dictionary (Pushsafer).
+addrs_type = Union[List[Union[str, Dict[str, str]]], Dict[str, str]]
+
+
 @dataclass
 class ProcessorItem:
     """
@@ -46,7 +52,7 @@ class ProcessorItem:
     service: Optional[str] = None
     target: Optional[str] = None
     config: Dict = field(default_factory=dict)
-    addrs: List[Union[str, Dict[str, str]]] = field(default_factory=list)
+    addrs: addrs_type = field(default_factory=list)  # type: ignore[assignment]
     priority: Optional[int] = None
     topic: Optional[str] = None
     title: Optional[str] = None
