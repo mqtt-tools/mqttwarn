@@ -121,31 +121,33 @@ def test_pushsafer_token_environment_success(srv, caplog, mocker, mock_urlopen_s
 
 
 @dataclasses.dataclass
-class TestItem:
+class IoTestItem:
     id: str  # noqa: A003
     in_addrs: t.List[str]
     out_data: t.Dict[str, str]
 
 
 variants = [
-    TestItem(id="device-id", in_addrs=[TEST_TOKEN, "52|65|78"], out_data={"d": "52|65|78"}),
-    TestItem(id="icon", in_addrs=[TEST_TOKEN, "", "test.ico"], out_data={"i": "test.ico"}),
-    TestItem(id="sound", in_addrs=[TEST_TOKEN, "", "", "test.mp3"], out_data={"s": "test.mp3"}),
-    TestItem(id="vibration", in_addrs=[TEST_TOKEN, "", "", "", "true"], out_data={"v": "true"}),
-    TestItem(
+    IoTestItem(id="device-id", in_addrs=[TEST_TOKEN, "52|65|78"], out_data={"d": "52|65|78"}),
+    IoTestItem(id="icon", in_addrs=[TEST_TOKEN, "", "test.ico"], out_data={"i": "test.ico"}),
+    IoTestItem(id="sound", in_addrs=[TEST_TOKEN, "", "", "test.mp3"], out_data={"s": "test.mp3"}),
+    IoTestItem(id="vibration", in_addrs=[TEST_TOKEN, "", "", "", "true"], out_data={"v": "true"}),
+    IoTestItem(
         id="url", in_addrs=[TEST_TOKEN, "", "", "", "", "http://example.org"], out_data={"u": "http://example.org"}
     ),
-    TestItem(id="url-title", in_addrs=[TEST_TOKEN, "", "", "", "", "", "Example Org"], out_data={"ut": "Example Org"}),
-    TestItem(id="time-to-live", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "60"], out_data={"l": "60"}),
-    TestItem(id="priority", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "2"], out_data={"pr": "2"}),
-    TestItem(id="retry", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "60"], out_data={"re": "60"}),
-    TestItem(id="expire", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "600"], out_data={"ex": "600"}),
-    TestItem(id="answer", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "", "0"], out_data={"a": "0"}),
+    IoTestItem(
+        id="url-title", in_addrs=[TEST_TOKEN, "", "", "", "", "", "Example Org"], out_data={"ut": "Example Org"}
+    ),
+    IoTestItem(id="time-to-live", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "60"], out_data={"l": "60"}),
+    IoTestItem(id="priority", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "2"], out_data={"pr": "2"}),
+    IoTestItem(id="retry", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "60"], out_data={"re": "60"}),
+    IoTestItem(id="expire", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "600"], out_data={"ex": "600"}),
+    IoTestItem(id="answer", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "", "0"], out_data={"a": "0"}),
 ]
 
 
 @pytest.mark.parametrize("variant", variants, ids=attrgetter("id"))
-def test_pushsafer_variant(srv, caplog, mock_urlopen_success, variant: TestItem):
+def test_pushsafer_variant(srv, caplog, mock_urlopen_success, variant: IoTestItem):
     module = load_module_from_file("mqttwarn/services/pushsafer.py")
     item = Item(addrs=variant.in_addrs, message="⚽ Notification message ⚽")
     outcome = module.plugin(srv, item)
