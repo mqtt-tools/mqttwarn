@@ -101,7 +101,7 @@ class PushsaferParameterEncoder:
         elif isinstance(addrs, t.Dict):
             self.encode_v2()
         else:
-            raise ValueError(f"Unable to decode Pushsafer configuration layout. type={type(addrs)}")
+            raise ValueError(f"Pushsafer configuration layout empty or invalid. type={type(addrs).__name__}")
 
     def encode_v1(self):
         """
