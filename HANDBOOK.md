@@ -2457,8 +2457,8 @@ In order to receive pushsafer notifications you need what is called a _private o
 targets = {
     'nagios'     : ['privatekey', 'Device ID', 'Icon', 'Sound', 'Vibration', 'URL', 'Url Title', 'Time2Live', 'Priority', 'Retry', 'Expire', 'Answer'],
     'tracking'   : ['aliaskey1'],
-    'extraphone' : ['aliaskey2', '', '', '', '', '', '', '60', '2', '60', '600', '0'],
-	'warnme'     : ['aliaskey3', '', '', '', '', '', '', '60', '1', '', '', '1']
+    'extraphone' : ['aliaskey2', '', '', '', '0', '', '', '60', '2', '60', '600', '0'],
+	'warnme'     : ['aliaskey3', '', '', '', '0', '', '', '60', '1', '', '', '1']
     }
 ```
 
@@ -2467,6 +2467,8 @@ configured _private or alias key_ combinations. This in turn enables you to
 notify, say, one or more of your devices as well as one for your spouse.
 For a list of available icons, sounds and other params see the
 [Pushsafer API](https://www.pushsafer.com/en/pushapi).
+
+Please note that `vibration=0` means "device-default" vibration.
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
