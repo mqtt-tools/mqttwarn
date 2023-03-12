@@ -8,6 +8,7 @@ in progress
 
 - Pushsafer: Fix to prevent submitting empty parameters to upstream API.
 - Pushsafer: Modernize configuration layout for target addresses.
+- Pushsafer: Add parameters for "Confirm", "Answer Options", and "Force Answer".
 
 
 2023-02-13 0.32.0

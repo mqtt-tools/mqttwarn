@@ -118,6 +118,21 @@ variants = [
     IoTestItem(id="retry", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "60"], out_data={"re": "60"}),
     IoTestItem(id="expire", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "600"], out_data={"ex": "600"}),
     IoTestItem(id="answer", in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "", "0"], out_data={"a": "0"}),
+    IoTestItem(
+        id="answer-options",
+        in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "", "1", "yes|no"],
+        out_data={"a": "1", "ao": "yes|no"},
+    ),
+    IoTestItem(
+        id="answer-force",
+        in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "", "1", "", "1"],
+        out_data={"a": "1", "af": "1"},
+    ),
+    IoTestItem(
+        id="confirm-repeat",
+        in_addrs=[TEST_TOKEN, "", "", "", "", "", "", "", "", "", "", "1", "", "", "45"],
+        out_data={"a": "1", "cr": "45"},
+    ),
 ]
 
 
