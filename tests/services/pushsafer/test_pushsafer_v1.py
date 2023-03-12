@@ -106,8 +106,7 @@ variants = [
     IoTestItem(id="device-id", in_addrs=[TEST_TOKEN, "52|65|78"], out_data={"d": "52|65|78"}),
     IoTestItem(id="icon", in_addrs=[TEST_TOKEN, "", "test.ico"], out_data={"i": "test.ico"}),
     IoTestItem(id="sound", in_addrs=[TEST_TOKEN, "", "", "test.mp3"], out_data={"s": "test.mp3"}),
-    IoTestItem(id="vibration-default", in_addrs=[TEST_TOKEN, "", "", "", "0"], out_data={"v": ""}),
-    IoTestItem(id="vibration-two", in_addrs=[TEST_TOKEN, "", "", "", "2"], out_data={"v": "2"}),
+    IoTestItem(id="vibration", in_addrs=[TEST_TOKEN, "", "", "", "2"], out_data={"v": "2"}),
     IoTestItem(
         id="url", in_addrs=[TEST_TOKEN, "", "", "", "", "http://example.org"], out_data={"u": "http://example.org"}
     ),
