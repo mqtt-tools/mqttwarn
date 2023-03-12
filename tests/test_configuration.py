@@ -6,6 +6,8 @@ from unittest.mock import Mock, call
 import pytest
 
 import mqttwarn.configuration
+from mqttwarn.configuration import load_configuration
+from tests import configfile_better_addresses
 
 
 def test_config_with_ssl():
@@ -58,3 +60,12 @@ def test_config_g_error_handling(mocker):
     assert m.mock_calls == [
         call("foo", "bar"),
     ]
+
+
+def test_config_better_addresses_apprise():
+    """
+    Verify reading configuration files with nested dictionaries.
+    """
+    config = load_configuration(configfile_better_addresses)
+    apprise_service_targets = config.getdict("config:apprise", "targets")
+    assert apprise_service_targets["demo-mailto"][0]["recipients"] == ["foo@example.org", "bar@example.org"]
