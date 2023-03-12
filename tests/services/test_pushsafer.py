@@ -51,7 +51,7 @@ def test_pushsafer_parameter_failure(srv, caplog, mock_urlopen_success):
     outcome = module.plugin(srv, item)
 
     assert outcome is False
-    assert "No pushsafer private or alias key configured" in caplog.text
+    assert "Pushsafer private or alias key not configured. target=None" in caplog.messages
 
 
 def test_pushsafer_basic_success(srv, caplog, mock_urlopen_success):
