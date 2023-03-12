@@ -6,6 +6,13 @@ mqttwarn changelog
 in progress
 ===========
 
+- Pushsafer: Fix to prevent submitting empty parameters to upstream API.
+
+  BREAKING CHANGE: This has an impact on the ``vibration`` parameter:
+  Previously, a Pushsafer notification would always have vibrations turned
+  on, which is considered to be a bug. Now, you will have to explicitly
+  configure ``vibration=0``, in order to use the "device-default" vibration.
+
 
 2023-02-13 0.32.0
 =================
