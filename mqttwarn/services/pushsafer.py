@@ -120,6 +120,9 @@ class PushsaferParameterEncoder:
         9 (if present) is the Pushsafer retry after which time (in seconds 60-10800) a message should resend
         10 (if present) is the Pushsafer expire after which time (in seconds 60-10800) the retry should stopped
         11 (if present) is the Pushsafer answer, 1 = Answer, 0 = no possibility to answer
+        12 (if present) is the Pushsafer answer options seperated by a pipe character e.g. yes|no|maybe
+        13 (if present) is the Pushsafer force answer, 1 = yes, 0 = no
+        14 (if present) is the Pushsafer message will be repeated after specified time delay when not confirmed
         """
 
         addrs = self.item.addrs
@@ -165,6 +168,15 @@ class PushsaferParameterEncoder:
 
         if len(addrs) > 11:
             params['a'] = addrs[11]
+
+        if len(addrs) > 12:
+            params['ao'] = addrs[12]
+
+        if len(addrs) > 13:
+            params['af'] = addrs[13]
+
+        if len(addrs) > 14:
+            params['cr'] = addrs[14]
 
         if title is not None:
             params['t'] = title
@@ -217,6 +229,9 @@ class PushsaferParameters:
     retry: t.Optional[int] = None
     expire: t.Optional[int] = None
     answer: t.Optional[int] = None
+    answer_options: t.Optional[str] = None
+    answer_force: t.Optional[int] = None
+    confirm_repeat: t.Optional[int] = None
 
     PARAMETER_MAP = {
         "device": "d",
@@ -230,6 +245,9 @@ class PushsaferParameters:
         "retry": "re",
         "expire": "ex",
         "answer": "a",
+        "answer_options": "ao",
+        "answer_force": "af",
+        "confirm_repeat": "cr",
     }
 
     def to_dict(self) -> t.Dict[str, t.Union[str, int]]:
