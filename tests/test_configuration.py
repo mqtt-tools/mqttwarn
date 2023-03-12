@@ -69,3 +69,15 @@ def test_config_better_addresses_apprise():
     config = load_configuration(configfile_better_addresses)
     apprise_service_targets = config.getdict("config:apprise", "targets")
     assert apprise_service_targets["demo-mailto"][0]["recipients"] == ["foo@example.org", "bar@example.org"]
+
+
+def test_config_better_addresses_pushsafer():
+    """
+    Verify reading configuration files with nested dictionaries.
+    """
+    config = load_configuration(configfile_better_addresses)
+    apprise_service_targets = config.getdict("config:pushsafer", "targets")
+    assert apprise_service_targets["nagios"]["private_key"] == "3SAz1a2iTYsh19eXIMiO"
+    assert apprise_service_targets["nagios"]["device"] == "52|65|78"
+    assert apprise_service_targets["nagios"]["priority"] == 2
+    assert apprise_service_targets["tracking"]["device"] == "gs23"
