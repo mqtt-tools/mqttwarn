@@ -1,44 +1,19 @@
 # -*- coding: utf-8 -*-
 # (c) 2023 The mqttwarn developers
+"""
+This file contains test cases for the v1 configuration layout variant,
+where `addrs` is a list.
+"""
 import dataclasses
 import re
 import typing as t
-import urllib.request
 from operator import attrgetter
-from urllib.parse import parse_qsl
 
 import pytest
 
 from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
-from tests.util import FakeResponse
-
-TEST_TOKEN = "myToken"
-
-
-def get_reference_data(**more_data):
-    data = {
-        "m": "⚽ Notification message ⚽",
-        "k": "myToken",
-        "expire": "3600",
-    }
-    data.update(more_data)
-    return data
-
-
-def assert_request(request: urllib.request.Request, data: t.Dict[str, str]):
-    assert request.full_url == "https://www.pushsafer.com/api"
-    assert dict(parse_qsl(request.data.decode("utf-8"))) == data
-
-
-@pytest.fixture
-def mock_urlopen_success(mocker):
-    return mocker.patch("urllib.request.urlopen", return_value=FakeResponse(data=b'{"status": 1}'))
-
-
-@pytest.fixture
-def mock_urlopen_failure(mocker):
-    return mocker.patch("urllib.request.urlopen", return_value=FakeResponse(data=b'{"status": 6}'))
+from tests.services.pushsafer.util import TEST_TOKEN, assert_request, get_reference_data
 
 
 def test_pushsafer_parameter_failure(srv, caplog, mock_urlopen_success):
