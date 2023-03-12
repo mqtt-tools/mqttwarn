@@ -9,7 +9,6 @@ def get_reference_data(**more_data):
     data = {
         "m": "⚽ Notification message ⚽",
         "k": "myToken",
-        "expire": "3600",
     }
     data.update(more_data)
     return data

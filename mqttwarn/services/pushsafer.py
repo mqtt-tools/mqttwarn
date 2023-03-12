@@ -131,9 +131,7 @@ class PushsaferParameterEncoder:
         except IndexError:
             raise PushsaferConfigurationError(f"Pushsafer private or alias key not configured")
 
-        params = {
-            'expire': 3600,
-        }
+        params = OrderedDict()
 
         if len(addrs) > 1:
             params['d'] = addrs[1]
@@ -192,13 +190,9 @@ class PushsaferParameterEncoder:
         except KeyError:
             raise PushsaferConfigurationError(f"Pushsafer private or alias key not configured")
 
-        params = {
-            'expire': 3600,
-        }
-
         # Decode and serialize all other parameters.
         pp = PushsaferParameters(**addrs)
-        params.update(pp.translated())
+        params = pp.translated()
 
         # Propagate `title` separately.
         if title is not None:
