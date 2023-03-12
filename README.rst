@@ -264,7 +264,7 @@ Yet, they are bundled into another package, ``mqttwarn-contrib``, see also
 
 Licenses
 ========
-This software is copyright © 2014-2022 Jan-Piet Mens and contributors. All
+This software is copyright © 2014-2023 Jan-Piet Mens and contributors. All
 rights reserved.
 
 It is and will always be **free and open source software**.
@@ -292,15 +292,6 @@ Press
 * The article `MQTTwarn: Ein Rundum-Sorglos-Notifier`_ in German at JAXenter.
 * The folks of the Berlin-based beekeeper collective Hiveeyes_ are monitoring their beehives and use *mqttwarn*
   as a building block for their alert notification system, enjoy reading `Schwarmalarm using mqttwarn`_.
-
-
-Notes
-=====
-*mqttwarn* is currently undergoing some refurbishment and will also be
-ported to Python 3 during that phase. You are welcome to participate!
-
-We outlined the tasks for the next releases within the backlog_.
-They might be transferred into GitHub issues progressively, if applicable.
 
 
 Legal stuff
