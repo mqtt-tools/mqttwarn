@@ -2469,10 +2469,12 @@ For a list of available icons, sounds and other params see the
 [Pushsafer API](https://www.pushsafer.com/en/pushapi).
 
 Please note:
-- The default value for the [_Expire_](https://www.pushsafer.com/en/pushapi_ext#API-EX)
-  parameter is `3600`.
-  
-- `vibration=0` means "device-default" vibration.
+- [Retry](https://www.pushsafer.com/en/pushapi_ext#API-RE)
+  with [Expire](https://www.pushsafer.com/en/pushapi_ext#API-EX): 
+  For configuring delivery retries, you must set both parameters.
+- [Vibration](https://www.pushsafer.com/en/pushapi_ext#API-V):
+  `vibration=0` means "device-default" vibration. This is a special value
+  used by mqttwarn, it will be translated to an empty `v=` upstream parameter.
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
