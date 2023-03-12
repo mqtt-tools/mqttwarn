@@ -2449,38 +2449,64 @@ Requires:
 
 ### `pushsafer`
 
-This service is for [Pushsafer](https://www.pushsafer.com), an app for iOS, Android and Windows 10.
-In order to receive pushsafer notifications you need what is called a _private or alias key_:
+[Pushsafer](https://www.pushsafer.com) is an app for iOS, Android and Windows 10.
+You can define different notification targets, in turn dispatching to one or 
+multiple Pushsafer devices or groups.
+For a list of available icons, sounds and other parameters, see the
+[Pushsafer API](https://www.pushsafer.com/en/pushapi) documentation.
+
+#### Requirements
+In order to receive Pushsafer notifications, you need what is called a _private 
+or alias key_. To receive such a key, you will need to sign up for an account.
+
+#### Configuration example
 
 ```ini
 [config:pushsafer]
+; https://www.pushsafer.com/en/pushapi
+; https://www.pushsafer.com/en/pushapi_ext
 targets = {
-    'nagios'     : ['privatekey', 'Device ID', 'Icon', 'Sound', 'Vibration', 'URL', 'Url Title', 'Time2Live', 'Priority', 'Retry', 'Expire', 'Answer'],
-    'tracking'   : ['aliaskey1'],
-    'extraphone' : ['aliaskey2', '', '', '', '', '', '', '60', '2', '60', '600', '0'],
-	'warnme'     : ['aliaskey3', '', '', '', '', '', '', '60', '1', '', '', '1']
+    'basic': { 'private_key': '3SAz1a2iTYsh19eXIMiO' },
+    'nagios': {
+        'private_key': '3SAz1a2iTYsh19eXIMiO',
+        'device': '52|65|78',
+        'icon': 64,
+        'sound': 2,
+        'vibration': 1,
+        'url': 'http://example.org',
+        'url_title': 'Example Org',
+        'time_to_live': 60,
+        'priority': 2,
+        'retry': 60,
+        'expire': 600,
+        'answer': 1,
+        },
+    'tracking': {
+        'private_key': '3SAz1a2iTYsh19eXIMiO',
+        'device': 'gs23',
+        'icon': 18,
+        },
+    'extraphone': { 'private_key': 'aliaskey2', 'time_to_live': 60, 'priority': 2, 'retry': 60, 'expire': 600, 'answer': 0 },
+    'warnme': { 'private_key': 'aliaskey3', 'time_to_live': 60, 'priority': 1, 'answer': 1 },
     }
 ```
 
-This defines targets (`nagios`, `alerts`, etc.) which are directed to the
-configured _private or alias key_ combinations. This in turn enables you to
-notify, say, one or more of your devices as well as one for your spouse.
-For a list of available icons, sounds and other params see the
-[Pushsafer API](https://www.pushsafer.com/en/pushapi).
-
-Please note:
-- [Retry](https://www.pushsafer.com/en/pushapi_ext#API-RE)
-  with [Expire](https://www.pushsafer.com/en/pushapi_ext#API-EX): 
-  For configuring delivery retries, you must set both parameters.
+#### MQTT topic options
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: pushsafer dflt) |
 
+#### Notes
+- [Retry](https://www.pushsafer.com/en/pushapi_ext#API-RE)
+  with [Expire](https://www.pushsafer.com/en/pushapi_ext#API-EX):
+  For configuring delivery retries, you must set both parameters.
+- The legacy configuration layout, based on a list for the `addrs` slot,
+  is still supported.
+
+#### Screenshot
 ![pushsafer on iOS](assets/pushsafer.jpg)
 
-Requires:
-* An account at [pushsafer.com](https://www.pushsafer.com/).
 
 ### `redispub`
 
