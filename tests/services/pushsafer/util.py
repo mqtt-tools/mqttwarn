@@ -15,6 +15,8 @@ def get_reference_data(**more_data):
     return data
 
 
-def assert_request(request: urllib.request.Request, data: t.Dict[str, str]):
+def assert_request(request: urllib.request.Request, reference_data: t.Dict[str, str]):
     assert request.full_url == "https://www.pushsafer.com/api"
-    assert dict(parse_qsl(request.data.decode("utf-8"))) == data
+    actual_data = dict(parse_qsl(request.data.decode("utf-8")))
+    msg = f"\nGot:      {actual_data}\nExpected: {reference_data}"
+    assert actual_data == reference_data, msg

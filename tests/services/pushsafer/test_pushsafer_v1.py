@@ -46,6 +46,20 @@ def test_pushsafer_basic_success(srv, caplog, mock_urlopen_success):
     assert "Successfully sent pushsafer notification" in caplog.text
 
 
+def test_pushsafer_basic_failure(srv, caplog, mock_urlopen_failure):
+    """
+    Test Pushsafer service with a response indicating an error.
+    """
+
+    module = load_module_from_file("mqttwarn/services/pushsafer.py")
+    item = Item(addrs=[TEST_TOKEN], message="⚽ Notification message ⚽")
+    outcome = module.plugin(srv, item)
+
+    assert outcome is False
+    assert "Sending pushsafer notification" in caplog.text
+    assert re.match('.*Error sending pushsafer notification.*{"status": 6}.*', caplog.text, re.DOTALL)
+
+
 def test_pushsafer_title_success(srv, caplog, mock_urlopen_success):
     """
     Test Pushsafer service with title.
@@ -61,20 +75,6 @@ def test_pushsafer_title_success(srv, caplog, mock_urlopen_success):
     assert outcome is True
     assert "Sending pushsafer notification" in caplog.text
     assert "Successfully sent pushsafer notification" in caplog.text
-
-
-def test_pushsafer_basic_failure(srv, caplog, mock_urlopen_failure):
-    """
-    Test Pushsafer service with a response indicating an error.
-    """
-
-    module = load_module_from_file("mqttwarn/services/pushsafer.py")
-    item = Item(addrs=[TEST_TOKEN], message="⚽ Notification message ⚽")
-    outcome = module.plugin(srv, item)
-
-    assert outcome is False
-    assert "Sending pushsafer notification" in caplog.text
-    assert re.match('.*Error sending pushsafer notification.*{"status": 6}.*', caplog.text, re.DOTALL)
 
 
 def test_pushsafer_token_environment_success(srv, caplog, mocker, mock_urlopen_success):
@@ -106,7 +106,7 @@ variants = [
     IoTestItem(id="device-id", in_addrs=[TEST_TOKEN, "52|65|78"], out_data={"d": "52|65|78"}),
     IoTestItem(id="icon", in_addrs=[TEST_TOKEN, "", "test.ico"], out_data={"i": "test.ico"}),
     IoTestItem(id="sound", in_addrs=[TEST_TOKEN, "", "", "test.mp3"], out_data={"s": "test.mp3"}),
-    IoTestItem(id="vibration", in_addrs=[TEST_TOKEN, "", "", "", "true"], out_data={"v": "true"}),
+    IoTestItem(id="vibration", in_addrs=[TEST_TOKEN, "", "", "", "1"], out_data={"v": "1"}),
     IoTestItem(
         id="url", in_addrs=[TEST_TOKEN, "", "", "", "", "http://example.org"], out_data={"u": "http://example.org"}
     ),
