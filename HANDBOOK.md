@@ -2480,6 +2480,9 @@ targets = {
         'retry': 60,
         'expire': 600,
         'answer': 1,
+        'answeroptions': 'yes|no|maybe',
+        'answerforce': 1,
+        'confirm': 10,
         },
     'tracking': {
         'private_key': '3SAz1a2iTYsh19eXIMiO',
@@ -2487,7 +2490,7 @@ targets = {
         'icon': 18,
         },
     'extraphone': { 'private_key': 'aliaskey2', 'time_to_live': 60, 'priority': 2, 'retry': 60, 'expire': 600, 'answer': 0 },
-    'warnme': { 'private_key': 'aliaskey3', 'time_to_live': 60, 'priority': 1, 'answer': 1 },
+    'warnme': { 'private_key': 'aliaskey3', 'time_to_live': 60, 'priority': 1, 'answer': 1, 'answerforce': 1, 'confirm': 10 },
     }
 ```
 
