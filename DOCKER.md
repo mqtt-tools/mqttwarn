@@ -1,17 +1,15 @@
-# Running mqttwarn with Docker
+# Running mqttwarn with Podman or Docker
 
-If you would rather use `mqttwarn` without installing Python and the
-required libraries, you can run it as a [Docker container](https://www.docker.com/).
-You need to install only the Docker executable.
+If you would rather use `mqttwarn` without installing Python and the required
+libraries, you can run the OCI image on [Podman] or [Docker].
 
-You can run the image as a service, i.e. in the background, or you can 
-run it interactively, perhaps to help diagnose a problem.
+You can run mqttwarn as a service, i.e. in the background, or you can run it
+interactively, perhaps to help diagnose a problem.
 
 Docker images are automatically published to:
 
 - https://github.com/orgs/jpmens/packages/container/package/mqttwarn-standard
 - https://github.com/orgs/jpmens/packages/container/package/mqttwarn-full
-- ~~https://hub.docker.com/r/jpmens/mqttwarn~~ (not automatically updated)
 
 ## Choosing the Docker image
 
@@ -162,17 +160,25 @@ docker run -it --rm --volume=$PWD:/etc/mqttwarn --link=mosquitto $IMAGE
 
 If you are making any changes to the `mqttwarn` application or to the
 `Dockerfile`, you can build a local image from the files on your drive (not
-from the files on Github).
+from the files on GitHub).
 
 Execute the following from the root of the project :
 ```
-docker build -t mqttwarn-local .
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+export BUILDKIT_PROGRESS=plain
+
+docker build --tag=local/mqttwarn-standard --file=Dockerfile .
+```
+
+```
+docker build --tag=local/mqttwarn-full --file=Dockerfile.full .
 ```
 
 You can then edit any files and rebuild the image as many times as you need. 
 You don't need to commit any changes.
 
-The name `mqttwarn-local` is not meaningful, other than making it obvious when
+The name `local/mqttwarn-standard` is not meaningful, other than making it obvious when
 you run it that you are using your own personal image. You can use any name you
 like, but avoid `mqttwarn` otherwise it's easily confused with the official
 images.
@@ -199,3 +205,7 @@ image including dependencies for all modules, we have you covered. Alongside
 the standard image, there is also `ghcr.io/jpmens/mqttwarn-full:latest`.
 
 The `standard` image weighs in with about 130 MB, the `full` image has 230 MB.
+
+
+[Docker]: https://docker.com/
+[Podman]: https://podman.io/
