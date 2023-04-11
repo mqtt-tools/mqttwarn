@@ -13,7 +13,9 @@ FROM python:3.11-slim-bullseye
 
 # Install build prerequisites.
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt --mount=type=cache,id=apt-lib,target=/var/lib/apt \
+RUN \
+    --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=apt,sharing=locked,target=/var/lib/apt \
     true \
     && apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests --yes git build-essential librrd-dev
