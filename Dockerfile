@@ -1,14 +1,22 @@
-# Docker build file for mqttwarn.
-# Based on https://github.com/pfichtner/docker-mqttwarn.
+# Docker build file for `mqttwarn-standard`.
 #
 # Invoke like:
 #
-#   docker build --tag=mqttwarn-local .
+#   docker build --tag=local/mqttwarn-standard --file=Dockerfile .
 #
 FROM python:3.11-slim-bullseye
 
-# Install additional requirements
-RUN apt-get update && apt-get install --yes git
+
+# =====
+# Build
+# =====
+
+# Install build prerequisites.
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt --mount=type=cache,id=apt-lib,target=/var/lib/apt \
+    true \
+    && apt-get update \
+    && apt-get install --no-install-recommends --no-install-suggests --yes git build-essential librrd-dev
 
 # Create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
@@ -18,10 +26,23 @@ WORKDIR /etc/mqttwarn
 RUN groupadd -r mqttwarn && useradd -r -g mqttwarn mqttwarn
 RUN chown -R mqttwarn:mqttwarn /etc/mqttwarn
 
-# Install mqttwarn
+# Install package.
 COPY . /src
-RUN pip install versioningit wheel
-RUN pip install /src
+RUN --mount=type=cache,id=pip,target=/root/.cache/pip \
+    true \
+    && pip install --prefer-binary versioningit wheel \
+    && pip install --use-pep517 --prefer-binary '/src'
+
+# Uninstall build prerequisites again.
+RUN apt-get --yes remove --purge git && apt-get --yes autoremove
+
+# Purge /src and /tmp directories.
+RUN rm -rf /src /tmp/*
+
+
+# =======
+# Runtime
+# =======
 
 # Make process run as "mqttwarn" user
 USER mqttwarn
