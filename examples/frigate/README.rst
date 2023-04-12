@@ -47,9 +47,11 @@ Run mqttwarn::
     mkdir -p ./var/media
     MQTTWARNINI=frigate.ini mqttwarn
 
-Publish an example event::
+Publish a few example events and see how mqttwarn processes them::
 
-    cat frigate-event.json | jq -c | mosquitto_pub -t 'frigate/events' -l
+    cat frigate-event-new.json | jq -c | mosquitto_pub -t 'frigate/events' -l
+    cat frigate-event-end.json | jq -c | mosquitto_pub -t 'frigate/events' -l
+    cat frigate-event-false-positive.json | jq -c | mosquitto_pub -t 'frigate/events' -l
 
 Publish an example image::
 
