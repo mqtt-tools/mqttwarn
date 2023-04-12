@@ -48,7 +48,7 @@ Run mqttwarn::
 
 Publish an example event::
 
-    cat frigate-event.json | mosquitto_pub -t 'frigate/events' -l
+    cat frigate-event.json | jq -c | mosquitto_pub -t 'frigate/events' -l
 
 
 .. _Apprise: https://github.com/caronc/apprise
