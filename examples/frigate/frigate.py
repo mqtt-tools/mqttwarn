@@ -7,8 +7,6 @@ except ImportError:
     import simplejson as json
 
 def frigate_events(topic, data, srv=None):
-    if srv is not None:
-        srv.logging.debug('events ******************************************')
     a = json.loads(data['payload'])['after']
     f = lambda x: (y.replace('_', ' ') for y in x)
     r = {
@@ -26,8 +24,6 @@ def frigate_events(topic, data, srv=None):
     return r
 
 def frigate_events_filter(topic, message, section, srv=None):
-    if srv is not None:
-        srv.logging.debug('filter ******************************************')
     try:
         message = json.loads(message)
     finally:
