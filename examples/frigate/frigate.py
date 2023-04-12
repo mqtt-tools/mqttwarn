@@ -26,7 +26,7 @@ def frigate_events(topic, data, srv=None):
 def frigate_events_filter(topic, message, section, srv=None):
     try:
         message = json.loads(message)
-    finally:
+    except:
         message = None
     if message and message.get('type', None) != 'end' and 'after' in message:
         a = message['after']
