@@ -26,42 +26,57 @@ def frigate_events(topic, data, srv=None):
     return r
 
 
-def frigate_events_filter(topic, message, section, srv: Service=None) -> bool:
+def frigate_events_filter(topic, message, section, srv: Service):
     """
     mqttwarn filter function to only use Frigate events of type `new`.
-    Additionally, skip, for example, false positives.
+
+    Additionally, validate more details within the event message,
+    specifically the `after` section. For example, skip false positives.
 
     :return: True if message should be filtered, i.e. notification should be skipped.
     """
-
-    # Decode message.
     try:
         message = json.loads(message)
-    except:
-        message = dict()
-    message_type = message.get("type", None)
-    srv.logging.info(f"Received Frigate event message with type={message_type}")
+    except json.JSONDecodeError as e:
+        srv.logging.warning(f"Can't parse Frigate event message: {e}")
+        return True
 
-    # Determine if message should be used, or not.
-    use_message = message_type == "new" and "after" in message
+    # ignore ending messages
+    if message.get('type', None) == 'end':
+        return True
 
-    # Look at more details.
-    if use_message:
-        after = message["after"]
-        if after.get("false_positive") is True:
-            srv.logging.info(f"Skipping Frigate event because it's a false positive")
-            use_message = False
+    # payload must have 'after' key
+    elif "after" not in message:
+        srv.logging.warning("Frigate event skipped: 'after' missing from payload")
+        return True
 
-        # TODO: Honor more details of inbound event message.
-        """
-        return False not in (x in a and (x == 'current_zones' or a[x]) for x in
-                                  ('false_positive', 'camera', 'label',
-                                   'current_zones', 'entered_zones',
-                                   'frame_time'))
-        """
-    else:
-        use_message = False
+    after = message.get('after')
 
-    # Inverse logic.
-    filter_message = not use_message
-    return filter_message
+    nonempty_fields = ['false_positive', 'camera', 'label', 'current_zones', 'entered_zones', 'frame_time']
+    for field in nonempty_fields:
+
+        # Validate field exists.
+        if field not in after:
+            srv.logging.warning(f"Frigate event skipped, missing field: {field}")
+            return True
+
+        value = after.get(field)
+
+        # We can ignore if `current_zones` is empty.
+        if field == "current_zones":
+            continue
+
+        # Check if it's a false positive.
+        if field == "false_positive":
+            if value is True:
+                srv.logging.warning("Frigate event skipped, it is a false positive")
+                return True
+            else:
+                continue
+
+        # All other keys should be present and have values.
+        if not value:
+            srv.logging.warning(f"Frigate event skipped, field is empty: {field}")
+            return True
+
+    return False
