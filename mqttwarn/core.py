@@ -161,6 +161,16 @@ def on_disconnect(mosq, userdata, result_code):
 
 def on_message(mosq, userdata, msg):
     """
+    Dispatch message received from the MQTT broker to mqttwarn's handler machinery.
+    """
+    try:
+        return on_message_handler(mosq, userdata, msg)
+    except:
+        logger.exception("Receiving and decoding MQTT message failed")
+
+
+def on_message_handler(mosq, userdata, msg):
+    """
     Message received from the broker
     """
 
