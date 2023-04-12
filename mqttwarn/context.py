@@ -62,7 +62,7 @@ class RuntimeContext:
             try:
                 return self.invoker.filter(filterfunc, topic, payload, section)
             except Exception as e:
-                logger.warning("Cannot invoke filter function '%s' defined in '%s': %s" % (filterfunc, section, e))
+                logger.exception("Cannot invoke filter function '%s' defined in '%s': %s" % (filterfunc, section, e))
         return False
 
     def get_topic_data(self, section, topic):
@@ -71,7 +71,7 @@ class RuntimeContext:
             try:
                 return self.invoker.datamap(name, topic)
             except Exception as e:
-                logger.warning("Cannot invoke datamap function '%s' defined in '%s': %s" % (name, section, e))
+                logger.exception("Cannot invoke datamap function '%s' defined in '%s': %s" % (name, section, e))
         return None
 
     def get_all_data(self, section, topic, data):
@@ -80,7 +80,7 @@ class RuntimeContext:
             try:
                 return self.invoker.alldata(name, topic, data)
             except Exception as e:
-                logger.warning("Cannot invoke alldata function '%s' defined in '%s': %s" % (name, section, e))
+                logger.exception("Cannot invoke alldata function '%s' defined in '%s': %s" % (name, section, e))
         return None
 
     def get_topic_targets(self, section, topic, data):

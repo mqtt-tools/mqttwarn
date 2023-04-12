@@ -7,6 +7,8 @@ in progress
 ===========
 
 - Fix: Don't crash when receiving non-UTF8 payloads. Thanks, @sevmonster.
+- Improve exception logging in ``is_filtered``, ``get_topic_data``, and
+  ``get_all_data`` context functions. Thanks, @sevmonster.
 
 
 2023-04-11 0.33.0
