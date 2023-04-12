@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- Fix: Don't crash when receiving non-UTF8 payloads. Thanks, @sevmonster.
+
 
 2023-04-11 0.33.0
 =================
