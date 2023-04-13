@@ -54,13 +54,19 @@ def plugin(srv, item):
     if overwrite:
         mode = "w"
 
+    if isinstance(text, bytes):
+        mode += "b"
+        encoding = None
+    else:
+        encoding = "utf-8"
+
     try:
-        f = io.open(filename, mode, encoding='utf-8')
+        f = io.open(filename, mode=mode, encoding=encoding)
         f.write(text)
         f.close()
 
     except Exception as e:
-        srv.logging.warning("Cannot write to file `%s': %s" % (filename, e))
+        srv.logging.error("Cannot write to file `%s': %s" % (filename, e))
         return False
 
     return True
