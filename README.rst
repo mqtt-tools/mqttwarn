@@ -11,7 +11,6 @@
     :target: https://pypi.org/project/mqttwarn/
 
 .. image:: https://img.shields.io/pypi/l/mqttwarn.svg
-    :alt: License
     :target: https://pypi.org/project/mqttwarn/
 
 .. image:: https://img.shields.io/pypi/status/mqttwarn.svg
@@ -20,7 +19,9 @@
 .. image:: https://pepy.tech/badge/mqttwarn/month
     :target: https://pepy.tech/project/mqttwarn
 
-|
+.. raw:: html
+
+    <br/><br/>
 
 .. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
 

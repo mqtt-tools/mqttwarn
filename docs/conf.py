@@ -14,18 +14,17 @@ author = 'Jan-Piet Mens, Ben Jones, Andreas Motl'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    # https://github.com/executablebooks/MyST-Parser
     "myst_parser",
+    "sphinx_copybutton",
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.ifconfig',
+    "sphinxext.opengraph",
 ]
+
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
-
-# -- Options for MyST -------------------------------------------------
-
-# https://github.com/executablebooks/MyST-Parser/issues/519
-myst_heading_anchors = 3
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -34,3 +33,32 @@ myst_heading_anchors = 3
 html_theme = 'furo'
 html_static_path = ['_static']
 html_logo = "mqttwarn-logo.png"
+
+
+# == Extension configuration ==========================================
+
+todo_include_todos = True
+intersphinx_mapping = {
+    'https://docs.python.org/': None,
+    'https://myst-parser.readthedocs.io/en/latest/': None,
+}
+linkcheck_ignore = [
+    r'https://www.researchgate.net/publication/.*'
+]
+sphinx_tabs_valid_builders = ["linkcheck"]
+
+
+# -- Options for MyST -------------------------------------------------
+myst_heading_anchors = 3
+
+# -- Options for sphinx-copybutton ------------------------------------
+copybutton_remove_prompts = True
+copybutton_line_continuation_character = "\\"
+copybutton_prompt_text = r">>> |\.\.\. |\$ |sh\$ |PS> |cr> |mysql> |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+
+# -- Options for sphinxext-opengraph ----------------------------------
+ogp_site_url = "https://mqttwarn.readthedocs.io/"
+ogp_image = "https://mqttwarn.readthedocs.io/en/latest/_static/mqttwarn-logo.png"
+ogp_description_length = 300
+ogp_enable_meta_description = True
