@@ -75,7 +75,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "2.0"
-addopts = "-rsfEX -p pytester --strict-markers --verbosity=3 --cov --cov-report=term-missing --cov-report=xml"
+addopts = "-rsfEX -p pytester --strict-markers --verbosity=3 --cov --cov-report=term-missing --cov-report=xml --cov-report html:.pytest_results/htmlcov"
 log_level = "DEBUG"
 log_cli_level = "DEBUG"
 testpaths = ["examples", "mqttwarn", "tests"]

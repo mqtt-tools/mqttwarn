@@ -83,7 +83,6 @@ suggestion how we can improve the documentation.
    :hidden:
 
    Development sandbox <workbench/sandbox>
-   Test suite <workbench/testing>
    Changelog <workbench/changelog>
    Backlog <workbench/backlog>
 
