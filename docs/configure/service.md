@@ -1,4 +1,5 @@
 (configure-service)=
+(services)=
 # Services
 
 
@@ -6,20 +7,27 @@
 
 This section of the documentation will outline how to configure mqttwarn
 services. Services are instances of service plugins, using Python modules to
-implement notification sinks.
+implement notifier components.
+
+Later, you will learn how to subscribe to MQTT [topics](#topics), and map them
+to the [services](#services) you have defined here.
+
+You can choose from a variety of [](#notification-services), or you can write
+your own notification plugin easily, see [](#custom-notification-plugins).
 
 
 ## Overview
 
-Sections called `[config:xxx]` configure settings for a service, where `xxx` is
-the name of the service.
+Configuration sections called `[config:xxx]` configure settings for a service,
+where `xxx` is the name of the service.
 
 Each of these sections has a mandatory option called `targets`, which is a 
 dictionary of target names, each pointing to an array of "addresses". The 
 address formats depend on the particular service.
 
-Other than the mandatory `targets` option, and an optional `module` option, these
-sections _may_ have more options which are required for a particular service.
+Other than the mandatory `targets` option, and an optional `module` option, 
+these sections _may_ have more options. Some of them may even be _required_
+for a particular service.
 
 The anatomy of such a service configuration snippet is:
 ```ini
@@ -211,7 +219,8 @@ format = {name}: {value}
 :::
 
 
-## Creating custom service plugins
+(custom-notification-plugins)=
+## Creating custom notification plugins
 
 Creating new service plugins is easy, and we recommend you use the `file`
 plugin as a blueprint and start from there.
