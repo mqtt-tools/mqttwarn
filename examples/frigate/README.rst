@@ -37,6 +37,9 @@ encoding causes error`_.
 Usage
 *****
 
+In a box
+========
+
 Start the Mosquitto MQTT broker::
 
     docker run --name=mosquitto --rm -it --publish=1883:1883 \
@@ -47,7 +50,14 @@ Run mqttwarn::
     mkdir -p ./var/media
     MQTTWARNINI=frigate.ini mqttwarn
 
-Publish a few example events and see how mqttwarn processes them::
+Run the example publisher program::
+
+    ./publish.sh
+
+Manually
+========
+
+Publish a few example events individually::
 
     cat frigate-event-new.json | jq -c | mosquitto_pub -t 'frigate/events' -l
     cat frigate-event-end.json | jq -c | mosquitto_pub -t 'frigate/events' -l
@@ -59,6 +69,7 @@ Publish an example image::
     convert goat.png goat.jpg
     mosquitto_pub -f goat.jpg -t 'frigate/cam-testdrive/goat/snapshot'
     open ./var/media/cam-testdrive-goat.jpg
+
 
 .. _Apprise: https://github.com/caronc/apprise
 .. _camera pictures in JPEG format: https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameobject_namesnapshot
