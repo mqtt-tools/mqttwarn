@@ -57,8 +57,8 @@ Publish an example image::
 
     wget -O goat.png https://user-images.githubusercontent.com/453543/231550862-5a64ac7c-bdfa-4509-86b8-b1a770899647.png
     convert goat.png goat.jpg
-    mosquitto_pub -f goat.jpg -t 'frigate/cam1/goat/snapshot'
-    open ./var/media/cam1-goat.jpg
+    mosquitto_pub -f goat.jpg -t 'frigate/cam-testdrive/goat/snapshot'
+    open ./var/media/cam-testdrive-goat.jpg
 
 .. _Apprise: https://github.com/caronc/apprise
 .. _camera pictures in JPEG format: https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameobject_namesnapshot
