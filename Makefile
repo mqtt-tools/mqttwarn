@@ -67,7 +67,7 @@ docs-html: install-doctools
 docs-serve:
 	cd docs/_build/html; python3 -m http.server
 
-docs-autobuild:
+docs-autobuild: install-doctools
 	$(sphinx-autobuild) --open-browser docs docs/_build
 
 

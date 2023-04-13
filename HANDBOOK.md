@@ -162,18 +162,18 @@ tls_insecure = False
 
 ```
 
-###### `functions`
+##### `functions`
 
 The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
 
-###### `launch`
+##### `launch`
 
 In the `launch` option you specify a list of comma-separated _service_ names  
 defined within the `[config:xxx]` sections which should be launched.
 
 You should launch every service you want to use from your topic/target definitions here.
 
-###### `status_publish`
+##### `status_publish`
 
 Like with Mosquitto's `$SYS` topic, `mqttwarn` can publish status information to the broker.
 This is useful for automated updates (Docker Swarm, Watchtower, etc.).
@@ -1724,7 +1724,7 @@ The MySQL plugin will attempt to add a row for every message received on a given
 For instance, given a table created with `CREATE TABLE names (id INTEGER, name VARCHAR(25));` then
 the message '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }' on topic 'my/2' will be added to the table like this:
 
-```table
+```text
 +------+------------+
 | id   | name       |
 +------+------------+
@@ -1736,7 +1736,7 @@ The values for the 'id' and 'name' columns are assumed to be filled by the value
 
 If you added columns 'topic', 'payload' and '_dtiso' to the database, then that same message will add this row:
 
-```table
+```text
 +------+------------+-----------------------------------------------------+-----------------------------+-------+
 | id   | name       | payload                                             | _dtiso                      | topic |
 +------+------------+-----------------------------------------------------+-----------------------------+-------+
@@ -1799,7 +1799,7 @@ I'll now add our fallback column to the schema:
 The payload of messages which do not contain valid JSON will be coped verbatim
 to the _fallback_ column:
 
-```table
+```text
 +------+------+-------------+--------+
 | id   | name | full        | number |
 +------+------+-------------+--------+
@@ -1822,7 +1822,7 @@ mosquitto_pub -t my/2 -m '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }'
 
 A table named ```my_2``` will be created on the fly with the following structure and content (the table name is derived from the MQTT topic, but slashes are replaced by underscores):
 
-```table
+```text
 +------+------------+--------+-------------------------------------------------------+
 | id   | name       | number | payload                                               |
 +------+------------+--------+-------------------------------------------------------+
@@ -3632,7 +3632,7 @@ _mqttwarn_ loads Jinja2 templates from the `templates/` directory relative to th
 configured `directory`. Assuming we have the following content in the file
 `templates/demo.j2`
 
-```jinja2
+```jinja
 {#
     this is a comment
     in Jinja2
@@ -3816,7 +3816,7 @@ template = temp2json.json
 
 The Jinja2 template looks like this:
 
-```jinja2
+```jinja
 {#
     We expect a single numeric temperature value in `payload'
     Return JSON suitable for Graylog2 (requires host and short_message)

@@ -1,4 +1,5 @@
 furo
+jinja2<4
 myst-parser<2
 sphinx<7
 sphinx-copybutton<1
