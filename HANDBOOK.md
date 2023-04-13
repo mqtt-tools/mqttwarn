@@ -33,7 +33,9 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
 
 ### Introduction
 
-I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
+I recommend you start off with the following simple configuration which will 
+log messages received on the MQTT topic `test/+` to a file. Create the following 
+configuration file:
 
 ```ini
 [defaults]
@@ -58,9 +60,13 @@ targets = {
 targets = file:mylog, log:info
 ```
 
-**Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
+:::{attention}
+The closing brace `}` of the `targets` dictionary MUST be indented. This is an
+artifact of Python's [ConfigParser](inv:python#library/configparser).
+:::
 
-Launch `mqttwarn` and keep an eye on its log file (`mqttwarn.log` by default). Publish two messages to the subscribed topic, using
+Launch `mqttwarn` and keep an eye on its log file (`mqttwarn.log` by default). 
+Publish two messages to the subscribed topic, using:
 
 ```
 mosquitto_pub -t test/1 -m "Hello"
@@ -198,7 +204,20 @@ targets = {
   }
 ```
 
-Find [detailed information about the `[config:xxx]` sections](./configure/service)
+Find [detailed information about the `[config:xxx]` sections](#configure-service)
+on a dedicated documentation page.
+
+
+### The `[__topic__]` sections
+
+The anatomy of a service configuration snippet is:
+
+```ini
+[icinga/+/+]
+targets = log:info, file:f01, mysql:nagios
+```
+
+Find [detailed information about the `[__topic__]` sections](#configure-topic)
 on a dedicated documentation page.
 
 
@@ -215,18 +234,6 @@ Below is an example which will log any failover events to an error log, and disp
 targets  = log:error, xbmc
 title    = mqttwarn
 ```
-
-### The `[__topic__]` sections
-
-The anatomy of a service configuration snippet is:
-
-```ini
-[icinga/+/+]
-targets = log:info, file:f01, mysql:nagios
-```
-
-Find [detailed information about the `[__topic__]` sections](#configure-topic)
-on a dedicated documentation page.
 
 
 (notification-services)=
