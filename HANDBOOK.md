@@ -2,11 +2,11 @@
 
 To _warn_, _alert_, or _notify_.
 
-![Definition by Google](assets/google-definition.jpg)
+![](assets/google-definition.jpg)
 
-This program subscribes to any number of MQTT topics (which may include wildcards) and publishes received payloads to one or more notification services, including support for notifying more than one distinct service for the same message.
+mqttwarn subscribes to any number of MQTT topics (which may include wildcards) and publishes received payloads to one or more notification services, including support for notifying more than one distinct service for the same message.
 
-![definition by Google](assets/mqttwarn.png)
+![](assets/mqttwarn.png)
 
 Notifications are transmitted to the appropriate service via plugins. We provide plugins for the list of services [below](#supported-notification-services), and you can easily add your own.
 
