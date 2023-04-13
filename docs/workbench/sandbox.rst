@@ -3,9 +3,10 @@ mqttwarn development sandbox
 ############################
 
 
-*******
-Hacking
-*******
+************
+Installation
+************
+
 For hacking on mqttwarn, please install it in development mode.
 
 Get hold of the sources::
@@ -31,10 +32,24 @@ You can also add multiple extras, all at once::
     pip install --editable=.[asterisk,nsca,desktopnotify,tootpaste,xmpp]
 
 
+*************
+Documentation
+*************
+
+The mqttwarn documentation is written in `reStructuredText`_ and `Markdown`_,
+and is rendered using `Sphinx`_ and `MyST`_.
+
+MyST, a rich and extensible flavour of `Markdown`_, is a superset of the
+`CommonMark syntax specification`_. It adds features focussed on scientific and
+technical documentation authoring. The Markedly Structured Text Parser is a Sphinx
+and Docutils extension to parse MyST.
+
 Build and view the documentation::
 
     make docs-autobuild
 
+For learning about how to link to references within Markdown documents, please
+read the `MyST Cross-references`_ documentation.
 
 
 ************
@@ -66,3 +81,11 @@ For properly configuring a virtualenv, please also read those fine resources:
 
 - https://code.visualstudio.com/docs/python/environments
 - https://medium.com/@kylehayes/using-a-python-virtualenv-environment-with-vscode-b5f057f44c6a
+
+
+.. _CommonMark syntax specification: https://spec.commonmark.org/
+.. _Markdown: https://en.wikipedia.org/wiki/Markdown
+.. _MyST: https://myst-parser.readthedocs.io/
+.. _MyST Cross-references: https://myst-parser.readthedocs.io/en/latest/syntax/cross-referencing.html
+.. _reStructuredText: https://en.wikipedia.org/wiki/ReStructuredText
+.. _Sphinx: https://www.sphinx-doc.org/
