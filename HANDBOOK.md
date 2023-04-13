@@ -218,84 +218,18 @@ title    = mqttwarn
 
 ### The `[__topic__]` sections
 
-All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topics
-to subscribe to. _mqttwarn_ handles each message received on this subscription
-by handing it off to one or more service targets.
-
-Section names must be unique and must specify the name of the topic to be processed. If the section block does not have a `topic` option,
-then the section name will be used.
-
-Consider the following example:
+The anatomy of a service configuration snippet is:
 
 ```ini
 [icinga/+/+]
 targets = log:info, file:f01, mysql:nagios
-
-[my/special]
-targets = mysql:m1, log:info
-
-[my/other/special]
-topic = another/topic
-targets = log:debug
 ```
 
-MQTT messages received at `icinga/+/+` will be directed to the three specified targets, whereas messages received
-at `my/special` will be stored in a `mysql` target and will be logged at level "INFO".  Messages received
-at `another/topic` (not at `my/other/special`) will be logged at level "DEBUG".
-
-When a message is received at a topic with more than one matching section it will be
-directed to the targets in all matching sections.  For consistency, it's a good practice
-to explicitly provide `topic` options to all such sections.
-
-Each of these sections has a number of optional (`O`) or mandatory (`M`)
-options:
-
-| Option        |  M/O   | Description                                    |
-| ------------- | :----: | ---------------------------------------------- |
-| `targets`     |   M    | service targets for this SUB                   |
-| `topic`       |   O    | topic to subscribe to (overrides section name) |
-| `filter`      |   O    | function name to suppress this msg             |
-| `datamap`     |   O    | function name parse topic name to dict         |
-| `alldata`     |   O    | function to merge topic, and payload with more |
-| `format`      |   O    | function or string format for output           |
-| `priority`    |   O    | used by certain targets (see below). May be func()  |
-| `title`       |   O    | used by certain targets (see below). May be func()  |
-| `image`       |   O    | used by certain targets (see below). May be func()  |
-| `template`    |   O    | use Jinja2 template instead of `format`        |
-| `qos`         |   O    | MQTT QoS for subscription (dflt: 0)            |
+Find [detailed information about the `[__topic__]` sections](#configure-topic)
+on a dedicated documentation page.
 
 
-#### Targets as dictionary
-
-Targets can be also defined as a dictionary containing the pairs of topic and targets.
-In that case message matching the section can be dispatched in more flexible ways to
-selected targets. Consider the following example:
-
-```ini
-[#]
-targets = {
-  '/#': 'file:0',
-  '/test/#': 'file:1',
-  '/test/out/#': 'file:2',
-  '/test/out/+': 'file:3',
-  '/test/out/+/+': 'file:4',
-  '/test/out/+/state': 'file:5',
-  '/test/out/FL_power_consumption/state': [ 'file:6', 'file:7' ],
-  '/test/out/BR_ambient_power_sensor/state': 'file:8',
-  }
-```
-**Attention**: the closing brace `}` of the `targets` dict MUST be indented; this is an artifact of ConfigParser.
-
-With the message dispatching configuration the message is dispatched to the targets matching
-the most specific topic. If the message is received at `/test/out/FL_power_consumption/state`
-it will be directed to `file:6` and `file:7` targets only. Message received at `/test/out/AR_lamp/state`
-will be directed to `file:5`, but received at `/test/out/AR_lamp/command` will go to `file:4`.
-
-The dispatcher mechanism is always trying to find the most specific match. It allows to define
-the wide topic with default targets while some more specific topic can be handled differently.
-It gives additional flexibility in a message routing.
-
-
+(notification-services)=
 ## Supported notification services
 
 _mqttwarn_ supports a number of notification services. This list enumerates them

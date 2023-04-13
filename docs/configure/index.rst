@@ -53,4 +53,6 @@ documentation.
    :maxdepth: 2
 
    service
+   topic
+
 
