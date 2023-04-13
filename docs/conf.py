@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'mqttwarn'
-copyright = '2023, The mqttwarn authors'
+copyright = '2014-2023, The mqttwarn authors'
 author = 'The mqttwarn authors'
 
 # -- General configuration ---------------------------------------------------
