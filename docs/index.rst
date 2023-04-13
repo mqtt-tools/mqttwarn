@@ -42,7 +42,15 @@ notification services** supported by Apprise.
 Documentation
 *************
 
-Please follow up reading the :doc:`README <readme>` and :doc:`handbook <handbook>`.
+Please follow up reading the :doc:`README <readme>` and :doc:`handbook
+<handbook>`. That's all we have.
+
+The authors of mqttwarn aim to provide excellent documentation about its
+machinery and internals. However, mqttwarn includes a complex set of
+transformation capabilities, which is sometimes not easy to understand.
+
+So, if you observe any rough edges, please don't hesitate to submit a
+suggestion how we can improve the documentation.
 
 
 ----
@@ -54,6 +62,21 @@ Please follow up reading the :doc:`README <readme>` and :doc:`handbook <handbook
 
    README <readme>
    HANDBOOK <handbook>
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+   :hidden:
+
+   tutorial/frigate/README
+   tutorial/warntoggle/README
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Workbench
+   :hidden:
+
+   Changelog <changelog>
 
 
 .. hidden
