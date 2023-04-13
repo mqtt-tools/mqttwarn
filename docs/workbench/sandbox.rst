@@ -9,18 +9,11 @@ Installation
 
 For hacking on mqttwarn, please install it in development mode.
 
-Get hold of the sources::
+Get hold of the sources, initialize a Python virtualenv, and run the software tests::
 
     git clone https://github.com/jpmens/mqttwarn
     cd mqttwarn
-
-Invoke software tests::
-
     make test
-
-Invoke software tests, with coverage::
-
-    make test-coverage
 
 Install extras::
 
@@ -30,6 +23,26 @@ Install extras::
 You can also add multiple extras, all at once::
 
     pip install --editable=.[asterisk,nsca,desktopnotify,tootpaste,xmpp]
+
+
+**************
+Software tests
+**************
+
+Invoke software tests::
+
+    make test
+
+Run individual test cases. For example, to run all "end-to-end" test cases, and
+turn off coverage reporting, invoke::
+
+    source .venv/bin/activate
+    pytest --no-cov -k e2e
+
+Display and browse code coverage results in HTML format::
+
+    open .pytest_results/htmlcov/index.html
+
 
 
 *************
