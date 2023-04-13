@@ -1,7 +1,7 @@
 {
   "before": {
     "id": "1680791459.255384-abcdef",
-    "camera": "camera",
+    "camera": "cam-testdrive",
     "frame_time": 1680791459.255384,
     "snapshot_time": 0,
     "label": "car",
@@ -35,7 +35,7 @@
   },
   "after": {
     "id": "1680791459.255384-abcdef",
-    "camera": "camera",
+    "camera": "cam-testdrive",
     "frame_time": 1680791506.638857,
     "snapshot_time": 1680791506.638857,
     "label": "car",
