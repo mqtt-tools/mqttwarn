@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'mqttwarn'
-copyright = '2014-2023, The mqttwarn authors'
-author = 'The mqttwarn authors'
+copyright = '2014-2023, Jan-Piet Mens, Ben Jones, Andreas Motl'
+author = 'Jan-Piet Mens, Ben Jones, Andreas Motl'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

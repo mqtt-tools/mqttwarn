@@ -1,0 +1,32 @@
+---
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+
+title: mqttwarn
+url: https://mqttwarn.readthedocs.org/
+abstract: mqttwarn - subscribe to MQTT topics and notify pluggable services
+authors:
+  - name: Jan-Piet Mens
+    email: jpmens@gmail.com
+  - name: Ben Jones
+    email: ben.jones12@gmail.com
+  - name: Andreas Motl
+    email: andreas.motl@panodata.org
+
+date-published: 2014-02-09
+date-released: 2023-04-13
+type: software
+license: EPL
+license-url: https://github.com/jpmens/mqttwarn/blob/main/LICENSE
+repository-code: https://github.com/jpmens/mqttwarn
+keywords:
+  - acquisition
+  - data
+  - engine
+  - notification
+  - plugins
+  - push
+  - transformation
+  - mosquitto
+  - mqtt
+  - mqttwarn
