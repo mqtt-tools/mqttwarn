@@ -214,7 +214,13 @@ def get_resource_content(package, filename):
 
 
 def truncate(s: t.Union[str, bytes], limit: int = 200, ellipsis="...") -> str:
-    s = str(s.strip())
+    try:
+        if isinstance(s, bytes):
+            s = s.decode("utf-8")
+    except UnicodeDecodeError:
+        pass
+    s = str(s)
+    s = s.strip()
     if len(s) > limit:
         return s[:limit].strip() + ellipsis
     return s
