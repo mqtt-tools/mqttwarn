@@ -63,11 +63,11 @@ jobs:
     - name: Check code style
       if: matrix.python-version != '3.6'
       run: |
-        poe check-style
+        poe lint
 
     - name: Run tests
       run: |
-        pytest
+        poe test
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
