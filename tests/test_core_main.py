@@ -24,7 +24,7 @@ def test_decode_payload_foo(caplog):
     outcome = decode_payload(section="foo", topic="bar", payload="baz")
     assert outcome["topic"] == "bar"
     assert outcome["payload"] == "baz"
-    assert "Cannot decode JSON object, payload=baz" in caplog.text, caplog.text
+    assert "Decoding JSON failed: Expecting value: line 1 column 1 (char 0). payload=baz" in caplog.text, caplog.text
 
 
 def test_decode_payload_json(caplog):

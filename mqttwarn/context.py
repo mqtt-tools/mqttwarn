@@ -196,6 +196,10 @@ class FunctionInvoker:
         :return:        Return value of function invocation
         """
 
+        # Filtering currently only works on text.
+        if isinstance(payload, bytes):
+            payload = payload.decode("utf-8")
+
         rc = False
         try:
             func = load_function(name=name, py_mod=self.config.functions)

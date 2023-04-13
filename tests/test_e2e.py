@@ -111,7 +111,7 @@ def test_system_dispatch_to_log_service_plaintext(mosquitto, caplog, capmqtt):
 
     assert "Message received on test/log-1: foobar" in caplog.messages
     assert "Section [test/log-1] matches message on test/log-1, processing it" in caplog.messages
-    assert "Cannot decode JSON object, payload=foobar: Expecting value: line 1 column 1 (char 0)" in caplog.messages
+    assert "Decoding JSON failed: Expecting value: line 1 column 1 (char 0). payload=foobar" in caplog.messages
     assert "Message on test/log-1 going to log:info" in caplog.messages
     assert "New `log:info' job: test/log-1" in caplog.messages
     assert "Processor #0 is handling: `log' for info" in caplog.messages

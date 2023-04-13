@@ -401,15 +401,17 @@ def decode_payload(section, topic, payload):
     if all_data is not None and isinstance(all_data, dict):
         transform_data.update(all_data)
 
-    # Attempt to decode the payload from JSON. If it's possible, add
-    # the JSON keys into item to pass to the plugin, and create the
-    # outgoing (i.e. transformed) message.
+    # Gracefully attempt to decode the payload from JSON. If it's possible, add
+    # the JSON keys into item to pass to the plugin, and create the outgoing
+    # (i.e. transformed) message.
     try:
+        if isinstance(payload, bytes):
+            payload = payload.decode("utf-8")
         payload = payload.rstrip("\0")
         payload_data = json.loads(payload)
         transform_data.update(payload_data)
     except Exception as ex:
-        logger.debug(f"Cannot decode JSON object, payload={truncate(payload)}\nReason: {ex}")
+        logger.debug(f"Decoding JSON failed: {ex}. payload={truncate(payload)}")
 
     return transform_data
 
