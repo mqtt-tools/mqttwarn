@@ -132,20 +132,9 @@ To learn more about this topic, please follow up reading the `Docker handbook`_.
 Configuration
 *************
 
-First, create configuration and custom Python starter files
-``mqttwarn.ini`` and ``samplefuncs.py`` and edit them to your taste::
+.. seealso::
 
-    # Create configuration file
-    mqttwarn make-config > mqttwarn.ini
-
-    # Create file for custom functions
-    mqttwarn make-samplefuncs > samplefuncs.py
-
-If you are using PowerShell on Windows 10, you may find the files to be written
-using the ``UTF-16`` charset encoding. However, ``mqttwarn`` works with ``UTF-8``.
-In order to switch to ``UTF-8``, please invoke this command beforehand::
-
-    $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+   :ref:`configure`.
 
 
 *****
