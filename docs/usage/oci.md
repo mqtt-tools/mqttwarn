@@ -1,19 +1,19 @@
-# Running mqttwarn with Podman or Docker
+# Using the OCI image with Docker or Podman
 
 If you would rather use `mqttwarn` without installing Python and the required
-libraries, you can run the OCI image on [Podman] or [Docker].
+libraries, you can run the OCI image on [Docker] or [Podman].
 
 You can run mqttwarn as a service, i.e. in the background, or you can run it
 interactively, perhaps to help diagnose a problem.
 
-Docker images are automatically published to:
+OCI images are available at:
 
 - https://github.com/orgs/jpmens/packages/container/package/mqttwarn-standard
 - https://github.com/orgs/jpmens/packages/container/package/mqttwarn-full
 
-## Choosing the Docker image
+## Choosing the OCI image
 
-Choose one of those Docker images.
+Choose one of those OCI images.
 ```shell
 # The standard image on GHCR.
 export IMAGE=ghcr.io/jpmens/mqttwarn-standard:latest
@@ -78,7 +78,7 @@ docker stop mqttwarn
 
 ### Configuration Location
 
-Run the Docker image from anywhere by specifying a full path to the
+Run the OCI image from anywhere by specifying a full path to the
 configuration file:
 ```shell
 --volume=/full/path/to/folder:/etc/mqttwarn
@@ -120,7 +120,7 @@ to your `/etc/docker/daemon.json` to control you logs:
 
 It also might be possible to add a `logging` entry to your individual `docker-compose.yml`
 file for `mqttwarn`, rather than changing it at the system level:
-```yml
+```yaml
 logging:
   driver: "json-file"
   options:
@@ -184,14 +184,14 @@ like, but avoid `mqttwarn` otherwise it's easily confused with the official
 images.
 
 
-## Installing additional Python packages into Docker image
+## Installing additional Python packages into OCI image
 
 In order to use `mqttwarn` with additional Python modules not included in the
-baseline image, you will need to build custom Docker images based on the
+baseline image, you will need to build custom OCI images based on the
 canonical `ghcr.io/jpmens/mqttwarn-standard:latest`.
 
 We prepared an example which outlines how this would work with the Slack SDK.
-By using the `Dockerfile.mqttwarn-slack`, this command will build a Docker
+By using the `Dockerfile.mqttwarn-slack`, this command will build an OCI
 image called `mqttwarn-slack`, which includes the Slack SDK:
 
 ```shell
