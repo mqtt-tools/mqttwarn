@@ -61,15 +61,16 @@ suggestion how we can improve the documentation.
    :hidden:
 
    README <readme>
-   HANDBOOK <handbook>
 
 .. toctree::
    :maxdepth: 2
-   :caption: Details
+   :caption: Handbook
    :hidden:
 
-   usage/oci
+   Overview <handbook>
    configure/index
+   usage/index
+
 .. toctree::
    :maxdepth: 2
    :caption: Tutorials
@@ -83,7 +84,7 @@ suggestion how we can improve the documentation.
    :caption: Workbench
    :hidden:
 
-   Development sandbox <workbench/sandbox>
+   Sandbox <workbench/sandbox>
    Changelog <workbench/changelog>
    Backlog <workbench/backlog>
 

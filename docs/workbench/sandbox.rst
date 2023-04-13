@@ -1,3 +1,5 @@
+.. _sandbox:
+
 ############################
 mqttwarn development sandbox
 ############################
