@@ -984,7 +984,7 @@ Requires:
 
 The `file` service can be used for logging incoming topics, archiving, etc.
 Each message is written to a path specified in the targets list. Note that
-files are opened for appending and then closed on each notification.
+by default, files are opened for appending and then closed on each notification.
 
 Supposing we wish to archive all incoming messages to the branch `arch/#`
 to a file `/data/arch`, we could configure the following:
@@ -1002,9 +1002,9 @@ If `append_newline` is `True`, a newline character is unconditionally appended
 to the string written to the file. If `overwrite` is `True`, the file is opened
 for truncation upon writing (i.e. the file will contain the last message only).
 
-Both parameters can also be specified on a per-file basis. In order to do that,
+Both parameters can also be specified on a per-file basis, where per-item
+parameters take precedence over global parameters. In order to do that,
 the corresponding configuration snippet would look like this:
-
 ```ini
 [config:file]
 targets = {
@@ -1012,7 +1012,22 @@ targets = {
    }
 ```
 
-Per-item parameters take precedence over global parameters.
+Although the `decode_utf8` service option acts on a different spot, it makes
+sense to outline how to forward and store MQTT message payloads to files 1:1.
+It also works on binary files, for example images.
+
+```ini
+[config:file]
+targets        = {
+    'store-me': ['./var/media/spool.jpg'],
+    }
+
+# Pass-through payload content 1:1.
+append_newline = False
+decode_utf8    = False
+overwrite      = True
+```
+
 
 ### `freeswitch`
 

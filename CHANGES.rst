@@ -11,6 +11,7 @@ in progress
   ``get_all_data`` context functions. Thanks, @sevmonster.
 - [core] Allow processing of binary, non-UTF8 message payloads, for example
   images. Thanks, @sevmonster.
+- [file] Allow writing of binary content. Thanks, @sevmonster.
 
 
 2023-04-11 0.33.0
