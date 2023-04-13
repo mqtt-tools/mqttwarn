@@ -166,3 +166,48 @@ def test_system_dispatch_to_log_service_json(mosquitto, caplog, capmqtt):
     assert MqttMessage(topic="test/log-1", payload='{"name": "foo", "value": "bar"}', userdata=None) in capmqtt.messages
 
     mqttc.disconnect()
+
+
+def test_system_dispatch_to_file_service_binary(mosquitto, caplog, capmqtt, pytestconfig):
+    """
+    A full system test verifying the notification message dispatching feature with a binary message.
+    It approves "Does mqttwarn boot and process messages correctly?".
+    Within this test case, it uses the `file` service plugin.
+    """
+
+    # Bootstrap the core machinery without MQTT.
+    config = load_configuration(configfile=configfile_no_functions)
+    bootstrap(config=config)
+
+    # Add MQTT.
+    mqttc = connect()
+
+    # Make mqttwarn run the subscription to the broker.
+    mqtt_process(mqttc)
+
+    # Submit a message to the broker.
+    capmqtt.publish(topic="test/file-1", payload=b"foobar")
+
+    # Make mqttwarn receive and process the message.
+    mqtt_process(mqttc, loops=3)
+
+    # Verify log output.
+    assert 'Successfully loaded service "log"' in caplog.messages
+    assert "Subscribing to test/file-1 (qos=0)" in caplog.messages
+
+    assert "Message received on test/file-1: foobar" in caplog.messages
+    assert "Section [test/file-1] matches message on test/file-1, processing it" in caplog.messages
+    assert "Decoding JSON failed: Expecting value: line 1 column 1 (char 0). payload=foobar" in caplog.messages
+    assert "Message on test/file-1 going to file:spool-binary" in caplog.messages
+    assert "New `file:spool-binary' job: test/file-1" in caplog.messages
+    assert "Processor #0 is handling: `file' for spool-binary" in caplog.messages
+    assert "Invoking service plugin for `file'" in caplog.messages
+    assert ("mqttwarn.services.file", 20, "Writing to file `/tmp/mqttwarn-test-spool.jpg'") in caplog.record_tuples
+    assert "Job queue has 0 items to process" in caplog.messages
+
+    # Verify MQTT messages.
+    # Remark: Message payload must still be compared as string, because `pytest-mqtt` decodes it,
+    #         as it has been configured with `capmqtt_decode_utf8`.
+    assert MqttMessage(topic="test/file-1", payload="foobar", userdata=None) in capmqtt.messages
+
+    mqttc.disconnect()
