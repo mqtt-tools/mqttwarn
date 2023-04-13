@@ -33,8 +33,8 @@ range of notification services and is very open to further contributions.
 You can enjoy the alphabetical list of plugins at `mqttwarn notification
 services`_.
 
-On top of that, it integrates with the excellent `Apprise`_ notification
-library. `Apprise notification services`_ has a complete list of the **80+
+On top of that, it integrates with the `Apprise`_ notification library.
+`Apprise notification services`_ has a complete list of the **80+
 notification services** supported by Apprise.
 
 
@@ -45,7 +45,7 @@ Documentation
 Please follow up reading the :doc:`README <readme>` and :doc:`handbook
 <handbook>`. That's all we have.
 
-The authors of mqttwarn aim to provide excellent documentation about its
+The authors of mqttwarn aim to provide good documentation about its
 machinery and internals. However, mqttwarn includes a complex set of
 transformation capabilities, which is sometimes not easy to understand.
 
