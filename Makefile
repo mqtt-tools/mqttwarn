@@ -13,6 +13,7 @@ $(eval python       := $(venvpath)/bin/python)
 $(eval pytest       := $(venvpath)/bin/pytest)
 $(eval twine        := $(venvpath)/bin/twine)
 $(eval sphinx       := $(venvpath)/bin/sphinx-build)
+$(eval sphinx-autobuild := $(venvpath)/bin/sphinx-autobuild)
 $(eval isort        := $(venvpath)/bin/isort)
 $(eval black        := $(venvpath)/bin/black)
 $(eval poe          := $(venvpath)/bin/poe)
@@ -62,6 +63,12 @@ release: push build pypi-upload
 # Build the documentation
 docs-html: install-doctools
 	cd docs; make html
+
+docs-serve:
+	cd docs/_build/html; python3 -m http.server
+
+docs-autobuild:
+	$(sphinx-autobuild) --open-browser docs docs/_build
 
 
 # ===============

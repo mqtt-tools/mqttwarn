@@ -168,6 +168,7 @@ extras["develop"] = [
     "mypy<1",
     "poethepoet<1",
     'ruff==0.0.254; python_version>="3.7"',
+    "sphinx-autobuild",
 ]
 
 
