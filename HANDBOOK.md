@@ -19,7 +19,7 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
     + [Creating Custom Service Plugins](#creating-custom-service-plugins)
   * [Outbound messages](#outbound-messages)
     + [Message forwarding](#message-forwarding)
-    + [Transforming inbound JSON](#transforming-inboound-json)
+    + [Transforming inbound JSON](#transforming-inbound-json)
     + [Custom functions](#custom-functions)
     + [Templates](#templates)
   * [Periodic tasks](#periodic-tasks)

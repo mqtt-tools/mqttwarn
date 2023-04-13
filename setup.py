@@ -220,7 +220,7 @@ setup(
     author="Jan-Piet Mens, Ben Jones, Andreas Motl",
     author_email="jpmens@gmail.com",
     url="https://github.com/jpmens/mqttwarn",
-    keywords="mqtt notification plugins data acquisition push transformation engine " + "mosquitto ",
+    keywords="mqtt notification plugins data acquisition push transformation engine mosquitto",
     packages=find_packages(),
     include_package_data=True,
     package_data={

@@ -7,8 +7,9 @@ mqttwarn backlog
 Iteration +1
 ************
 - [o] ``--config-file`` option does not work
-- [o] Add documentation on RTD
+- [x] Add documentation on RTD
   https://github.com/jpmens/mqttwarn/issues/389#issuecomment-1428353079
+- [o] ogp-metadata-plugin
 
 
 ************
