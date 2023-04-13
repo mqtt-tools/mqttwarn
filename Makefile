@@ -61,7 +61,6 @@ release: push build pypi-upload
 
 # Build the documentation
 docs-html: install-doctools
-	touch doc/index.rst
 	cd docs; make html
 
 
