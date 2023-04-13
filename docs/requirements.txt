@@ -1,0 +1,4 @@
+furo
+sphinx<7
+sphinx-copybutton<1
+sphinxext-opengraph<1
