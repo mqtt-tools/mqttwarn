@@ -57,6 +57,12 @@ def frigate_events(topic, data, srv: Service):
     mqttwarn transformation function which computes options to be submitted to Apprise/Ntfy.
     """
 
+    # Acceptable hack to get attachment filename template from service configuration.
+    context: RuntimeContext = srv.mwcore["context"]
+    service_config = context.get_service_config("apprise-ntfy")
+    filename_template = service_config.get("filename_template")
+
+    # Decode JSON message.
     after = json.loads(data['payload'])['after']
 
     # Collect details from inbound Frigate event.
@@ -68,11 +74,15 @@ def frigate_events(topic, data, srv: Service):
         entered_zones=after['entered_zones'],
     )
 
+    # Interpolate event data into attachment filename template.
+    attach_filename = filename_template.format(**event.to_dict())
+
     # Compute parameters for outbound Apprise / Ntfy URL.
     ntfy_parameters = NtfyParameters(
         title=f"{event.label} entered {event.entered_zones_str}",
         format=f"In zones {event.current_zones_str} at {event.time}",
         click=f"https://frigate/events?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}",
+        attach=attach_filename,
     )
     return ntfy_parameters.to_dict()
 
