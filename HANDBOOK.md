@@ -12,14 +12,14 @@ Notifications are transmitted to the appropriate service via plugins. We provide
 
 I've written an introductory post, explaining [what mqttwarn can be used for](http://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/). For example, you may wish to notify via e-mail and to Pushover of an alarm published as text to the MQTT topic `home/monitoring/+`.
 
-  * [Outbound messages](#outbound-messages)
   * [](#configuration)
   * [](#supported-notification-services)
+  * [](#outbound-messages)
     + [Message forwarding](#message-forwarding)
     + [Transforming inbound JSON](#transforming-inbound-json)
     + [Custom functions](#custom-functions)
     + [Templates](#templates)
-  * [Periodic tasks](#periodic-tasks)
+  * [](#periodic-tasks)
   * [](#docker-and-podman)
   * [Examples](#examples)
     + [Low battery notifications](#low-battery-notifications)
@@ -29,9 +29,9 @@ I've written an introductory post, explaining [what mqttwarn can be used for](ht
   * [Press](#press)
   
 
-## Getting started
+## Configuration
 
-### Configuration
+### Introduction
 
 I recommend you start off with the following simple configuration which will log messages received on the MQTT topic `test/+` to a file. Create the following configuration file:
 
@@ -90,7 +90,7 @@ If you repeat the publish of the second message, you should see the following in
 -->Jane<--
 ```
 
-#### The `[defaults]` section
+### The `[defaults]` section
 
 Most of the options in the configuration file have sensible defaults, and/or ought to be self-explanatory:
 
@@ -158,18 +158,18 @@ tls_insecure = False
 
 ```
 
-##### `functions`
+#### `functions`
 
 The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
 
-##### `launch`
+#### `launch`
 
 In the `launch` option you specify a list of comma-separated _service_ names  
 defined within the `[config:xxx]` sections which should be launched.
 
 You should launch every service you want to use from your topic/target definitions here.
 
-##### `status_publish`
+#### `status_publish`
 
 Like with Mosquitto's `$SYS` topic, `mqttwarn` can publish status information to the broker.
 This is useful for automated updates (Docker Swarm, Watchtower, etc.).
@@ -202,7 +202,7 @@ Find [detailed information about the `[config:xxx]` sections](./configure/servic
 on a dedicated documentation page.
 
 
-#### The `[failover]` section
+### The `[failover]` section
 
 There is a special section (optional) for defining a target (or targets) for internal error conditions. Currently there is only one error handled by this logic, broker disconnection.
 
@@ -216,7 +216,7 @@ targets  = log:error, xbmc
 title    = mqttwarn
 ```
 
-#### The `[__topic__]` sections
+### The `[__topic__]` sections
 
 All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topics
 to subscribe to. _mqttwarn_ handles each message received on this subscription
@@ -265,7 +265,7 @@ options:
 | `qos`         |   O    | MQTT QoS for subscription (dflt: 0)            |
 
 
-##### Targets as dictionary
+#### Targets as dictionary
 
 Targets can be also defined as a dictionary containing the pairs of topic and targets.
 In that case message matching the section can be dispatched in more flexible ways to
@@ -284,7 +284,7 @@ targets = {
   '/test/out/BR_ambient_power_sensor/state': 'file:8',
   }
 ```
-**Note**: the closing brace `}` of the `targets` dict must be indented; this is an artifact of ConfigParser.
+**Attention**: the closing brace `}` of the `targets` dict MUST be indented; this is an artifact of ConfigParser.
 
 With the message dispatching configuration the message is dispatched to the targets matching
 the most specific topic. If the message is received at `/test/out/FL_power_consumption/state`
@@ -968,7 +968,7 @@ The `freeswitch` service will make a VOIP call to the number specified in your t
 
 In order to use this service you must enable the XML RPC API in Freeswitch - see instructions [here](http://wiki.freeswitch.org/wiki/Mod_xml_rpc).
 
-You need to provide a TTS URL to perform the conversion of your message to an announcement. This can be an online service like VoiceRSS or the [Google Translate API](translate.google.com) (see example below). Or it could be a local TTS service you are using.
+You need to provide a TTS URL to perform the conversion of your message to an announcement. This can be an online service like VoiceRSS or the [Google Translate API](https://translate.google.com) (see example below). Or it could be a local TTS service you are using.
 
 ```ini
 [config:freeswitch]
@@ -3127,17 +3127,18 @@ def ZabbixData(topic, data, srv=None):
 ### Message forwarding
 
 To simply forward an incoming MQTT message, you don't need to do anything other than configure the target. Add a topic section to your `mqttwarn.ini`, by simply naming it after the topic you wish to have forwarded, and within define the `targets`. The payload of the inbound message will then be forwarded to the defined service plugin, wether it simply says "ON", or contains a large JSON dictionary.
-
+```ini
 [office/ups]
 targets = log:debug
+```
 
-This example shows how to have messages received on the MQTT topic `office/ups`, saved into the `mqttwarn.log` file with a `debug` label. This of course assumes that you have configured the log section the way described [above](#the-configxxx-sections). 
+This example shows how to have messages received on the MQTT topic `office/ups`, saved into the `mqttwarn.log` file with a `debug` label. This of course assumes that you have configured the log section the way described at the [](#configure-service). 
 
 But mqttwarn provides several options to create a different outbound message, allowing you for example to make your outbound message more human-readable. 
 
 The title and format directives define the title and the body of the outbound message. Here, you can turn an MQTT payload that simply states "ON", into a friendlier version. 
 
-```
+```ini
 [office/ups]
 title = Office UPS
 format = The office UPS is {payload}
@@ -3147,18 +3148,18 @@ Notice that the original MQTT payload is referenced, so that if the UPS is switc
 
 ```python
 {
-  'topic'         : topic name
-  'payload'       : topic payload
-  '_dtepoch'      : epoch time                  # 1392628581
-  '_dtiso'        : ISO date (UTC)              # 2014-02-17T10:38:43.910691Z
-  '_dthhmm'       : timestamp HH:MM (local)     # 10:16
-  '_dthhmmss'     : timestamp HH:MM:SS (local)  # 10:16:21
+  "topic":      "foo/bar",                      # MQTT topic
+  "payload":    "Hello world!",                 # MQTT message payload
+  "_dtepoch":   1392628581,                     # "epoch time"
+  "_dtiso":     "2014-02-17T10:38:43.910691Z",  # ISO date (UTC)
+  "_dthhmm":    "10:16",                        # timestamp HH:MM (local)
+  "_dthhmmss":  "10:16:21",                     # timestamp HH:MM:SS (local)
 }
 ```
 
 ### Transforming inbound JSON
 
-In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you do do the following:
+In addition to passing the payload received via MQTT to a service, _mqttwarn_ allows you to do the following:
 
 * Transform payloads on a per/topic basis. For example, you know you'll be receiving JSON, but you want to warn with a nicely formatted message.
 * For certain services, you can change the _title_ (or _subject_) of the outgoing message.
@@ -3723,9 +3724,12 @@ Instructions:
 
 ## Press
 
-* [MQTTwarn: Ein Rundum-Sorglos-Notifier](http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312), article in German at JAXenter.
-* [Schwarmalarm using mqttwarn](https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html)
+* [MQTTwarn: Ein Rundum-Sorglos-Notifier], article in German at JAXenter.
+* [Schwarmalarm using mqttwarn]
 
-  [OwnTracks]: http://owntracks.org
-  [Jinja2]: http://jinja.pocoo.org/docs/templates/
-  [Zabbix]: http://zabbix.com
+
+[Jinja2]: http://jinja.pocoo.org/docs/templates/
+[MQTTwarn: Ein Rundum-Sorglos-Notifier]: https://web.archive.org/web/20140611040637/http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312
+[OwnTracks]: http://owntracks.org
+[Schwarmalarm using mqttwarn]: https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
+[Zabbix]: http://zabbix.com

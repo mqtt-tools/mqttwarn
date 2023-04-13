@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'mqttwarn'
-copyright = '2014-2023, Jan-Piet Mens, Ben Jones, Andreas Motl'
-author = 'Jan-Piet Mens, Ben Jones, Andreas Motl'
+project = "mqttwarn"
+copyright = "2014-2023, Jan-Piet Mens, Ben Jones, Andreas Motl"
+author = "Jan-Piet Mens, Ben Jones, Andreas Motl"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -24,15 +24,15 @@ extensions = [
 ]
 
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'furo'
-html_static_path = ['_static']
+html_theme = "furo"
+html_static_path = ["_static"]
 html_logo = "mqttwarn-logo.png"
 
 
@@ -40,12 +40,11 @@ html_logo = "mqttwarn-logo.png"
 
 todo_include_todos = True
 intersphinx_mapping = {
-    'https://docs.python.org/': None,
-    'https://myst-parser.readthedocs.io/en/latest/': None,
+    "python": ("https://docs.python.org/3", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+    "myst": ("https://myst-parser.readthedocs.io/en/latest", None),
 }
-linkcheck_ignore = [
-    r'https://www.researchgate.net/publication/.*'
-]
+linkcheck_ignore = [r"https://www.researchgate.net/publication/.*"]
 sphinx_tabs_valid_builders = ["linkcheck"]
 
 
