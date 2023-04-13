@@ -27,6 +27,7 @@ from mqttwarn.util import (
     parse_cron_options,
     sanitize_function_name,
     timeout,
+    truncate,
 )
 
 try:
@@ -175,8 +176,8 @@ def on_message_handler(mosq, userdata, msg):
     """
 
     topic = msg.topic
-    payload = msg.payload.decode("utf-8")
-    logger.debug("Message received on %s: %s" % (topic, payload))
+    payload = msg.payload
+    logger.debug(f"Message received on {topic}: {truncate(payload)}")
 
     if msg.retain == 1:
         if cf.skipretained:
@@ -287,7 +288,7 @@ def send_to_targets(section, topic, payload):
             error = repr(ex)
             logger.error(
                 f"Cannot interpolate transformation data into topic target '{target}': {error}. "
-                f"section={section}, topic={topic}, payload={payload}, data={data}"
+                f"section={section}, topic={topic}, payload={truncate(payload)}, data={data}"
             )
     targetlist = targetlist_resolved
 
@@ -310,6 +311,10 @@ def send_to_targets(section, topic, payload):
         if service not in service_plugins:
             logger.error("Invalid configuration: Topic '%s' points to non-existing service '%s'" % (topic, service))
             continue
+
+        service_config = context.get_service_config(service)
+        if asbool(service_config.get("decode_utf8", True)):
+            payload = payload.decode("utf-8")
 
         sendtos = None
         if target is None:
@@ -404,7 +409,7 @@ def decode_payload(section, topic, payload):
         payload_data = json.loads(payload)
         transform_data.update(payload_data)
     except Exception as ex:
-        logger.debug(f"Cannot decode JSON object, payload={payload}: {ex}")
+        logger.debug(f"Cannot decode JSON object, payload={truncate(payload)}\nReason: {ex}")
 
     return transform_data
 
