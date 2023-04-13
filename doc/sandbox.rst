@@ -30,6 +30,11 @@ You can also add multiple extras, all at once::
 
     pip install --editable=.[asterisk,nsca,desktopnotify,tootpaste,xmpp]
 
+Build the documentation::
+
+    make docs-html
+    open docs/_build/html/index.html
+
 
 ************
 Using VSCode

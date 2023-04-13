@@ -62,7 +62,7 @@ release: push build pypi-upload
 # Build the documentation
 docs-html: install-doctools
 	touch doc/index.rst
-	export SPHINXBUILD="`pwd`/$(sphinx)"; cd doc; make html
+	cd docs; make html
 
 
 # ===============
@@ -77,8 +77,9 @@ build: install-releasetools
 pypi-upload: install-releasetools
 	$(twine) upload --skip-existing --verbose dist/*{.tar.gz,.whl}
 
-install-doctools: setup-virtualenv
-	@$(pip) install --requirement requirements-docs.txt --upgrade
+install-doctools:
+	@test -e $(python) || python3 -m venv $(venvpath)
+	$(pip) install --quiet --upgrade --requirement=docs/requirements.txt
 
 install-releasetools: setup-virtualenv
 	@$(pip) install --requirement requirements-release.txt --upgrade
