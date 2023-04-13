@@ -6,6 +6,7 @@ import json
 import os
 import re
 import string
+import typing as t
 
 import pkg_resources
 from six import string_types
@@ -210,3 +211,10 @@ def load_function(name=None, py_mod=None):
 def get_resource_content(package, filename):
     with pkg_resources.resource_stream(package, filename) as stream:
         return stream.read().decode("utf-8")
+
+
+def truncate(s: t.Union[str, bytes], limit: int = 200, ellipsis="...") -> str:
+    s = str(s.strip())
+    if len(s) > limit:
+        return s[:limit].strip() + ellipsis
+    return s

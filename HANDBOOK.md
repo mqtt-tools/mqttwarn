@@ -416,9 +416,33 @@ _mqttwarn_ supports a number of services (listed alphabetically below):
 
 ### Configuration of service plugins
 
+#### Overview
+
 Service plugins are configured in the main `mqttwarn.ini` file. Each service has a mandatory _section_ named `[config:xxx]`, where `xxx` is the name of the service. This section _may_ have some settings which are required for a particular service, and all services have an rarely used option called `module` (see [The config:xxx sections](#the-configxxx-sections)) and one mandatory option called `targets`. This defines individual "service points" for a particular service, e.g. different paths for the `file` service, distinct database tables for `mysql`, etc.
 
 We term the array for each target an "address list" for the particular service. These may be path names (in the case of the `file` service), topic names (for outgoing `mqtt` publishes), hostname/port number combinations for `xbmc`, etc.
+
+As such, the anatomy of a service configuration snippet is:
+```ini
+[config:foo]
+targets = {
+    'servicepoint1': [ 'address1', 'address2' ],
+    'servicepoint2': [ 'address3', 'address4' ],
+  }
+```
+
+#### General options
+
+Individual services offer different configuration options as settings here, but
+there are a few settings implemented within mqttwarn core, which can optionally
+be configured on this level, as they are applicable to **all services**.
+
+```ini
+# Don't assume incoming MQTT message is encoded in UTF-8.
+# This is applicable for receiving and processing binary data.
+decode_utf8    = False
+```
+
 
 ### `alexa-notify-me`
 
