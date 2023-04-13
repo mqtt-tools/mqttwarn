@@ -65,6 +65,12 @@ suggestion how we can improve the documentation.
 
 .. toctree::
    :maxdepth: 2
+   :caption: Details
+   :hidden:
+
+   usage/oci
+.. toctree::
+   :maxdepth: 2
    :caption: Tutorials
    :hidden:
 
