@@ -113,6 +113,10 @@ You can also add support for multiple services, all at once::
 
     pip install --upgrade 'mqttwarn[apprise,asterisk,nsca,desktopnotify,tootpaste,xmpp]'
 
+.. seealso::
+
+   :ref:`using-pip`.
+
 
 ***************
 Container image
