@@ -16,9 +16,10 @@ author = 'Jan-Piet Mens, Ben Jones, Andreas Motl'
 extensions = [
     "myst_parser",
     "sphinx_copybutton",
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.ifconfig',
+    "sphinx_togglebutton",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.ifconfig",
     "sphinxext.opengraph",
 ]
 
@@ -50,6 +51,16 @@ sphinx_tabs_valid_builders = ["linkcheck"]
 
 # -- Options for MyST -------------------------------------------------
 myst_heading_anchors = 3
+myst_enable_extensions = [
+    "attrs_block",
+    "attrs_inline",
+    "colon_fence",
+    "deflist",
+    "fieldlist",
+    "linkify",
+    "strikethrough",
+    "tasklist",
+]
 
 # -- Options for sphinx-copybutton ------------------------------------
 copybutton_remove_prompts = True
