@@ -12,6 +12,8 @@ in progress
 - [core] Allow processing of binary, non-UTF8 message payloads, for example
   images. Thanks, @sevmonster.
 - [file] Allow writing of binary content. Thanks, @sevmonster.
+- [ux] Rename subcommand ``mqttwarn make-samplefuncs`` to ``mqttwarn make-udf``,
+  and adjust naming.
 
 
 2023-04-11 0.33.0

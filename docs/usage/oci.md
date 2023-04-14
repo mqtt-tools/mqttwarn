@@ -34,7 +34,7 @@ the necessary steps needed to create a configuration and run it.
 Within an empty folder, create a baseline `mqttwarn.ini` file:
 ```shell
 docker run -it --rm --volume=$PWD:/etc/mqttwarn $IMAGE mqttwarn make-config > mqttwarn.ini
-docker run -it --rm --volume=$PWD:/etc/mqttwarn $IMAGE mqttwarn make-samplefuncs > samplefuncs.py
+docker run -it --rm --volume=$PWD:/etc/mqttwarn $IMAGE mqttwarn make-udf > udf.py
 ```
 
 Then, assuming your MQTT broker runs on `localhost`, amend the `mqttwarn.ini` like:
