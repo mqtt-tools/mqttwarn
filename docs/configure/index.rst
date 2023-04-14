@@ -5,30 +5,31 @@ Configuration
 #############
 
 This part of the documentation covers the configuration of mqttwarn. The second
-step to using any software package after installation is getting it properly
-configured. Please read this section carefully.
-
-After successfully installing the software, you might want to follow up about
-:ref:`using <using>` it.
+step to using any software package after its :ref:`installation <installation>`,
+is getting it properly configured. Please read this section carefully.
 
 
 ******************************
 Application configuration file
 ******************************
 
+In this section, you will learn about the layout, structure, and semantics of
+the application configuration file ``mqttwarn.ini``.
+mqttwarn needs it properly configured in order to operate successfully.
+
+
 Create starter files
 ====================
 
-Blueprints of configuration files for running mqttwarn in development and
-production mode are available within the mqttwarn repository.
 
-First, create configuration and personal starter files ``mqttwarn.ini``
-and ``udf.py`` and edit them to your taste::
+Blueprints for mqttwarn configuration files are available within the mqttwarn
+repository at `mqttwarn.ini`_ and `udf.py`_. You can use them as personal
+starter files, and edit them to your taste::
 
-    # Create configuration file
+    # Create configuration file.
     mqttwarn make-config > mqttwarn.ini
 
-    # Create file for user-defined functions
+    # Create file hosting user-defined functions.
     mqttwarn make-udf > udf.py
 
 .. important::
@@ -42,16 +43,28 @@ and ``udf.py`` and edit them to your taste::
        $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 
 
-Edit starter files
-==================
+Learn and edit configuration
+============================
 
-In order to learn about the structure of the application configuration file
-``mqttwarn.ini``, please follow up reading the following sections of the
-documentation.
+In order to implement mqttwarn for your use case, you will need to edit its
+configuration files according to your needs.
+
+To learn about the application configuration file ``mqttwarn.ini``, please
+follow up reading the following sections of the documentation.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
+   mqttwarn.ini
    service
    topic
    transformation
+
+Notification "services" define where messages are routed to, "topics" are
+definitions of MQTT topic subscriptions, and with "transformations", you are
+defining how messages will be filtered, decoded, and re-formatted while
+mqttwarn is processing them.
+
+
+.. _mqttwarn.ini: https://github.com/jpmens/mqttwarn/blob/main/mqttwarn/examples/basic/mqttwarn.ini
+.. _udf.py: https://github.com/jpmens/mqttwarn/blob/main/mqttwarn/examples/basic/samplefuncs.py
