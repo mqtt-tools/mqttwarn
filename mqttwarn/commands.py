@@ -25,7 +25,7 @@ def run():
     """
     Usage:
       {program} [make-config]
-      {program} [make-samplefuncs]
+      {program} [make-udf]
       {program} [--config=] [--config-file=] [--plugin=] [--options=]
       {program} --version
       {program} (-h | --help)
@@ -45,8 +45,8 @@ def run():
     Bootstrapping options:
       make-config               Dump configuration file blueprint to STDOUT,
                                 suitable for redirecting into a configuration file.
-      make-samplefuncs          Dump blueprint for custom functions file to STDOUT,
-                                suitable for redirecting into a `samplefuncs.py` file.
+      make-udf                  Dump blueprint for user-defined functions file to STDOUT,
+                                suitable for redirecting into a `udf.py` file.
 
     Miscellaneous options:
       --version                 Show version information
@@ -68,7 +68,8 @@ def run():
         payload = get_resource_content("mqttwarn.examples", "basic/mqttwarn.ini")
         print(payload)
 
-    elif options["make-samplefuncs"]:
+    elif options["make-udf"]:
+        # TODO: Rename `samplefuncs` to `udf`.
         payload = get_resource_content("mqttwarn.examples", "basic/samplefuncs.py")
         print(payload)
 

@@ -22,14 +22,14 @@ Create starter files
 Blueprints of configuration files for running mqttwarn in development and
 production mode are available within the mqttwarn repository.
 
-First, create configuration and custom Python starter files ``mqttwarn.ini``
-and ``samplefuncs.py`` and edit them to your taste::
+First, create configuration and personal starter files ``mqttwarn.ini``
+and ``udf.py`` and edit them to your taste::
 
     # Create configuration file
     mqttwarn make-config > mqttwarn.ini
 
-    # Create file for custom functions
-    mqttwarn make-samplefuncs > samplefuncs.py
+    # Create file for user-defined functions
+    mqttwarn make-udf > udf.py
 
 .. important::
 

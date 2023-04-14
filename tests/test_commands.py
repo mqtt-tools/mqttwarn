@@ -74,12 +74,12 @@ def test_command_dump_config(mqttwarn_bin, capfd):
     assert 'mqttwarn example configuration file "mqttwarn.ini"' in stdout, stdout
 
 
-def test_command_dump_samplefuncs(mqttwarn_bin, capfd):
+def test_command_dump_udf(mqttwarn_bin, capfd):
     """
-    Verify that `mqttwarn make-samplefuncs` works as expected.
+    Verify that `mqttwarn make-udf` works as expected.
     """
 
-    command = f"{mqttwarn_bin} make-samplefuncs"
+    command = f"{mqttwarn_bin} make-udf"
     stdout, stderr = invoke_command(capfd, command)
     assert "# mqttwarn example function extensions" in stdout, stdout
 
