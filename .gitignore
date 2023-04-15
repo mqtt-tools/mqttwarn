@@ -14,7 +14,7 @@ services/winscp.rnd
 .vs/VSWorkspaceState.json
 .vs/ProjectSettings.json
 f.01
-funcs.py
+udf.py
 .pytest_cache
 .pytest_results
 .coverage*

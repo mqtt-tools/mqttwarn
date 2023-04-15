@@ -69,8 +69,7 @@ def run():
         print(payload)
 
     elif options["make-udf"]:
-        # TODO: Rename `samplefuncs` to `udf`.
-        payload = get_resource_content("mqttwarn.examples", "basic/samplefuncs.py")
+        payload = get_resource_content("mqttwarn.examples", "basic/udf.py")
         print(payload)
 
     elif options["--plugin"] and options["--options"]:

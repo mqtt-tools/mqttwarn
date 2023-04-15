@@ -409,8 +409,8 @@ the invocation of your function, you will create an endless loop.
 
 ## User-defined function examples
 
-In this section, you can explore a few example scenarios where custom functions
-are being used.
+In this section, you can explore a few example scenarios where user-defined
+functions are being used.
 
 
 ### `format`: Replacing incoming payloads
