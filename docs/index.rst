@@ -73,11 +73,10 @@ suggestion how we can improve the documentation.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials
+   :caption: Learn
    :hidden:
 
-   tutorial/frigate/README
-   tutorial/warntoggle/README
+   examples/readme
 
 .. toctree::
    :maxdepth: 2
