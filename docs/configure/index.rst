@@ -59,6 +59,7 @@ follow up reading the following sections of the documentation.
    service
    topic
    transformation
+   task
 
 Notification "services" define where messages are routed to, "topics" are
 definitions of MQTT topic subscriptions, and with "transformations", you are
