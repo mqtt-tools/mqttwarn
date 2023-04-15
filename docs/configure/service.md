@@ -2,7 +2,6 @@
 (services)=
 # Services
 
-
 ## Introduction
 
 This section of the documentation will outline how to configure mqttwarn
@@ -21,6 +20,7 @@ your own notification plugin easily, see [](#custom-notification-plugins).
 Configuration sections called `[config:xxx]` configure settings for a service,
 where `xxx` is the name of the service.
 
+{#service-targets}
 Each of these sections has a mandatory option called `targets`, which is a 
 dictionary of target names, each pointing to an array of "addresses". The 
 address formats depend on the particular service.

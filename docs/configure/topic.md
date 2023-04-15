@@ -2,7 +2,6 @@
 (topics)=
 # Topics
 
-
 ## Introduction
 
 This section of the documentation will outline how to configure mqttwarn 
@@ -18,7 +17,7 @@ wildcard scheme you are already accustomed to, for example when using [`mosquitt
 
 All sections not called `[defaults]` or `[config:xxx]` are treated as MQTT topics
 to subscribe to. _mqttwarn_ handles each message received on this subscription
-by handing it off to one or more [](#service-targets).
+by handing it off to one or more [service targets](#service-targets).
 
 Section names must be unique and must specify the name of the topic to be processed. 
 If the section block does not have a `topic` option, then the section name will be used.
@@ -27,6 +26,7 @@ When a message is received at a topic with more than one matching sections, it
 will be directed to the targets in all matching sections.  For consistency,
 it's a good practice to explicitly provide `topic` options to all such sections.
 
+{#topic-options}
 A section can have additional mandatory (`M`) or optional (`O`) options:
 
 | Option        |  M/O   | Description                                    |
