@@ -8,6 +8,9 @@ This part of the documentation covers the configuration of mqttwarn. The second
 step to using any software package after its :ref:`installation <installation>`,
 is getting it properly configured. Please read this section carefully.
 
+To directly jump to the corresponding sections, visit
+:ref:`mqttwarn.ini`, :ref:`services`, :ref:`topics`, and :ref:`transformations`.
+
 
 ******************************
 Application configuration file
