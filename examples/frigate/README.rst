@@ -1,6 +1,8 @@
-#################################
-Forwarding Frigate events to Ntfy
-#################################
+.. _processing-frigate-events:
+
+##############################################
+Frigate » Forward events and snapshots to Ntfy
+##############################################
 
 
 *****
