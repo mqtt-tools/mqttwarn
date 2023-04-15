@@ -70,6 +70,9 @@ targets = log:debug
 
 ## Advanced message routing
 
+
+### Dictionary targets
+
 Targets can also be defined as a dictionary, containing items of `{topic: targets}`. 
 In that case, message matching the section can be dispatched in more  flexible ways 
 to selected targets. Consider the following example:
@@ -107,4 +110,65 @@ artifact of Python's [ConfigParser](inv:python#library/configparser).
 :::
 
 
+### Templated targets
+
+By defining topic targets as templates, and interpolating transformation data,
+we can make _mqttwarn_ dispatch messages dynamically, based on the values of
+the transformation data dictionary.
+
+By bundling multiple target rules into a single templated one, this may save a
+few explicit rules to be configured within your [topic section](#topics) definitions.
+
+#### Example 1
+To get an idea about how this works, let's define the placeholder variable
+`loglevel` inside the `targets` option of a topic section.
+```ini
+[topic-targets-dynamic]
+topic   = test/topic-targets-dynamic
+format  = Something {loglevel} happened! {message}
+targets = log:{loglevel}
+```
+
+When sending this value through a JSON encoded message or by computing it
+through the `alldata` transformation machinery, it will get interpolated into
+the designated topic target. Example:
+```shell
+mosquitto_pub \
+  -t test/topic-targets-dynamic \
+  -m '{"loglevel": "crit", "message": "Nur Döner macht schöner!"}'
+```
+
+This will issue the following message into the log file:
+```text
+2016-02-14 18:09:34,822 CRITICAL [log] Something crit happened! Nur Döner macht schöner!
+```
+
+While this little example might feel artificial, there are more sensible use
+cases like determining the recipient address of `smtp` or `xmpp` receivers by
+interpolating information from topic names or message payloads.
+Please have a look at how to [incorporate topic names into topic targets] for a
+more meaningful example in this regard.
+
+
+#### Example 2
+
+The [](#processing-frigate-events) tutorial used a configuration snippet like this.
+```ini
+[frigate/cam1/goat/snapshot]
+targets = store-jpeg:cam1-goat
+[frigate/cam2/squirrel/snapshot]
+targets = store-jpeg:cam2-squirrel
+```
+
+Using [](#templated-targets), this can be condensed like this, not needing to
+repeat each and every slot to be addressed. Of course, it needs a corresponding
+[](#decoding) function to propagate the `camera` and `label` values into the
+transformation data.
+```ini
+[frigate/+/+/snapshot]
+targets = store-jpeg:{camera}-{label}
+```
+
+
+[incorporate topic names into topic targets]: https://github.com/jpmens/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets
 [`mosquitto_pub`]: https://mosquitto.org/man/mosquitto_pub-1.html
