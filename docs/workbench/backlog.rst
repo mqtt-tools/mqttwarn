@@ -6,15 +6,59 @@ mqttwarn backlog
 ************
 Iteration +1
 ************
+
+Bugs
+====
 - [o] ``--config-file`` option does not work
+- [o] Documentation vs. code: Clarify and/or fix logic of "filter" function
+  https://github.com/jpmens/mqttwarn/issues/637
+
+Documentation » Tech
+====================
 - [x] Add documentation on RTD
   https://github.com/jpmens/mqttwarn/issues/389#issuecomment-1428353079
-- [o] ogp-metadata-plugin
+- [x] ogp-metadata-plugin
+- [x] sphinx-copybutton
+- [x] sphinx-autodoc
+- [x] Collapsibles
+- [o] Mermaid?
+- [o] Grid on bottom of landing page
+- [o] automodules
+- [o] Refactor backlog.rst to use MyST tasklists
+- [o] Does ``html_show_sourcelink`` actually work?
+  https://github.com/pradyunsg/furo/issues/12
+- [o] Enable ``html_use_opensearch``?
+  https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_use_opensearch
+
+Documentation » Content
+=======================
+- [x] Refactor "Services"
+- [x] Refactor "Topics"
+- [x] New: Configuration at a glance / in a nutshell / Introduction
+- [x] Move "Press" into more prominent section
+- [x] Refactor "Plugins"
+- [x] Refactor "Examples" / "Tutorials"
+- [x] Code example for "Transformation » Decoding nested JSON" section
+- [x] Naming things: Replace term "custom function" with "user-defined function" (UDF)
+
+- [o] Search for all old links
+- [o] Better advertise the new topic section layout for ``targets``
+- [o] Improve default output for ``mqttwarn make-udf``, ``basic/udf.py``.
+- [o] Deprecate the ``datamap`` function. ``alldata`` is the new thing.
+- [o] Screen the Wiki for more content
+  https://github.com/jpmens/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets
+- [o] Naming things: "Transforming" is actually "Decoding"
+
+- [o] The ``format`` option should be renamed to ``message`` or ``body``
+- [o] Rename ``alldata`` to ``decode``, or ``decoder``
 
 
 ************
 Iteration +2
 ************
+- [o] Improve topic decoding
+  ``frigate/cam1/goat/snapshot`` should be decoded like ``frigate/<camera>/<label>/snapshot``
+- [o] Improve topic decoding: What about writing decoder functions in JavaScript?
 - [o] Improve software tests
 - [o] Refactor contents from "examples", "templates" and "vendor" folders
 
@@ -26,8 +70,8 @@ Iteration +2
   - Wire ``contrib/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
   - Wire ``contrib/zabbix_mqtt_agent.py`` to ``mqttwarn --plugin=zabbix --command=publish``
   - Wire ``mqttwarn/vendor/ZabbixSender.py`` to ``mqttwarn --plugin=zabbix --command=sensor``
-- [o] How to address "samplefuncs.py" in relation to "mqttwarn.ini"? E.g. if the mqttwarn configuration file
-  would be ``/etc/mqttwarn/acme.ini``, should this load ``/etc/mqttwarn/samplefuncs.py`` or use the current
+- [o] How to address ``udf.py`` in relation to "mqttwarn.ini"? E.g. if the mqttwarn configuration file
+  would be ``/etc/mqttwarn/acme.ini``, should this load ``/etc/mqttwarn/udf.py`` or use the current
   working directory for that? Or even both!?
 - [o] When running the mqttwarn daemon and no configuration file is given,
   use configuration from the ".mqttwarn" folder in the current working directory.
@@ -43,9 +87,9 @@ Iteration +2
 ************
 Iteration +3
 ************
-- [o] Refactor the ``mqttwarn make-config|make-samplefuncs`` machinery into a ``mqttwarn init``-style thing. Proposal::
+- [o] Refactor the ``mqttwarn make-config|make-udf`` machinery into a ``mqttwarn init``-style thing. Proposal::
 
-      # Create folder .mqttwarn with minimal configuration (config.ini, custom.py)
+      # Create folder .mqttwarn with minimal configuration (config.ini, udf.py)
       mqttwarn init
 
       # Create folder .mqttwarn with configuration from named preset "hiveeyes" (hiveeyes.ini, hiveeyes.py, hiveeyes-alert.j2)
