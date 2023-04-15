@@ -2,6 +2,7 @@
 (tasks)=
 # Tasks
 
+
 ## Periodic tasks
 
 _mqttwarn_ can use functions you define in the file specified `[defaults]` section
@@ -13,7 +14,9 @@ are two things you have to do:
 
 Assume we have the following user-defined function.
 ```python
-def pinger(srv=None):
+from mqttwarn.model import Service
+
+def pinger(srv: Service):
     srv.mqttc.publish("pt/PINGER", "Hello from mqttwarn!", qos=0)
 ```
 
@@ -27,14 +30,13 @@ pinger = 10.5
 
 Each keyword in the `[cron]` section specifies the name of one of your custom
 functions, and its float value is an interval in _seconds_ after which your
-custom function (_pinger()_ in this case) is invoked. Your function has access
-to the `srv` object (which was described earlier).
+user-defined function, in this case `pinger()`, is invoked. Your function has
+access to the `srv` object described above.
 
 Function names are to be specified in lower-case characters.
 
-instead of waiting for the interval to elapse, you might want to configure:
-
 If you want to run the user-defined function immediately after starting mqttwarn
+instead of waiting for the interval to elapse, you might want to add `now=true`.
 ```ini
 [cron]
 pinger = 10.5; now=true

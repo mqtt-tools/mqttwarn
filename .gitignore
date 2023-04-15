@@ -13,7 +13,6 @@ services/winscp.rnd
 .vs/slnx.sqlite
 .vs/VSWorkspaceState.json
 .vs/ProjectSettings.json
-f.01
 udf.py
 .pytest_cache
 .pytest_results
