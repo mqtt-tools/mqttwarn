@@ -1,37 +1,17 @@
-# mqttwarn
+(handbook-old)=
+# Old handbook (phasing out)
 
-To _warn_, _alert_, or _notify_.
 
-![](assets/google-definition.jpg)
+:::{important}
+We are currently reworking the documentation, so this document is
+gradually being phased out.
 
-mqttwarn subscribes to any number of MQTT topics (which may include wildcards) and publishes received payloads to one or more notification services, including support for notifying more than one distinct service for the same message.
-
-![](assets/mqttwarn.png)
-
-Notifications are transmitted to the appropriate service via plugins. We provide plugins for the list of services [below](#supported-notification-services), and you can easily add your own.
-
-I've written an introductory post, explaining [what mqttwarn can be used for](http://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/). For example, you may wish to notify via e-mail and to Pushover of an alarm published as text to the MQTT topic `home/monitoring/+`.
-
-  * [](#configuration)
-  * [](#supported-notification-services)
-  * [](#outbound-messages)
-    + [Message forwarding](#message-forwarding)
-    + [Transforming inbound JSON](#transforming-inbound-json)
-    + [Custom functions](#custom-functions)
-    + [Templates](#templates)
-  * [](#periodic-tasks)
-  * [](#docker-and-podman)
-  * [Examples](#examples)
-    + [Low battery notifications](#low-battery-notifications)
-    + [Producing JSON](#producing-json)
-    + [Amazon Alexa](#amazon-alexa)
-  * [Notes](#notes)
-  * [Press](#press)
-  
+Please head over to https://mqttwarn.readthedocs.io/.
+:::
 
 
 ## Configuration
-See [mqttwarn.ini](#mqttwarn.ini).
+See [mqttwarn.ini](#mqttwarn.ini), [](#services), [](#topics), and [](#transformations).
 
 (notification-services)=
 (services-catalog)=
@@ -2211,12 +2191,13 @@ targets = {
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | application title (dflt: pushsafer dflt) |
 
-#### Notes
-- [Retry](https://www.pushsafer.com/en/pushapi_ext#API-RE)
-  with [Expire](https://www.pushsafer.com/en/pushapi_ext#API-EX):
-  For configuring delivery retries, you must set both parameters.
+:::{note}
+- For configuring delivery retries, you must set both parameters, 
+  [Retry](https://www.pushsafer.com/en/pushapi_ext#API-RE), **and**
+  [Expire](https://www.pushsafer.com/en/pushapi_ext#API-EX).
 - The legacy configuration layout, based on a list for the `addrs` slot,
   is still supported.
+:::
 
 #### Screenshot
 ![pushsafer on iOS](assets/pushsafer.jpg)
@@ -2861,26 +2842,4 @@ def ZabbixData(topic, data, srv=None):
 ```
 
 
-
-## Docker and Podman
-
-Please follow up reading at [](./usage/oci.md).
-
-
-## Notes
-
-"MQTT" is a trademark of the OASIS open standards consortium, which publishes the MQTT specifications.
-
-
-
-## Press
-
-* [MQTTwarn: Ein Rundum-Sorglos-Notifier], article in German at JAXenter.
-* [Schwarmalarm using mqttwarn]
-
-
-[Jinja2]: http://jinja.pocoo.org/docs/templates/
-[MQTTwarn: Ein Rundum-Sorglos-Notifier]: https://web.archive.org/web/20140611040637/http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312
-[OwnTracks]: http://owntracks.org
-[Schwarmalarm using mqttwarn]: https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
-[Zabbix]: http://zabbix.com
+[Zabbix]: https://www.zabbix.com/
