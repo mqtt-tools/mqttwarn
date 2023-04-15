@@ -1,21 +1,7 @@
-(handbook-old)=
-# Old handbook (phasing out)
-
-
-:::{important}
-We are currently reworking the documentation, so this document is
-gradually being phased out.
-
-Please head over to https://mqttwarn.readthedocs.io/.
-:::
-
-
-## Configuration
-See [mqttwarn.ini](#mqttwarn.ini), [](#services), [](#topics), and [](#transformations).
-
 (notification-services)=
 (services-catalog)=
-## Notification service catalog
+(notifier-catalog)=
+## Notifier catalog
 
 _mqttwarn_ supports a number of notification services. This list enumerates them
 alphabetically sorted.

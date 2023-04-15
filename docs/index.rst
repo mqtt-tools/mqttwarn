@@ -70,10 +70,6 @@ documentation carefully.
 
 - :ref:`Install and operate mqttwarn <use>`
 - :ref:`The mqttwarn configuration <configure>`
-
-Previous documentation and documentation currently being migrated:
-
-- :ref:`handbook-old`
 - :doc:`README <readme>`
 
 
@@ -116,8 +112,8 @@ the MQTT specifications.
 
    usage/index
    configure/index
+   notifier-catalog
    README <readme>
-   handbook
 
 .. toctree::
    :maxdepth: 2
