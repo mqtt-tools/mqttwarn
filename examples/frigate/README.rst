@@ -47,6 +47,7 @@ Start the Mosquitto MQTT broker::
 
 Run mqttwarn::
 
+    cd examples/frigate/
     mkdir -p ./var/media
     MQTTWARNINI=frigate.ini mqttwarn
 
@@ -68,7 +69,7 @@ Publish an example image::
     wget -O goat.png https://user-images.githubusercontent.com/453543/231550862-5a64ac7c-bdfa-4509-86b8-b1a770899647.png
     convert goat.png goat.jpg
     mosquitto_pub -f goat.jpg -t 'frigate/cam-testdrive/goat/snapshot'
-    open ./var/media/cam-testdrive-goat.jpg
+    open /tmp/mqttwarn-frigate-cam-testdrive-goat.jpg
 
 
 .. _Apprise: https://github.com/caronc/apprise

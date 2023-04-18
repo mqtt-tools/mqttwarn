@@ -2,6 +2,7 @@
 /.idea
 /.venv*
 /dist*
+/docs/_build
 /build
 *.pyc
 *.egg-info
