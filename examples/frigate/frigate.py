@@ -29,11 +29,17 @@ class FrigateEvent:
 
     @property
     def current_zones_str(self):
-        return ', '.join(self.f(self.current_zones))
+        if self.current_zones:
+            return ', '.join(self.f(self.current_zones))
+        else:
+            return ''
 
     @property
     def entered_zones_str(self):
-        return ', '.join(self.f(self.entered_zones))
+        if self.entered_zones:
+            return ', '.join(self.f(self.entered_zones))
+        else:
+            return ''
 
     def to_dict(self) -> t.Dict[str, str]:
         return dataclasses.asdict(self)
@@ -82,8 +88,8 @@ def frigate_events(topic, data, srv: Service):
 
     # Compute parameters for outbound Apprise / Ntfy URL.
     ntfy_parameters = NtfyParameters(
-        title=f"{event.label} entered {event.entered_zones_str}",
-        format=f"In zones {event.current_zones_str} at {event.time}",
+        title=f"{event.label} entered {event.entered_zones_str} at {event.time}",
+        format=f"{event.label} was in {event.current_zones_str}",
         click=f"https://frigate/events?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}",
         #attach=attach_filename,
     )
