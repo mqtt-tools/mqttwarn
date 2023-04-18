@@ -12,6 +12,7 @@ Bugs
 - [o] ``--config-file`` option does not work
 - [o] Documentation vs. code: Clarify and/or fix logic of "filter" function
   https://github.com/jpmens/mqttwarn/issues/637
+- [o] Fallback for ``mqttwarn make-samplefuncs``
 
 Documentation » Tech
 ====================
@@ -48,6 +49,12 @@ Documentation » Content
 - [o] Screen the Wiki for more content
   https://github.com/jpmens/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets
 - [o] Naming things: "Transforming" is actually "Decoding"
+- [o] Add example from https://jpmens.net/2018/03/25/alerting-on-ssh-logins/
+- [o] Add "Acknowledgements" section
+- [o] Add decoder function to "Templated targets" example
+  https://mqttwarn.readthedocs.io/en/latest/configure/topic.html#example-2
+- [o] What about the `item` definition in ...? Is it actually the real "transformation data" now?
+  https://mqttwarn.readthedocs.io/en/latest/configure/service.html#creating-custom-notification-plugins
 
 - [o] The ``format`` option should be renamed to ``message`` or ``body``
 - [o] Rename ``alldata`` to ``decode``, or ``decoder``
