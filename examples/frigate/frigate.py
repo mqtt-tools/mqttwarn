@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import dataclasses
-from datetime import datetime
+from datetime import datetime, timezone
 import typing as t
 
 from mqttwarn.context import RuntimeContext
@@ -69,7 +69,7 @@ def frigate_events(topic, data, srv: Service):
 
     # Collect details from inbound Frigate event.
     event = FrigateEvent(
-        time=datetime.fromtimestamp(after['frame_time']),
+        time=datetime.fromtimestamp(after['frame_time'], tz=timezone.utc),
         camera=after['camera'],
         label=after['sub_label'] or after['label'],
         current_zones=after['current_zones'],

@@ -53,7 +53,6 @@ Start the Ntfy API service::
 Run mqttwarn::
 
     cd examples/frigate/
-    mkdir -p ./var/media
     MQTTWARNINI=frigate.ini mqttwarn
 
 Run the example publisher program::
