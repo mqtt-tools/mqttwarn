@@ -92,7 +92,7 @@ def frigate_events(topic, data, srv: Service):
 
 def frigate_events_filter(topic, message, section, srv: Service):
     """
-    mqttwarn filter function to only use Frigate events of type `new`.
+    mqttwarn filter function to only use `new` and important `update` Frigate events.
 
     Additionally, validate more details within the event message,
     specifically the `after` section. For example, skip false positives.
@@ -143,6 +143,18 @@ def frigate_events_filter(topic, message, section, srv: Service):
         # All other keys should be present and have values.
         if not value:
             srv.logging.warning(f"Frigate event skipped, field is empty: {field}")
+            return True
+
+    # Ignore unimportant `update` events.
+    before = message.get('before')
+    if message_type == 'update' and isinstance(before, dict):
+        if before.get('stationary') is True and after.get('stationary') is True:
+            srv.logging.warning("Frigate event skipped, object is stationary")
+            return True
+        elif (after['current_zones'] == after['entered_zones'] or
+                (before['current_zones'] == after['current_zones'] and
+                 before['entered_zones'] == after['entered_zones'])):
+            srv.logging.warning("Frigate event skipped, object stayed within same zone")
             return True
 
     return False

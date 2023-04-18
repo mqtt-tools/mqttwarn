@@ -1,0 +1,34 @@
+{
+  "before": {
+    "id": "1680791459.255384-abcdef",
+    "camera": "cam-testdrive",
+    "frame_time": 1680791459.255384,
+    "snapshot_time": 0,
+    "label": "goat",
+    "sub_label": null,
+    "top_score": 0,
+    "false_positive": true,
+    "start_time": 1680791459.255384,
+    "end_time": null,
+    "current_zones": [],
+    "entered_zones": [],
+    "has_clip": false,
+    "has_snapshot": false
+  },
+  "after": {
+    "id": "1680791459.255384-abcdef",
+    "camera": "cam-testdrive",
+    "frame_time": 1680791506.638857,
+    "snapshot_time": 1680791506.638857,
+    "label": "goat",
+    "sub_label": null,
+    "false_positive": false,
+    "start_time": 1680791459.255384,
+    "end_time": null,
+    "current_zones": [],
+    "entered_zones": [],
+    "has_clip": true,
+    "has_snapshot": true
+  },
+  "type": "update"
+}

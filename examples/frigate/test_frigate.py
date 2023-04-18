@@ -83,7 +83,7 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     mqttc.disconnect()
 
 
-@pytest.mark.parametrize("jsonfile", ["frigate-event-full.json", "frigate-event-new.json"])
+@pytest.mark.parametrize("jsonfile", ["frigate-event-full.json", "frigate-event-new.json", "frigate-event-update-good.json"])
 def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqtt, jsonfile):
     """
     A full system test verifying the "Forwarding Frigate events to Ntfy" example.
@@ -122,7 +122,13 @@ def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqt
     mqttc.disconnect()
 
 
-@pytest.mark.parametrize("jsonfile", ["frigate-event-end.json", "frigate-event-false-positive.json"])
+@pytest.mark.parametrize(
+    "jsonfile", [
+        "frigate-event-end.json",
+        "frigate-event-false-positive.json",
+        "frigate-event-update-samezone.json",
+        "frigate-event-update-stationary.json",
+    ])
 def test_frigate_event_without_notification(mosquitto, caplog, capmqtt, jsonfile):
     """
     A full system test verifying the "Forwarding Frigate events to Ntfy" example.
