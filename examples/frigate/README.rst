@@ -45,6 +45,11 @@ Start the Mosquitto MQTT broker::
     docker run --name=mosquitto --rm -it --publish=1883:1883 \
         eclipse-mosquitto:2.0.15 mosquitto -c /mosquitto-no-auth.conf
 
+Start the Ntfy API service::
+
+    docker run --name=ntfy --rm -it --publish=5555:80 \
+        binwiederhier/ntfy serve
+
 Run mqttwarn::
 
     cd examples/frigate/

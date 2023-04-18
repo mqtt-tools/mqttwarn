@@ -78,7 +78,7 @@ minversion = "2.0"
 addopts = "-rsfEX -p pytester --strict-markers --verbosity=3 --cov --cov-report=term-missing --cov-report=xml"
 log_level = "DEBUG"
 log_cli_level = "DEBUG"
-testpaths = ["tests"]
+testpaths = ["examples", "mqttwarn", "tests"]
 xfail_strict = true
 markers = [
   "e2e",  # Full end-to-end system tests, needing an MQTT broker.
