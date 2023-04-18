@@ -62,8 +62,7 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     assert 'Successfully loaded service "store-jpeg"' in caplog.messages
 
     assert "Subscribing to frigate/events (qos=0)" in caplog.messages
-    assert "Subscribing to frigate/cam-testdrive/goat/snapshot (qos=0)" in caplog.messages
-    assert "Subscribing to frigate/cam-testdrive/squirrel/snapshot (qos=0)" in caplog.messages
+    assert "Subscribing to frigate/+/+/snapshot (qos=0)" in caplog.messages
 
     assert "MQTT message received: MqttMessage(topic='frigate/events'" in caplog.text
     assert "Section [frigate/events] matches message on frigate/events, processing it" in caplog.messages
@@ -76,7 +75,7 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     assert "Successfully sent message using Apprise" in caplog.messages
 
     assert "MQTT message received: MqttMessage(topic='frigate/cam-testdrive/goat/snapshot'" in caplog.text
-    assert "Section [frigate/cam-testdrive/goat/snapshot] matches message on frigate/cam-testdrive/goat/snapshot, processing it" in caplog.messages
+    assert "Section [frigate/+/+/snapshot] matches message on frigate/cam-testdrive/goat/snapshot, processing it" in caplog.messages
     assert "Message on frigate/cam-testdrive/goat/snapshot going to store-jpeg:cam-testdrive-goat" in caplog.messages
     assert "Writing to file `/tmp/mqttwarn-frigate-cam-testdrive-goat.jpg'" in caplog.messages
 

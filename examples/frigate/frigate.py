@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import dataclasses
+import re
 from datetime import datetime, timezone
 import typing as t
 
@@ -145,3 +146,24 @@ def frigate_events_filter(topic, message, section, srv: Service):
             return True
 
     return False
+
+
+def frigate_snapshot_decode_topic(topic, data, srv: Service):
+    """
+    Decode Frigate MQTT topic for image snapshots.
+
+    frigate/+/+/snapshot
+
+    See also:
+    - https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameobject_namesnapshot
+    """
+    if type(topic) == str:
+        try:
+            pattern = r'^frigate/(?P<camera_name>.+?)/(?P<object_name>.+?)/snapshot$'
+            p = re.compile(pattern)
+            m = p.match(topic)
+            topology = m.groupdict()
+        except:
+            topology = {}
+        return topology
+    return None
