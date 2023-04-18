@@ -157,6 +157,21 @@ def frigate_events_filter(topic, message, section, srv: Service):
             srv.logging.warning("Frigate event skipped, object stayed within same zone")
             return True
 
+    # Evaluate optional skip rules.
+    context: RuntimeContext = srv.mwcore["context"]
+    frigate_skip_rules = context.config.getdict(section, "frigate_skip_rules")
+    for rule in frigate_skip_rules.values():
+        do_skip = True
+        for fieldname, skip_values in rule.items():
+            actual_value = after[fieldname]
+            if isinstance(actual_value, list):
+                do_skip = do_skip and all(value in skip_values for value in actual_value)
+            else:
+                do_skip = do_skip and actual_value in skip_values
+        if do_skip:
+            srv.logging.warning("Frigate event skipped, object did not enter zone of interest")
+            return True
+
     return False
 
 
