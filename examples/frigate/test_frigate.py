@@ -70,7 +70,7 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     assert "Message on frigate/events going to apprise-ntfy" in caplog.messages
     assert "Invoking service plugin for `apprise-ntfy'" in caplog.messages
     assert "ntfy Payload: {'topic': 'frigate', 'title': 'goat entered zone1', 'message': 'In zones  at 2023-04-06 14:31:46.638857+00:00'}" in caplog.messages
-    assert "ntfy Headers: {'User-Agent': 'Apprise', 'Content-Type': 'application/json', 'X-Click': 'https://frigate/events?camera=cam-testdrive&label=goat&zone=zone1'}" in caplog.messages
+    assert "ntfy Headers: {'User-Agent': 'Apprise', 'Content-Type': 'application/json', 'X-Icon': 'https://github.com/caronc/apprise/raw/master/apprise/assets/themes/default/apprise-info-256x256.png', 'X-Click': 'https://frigate/events?camera=cam-testdrive&label=goat&zone=zone1'}" in caplog.messages
 
     assert "Sent ntfy notification to 'http://localhost:5555'." in caplog.messages
     assert "Successfully sent message using Apprise" in caplog.messages
