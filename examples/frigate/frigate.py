@@ -46,10 +46,12 @@ class NtfyParameters:
     title: str
     format: str
     click: str
-    attach: str
+    attach: t.Optional[str] = None
 
     def to_dict(self) -> t.Dict[str, str]:
-        return dataclasses.asdict(self)
+        data = dataclasses.asdict(self)
+        data = {k: v for (k, v) in data.items() if v is not None}
+        return data
 
 
 def frigate_events(topic, data, srv: Service):
@@ -82,7 +84,7 @@ def frigate_events(topic, data, srv: Service):
         title=f"{event.label} entered {event.entered_zones_str}",
         format=f"In zones {event.current_zones_str} at {event.time}",
         click=f"https://frigate/events?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}",
-        attach=attach_filename,
+        #attach=attach_filename,
     )
     return ntfy_parameters.to_dict()
 
