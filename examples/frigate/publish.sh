@@ -20,4 +20,4 @@ mosquitto_pub -f goat.jpg -t 'frigate/cam-testdrive/goat/snapshot'
 
 # 2. Publish event in JSON format.
 # shellcheck disable=SC2002
-cat "frigate-event-new.json" | jq -c | mosquitto_pub -t 'frigate/events' -l
+cat "assets/frigate-event-new-good.json" | jq -c | mosquitto_pub -t 'frigate/events' -l

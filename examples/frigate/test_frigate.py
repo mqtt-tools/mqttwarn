@@ -25,12 +25,13 @@ pytestmark = pytest.mark.e2e
 capmqtt_decode_utf8 = False
 
 HERE = Path(__file__).parent
+ASSETS = HERE.joinpath("assets")
 
 
 def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     """
     A full system test verifying the "Forwarding Frigate events to Ntfy" example.
-    This test case submits the `frigate-event-new.json` file as MQTT event message.
+    This test case submits the `frigate-event-new-good.json` file as MQTT event message.
     """
 
     # Bootstrap the core machinery without MQTT.
@@ -44,8 +45,8 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     mqtt_process(mqttc)
 
     # Publish the JSON event message.
-    # cat frigate-event-new.json | jq -c | mosquitto_pub -t 'frigate/events' -l
-    payload_event = open(HERE / "frigate-event-new.json").read()
+    # cat frigate-event-new-good.json | jq -c | mosquitto_pub -t 'frigate/events' -l
+    payload_event = open(ASSETS / "frigate-event-new-good.json").read()
     capmqtt.publish(topic="frigate/events", payload=payload_event)
 
     # Publish the snapshot image.
@@ -83,7 +84,7 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     mqttc.disconnect()
 
 
-@pytest.mark.parametrize("jsonfile", ["frigate-event-full.json", "frigate-event-new.json", "frigate-event-update-good.json"])
+@pytest.mark.parametrize("jsonfile", ["frigate-event-full.json", "frigate-event-new-good.json", "frigate-event-update-good.json"])
 def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqtt, jsonfile):
     """
     A full system test verifying the "Forwarding Frigate events to Ntfy" example.
@@ -102,7 +103,7 @@ def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqt
 
     # Publish the JSON event message.
     # cat frigate-event-full.json | jq -c | mosquitto_pub -t 'frigate/events' -l
-    payload_event = open(HERE / jsonfile).read()
+    payload_event = open(ASSETS / jsonfile).read()
     capmqtt.publish(topic="frigate/events", payload=payload_event)
 
     # Make mqttwarn receive and process the message.
@@ -148,7 +149,7 @@ def test_frigate_event_without_notification(mosquitto, caplog, capmqtt, jsonfile
 
     # Publish the JSON event message.
     # cat frigate-event-full.json | jq -c | mosquitto_pub -t 'frigate/events' -l
-    payload_event = open(HERE / jsonfile).read()
+    payload_event = open(ASSETS / jsonfile).read()
     capmqtt.publish(topic="frigate/events", payload=payload_event)
 
     # Make mqttwarn receive and process the message.
