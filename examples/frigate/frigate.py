@@ -105,12 +105,14 @@ def frigate_events_filter(topic, message, section, srv: Service):
         return True
 
     # ignore ending messages
-    if message.get('type', None) == 'end':
+    message_type = message.get('type', None)
+    if message_type == 'end':
+        srv.logging.warning(f"Frigate event skipped, ignoring Message type '{message_type}'")
         return True
 
     # payload must have 'after' key
     elif "after" not in message:
-        srv.logging.warning("Frigate event skipped: 'after' missing from payload")
+        srv.logging.warning("Frigate event skipped, 'after' missing from payload")
         return True
 
     after = message.get('after')
