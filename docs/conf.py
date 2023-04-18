@@ -34,6 +34,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_static_path = ["_static"]
 html_logo = "mqttwarn-logo.png"
+html_show_sourcelink = True
 
 
 # == Extension configuration ==========================================
