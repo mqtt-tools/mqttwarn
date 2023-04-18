@@ -128,6 +128,7 @@ def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqt
         "frigate-event-false-positive.json",
         "frigate-event-update-samezone.json",
         "frigate-event-update-stationary.json",
+        "frigate-event-new-ignored.json",
     ])
 def test_frigate_event_without_notification(mosquitto, caplog, capmqtt, jsonfile):
     """
