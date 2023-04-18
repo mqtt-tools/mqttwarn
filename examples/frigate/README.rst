@@ -64,9 +64,9 @@ Manually
 
 Publish a few example events individually::
 
-    cat frigate-event-new.json | jq -c | mosquitto_pub -t 'frigate/events' -l
-    cat frigate-event-end.json | jq -c | mosquitto_pub -t 'frigate/events' -l
-    cat frigate-event-false-positive.json | jq -c | mosquitto_pub -t 'frigate/events' -l
+    cat assets/frigate-event-new-good.json | jq -c | mosquitto_pub -t 'frigate/events' -l
+    cat assets/frigate-event-end.json | jq -c | mosquitto_pub -t 'frigate/events' -l
+    cat assets/frigate-event-false-positive.json | jq -c | mosquitto_pub -t 'frigate/events' -l
 
 Publish an example image::
 
