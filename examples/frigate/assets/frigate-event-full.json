@@ -62,9 +62,11 @@
     "stationary": false,
     "motionless_count": 1,
     "position_changes": 2,
-    "current_zones": [],
+    "current_zones": [
+      "barn"
+    ],
     "entered_zones": [
-      "zone1"
+      "lawn"
     ],
     "has_clip": true,
     "has_snapshot": true
