@@ -784,7 +784,7 @@ def bootstrap(config=None, scriptname=None):
         SCRIPTNAME = scriptname
 
 
-def run_plugin(config=None, name=None, options=None):
+def run_plugin(config=None, name=None, options=None, data=None):
     """
     Run service plugins directly without the
     dispatching and transformation machinery.
@@ -817,7 +817,7 @@ def run_plugin(config=None, name=None, options=None):
     item.config = config.config("config:" + name)
     item.service = srv
     item.target = "mqttwarn"
-    item.data = {}  # FIXME
+    item.data = data or {}
 
     # Launch plugin
     module = service_plugins[name]["module"]

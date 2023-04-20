@@ -14,6 +14,7 @@ in progress
 - [file] Allow writing of binary content. Thanks, @sevmonster.
 - [ux] Rename subcommand ``mqttwarn make-samplefuncs`` to ``mqttwarn make-udf``,
   and adjust naming.
+- [ntfy] Add dedicated service plugin ``ntfy``
 
 
 2023-04-11 0.33.0

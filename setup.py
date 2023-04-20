@@ -18,6 +18,7 @@ requires = [
     "requests<3",
     "future>=0.18.0,<1",
     "importlib-metadata; python_version<'3.8'",
+    "funcy<3",
 ]
 
 extras = {

@@ -5,12 +5,12 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 """
-Provide the `Ntfy`_ API service as a session-scoped fixture to your test
+Provide the `ntfy`_ API service as a session-scoped fixture to your test
 harness.
 
 Source: https://docs.ntfy.sh/install/#docker
 
-.. _Ntfy: https://ntfy.sh/
+.. _ntfy: https://ntfy.sh/
 """
 import docker
 import pytest
@@ -22,7 +22,11 @@ images.settings["ntfy"] = {
     "image": "binwiederhier/ntfy",
     "version": "latest",
     "options": {
-        "command": "serve",
+        "command": """
+        serve
+        --base-url="http://localhost:5555"
+        --attachment-cache-dir="/tmp/ntfy-attachments"
+        """,
         "publish_all_ports": False,
         "ports": {"80/tcp": "5555"},
     },
@@ -64,7 +68,7 @@ def is_ntfy_running() -> bool:
 @pytest.fixture(scope="session")
 def ntfy_service():
 
-    # Gracefully skip spinning up the Docker container if Mosquitto is already running.
+    # Gracefully skip spinning up the Docker container if ntfy is already running.
     if is_ntfy_running():
         yield "localhost", 5555
         return

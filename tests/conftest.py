@@ -10,6 +10,7 @@ from mqttwarn.services.apprise_util import get_all_template_argument_names  # no
 
 # Import custom fixtures.
 from mqttwarn.testing.fixtures import mqttwarn_service as srv  # noqa:F401
+from tests.fixtures.ntfy import ntfy_service  # noqa:F401
 
 
 @pytest.fixture

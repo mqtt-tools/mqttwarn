@@ -26,7 +26,7 @@ def run():
     Usage:
       {program} [make-config]
       {program} [make-udf]
-      {program} [--config=] [--config-file=] [--plugin=] [--options=]
+      {program} [--config=] [--config-file=] [--plugin=] [--options=] [--data=]
       {program} --version
       {program} (-h | --help)
 
@@ -39,8 +39,8 @@ def run():
       [--plugin=]               The plugin name to load. This can either be a
                                 full qualified Python package/module name or a
                                 path to a Python file.
-      [--options=]              Configuration options to propagate to the plugin
-                                entrypoint.
+      [--options=]              Configuration options to propagate to the plugin entrypoint.
+      [--data=]                 Data to propagate to the plugin entrypoint.
 
     Bootstrapping options:
       make-config               Dump configuration file blueprint to STDOUT,
@@ -76,14 +76,15 @@ def run():
 
         # Decode arguments
         arg_plugin = options["--plugin"]
-        arg_options = json.loads(options["--options"])
+        arg_options = options["--options"] and json.loads(options["--options"]) or {}
+        arg_data = options["--data"] and json.loads(options["--data"]) or {}
         arg_config = None
         if "--config" in options and options["--config"] is not None:
             arg_config = json.loads(options["--config"])
 
         # Launch service plugin in standalone mode
         launch_plugin_standalone(
-            arg_plugin, arg_options, configfile=options.get("--config-file"), config_more=arg_config
+            arg_plugin, arg_options, arg_data, configfile=options.get("--config-file"), config_more=arg_config
         )
 
     # Run mqttwarn in service mode when no command line arguments are given
@@ -91,7 +92,7 @@ def run():
         run_mqttwarn()
 
 
-def launch_plugin_standalone(plugin, options, configfile=None, config_more=None):
+def launch_plugin_standalone(plugin, options, data, configfile=None, config_more=None):
 
     # Optionally load configuration file
     does_not_exist = False
@@ -120,7 +121,7 @@ def launch_plugin_standalone(plugin, options, configfile=None, config_more=None)
     logger.info('Running service plugin "{}" with options "{}"'.format(plugin, options))
 
     # Launch service plugin
-    run_plugin(config=config, name=plugin, options=options)
+    run_plugin(config=config, name=plugin, options=options, data=data)
 
 
 def run_mqttwarn():

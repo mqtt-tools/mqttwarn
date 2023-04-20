@@ -30,8 +30,6 @@ def get_all_template_argument_names():
 def obtain_apprise_arguments(item: ProcessorItem, arg_names: list) -> dict:
     """
     Obtain eventual Apprise parameters from data dictionary.
-
-    https://github.com/caronc/apprise/wiki/Notify_ntfy#parameter-breakdown
     """
     params = dict()
     for arg_name in arg_names:
