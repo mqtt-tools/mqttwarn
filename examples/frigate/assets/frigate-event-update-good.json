@@ -25,9 +25,11 @@
     "false_positive": false,
     "start_time": 1680791459.255384,
     "end_time": null,
-    "current_zones": [],
+    "current_zones": [
+      "barn"
+    ],
     "entered_zones": [
-      "zone1"
+      "lawn"
     ],
     "has_clip": true,
     "has_snapshot": true

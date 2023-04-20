@@ -10,13 +10,12 @@ for program in ${prerequisites}; do
 done
 
 # Acquire image for publishing.
-if [ ! -f goat.jpg ]; then
+if [ ! -f goat.png ]; then
   wget -O goat.png https://user-images.githubusercontent.com/453543/231550862-5a64ac7c-bdfa-4509-86b8-b1a770899647.png
-  convert goat.png goat.jpg
 fi
 
-# 1. Publish picture snapshot in JPEG format.
-mosquitto_pub -f goat.jpg -t 'frigate/cam-testdrive/goat/snapshot'
+# 1. Publish picture snapshot in PNG format.
+mosquitto_pub -f goat.png -t 'frigate/cam-testdrive/goat/snapshot'
 
 # 2. Publish event in JSON format.
 # shellcheck disable=SC2002

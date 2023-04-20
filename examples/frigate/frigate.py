@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import dataclasses
 import re
+from collections import OrderedDict
 from datetime import datetime, timezone
 import typing as t
 
@@ -48,7 +49,7 @@ class FrigateEvent:
 @dataclasses.dataclass
 class NtfyParameters:
     """
-    Manage outbound parameter data for Apprise/Ntfy.
+    Manage outbound parameter data for ntfy.
     """
     title: str
     format: str
@@ -63,12 +64,12 @@ class NtfyParameters:
 
 def frigate_events(topic, data, srv: Service):
     """
-    mqttwarn transformation function which computes options to be submitted to Apprise/Ntfy.
+    mqttwarn transformation function which computes options to be submitted to ntfy.
     """
 
     # Acceptable hack to get attachment filename template from service configuration.
     context: RuntimeContext = srv.mwcore["context"]
-    service_config = context.get_service_config("apprise-ntfy")
+    service_config = context.get_service_config("ntfy")
     filename_template = service_config.get("filename_template")
 
     # Decode JSON message.
@@ -84,16 +85,19 @@ def frigate_events(topic, data, srv: Service):
     )
 
     # Interpolate event data into attachment filename template.
-    attach_filename = filename_template.format(**event.to_dict())
+    # attach_filename = filename_template.format(**event.to_dict())
 
-    # Compute parameters for outbound Apprise / Ntfy URL.
+    # Compute parameters for outbound ntfy URL.
     ntfy_parameters = NtfyParameters(
         title=f"{event.label} entered {event.entered_zones_str} at {event.time}",
-        format=f"{event.label} was in {event.current_zones_str}",
-        click=f"https://frigate/events?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}",
+        format=f"{event.label} was in {event.current_zones_str} before",
+        click=f"https://frigate.local/events?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}",
         #attach=attach_filename,
     )
-    return ntfy_parameters.to_dict()
+    params = OrderedDict()
+    params.update(event.to_dict())
+    params.update(ntfy_parameters.to_dict())
+    return params
 
 
 def frigate_events_filter(topic, message, section, srv: Service):
