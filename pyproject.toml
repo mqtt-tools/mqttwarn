@@ -67,6 +67,11 @@ extend-exclude = [
 
 [tool.mypy]
 ignore_missing_imports = true
+files = [
+  "mqttwarn/core.py",
+  "mqttwarn/services/ntfy.py",
+  "tests/services/test_ntfy.py",
+]
 
 
 # ==================
@@ -110,7 +115,7 @@ lint = [
   {cmd="ruff ."},
   {cmd="black --check ."},
   {cmd="isort --check ."},
-  {cmd="mypy --install-types --non-interactive mqttwarn/core.py"},
+  {cmd="mypy --install-types --non-interactive"},
 ]
 test = [
   {cmd="pytest"},

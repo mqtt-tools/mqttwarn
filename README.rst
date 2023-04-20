@@ -183,17 +183,21 @@ you an idea how to pass relevant information on the command line using JSON::
     # Launch "pushover" service plugin
     mqttwarn --plugin=pushover --options='{"title": "About", "message": "Hello world", "addrs": ["userkey", "token"], "priority": 6}'
 
-    # Launch "ssh" service plugin from the command line
+    # Launch "ntfy" service plugin
+    mqttwarn --plugin=ntfy --options='{"addrs": {"url": "http://localhost:5555/testdrive"}, "title": "Example notification", "message": "Hello world"}' --data='{"tags": "foo,bar,äöü", "priority": "high"}'
+
+    # Launch "ntfy" service plugin, and add remote attachment
+    mqttwarn --plugin=ntfy --options='{"addrs": {"url": "http://localhost:5555/testdrive"}, "title": "Example notification", "message": "Hello world"}' --data='{"attach": "https://unsplash.com/photos/spdQ1dVuIHw/download?w=320", "filename": "goat.jpg"}'
+
+    # Launch "ntfy" service plugin, and add attachment from local filesystem
+    mqttwarn --plugin=ntfy --options='{"addrs": {"url": "http://localhost:5555/testdrive", "attachment": "goat.jpg"}, "title": "Example notification", "message": "Hello world"}'
+
+    # Launch "ssh" service plugin
     mqttwarn --plugin=ssh --config='{"host": "ssh.example.org", "port": 22, "user": "foo", "password": "bar"}' --options='{"addrs": ["command with substitution %s"], "payload": "{\"args\": \"192.168.0.1\"}"}'
 
-    # Launch "cloudflare_zone" service plugin from "mqttwarn-contrib", passing "--config" parameters via command line
+    # Launch "cloudflare_zone" service plugin from "mqttwarn-contrib"
     pip install mqttwarn-contrib
     mqttwarn --plugin=mqttwarn_contrib.services.cloudflare_zone --config='{"auth-email": "foo", "auth-key": "bar"}' --options='{"addrs": ["0815", "www.example.org", ""], "message": "192.168.0.1"}'
-
-    # Submit notification to "ntfy", using Apprise service plugin.
-    mqttwarn --plugin=apprise \
-        --config='{"baseuri": "ntfy://user:password@ntfy.example.org/topic1/topic2"}' \
-        --options='{"addrs": [], "title": "Example notification", "message": "Hello world"}'
 
 
 Also, the ``--config-file`` parameter can be used to optionally specify the

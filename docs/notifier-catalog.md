@@ -223,14 +223,14 @@ template arguments. mqttwarn supports propagating them from either the
 ``baseuri`` configuration setting, or from its data dictionary to the Apprise
 plugin invocation.
 
-So, for example, you can propagate parameters to the [Apprise Ntfy plugin]
-by either pre-setting them as URL query parameters, like 
+So, for example, you can propagate parameters to the [Apprise JSON HTTP POST
+Notifications plugin] by either pre-setting them as URL query parameters, like
 ```
-ntfy://user:password@ntfy.example.org/topic1/topic2?email=test@example.org
+json://localhost/?:sound=oceanwave
 ```
 or by submitting them within a JSON-formatted MQTT message, like
 ```json
-{"priority": "high", "tags": "foo,bar", "click": "https://httpbin.org/headers"}
+{":sound": "oceanwave", "tags": "foo,bar", "click": "https://httpbin.org/headers"}
 ```
 
 
@@ -238,7 +238,7 @@ or by submitting them within a JSON-formatted MQTT message, like
 [Apprise documentation]: https://github.com/caronc/apprise/wiki
 [Apprise URL Basics]: https://github.com/caronc/apprise/wiki/URLBasics
 [Apprise Notification Services]: https://github.com/caronc/apprise/wiki#notification-services
-[Apprise Ntfy plugin]: https://github.com/caronc/apprise/wiki/Notify_ntfy
+[Apprise JSON HTTP POST Notifications plugin]: https://github.com/caronc/apprise/wiki/Notify_Custom_JSON
 
 
 ### `apprise_single`
@@ -256,7 +256,7 @@ Apprise to E-Mail, an HTTP endpoint, and a Discord channel.
 
 ```ini
 [defaults]
-launch    = apprise-mail, apprise-json, apprise-discord, apprise-ntfy
+launch    = apprise-mail, apprise-json, apprise-discord
 
 [config:apprise-mail]
 ; Dispatch message as e-mail.
@@ -283,16 +283,9 @@ baseuri  = 'json://localhost:1234/mqtthook'
 module   = 'apprise_single'
 baseuri  = 'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js'
 
-[config:apprise-ntfy]
-; Dispatch message to ntfy.
-; https://github.com/caronc/apprise/wiki/URLBasics
-; https://github.com/caronc/apprise/wiki/Notify_ntfy
-module   = 'apprise_single'
-baseuri  = 'ntfy://user:password@ntfy.example.org/topic1/topic2'
-
 [apprise-single-test]
 topic    = apprise/single/#
-targets  = apprise-mail:demo, apprise-json, apprise-discord, apprise-ntfy
+targets  = apprise-mail:demo, apprise-json, apprise-discord
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
@@ -325,7 +318,6 @@ module   = 'apprise_multi'
 targets = {
    'demo-http'        : [ { 'baseuri':  'json://localhost:1234/mqtthook' }, { 'baseuri':  'json://daq.example.org:5555/foobar' } ],
    'demo-discord'     : [ { 'baseuri':  'discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js' } ],
-   'demo-ntfy'        : [ { 'baseuri':  'ntfy://user:password@ntfy.example.org/topic1/topic2' } ],
    'demo-mailto'      : [ {
           'baseuri':  'mailtos://smtp_username:smtp_password@mail.example.org',
           'recipients': ['foo@example.org', 'bar@example.org'],
@@ -336,7 +328,7 @@ targets = {
 
 [apprise-multi-test]
 topic    = apprise/multi/#
-targets  = apprise-multi:demo-http, apprise-multi:demo-discord, apprise-multi:demo-mailto, apprise-multi:demo-ntfy
+targets  = apprise-multi:demo-http, apprise-multi:demo-discord, apprise-multi:demo-mailto
 format   = Alarm from {device}: {payload}
 title    = Alarm from {device}
 ```
@@ -1746,10 +1738,151 @@ Requires:
 
 ### `ntfy`
 
-Support for [ntfy] is provided through Apprise, see [apprise_single](#apprise_single)
-and [apprise_multi](#apprise_multi).
+> [ntfy] (pronounce: _notify_) is a simple HTTP-based [pub-sub] notification service.
+> It allows you to send notifications to your phone or desktop via scripts from
+> any computer, entirely without signup, cost or setup.
+> [ntfy is also open source](https://github.com/binwiederhier/ntfy), if you want to
+> run an instance on your own premises.
+
+ntfy uses topics to address communication channels. This topic is part of the
+HTTP API URL.
+
+To use the hosted variant on `ntfy.sh`, just provide an URL including the topic.
+```ini
+[config:ntfy]
+targets  = {
+    'test': 'https://ntfy.sh/testdrive',
+    }
+```
+
+When running your own instance, you would use a custom URL here.
+```ini
+[config:ntfy]
+targets  = {
+    'test': 'http://username:password@localhost:5555/testdrive',
+    }
+```
+
+In order to specify more options, please wrap your ntfy URL into a dictionary
+under the `url` key. This way, additional options can be added.
+```ini
+[config:ntfy]
+targets  = {
+    'test': {
+        'url': 'https://ntfy.sh/testdrive',
+        },
+    }
+```
+
+:::{important}
+[ntfy publishing options] outlines different ways to marshal data to the ntfy
+HTTP API. mqttwarn is using HTTP headers for serializing values, because the
+HTTP body will already be used for the attachment file. Because of this, you
+are not able to use UTF-8 characters within your message text, they will be
+replaced by placeholder characters like `?`.
+:::
+
+{#ntfy-remote-attachments}
+#### Remote attachments
+In order to submit notifications with an attachment file at a remote location,
+use the `attach` field. Optionally, the `filename` field can be used to assign
+a different name to the file.
+```ini
+[config:ntfy]
+targets  = {
+    'test': {
+        'url': 'https://ntfy.sh/testdrive',
+        'attach': 'https://unsplash.com/photos/spdQ1dVuIHw/download?w=320',
+        'filename': 'goat.jpg',
+        },
+    }
+```
+
+{#ntfy-local-attachments}
+#### Local attachments
+By using the `attachment` option, you can add an attachment to your message, local
+to the machine mqttwarn is running on. The file will be uploaded when submitting
+the notification, and ntfy will serve it for clients so that you don't have to. In
+order to address the file, you can provide a path template, where the transformation
+data will also get interpolated into.
+```ini
+[config:ntfy]
+targets  = {
+    'test': {
+        'url': 'https://ntfy.sh/testdrive',
+        'attachment': '/tmp/ntfy-attachment-{slot}-{label}.png',
+        }
+    }
+```
+:::{important}
+In order to allow users to **upload** and attach files to notifications, you will
+need to enable the corresponding ntfy feature by simply configuring an attachment
+cache directory and a base URL (`attachment-cache-dir`, `base-url`), see
+[ntfy stored attachments].
+:::
+:::{note}
+When mqttwarn processes a message, and accessing the file raises an error, it gets
+handled gracefully. In this way, notifications will be triggered even when attaching
+the file fails for whatever reasons.
+:::
+
+#### Publishing options
+You can use all the available [ntfy publishing options], by using the corresponding
+option names listed within `NTFY_FIELD_NAMES`, which are: `message`, `title`, `tags`, 
+`priority`, `actions`, `click`, `attach`, `filename`, `delay`, and `email`. 
+
+You can obtain ntfy option fields from _three_ contexts in total, as implemented
+by the `obtain_ntfy_fields` function. Effectively, that means that you can place
+them either within the `targets` address descriptor, within the configuration
+section, or submit them using a JSON MQTT message and a corresponding decoder
+function into the transformation data dictionary.
+
+For example, you can always send a `priority` field using MQTT/JSON, or use one of
+those configuration snippets, which are equivalent.
+```ini
+[config:ntfy]
+targets  = {
+    'test': {
+        'url': 'https://ntfy.sh/testdrive',
+        'priority': 'high',
+        }
+    }
+```
+```ini
+[config:ntfy]
+targets  = {
+    'test': {
+        'url': 'https://ntfy.sh/testdrive',
+        }
+    }
+priority = high
+```
+
+The highest precedence takes data coming in from the transformation data dictionary,
+followed by option fields coming in from the per-recipient `targets` address descriptor,
+followed by option fields defined on the `[config:ntfy]` configuration section.
+
+#### Examples
+
+1. This is another way to write the "[remote attachments](#ntfy-remote-attachments)"
+   example, where all ntfy options are located on the configuration section, so they
+   will apply for all configured target addresses.
+   ```ini
+   [config:ntfy]
+   targets  = {'test': 'https://ntfy.sh/testdrive'}
+   attach   = https://unsplash.com/photos/spdQ1dVuIHw/download?w=320
+   filename = goat.jpg
+   ```
+
+2. The tutorial [](#processing-frigate-events) explains how to configure mqttwarn to
+   notify the user with events emitted by Frigate, a network video recorder (NVR)
+   with realtime local object detection for IP cameras.
+
 
 [ntfy]: https://ntfy.sh/
+[ntfy publishing options]: https://docs.ntfy.sh/publish/
+[ntfy stored attachments]: https://docs.ntfy.sh/config/#attachments
+[pub-sub]: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
 
 
 ### `desktopnotify`

@@ -42,7 +42,7 @@ def plugin(srv, item):
             # Collect URL parameters.
             params = OrderedDict()
 
-            # Obtain and apply all possible Ntfy parameters from data dictionary.
+            # Obtain and apply all possible Apprise parameters from data dictionary.
             params.update(obtain_apprise_arguments(item, APPRISE_ALL_ARGUMENT_NAMES))
 
             # Apply addressee information.

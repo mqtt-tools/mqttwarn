@@ -2,6 +2,7 @@
 # (c) 2018-2021 The mqttwarn developers
 import shlex
 import threading
+import time
 from unittest.mock import patch
 
 import paho
@@ -65,7 +66,8 @@ def mqtt_process(mqttc: paho.mqtt.client.Client, loops=2):
     """
     delay()
     for _ in range(loops):
-        mqttc.loop()
+        mqttc.loop(max_packets=10)
+        time.sleep(0.01)
     delay()
 
 
