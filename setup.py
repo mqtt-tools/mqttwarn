@@ -10,15 +10,15 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, "README.rst")).read()
 
 requires = [
-    "six<2",
-    "paho-mqtt<2",
-    "jinja2<4",
     "attrs<23",
     "docopt<1",
-    "requests<3",
+    "funcy<3",
     "future>=0.18.0,<1",
     "importlib-metadata; python_version<'3.8'",
-    "funcy<3",
+    "jinja2<4",
+    "paho-mqtt<2",
+    "requests<3",
+    "six<2",
 ]
 
 extras = {
