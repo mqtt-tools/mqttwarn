@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+"""
+Frigate » Forward events and snapshots to Ntfy, using mqttwarn.
+
+https://mqttwarn.readthedocs.io/en/latest/examples/frigate/README.html
+"""
 import dataclasses
+import json
 import re
+import typing as t
 from collections import OrderedDict
 from datetime import datetime, timezone
-import typing as t
 
 from mqttwarn.context import RuntimeContext
 from mqttwarn.model import Service
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 
 @dataclasses.dataclass
@@ -19,88 +20,80 @@ class FrigateEvent:
     """
     Manage inbound event data received from Frigate.
     """
+
     time: datetime
     camera: str
     label: str
     current_zones: t.List[str]
     entered_zones: t.List[str]
 
-    def f(self, value):
-        return [y.replace('_', ' ') for y in value]
+    @staticmethod
+    def format_list(value: t.List[str]) -> t.List[str]:
+        """
+        Format a list for human consumption.
+        """
+        return [y.replace("_", " ") for y in value]
 
     @property
-    def current_zones_str(self):
-        if self.current_zones:
-            return ', '.join(self.f(self.current_zones))
-        else:
-            return ''
+    def current_zones_str(self) -> str:
+        """
+        Serialize list of `current_zones` to string.
+        """
+        return ", ".join(self.format_list(self.current_zones or []))
 
     @property
-    def entered_zones_str(self):
-        if self.entered_zones:
-            return ', '.join(self.f(self.entered_zones))
-        else:
-            return ''
+    def entered_zones_str(self) -> str:
+        """
+        Serialize list of `entered_zones` to string.
+        """
+        return ", ".join(self.format_list(self.entered_zones or []))
 
     def to_dict(self) -> t.Dict[str, str]:
+        """
+        Return Python dictionary from attributes.
+        """
         return dataclasses.asdict(self)
 
+    @classmethod
+    def from_json(cls, payload: str) -> "FrigateEvent":
+        """
+        Decode inbound Frigate event, in JSON format.
+        """
+        # Decode JSON message.
+        after = json.loads(payload)["after"]
 
-@dataclasses.dataclass
-class NtfyParameters:
-    """
-    Manage outbound parameter data for ntfy.
-    """
-    title: str
-    format: str
-    click: str
-    attach: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, str]:
-        data = dataclasses.asdict(self)
-        data = {k: v for (k, v) in data.items() if v is not None}
-        return data
+        # Decode inbound Frigate event.
+        return cls(
+            time=datetime.fromtimestamp(after["frame_time"], tz=timezone.utc),
+            camera=after["camera"],
+            label=after["sub_label"] or after["label"],
+            current_zones=after["current_zones"],
+            entered_zones=after["entered_zones"],
+        )
 
 
-def frigate_events(topic, data, srv: Service):
+ContainerType = t.Dict[str, t.Union[str, FrigateEvent]]
+
+
+def frigate_events(topic: str, data: t.Dict[str, str], srv: Service) -> ContainerType:
     """
     mqttwarn transformation function which computes options to be submitted to ntfy.
     """
 
-    # Acceptable hack to get attachment filename template from service configuration.
-    context: RuntimeContext = srv.mwcore["context"]
-    service_config = context.get_service_config("ntfy")
-    filename_template = service_config.get("filename_template")
+    # Decode inbound Frigate event.
+    event = FrigateEvent.from_json(data["payload"])
 
-    # Decode JSON message.
-    after = json.loads(data['payload'])['after']
-
-    # Collect details from inbound Frigate event.
-    event = FrigateEvent(
-        time=datetime.fromtimestamp(after['frame_time'], tz=timezone.utc),
-        camera=after['camera'],
-        label=after['sub_label'] or after['label'],
-        current_zones=after['current_zones'],
-        entered_zones=after['entered_zones'],
-    )
-
-    # Interpolate event data into attachment filename template.
-    # attach_filename = filename_template.format(**event.to_dict())
-
-    # Compute parameters for outbound ntfy URL.
-    ntfy_parameters = NtfyParameters(
-        title=f"{event.label} entered {event.entered_zones_str} at {event.time}",
-        format=f"{event.label} was in {event.current_zones_str} before",
-        click=f"https://frigate.local/events?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}",
-        #attach=attach_filename,
-    )
-    params = OrderedDict()
+    # Collect outbound ntfy option fields.
+    params: ContainerType = OrderedDict()
     params.update(event.to_dict())
-    params.update(ntfy_parameters.to_dict())
+
+    # Also add the event object as a whole, to let downstream templates leverage it.
+    params["event"] = event
+
     return params
 
 
-def frigate_events_filter(topic, message, section, srv: Service):
+def frigate_events_filter(topic: str, payload: str, section: str, srv: Service) -> bool:
     """
     mqttwarn filter function to only use `new` and important `update` Frigate events.
 
@@ -110,14 +103,14 @@ def frigate_events_filter(topic, message, section, srv: Service):
     :return: True if message should be filtered, i.e. notification should be skipped.
     """
     try:
-        message = json.loads(message)
+        message = json.loads(payload)
     except json.JSONDecodeError as e:
         srv.logging.warning(f"Can't parse Frigate event message: {e}")
         return True
 
     # ignore ending messages
-    message_type = message.get('type', None)
-    if message_type == 'end':
+    message_type = message.get("type")
+    if message_type == "end":
         srv.logging.warning(f"Frigate event skipped, ignoring Message type '{message_type}'")
         return True
 
@@ -126,9 +119,9 @@ def frigate_events_filter(topic, message, section, srv: Service):
         srv.logging.warning("Frigate event skipped, 'after' missing from payload")
         return True
 
-    after = message.get('after')
+    after = message.get("after")
 
-    nonempty_fields = ['false_positive', 'camera', 'label', 'current_zones', 'entered_zones', 'frame_time']
+    nonempty_fields = ["false_positive", "camera", "label", "current_zones", "entered_zones", "frame_time"]
     for field in nonempty_fields:
 
         # Validate field exists.
@@ -156,14 +149,14 @@ def frigate_events_filter(topic, message, section, srv: Service):
             return True
 
     # Ignore unimportant `update` events.
-    before = message.get('before')
-    if message_type == 'update' and isinstance(before, dict):
-        if before.get('stationary') is True and after.get('stationary') is True:
+    before = message.get("before")
+    if message_type == "update" and isinstance(before, dict):
+        if before.get("stationary") is True and after.get("stationary") is True:
             srv.logging.warning("Frigate event skipped, object is stationary")
             return True
-        elif (after['current_zones'] == after['entered_zones'] or
-                (before['current_zones'] == after['current_zones'] and
-                 before['entered_zones'] == after['entered_zones'])):
+        elif after["current_zones"] == after["entered_zones"] or (
+            before["current_zones"] == after["current_zones"] and before["entered_zones"] == after["entered_zones"]
+        ):
             srv.logging.warning("Frigate event skipped, object stayed within same zone")
             return True
 
@@ -172,8 +165,8 @@ def frigate_events_filter(topic, message, section, srv: Service):
     frigate_skip_rules = context.config.getdict(section, "frigate_skip_rules")
     for rule in frigate_skip_rules.values():
         do_skip = True
-        for fieldname, skip_values in rule.items():
-            actual_value = after[fieldname]
+        for field_name, skip_values in rule.items():
+            actual_value = after[field_name]
             if isinstance(actual_value, list):
                 do_skip = do_skip and all(value in skip_values for value in actual_value)
             else:
@@ -185,7 +178,7 @@ def frigate_events_filter(topic, message, section, srv: Service):
     return False
 
 
-def frigate_snapshot_decode_topic(topic, data, srv: Service):
+def frigate_snapshot_decode_topic(topic: str, data: t.Dict[str, str], srv: Service) -> t.Optional[t.Dict[str, str]]:
     """
     Decode Frigate MQTT topic for image snapshots.
 
@@ -194,13 +187,15 @@ def frigate_snapshot_decode_topic(topic, data, srv: Service):
     See also:
     - https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameobject_namesnapshot
     """
-    if type(topic) == str:
+    topology = {}
+    if isinstance(topic, str):
         try:
-            pattern = r'^frigate/(?P<camera_name>.+?)/(?P<object_name>.+?)/snapshot$'
+            # TODO: Compile pattern only once, for efficiency reasons.
+            pattern = r"^frigate/(?P<camera_name>.+?)/(?P<object_name>.+?)/snapshot$"
             p = re.compile(pattern)
             m = p.match(topic)
-            topology = m.groupdict()
+            if m:
+                topology = m.groupdict()
         except:
-            topology = {}
-        return topology
-    return None
+            pass
+    return topology

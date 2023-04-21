@@ -15,7 +15,6 @@ from mqttwarn.configuration import load_configuration
 from mqttwarn.core import bootstrap, connect
 from tests.util import mqtt_process
 
-
 if os.getenv("GITHUB_ACTIONS") == "true" and sys.platform != "linux":
     raise pytest.skip(msg="On GHA, Mosquitto via Docker is only available on Linux", allow_module_level=True)
 
@@ -72,16 +71,16 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     assert "Invoking service plugin for `ntfy'" in caplog.messages
     assert (
         "Headers: {"
+        "'Click': 'https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn', "
         "'Title': 'goat entered lawn at 2023-04-06 14:31:46.638857+00:00', "
-        "'Click': 'https://frigate.local/events?camera=cam-testdrive&label=goat&zone=lawn', "
         "'Message': 'goat was in barn before', "
-        "'Filename': 'mqttwarn-frigate-cam-testdrive-goat.png'}"
-        in caplog.messages
+        "'Filename': 'mqttwarn-frigate-cam-testdrive-goat.png'}" in caplog.messages
     )
     assert (
         "Sending notification to ntfy. target=test, options={"
         "'url': 'http://username:password@localhost:5555/frigate-testdrive', "
-        "'attachment': '/tmp/mqttwarn-frigate-{camera}-{label}.png'}"
+        "'attachment': '/tmp/mqttwarn-frigate-{camera}-{label}.png', "
+        "'click': 'https://httpbin.org/anything?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}'}"
         in caplog.messages
     )
 
@@ -134,11 +133,10 @@ def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqt
     assert "Invoking service plugin for `ntfy'" in caplog.messages
     assert (
         "Headers: {"
+        "'Click': 'https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn', "
         "'Title': 'goat entered lawn at 2023-04-06 14:31:46.638857+00:00', "
-        "'Click': 'https://frigate.local/events?camera=cam-testdrive&label=goat&zone=lawn', "
         "'Message': 'goat was in barn before', "
-        "'Filename': 'mqttwarn-frigate-cam-testdrive-goat.png'}"
-        in caplog.messages
+        "'Filename': 'mqttwarn-frigate-cam-testdrive-goat.png'}" in caplog.messages
     )
 
     # assert "Sent ntfy notification to 'http://localhost:5555'." in caplog.messages
@@ -196,4 +194,6 @@ def get_goat_image() -> bytes:
     """
     Get an image of a Changthangi goat.
     """
-    return requests.get("https://user-images.githubusercontent.com/453543/231550862-5a64ac7c-bdfa-4509-86b8-b1a770899647.png").content
+    return requests.get(
+        "https://user-images.githubusercontent.com/453543/231550862-5a64ac7c-bdfa-4509-86b8-b1a770899647.png"
+    ).content

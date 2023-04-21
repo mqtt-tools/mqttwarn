@@ -71,6 +71,7 @@ files = [
   "mqttwarn/core.py",
   "mqttwarn/services/ntfy.py",
   "tests/services/test_ntfy.py",
+  "examples/frigate/**/*.py",
 ]
 
 

@@ -15,7 +15,7 @@ in progress
 - [ux] Rename subcommand ``mqttwarn make-samplefuncs`` to ``mqttwarn make-udf``,
   and adjust naming.
 - [ntfy] Add dedicated service plugin ``ntfy``
-- [ntfy] Use RFC 2047 for encoding HTTP header values
+- [ntfy] Use RFC 2047 for encoding HTTP header values. Thanks, @binwiederhier.
 - [ntfy] Add more fields: icon, cache, firebase, unifiedpush
 - [ntfy] Improve example/tutorial about Frigate event notifications
 - [ntfy] Also interpolate outbound ntfy option fields
