@@ -123,7 +123,7 @@ def decode_jobitem(item: ProcessorItem) -> NtfyRequest:
         raise TypeError(f"Unable to handle `targets` address descriptor data type `{type(item.addrs).__name__}`: {item.addrs}")
 
     url = options["url"]
-    attachment_path = options.get("attachment")
+    attachment_path = options.get("file")
 
     # Collect ntfy fields.
     fields: DataDict = OrderedDict()

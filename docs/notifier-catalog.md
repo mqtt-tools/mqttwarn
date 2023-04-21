@@ -1810,7 +1810,7 @@ data will also get interpolated into.
 targets  = {
     'test': {
         'url': 'https://ntfy.sh/testdrive',
-        'attachment': '/tmp/ntfy-attachment-{slot}-{label}.png',
+        'file': '/tmp/ntfy-attachment-{slot}-{label}.png',
         }
     }
 ```

@@ -63,14 +63,14 @@ def test_ntfy_decode_jobitem_attachment_success(attachment_dummy):
     """
 
     item = Item(
-        addrs={"url": "http://localhost:9999/testdrive", "attachment": attachment_dummy.name},
+        addrs={"url": "http://localhost:9999/testdrive", "file": attachment_dummy.name},
     )
 
     ntfy_request = decode_jobitem(item)
 
     assert ntfy_request.url == "http://localhost:9999/testdrive"
     assert ntfy_request.options["url"] == "http://localhost:9999/testdrive"
-    assert ntfy_request.options["attachment"] == attachment_dummy.name
+    assert ntfy_request.options["file"] == attachment_dummy.name
     assert ntfy_request.fields["filename"] == Path(attachment_dummy.name).name
     assert ntfy_request.attachment_data.read() == b"foo"
 
@@ -81,14 +81,14 @@ def test_ntfy_decode_jobitem_attachment_failure(caplog):
     """
 
     item = Item(
-        addrs={"url": "http://localhost:9999/testdrive", "attachment": "/tmp/mqttwarn-random-unknown"},
+        addrs={"url": "http://localhost:9999/testdrive", "file": "/tmp/mqttwarn-random-unknown"},
     )
 
     ntfy_request = decode_jobitem(item)
 
     assert ntfy_request.url == "http://localhost:9999/testdrive"
     assert ntfy_request.options["url"] == "http://localhost:9999/testdrive"
-    assert ntfy_request.options["attachment"] == "/tmp/mqttwarn-random-unknown"
+    assert ntfy_request.options["file"] == "/tmp/mqttwarn-random-unknown"
     assert "filename" not in ntfy_request.fields
     assert ntfy_request.attachment_data is None
 
@@ -101,7 +101,7 @@ def test_ntfy_decode_jobitem_attachment_with_filename_success(attachment_dummy):
     """
 
     item = Item(
-        addrs={"url": "http://localhost:9999/testdrive", "attachment": attachment_dummy.name},
+        addrs={"url": "http://localhost:9999/testdrive", "file": attachment_dummy.name},
         data={"filename": "testdrive.txt"},
     )
 
@@ -109,7 +109,7 @@ def test_ntfy_decode_jobitem_attachment_with_filename_success(attachment_dummy):
 
     assert ntfy_request.url == "http://localhost:9999/testdrive"
     assert ntfy_request.options["url"] == "http://localhost:9999/testdrive"
-    assert ntfy_request.options["attachment"] == attachment_dummy.name
+    assert ntfy_request.options["file"] == attachment_dummy.name
     assert ntfy_request.fields["filename"] == "testdrive.txt"
     assert ntfy_request.attachment_data.read() == b"foo"
 
@@ -275,7 +275,7 @@ def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
     module = load_module_by_name("mqttwarn.services.ntfy")
 
     item = Item(
-        addrs={"url": "http://localhost:9999/testdrive", "attachment": attachment_dummy.name},
+        addrs={"url": "http://localhost:9999/testdrive", "file": attachment_dummy.name},
         title="⚽ Message title ⚽",
         message="⚽ Notification message ⚽",
         data={"priority": "high", "tags": "foo,bar,äöü", "click": "https://example.org/testdrive"},
