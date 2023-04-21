@@ -139,18 +139,18 @@ tls_insecure = False
 
 ```
 
-#### `functions`
+### `functions`
 
 The `functions` option specifies the path to a Python file containing functions you use in formatting or filtering data (see below). The `.py` extension to the path name you configure here must be specified.
 
-#### `launch`
+### `launch`
 
 In the `launch` option you specify a list of comma-separated _service_ names  
 defined within the `[config:xxx]` sections which should be launched.
 
 You should launch every service you want to use from your topic/target definitions here.
 
-#### `status_publish`
+### `status_publish`
 
 Like with Mosquitto's `$SYS` topic, `mqttwarn` can publish status information to the broker.
 This is useful for automated updates (Docker Swarm, Watchtower, etc.).

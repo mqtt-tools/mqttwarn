@@ -13,6 +13,8 @@ Bugs
 - [o] Documentation vs. code: Clarify and/or fix logic of "filter" function
   https://github.com/jpmens/mqttwarn/issues/637
 - [o] Fallback for ``mqttwarn make-samplefuncs``
+- [o] Remove deprecated ``mqttwarn.services.apprise``
+- [o] Start even when MQTT broker is not available
 
 Documentation » Tech
 ====================
@@ -43,7 +45,8 @@ Documentation » Content
 - [x] Naming things: Replace term "custom function" with "user-defined function" (UDF)
 
 - [o] Search for all old links
-- [o] Better advertise the new topic section layout for ``targets``
+- [o] Better advertise the new configuration section layout for ``targets``,
+  it can be strings (ntfy), or dictionaries (ntfy, pushsafer)
 - [o] Improve default output for ``mqttwarn make-udf``, ``basic/udf.py``.
 - [o] Deprecate the ``datamap`` function. ``alldata`` is the new thing.
 - [o] Screen the Wiki for more content
@@ -58,13 +61,23 @@ Documentation » Content
 
 - [o] The ``format`` option should be renamed to ``message`` or ``body``
 - [o] Rename ``alldata`` to ``decode``, or ``decoder``
+- [o] Add documentation snippet to ntfy, à la https://docs.ntfy.sh/examples/#traccar, but for OwnTracks
+- [o] Tutorial: MQTT topic rewriting with mqttwarn
+- [o] Tutorial: Periodic MOTD notifier with ntfy
+
+Frigate example
+===============
+- [x] Improve topic decoding
+  ``frigate/cam1/goat/snapshot`` should be decoded like ``frigate/<camera>/<label>/snapshot``
+- [o] Rename ``frigate.{py,ini}`` to ``mqttwarn-frigate.{py,ini}``
 
 
 ************
 Iteration +2
 ************
-- [o] Improve topic decoding
-  ``frigate/cam1/goat/snapshot`` should be decoded like ``frigate/<camera>/<label>/snapshot``
+- [o] Enable doctests with pytest
+- [o] ntfy: Allow to set tags per mqttwarn.ini
+- [o] ntfy: Allow to configure to use ntfy.sh by only providing the topic
 - [o] Improve topic decoding: What about writing decoder functions in JavaScript?
 - [o] Improve software tests
 - [o] Refactor contents from "examples", "templates" and "vendor" folders
