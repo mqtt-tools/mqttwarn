@@ -197,6 +197,7 @@ class FunctionInvoker:
         """
 
         # Filtering currently only works on text.
+        # TODO: To let filtering also work on binary data, this line would need to go elsewhere. But where?
         if isinstance(payload, bytes):
             payload = payload.decode("utf-8")
 
