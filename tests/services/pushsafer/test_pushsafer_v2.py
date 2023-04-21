@@ -98,7 +98,7 @@ def test_pushsafer_token_environment_success(srv, caplog, mocker, mock_urlopen_s
 @dataclasses.dataclass
 class IoTestItem:
     id: str  # noqa: A003
-    in_addrs: t.Dict[str, str]
+    in_addrs: t.Dict[str, t.Union[str, int]]
     out_data: t.Dict[str, str]
 
 

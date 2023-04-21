@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2022 The mqttwarn developers
+# (c) 2014-2023 The mqttwarn developers
 import ast
 import codecs
 import logging
 import os
 import sys
+import typing as t
 from configparser import NoOptionError, RawConfigParser
 
 from mqttwarn.util import load_functions
@@ -21,13 +22,13 @@ logger = logging.getLogger(__name__)
 
 class Config(RawConfigParser):
 
-    specials = {
+    specials: t.Dict[str, t.Union[bool, None]] = {
         "TRUE": True,
         "FALSE": False,
         "NONE": None,
     }
 
-    def __init__(self, configuration_file=None, defaults=None):
+    def __init__(self, configuration_file: t.Optional[str] = None, defaults: t.Optional[t.Dict] = None):
 
         defaults = defaults or {}
 
@@ -48,6 +49,7 @@ class Config(RawConfigParser):
         self.password = None
         self.clientid = None
         self.lwt = None
+        self.lwt_alive = None
         self.skipretained = False
         self.cleansession = False
         self.protocol = 3
@@ -110,7 +112,7 @@ class Config(RawConfigParser):
 
             self.functions = load_functions(functions_file)
 
-    def level2number(self, level):
+    def level2number(self, level: str) -> int:
 
         levels = {
             "CRITICAL": 50,
@@ -125,7 +127,8 @@ class Config(RawConfigParser):
 
         return levels.get(level.upper(), levels["DEBUG"])
 
-    def g(self, section, key, default=None):
+    def g(self, section: str, key: str, default=None) -> t.Any:
+        val = None
         try:
             val = self.get(section, key)
             if isinstance(val, str) and val.upper() in self.specials:
@@ -139,21 +142,21 @@ class Config(RawConfigParser):
             return val
         except:
             raise
-            return val
 
-    def getlist(self, section, key):
+    def getlist(self, section: str, key: str) -> t.Union[t.List, None]:
         """Return a list, fail if it isn't a list"""
 
         val = None
         try:
-            val = self.get(section, key)
-            val = [s.strip() for s in val.split(",")]
+            val_str = self.get(section, key)
+            val = [s.strip() for s in val_str.split(",")]
         except Exception as e:
             logger.warning("Expecting a list in section `%s', key `%s' (%s)" % (section, key, e))
 
         return val
 
-    def getdict(self, section, key):
+    # TODO: Add return type annotation.
+    def getdict(self, section: str, key: str):
         val = self.g(section, key)
 
         try:
@@ -161,7 +164,7 @@ class Config(RawConfigParser):
         except:
             return None
 
-    def config(self, section):
+    def config(self, section: str) -> t.Dict:
         """Convert a whole section's options (except the options specified
         explicitly below) into a dict, turning
 
@@ -183,17 +186,17 @@ class Config(RawConfigParser):
         return d
 
 
-def load_configuration(configfile=None, name="mqttwarn"):
+def load_configuration(configfile: t.Optional[str] = None, name: str = "mqttwarn") -> Config:
 
     if configfile is None:
-        configfile = os.getenv(name.upper() + "INI", name + ".ini")
+        configfile = str(os.getenv(name.upper() + "INI", name + ".ini"))
 
     if not os.path.exists(configfile):
         raise FileNotFoundError('Configuration file "{}" does not exist'.format(configfile))
 
     # TODO: There should be a factory method which creates a `Config` instance,
     #       including defaults, but without loading a configuration file.
-    defaults = {
+    defaults: t.Dict[str, str] = {
         "clientid": name,
         "lwt": "clients/{}".format(name),
         "lwt_alive": "1",

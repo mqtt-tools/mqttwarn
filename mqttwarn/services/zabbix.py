@@ -8,7 +8,7 @@ __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/ep
 try:
     import simplejson as json
 except ImportError:
-    import json
+    import json  # type: ignore[no-redef]
 from mqttwarn.vendor import ZabbixSender
 import time
 

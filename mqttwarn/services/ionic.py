@@ -15,7 +15,7 @@ import base64
 try:
     import simplejson as json
 except ImportError:
-    import json
+    import json  # type: ignore[no-redef]
 
 
 def plugin(srv, item):

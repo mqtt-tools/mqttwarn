@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2022 The mqttwarn developers
+# (c) 2014-2023 The mqttwarn developers
 import logging
 import os
 import socket
@@ -12,12 +12,14 @@ from datetime import datetime
 from queue import Queue
 
 import paho.mqtt.client as paho
+from paho.mqtt.client import Client as MqttClient
+from paho.mqtt.client import MQTTMessage
 from pkg_resources import resource_filename
 
 import mqttwarn.configuration
 from mqttwarn.context import FunctionInvoker, RuntimeContext
 from mqttwarn.cron import PeriodicThread
-from mqttwarn.model import Job, Service, StatusInformation, Struct
+from mqttwarn.model import Job, Service, StatusInformation, Struct, TdataType
 from mqttwarn.util import (
     Formatter,
     asbool,
@@ -52,27 +54,27 @@ logger = logging.getLogger(__name__)
 SCRIPTNAME = "mqttwarn"
 
 # Global runtime context object
-context: t.Optional[RuntimeContext] = None
+context: RuntimeContext
 
 # Global configuration object
-cf: t.Optional[mqttwarn.configuration.Config] = None
+cf: mqttwarn.configuration.Config
 
 # Global handle to MQTT client
-mqttc: t.Optional[paho.Client] = None
-
+mqttc: paho.Client
+mqttc = None
 
 # Initialize processor queue
 q_in: Queue = Queue(maxsize=0)
 exit_flag = False
 
 # Instances of PeriodicThread objects
-ptlist = {}
+ptlist: t.Dict[str, PeriodicThread] = {}
 
 # Instances of loaded service plugins
 service_plugins: t.Dict[str, t.Dict[str, t.Any]] = dict()
 
 
-def make_service(mqttc=None, name=None):
+def make_service(mqttc: paho.Client = None, name: t.Optional[str] = None) -> Service:
     """
     Service object factory.
     Prepare service object for plugin.
@@ -88,7 +90,7 @@ def make_service(mqttc=None, name=None):
     return service
 
 
-def render_template(filename, data):
+def render_template(filename: str, data: TdataType) -> t.Optional[str]:
     text = None
     if HAVE_JINJA is True:
         template = jenv.get_template(filename)
@@ -98,7 +100,7 @@ def render_template(filename, data):
 
 
 # MQTT broker callbacks
-def on_connect(mosq, userdata, flags, result_code):
+def on_connect(mosq: MqttClient, userdata: t.Dict[str, str], flags: t.Dict[str, str], result_code: int):
     """
     Handle connections (or failures) to the broker.
     This is called after the client has received a CONNACK message
@@ -148,19 +150,19 @@ def on_connect(mosq, userdata, flags, result_code):
         logger.error("Connection failed - result code %d" % (result_code))
 
 
-def on_disconnect(mosq, userdata, result_code):
+def on_disconnect(mosq: MqttClient, userdata: t.Dict[str, str], result_code: int):
     """
     Handle disconnections from the broker
     """
     if result_code == 0:
         logger.info("Clean disconnection from broker")
     else:
-        send_failover("brokerdisconnected", "Broker connection lost. Will attempt to reconnect in 5s")
+        send_failover("brokerdisconnected", b"Broker connection lost. Will attempt to reconnect in 5s")
         # TODO: Review this.
         time.sleep(5)
 
 
-def on_message(mosq, userdata, msg):
+def on_message(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMessage):
     """
     Dispatch message received from the MQTT broker to mqttwarn's handler machinery.
     """
@@ -170,7 +172,7 @@ def on_message(mosq, userdata, msg):
         logger.exception("Receiving and decoding MQTT message failed")
 
 
-def on_message_handler(mosq, userdata, msg):
+def on_message_handler(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMessage):
     """
     Message received from the broker
     """
@@ -204,14 +206,14 @@ def on_message_handler(mosq, userdata, msg):
 # End of MQTT broker callbacks
 
 
-def send_failover(reason, message):
+def send_failover(reason: str, message: t.AnyStr):
     # Make sure we dump this event to the log
     logger.warning(message)
     # Attempt to send the message to our failover targets
     send_to_targets("failover", reason, message)
 
 
-def send_to_targets(section, topic, payload):
+def send_to_targets(section: str, topic: str, payload: t.AnyStr):
     if cf.has_section(section) is False:
         logger.warning(
             "Section [%s] does not exist in your INI file, skipping message on topic '%s'" % (section, topic)
@@ -221,12 +223,19 @@ def send_to_targets(section, topic, payload):
     # decode raw payload into transformation data
     data = decode_payload(section, topic, payload)
 
+    # Probe if it's a function name.
+    function_name = None
+    try:
+        function_name = sanitize_function_name(context.get_config(section, "targets"))
+    except:
+        pass
     dispatcher_dict = cf.getdict(section, "targets")
-    function_name = sanitize_function_name(context.get_config(section, "targets"))
 
     # `targets` is a function symbol.
     if function_name is not None:
         targetlist = context.get_topic_targets(section, topic, data)
+        # TODO: Verify if this is still the case. @amotl thinks that the
+        #       target address descriptor may be of any type these days.
         if not isinstance(targetlist, list):
             targetlist_type = type(targetlist)
             logger.error(
@@ -313,8 +322,11 @@ def send_to_targets(section, topic, payload):
             continue
 
         service_config = context.get_service_config(service)
-        if asbool(service_config.get("decode_utf8", True)):
-            payload = payload.decode("utf-8")
+        payload_out: t.Union[str, bytes]
+        if asbool(service_config.get("decode_utf8", True)) and isinstance(payload, bytes):
+            payload_out = payload.decode("utf-8")
+        else:
+            payload_out = payload
 
         sendtos = None
         if target is None:
@@ -324,15 +336,15 @@ def send_to_targets(section, topic, payload):
 
         for sendto in sendtos:
             logger.debug("New `%s:%s' job: %s" % (service, sendto, topic))
-            job = Job(1, service, section, topic, payload, data, sendto)
+            job = Job(1, service, section, topic, payload_out, data, sendto)
             q_in.put(job)
 
 
-def builtin_transform_data(topic, payload):
+def builtin_transform_data(topic: str, payload: t.AnyStr) -> TdataType:
     """Return a dict with initial transformation data which is made
     available to all plugins"""
 
-    tdata = {}
+    tdata: TdataType = {}
     dt = datetime.now()
 
     tdata["topic"] = topic
@@ -346,7 +358,7 @@ def builtin_transform_data(topic, payload):
     return tdata
 
 
-def xform(function, orig_value, transform_data):
+def xform(function: str, orig_value: t.Any, transform_data: TdataType) -> t.Union[TdataType, str, None]:
     """
     Attempt transformation on orig_value.
 
@@ -360,13 +372,15 @@ def xform(function, orig_value, transform_data):
     res = orig_value
 
     if function is not None:
-        function_name = sanitize_function_name(function)
-        if function_name is not None:
+        try:
+            function_name = sanitize_function_name(function)
             try:
                 res = context.invoker.datamap(function_name, transform_data)
                 return res
             except Exception:
-                logger.exception(f"Invoking function '{function_name}' failed")
+                logger.exception(f"Invoking function '{function}' failed")
+        except:
+            pass
 
         try:
             res = Formatter().format(function, **transform_data)
@@ -379,14 +393,14 @@ def xform(function, orig_value, transform_data):
     return res
 
 
-def decode_payload(section, topic, payload):
+def decode_payload(section: str, topic: str, payload: t.AnyStr) -> TdataType:
     """
     Decode message payload through transformation machinery.
     """
 
     transform_data = builtin_transform_data(topic, payload)
 
-    topic_data = context.get_topic_data(section, topic)
+    topic_data = context.get_topic_data(section, transform_data)
     if topic_data is not None and isinstance(topic_data, dict):
         transform_data.update(topic_data)
 
@@ -406,9 +420,11 @@ def decode_payload(section, topic, payload):
     # (i.e. transformed) message.
     try:
         if isinstance(payload, bytes):
-            payload = payload.decode("utf-8")
-        payload = payload.rstrip("\0")
-        payload_data = json.loads(payload)
+            outdata = payload.decode("utf-8")
+        else:
+            outdata = payload
+        outdata = outdata.rstrip("\0")
+        payload_data = json.loads(outdata)
         transform_data.update(payload_data)
     except Exception as ex:
         logger.debug(f"Decoding JSON failed: {ex}. payload={truncate(payload)}")

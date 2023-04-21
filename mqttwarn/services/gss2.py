@@ -10,7 +10,7 @@ import os
 try:
     import simplejson as json
 except ImportError:
-    import json
+    import json  # type: ignore[no-redef]
 
 import gspread
 import oauth2client.client

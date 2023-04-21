@@ -6,7 +6,7 @@ from unittest.mock import Mock, call
 import pytest
 
 from mqttwarn.model import ProcessorItem as Item
-from mqttwarn.model import Struct
+from mqttwarn.model import Service, Struct
 from mqttwarn.util import load_module_by_name
 
 
@@ -42,17 +42,17 @@ def test_desktopnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
     assert "Sending desktop notification" in caplog.messages
 
 
-def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv, caplog):
+def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv: Service, caplog):
 
     module = load_module_by_name("mqttwarn.services.desktopnotify")
 
-    item = Item(
+    processor_item = Item(
         title="⚽ Notification title ⚽",
         message="⚽ Notification message ⚽",
     )
 
     # Plugin needs a real `Struct`.
-    item = Struct(**item.asdict())
+    item = Struct(**processor_item.asdict())
 
     # Make the `send_sync` method fail.
     notifier_mock: Mock = mocker.patch.object(

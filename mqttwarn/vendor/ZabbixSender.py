@@ -15,7 +15,7 @@ import struct
 try:
     import json
 except ImportError:
-    import simplejson as json
+    import simplejson as json  # type: ignore[no-redef]
 
 
 class ZabbixSender:

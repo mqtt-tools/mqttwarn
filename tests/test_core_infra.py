@@ -273,7 +273,7 @@ def test_on_disconnect_failure(mocker, caplog):
     on_disconnect(mosq=None, userdata=None, result_code=999)
     assert caplog.record_tuples == []
     send_failover.assert_called_once_with(
-        "brokerdisconnected", "Broker connection lost. Will attempt to reconnect in 5s"
+        "brokerdisconnected", b"Broker connection lost. Will attempt to reconnect in 5s"
     )
 
 

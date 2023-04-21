@@ -6,7 +6,7 @@ import copy
 try:
     import json
 except ImportError:
-    import simplejson as json
+    import simplejson as json  # type: ignore[no-redef]
 
 def OwnTracksTopic2Data(topic):
     try:

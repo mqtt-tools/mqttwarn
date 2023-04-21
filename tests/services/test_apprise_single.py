@@ -4,10 +4,11 @@ from unittest import mock
 from unittest.mock import Mock, call
 
 from mqttwarn.model import ProcessorItem as Item
+from mqttwarn.model import Service
 from mqttwarn.util import load_module_from_file
 
 
-def test_apprise_success(srv, mocker, caplog):
+def test_apprise_success(srv: Service, mocker, caplog):
 
     # Mock the SMTP library.
     mock_smtp: Mock = mocker.patch("smtplib.SMTP")
