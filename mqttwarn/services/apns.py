@@ -6,7 +6,10 @@ __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import json
-from apns import APNs, Payload
+try:
+    from apns import APNs, Payload
+except:
+    pass
 
 
 def plugin(srv, item):
