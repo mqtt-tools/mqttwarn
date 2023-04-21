@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2019 The mqttwarn developers
+# (c) 2014-2023 The mqttwarn developers
 from __future__ import print_function
 
 import codecs
@@ -8,6 +8,7 @@ import logging
 import os
 import signal
 import sys
+import typing as t
 
 from docopt import docopt
 
@@ -92,7 +93,13 @@ def run():
         run_mqttwarn()
 
 
-def launch_plugin_standalone(plugin, options, data, configfile=None, config_more=None):
+def launch_plugin_standalone(
+    plugin: str,
+    options: t.Dict,
+    data: t.Dict,
+    configfile: t.Optional[str] = None,
+    config_more: t.Optional[t.Dict] = None,
+):
 
     # Optionally load configuration file
     does_not_exist = False
@@ -148,7 +155,7 @@ def run_mqttwarn():
     subscribe_forever()
 
 
-def setup_logging(config):
+def setup_logging(config: Config):
     LOGLEVEL = config.loglevelnumber
     LOGFILE = config.logfile
     LOGFORMAT = config.logformat

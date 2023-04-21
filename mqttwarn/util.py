@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2014-2022 The mqttwarn developers
+# (c) 2014-2023 The mqttwarn developers
 import functools
 import hashlib
 import imp
@@ -8,6 +7,7 @@ import logging
 import os
 import re
 import string
+import types
 import typing as t
 
 import funcy
@@ -24,7 +24,7 @@ class Formatter(string.Formatter):
     - https://docs.python.org/2/library/string.html#custom-string-formatting
     """
 
-    def convert_field(self, value, conversion):
+    def convert_field(self, value: str, conversion: str) -> str:
         """
         The conversion field causes a type coercion before formatting.
         By default, two conversion flags are supported: '!s' which calls
@@ -40,7 +40,7 @@ class Formatter(string.Formatter):
         return value
 
 
-def asbool(obj):
+def asbool(obj: t.Any) -> bool:
     """
     Shamelessly stolen from beaker.converters
     # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
@@ -57,7 +57,7 @@ def asbool(obj):
     return bool(obj)
 
 
-def parse_cron_options(argstring):
+def parse_cron_options(argstring: str) -> t.Dict[str, t.Union[str, float]]:
     """
     Parse periodic task options.
     Obtains configuration value, returns dictionary.
@@ -72,7 +72,7 @@ def parse_cron_options(argstring):
 
     """
     parts = argstring.split(";")
-    options = {"interval": float(parts[0].strip())}
+    options: t.Dict[str, t.Union[str, float]] = {"interval": float(parts[0].strip())}
     for part in parts[1:]:
         name, value = part.split("=")
         options[name.strip()] = value.strip()
@@ -80,7 +80,7 @@ def parse_cron_options(argstring):
 
 
 # http://code.activestate.com/recipes/473878-timeout-function-using-threading/
-def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
+def timeout(func: t.Callable, args=(), kwargs={}, timeout_secs: int = 10, default: bool = False) -> t.Any:
     import threading
 
     class InterruptableThread(threading.Thread):
@@ -111,20 +111,20 @@ def timeout(func, args=(), kwargs={}, timeout_secs=10, default=False):
         return it.result
 
 
-def sanitize_function_name(s):
-    func = None
+def sanitize_function_name(name: str) -> str:
+    if name is None:
+        raise ValueError(f"Empty function name: {name}")
 
-    if s is not None:
-        try:
-            valid = re.match(r"^[\w]+\(\)", s)
-            if valid is not None:
-                func = re.sub("[()]", "", s)
-        except:
-            pass
-    return func
+    try:
+        valid = re.match(r"^[\w]+\(\)", name)
+        if valid is not None:
+            return re.sub("[()]", "", name)
+    except:
+        pass
+    raise ValueError(f"Invalid function name: {name}")
 
 
-def load_module_from_file(path):
+def load_module_from_file(path: str) -> types.ModuleType:
     """
     http://code.davidjanes.com/blog/2008/11/27/how-to-dynamically-load-python-code/
 
@@ -134,7 +134,7 @@ def load_module_from_file(path):
     try:
         fp = open(path, "rb")
         digest = hashlib.md5(path.encode("utf-8")).hexdigest()
-        return imp.load_source(digest, path, fp)
+        return imp.load_source(digest, path, fp)  # type: ignore[arg-type]
     finally:
         try:
             fp.close()
@@ -142,7 +142,7 @@ def load_module_from_file(path):
             pass
 
 
-def load_module_by_name(name):
+def load_module_by_name(name: str) -> types.ModuleType:
     """
     https://pymotw.com/2/imp/#loading-modules
 
@@ -153,7 +153,7 @@ def load_module_by_name(name):
     return module
 
 
-def import_module(name, path=None):
+def import_module(name: str, path: t.Optional[t.List[str]] = None) -> types.ModuleType:
     """
     Derived from `import_from_dotted_path`:
     https://chase-seibert.github.io/blog/2014/04/23/python-imp-examples.html
@@ -168,7 +168,7 @@ def import_module(name, path=None):
         remaining_names = None
 
     fp, pathname, description = imp.find_module(next_module, path)
-    module = imp.load_module(next_module, fp, pathname, description)
+    module = imp.load_module(next_module, fp, pathname, description)  # type: ignore[arg-type]
 
     if remaining_names is None:
         return module
@@ -176,10 +176,10 @@ def import_module(name, path=None):
     if hasattr(module, remaining_names):
         return getattr(module, remaining_names)
     else:
-        return import_module(remaining_names, path=module.__path__)
+        return import_module(remaining_names, path=list(module.__path__))
 
 
-def load_functions(filepath=None):
+def load_functions(filepath: t.Optional[str] = None) -> t.Optional[types.ModuleType]:
 
     if not filepath:
         return None
@@ -201,7 +201,7 @@ def load_functions(filepath=None):
     return py_mod
 
 
-def load_function(name=None, py_mod=None):
+def load_function(name: str, py_mod: t.Optional[types.ModuleType]) -> t.Callable:
     assert name, "Function name must be given"
     assert py_mod, "Python module must be given"
 
@@ -213,7 +213,7 @@ def load_function(name=None, py_mod=None):
     return func
 
 
-def get_resource_content(package, filename):
+def get_resource_content(package: str, filename: str) -> str:
     with pkg_resources.resource_stream(package, filename) as stream:
         return stream.read().decode("utf-8")
 

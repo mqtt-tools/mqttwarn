@@ -1,13 +1,26 @@
 # -*- coding: utf-8 -*-
-# (c) 2021-2022 The mqttwarn developers
+# (c) 2021-2023 The mqttwarn developers
 import dataclasses
 import platform
 import sys
+import typing as t
 from dataclasses import dataclass, field
 from functools import total_ordering
-from typing import Dict, List, Optional, Union
+from logging import Logger
+from typing import Dict, Optional, Union
 
 from mqttwarn import __version__
+
+# Type definitions.
+
+# The venerable transformation data dictionary.
+TdataType = t.Dict[str, t.Union[t.AnyStr, int]]
+
+# Covering old- and new-style configuration layouts. `addrs` has
+# originally been a list of strings, has been expanded to be a
+# list of dictionaries (Apprise), to be a dictionary (Pushsafer),
+# and finally to be a scalar string only (ntfy).
+TopicTargetType = t.Union[t.List, t.Dict[str, t.Any], str, None]
 
 
 class Struct:
@@ -37,12 +50,6 @@ class Struct:
         return item
 
 
-# Covering old- and new-style configuration layouts. `addrs` has
-# originally been a list of strings, has been expanded to be a
-# list of dictionaries (Apprise), and to be a dictionary (Pushsafer).
-addrs_type = Union[List[Union[str, Dict[str, str]]], Dict[str, str], str]
-
-
 @dataclass
 class ProcessorItem:
     """
@@ -53,7 +60,7 @@ class ProcessorItem:
     target: Optional[str] = None
     config: Dict = field(default_factory=dict)
     # TODO: `addrs` can also be a string or dictionary now.
-    addrs: addrs_type = field(default_factory=list)  # type: ignore[assignment]
+    addrs: TopicTargetType = field(default_factory=list)  # type: ignore[assignment]
     priority: Optional[int] = None
     topic: Optional[str] = None
     title: Optional[str] = None
@@ -62,6 +69,9 @@ class ProcessorItem:
 
     def asdict(self):
         return dataclasses.asdict(self)
+
+    def get(self, key, default=None):
+        return getattr(self, key, default)
 
 
 @dataclasses.dataclass
@@ -89,7 +99,7 @@ class Service:
         self.mwcore = mwcore
 
         # Reference to logging object.
-        self.logging = logger
+        self.logging: Logger = logger  # type: ignore[annotation-unchecked]
 
         # Name of self ("mqttwarn", mostly).
         self.SCRIPTNAME = program

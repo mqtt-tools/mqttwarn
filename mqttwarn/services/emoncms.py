@@ -14,7 +14,7 @@ import urllib.request, urllib.parse, urllib.error
 try:
     import simplejson as json
 except ImportError:
-    import json
+    import json  # type: ignore[no-redef]
 
 
 def plugin(srv, item):

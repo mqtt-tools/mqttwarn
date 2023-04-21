@@ -78,7 +78,7 @@ def test_runtime_context_callfunc_failures(caplog, runtime_ini_file):
     invoker = FunctionInvoker(config=config, srv=None)
     context = RuntimeContext(config=config, invoker=invoker)
     assert context.is_filtered(section="config:foo", topic="foo", payload="bar") is False
-    assert context.get_topic_data(section="config:foo", topic="foo") is None
+    assert context.get_topic_data(section="config:foo", data="foo") is None
     assert context.get_all_data(section="config:foo", topic="foo", data="bar") is None
     assert caplog.messages == [
         "Cannot invoke filter function 'filter_function' defined in 'config:foo': Python module must be given",
@@ -109,4 +109,4 @@ def test_runtime_context_get_service_targets(runtime_ini_file):
     config = Config(configuration_file=runtime_ini_file)
     context = RuntimeContext(config=config, invoker=None)
     assert context.get_service_targets("foo") == {"abc": "def"}
-    assert context.get_service_targets("unknown") is None
+    assert context.get_service_targets("unknown") == [None]

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2022 The mqttwarn developers
+# (c) 2014-2023 The mqttwarn developers
 import logging
 import threading
+import typing as t
+
+from mqttwarn.model import Service
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +16,16 @@ class PeriodicThread:
     Python periodic Thread using Timer with instant cancellation
     """
 
-    def __init__(self, callback=None, period=1, name=None, srv=None, now=False, *args, **kwargs):
+    def __init__(
+        self,
+        callback: t.Optional[t.Callable] = None,
+        period: t.Optional[int] = 1,
+        name: t.Optional[str] = None,
+        srv: t.Optional[Service] = None,
+        now: t.Optional[bool] = False,
+        *args,
+        **kwargs,
+    ):
         self.name = name
         self.srv = srv
         self.now = now

@@ -9,7 +9,7 @@ from builtins import str
 try:
     import simplejson as json
 except ImportError:
-    import json
+    import json  # type: ignore[no-redef]
 
 import gdata.spreadsheet.service
 

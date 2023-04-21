@@ -76,9 +76,18 @@ def test_timeout():
 
 def test_sanitize_function_name():
     assert sanitize_function_name("foobar()") == "foobar"
-    assert sanitize_function_name("hastme") is None
-    assert sanitize_function_name(42) is None
-    assert sanitize_function_name(None) is None
+
+    with pytest.raises(ValueError) as ex:
+        sanitize_function_name("hastme")
+    assert ex.match("Invalid function name: hastme")
+
+    with pytest.raises(ValueError) as ex:
+        sanitize_function_name(42)
+    assert ex.match("Invalid function name: 42")
+
+    with pytest.raises(ValueError) as ex:
+        sanitize_function_name(None)
+    assert ex.match("Empty function name: None")
 
 
 def test_load_module_from_file_good():

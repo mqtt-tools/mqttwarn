@@ -166,7 +166,7 @@ extras["develop"] = [
     "isort<6",
     "black<23",
     "build<1",
-    "mypy<1",
+    "mypy<1.3",
     "poethepoet<1",
     'ruff==0.0.254; python_version>="3.7"',
     "sphinx-autobuild",
