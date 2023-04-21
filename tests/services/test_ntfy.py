@@ -293,7 +293,7 @@ def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
             "priority": "high",
             "tags": "foo,bar,äöü",
             "click": "https://example.org/testdrive",
-            "actions": "view, Adjust temperature 🌡, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'",  # noqa: E501
+            "actions": "view, Adjust temperature 🌡, https://example.org/home-automation/temperature, body='{{\"temperature\": 18}}'",  # noqa: E501
         },
     )
 

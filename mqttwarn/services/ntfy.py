@@ -10,9 +10,10 @@ from email.header import Header
 from pathlib import Path
 
 import requests
-from funcy import project
+from funcy import project, merge
 
 from mqttwarn.model import Service, ProcessorItem
+from mqttwarn.util import Formatter
 
 DataDict = t.Dict[str, t.Union[str, bytes]]
 
@@ -128,11 +129,13 @@ def decode_jobitem(item: ProcessorItem) -> NtfyRequest:
     options: t.Dict[str, str]
 
     if isinstance(item.addrs, str):
-        options = {"url": item.addrs}
+        item.addrs = {"url": item.addrs}
     elif isinstance(item.addrs, dict):
-        options = item.addrs
+        pass
     else:
         raise TypeError(f"Unable to handle `targets` address descriptor data type `{type(item.addrs).__name__}`: {item.addrs}")
+
+    options = item.addrs
 
     url = options["url"]
     attachment_path = options.get("file")
@@ -168,8 +171,11 @@ def decode_jobitem(item: ProcessorItem) -> NtfyRequest:
 
 def obtain_ntfy_fields(item: ProcessorItem) -> DataDict:
     """
-    Obtain eventual ntfy fields from transformation data.
+    Obtain eventual ntfy fields from different sources.
     """
+
+    # Get relevant ntfy option fields from all of `config`,
+    # `addrs`, and `data`, with ascending precedence.
     fields_data = item.data and project(item.data, NTFY_FIELD_NAMES) or {}
     fields_addrs = item.addrs and project(item.addrs, NTFY_FIELD_NAMES) or {}
     fields_config = item.config and project(item.config, NTFY_FIELD_NAMES) or {}
@@ -177,6 +183,17 @@ def obtain_ntfy_fields(item: ProcessorItem) -> DataDict:
     fields.update(fields_config)
     fields.update(fields_addrs)
     fields.update(fields_data)
+
+    # Run an interpolation step also on the outbound ntfy option
+    # fields, in order to unlock using templated values there.
+    logger.info((item.config or {}, item.addrs or {}, item.data or {}))
+    all_data = merge(item.config or {}, item.addrs or {}, item.data or {})
+    formatter = Formatter()
+    for key, value in fields.items():
+        if isinstance(value, str):
+            new_value = formatter.format(value, **all_data)
+            fields[key] = new_value
+
     return fields
 
 

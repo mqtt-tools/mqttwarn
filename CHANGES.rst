@@ -18,6 +18,7 @@ in progress
 - [ntfy] Use RFC 2047 for encoding HTTP header values
 - [ntfy] Add more fields: icon, cache, firebase, unifiedpush
 - [ntfy] Improve example/tutorial about Frigate event notifications
+- [ntfy] Also interpolate outbound ntfy option fields
 
 
 2023-04-11 0.33.0
