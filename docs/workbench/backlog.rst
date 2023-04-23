@@ -13,8 +13,14 @@ Bugs
 - [o] Documentation vs. code: Clarify and/or fix logic of "filter" function
   https://github.com/jpmens/mqttwarn/issues/637
 - [o] Fallback for ``mqttwarn make-samplefuncs``
-- [o] Remove deprecated ``mqttwarn.services.apprise``
+
+Features
+========
+- [o] ntfy: Encode HTTP headers with RFC 2047
+- [o] ntfy: https://docs.ntfy.sh/publish/#access-tokens
+- [o] ntfy: https://docs.ntfy.sh/publish/#list-of-all-parameters
 - [o] Start even when MQTT broker is not available
+- [o] Remove deprecated ``mqttwarn.services.apprise``
 
 Documentation » Tech
 ====================
@@ -69,7 +75,7 @@ Frigate example
 ===============
 - [x] Improve topic decoding
   ``frigate/cam1/goat/snapshot`` should be decoded like ``frigate/<camera>/<label>/snapshot``
-- [o] Rename ``frigate.{py,ini}`` to ``mqttwarn-frigate.{py,ini}``
+- [o] Rename ``frigate.{py,ini}`` to ``mqttwarn-frigate.{py,ini}``?
 
 
 ************
