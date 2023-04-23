@@ -1774,12 +1774,11 @@ targets  = {
     }
 ```
 
-:::{important}
+:::{note}
 [ntfy publishing options] outlines different ways to marshal data to the ntfy
-HTTP API. mqttwarn is using HTTP headers for serializing values, because the
-HTTP body will already be used for the attachment file. Because of this, you
-are not able to use UTF-8 characters within your message text, they will be
-replaced by placeholder characters like `?`.
+HTTP API. mqttwarn is using the HTTP PUT method, where the HTTP body is used
+for the attachment file, and HTTP headers are used for all other ntfy option 
+fields, encoded with [RFC 2047] MIME [quoted-printable encoding].
 :::
 
 {#ntfy-remote-attachments}
@@ -1883,6 +1882,8 @@ followed by option fields defined on the `[config:ntfy]` configuration section.
 [ntfy publishing options]: https://docs.ntfy.sh/publish/
 [ntfy stored attachments]: https://docs.ntfy.sh/config/#attachments
 [pub-sub]: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
+[quoted-printable encoding]: https://en.wikipedia.org/wiki/Quoted-printable
+[RFC 2047]: https://datatracker.ietf.org/doc/html/rfc2047
 
 
 ### `desktopnotify`

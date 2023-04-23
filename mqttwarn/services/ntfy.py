@@ -6,6 +6,7 @@ import dataclasses
 import logging
 from collections import OrderedDict
 import typing as t
+from email.header import Header
 from pathlib import Path
 
 import requests
@@ -71,7 +72,7 @@ class NtfyRequest:
         In this spirit, the header transport does not permit any fancy UTF-8 characters
         within any field, so they will be replaced with placeholder characters `?`.
         """
-        return dict_ascii_clean(dict_with_titles(self.fields))
+        return dict_rfc2047(dict_with_titles(self.fields))
 
 
 def plugin(srv: Service, item: ProcessorItem) -> bool:
@@ -198,6 +199,20 @@ def ascii_clean(data: t.Union[str, bytes]) -> str:
         raise TypeError(f"Unknown data type to compute ASCII-clean variant: {type(data).__name__}")
 
 
+def encode_rfc2047(data: t.Union[str, bytes]) -> str:
+    """
+    Return RFC2047-encoded variant of input string.
+
+    https://docs.python.org/3/library/email.header.html
+    """
+    if isinstance(data, bytes):
+        data = data.decode()
+    if isinstance(data, str):
+        return Header(s=data, charset="utf-8").encode()
+    else:
+        raise TypeError(f"Unknown data type to compute ASCII-clean variant: {type(data).__name__}")
+
+
 def dict_ascii_clean(data: DataDict) -> t.Dict[str, str]:
     """
     Return dictionary with ASCII-clean keys and values.
@@ -207,6 +222,32 @@ def dict_ascii_clean(data: DataDict) -> t.Dict[str, str]:
     for key, value in data.items():
         key = ascii_clean(key).strip()
         value = ascii_clean(value).strip()
+        outdata[key] = value
+    return outdata
+
+
+def dict_rfc2047(data: DataDict) -> t.Dict[str, str]:
+    """
+    Return dictionary using values encoded with RFC 2047, aka. MIME Message
+    Header Extensions for Non-ASCII Text. Two encodings are possible.
+
+    4.1 The "B" encoding is identical to the "BASE64" encoding defined by RFC 2045.
+    4.2 The "Q" encoding is similar to the "Quoted-Printable" content-transfer-encoding
+        defined in RFC 2045.  It is designed to allow text containing mostly ASCII
+        characters to be decipherable on an ASCII terminal without decoding.
+
+    The Python email package supports the standards RFC 2045, RFC 2046, RFC 2047, and
+    RFC 2231 in its `email.header` and `email.charset` modules.
+
+    - https://datatracker.ietf.org/doc/html/rfc2047#section-2
+    - https://datatracker.ietf.org/doc/html/rfc2047#section-4
+    - https://docs.python.org/3/library/email.header.html
+    """
+
+    outdata = OrderedDict()
+    for key, value in data.items():
+        key = ascii_clean(key).strip()
+        value = encode_rfc2047(value)
         outdata[key] = value
     return outdata
 

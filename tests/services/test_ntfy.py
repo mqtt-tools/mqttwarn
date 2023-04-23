@@ -16,6 +16,7 @@ from mqttwarn.services.ntfy import (
     decode_jobitem,
     dict_ascii_clean,
     dict_with_titles,
+    encode_rfc2047,
     load_attachment,
     obtain_ntfy_fields,
 )
@@ -232,6 +233,16 @@ def test_ntfy_ascii_clean_success():
     assert ascii_clean("⚽ Notification message ⚽".encode("utf-8")) == "? Notification message ?"
 
 
+def test_ntfy_encode_rfc2047():
+    """
+    Test the `ascii_clean` helper function.
+    """
+    message_in = "⚽ Notification message ⚽"
+    message_out = "=?utf-8?q?=E2=9A=BD_Notification_message_=E2=9A=BD?="
+    assert encode_rfc2047(message_in) == message_out
+    assert encode_rfc2047(message_in.encode("utf-8")) == message_out
+
+
 def test_ntfy_ascii_clean_failure():
     """
     Test the `ascii_clean` helper function.
@@ -292,7 +303,7 @@ def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
     assert isinstance(response.request.body, io.BufferedReader)
     assert response.request.body.read() == b"foo"
     assert response.request.headers["User-Agent"] == "mqttwarn"
-    assert response.request.headers["Tags"] == "foo,bar,???"
+    assert response.request.headers["Tags"] == "=?utf-8?q?foo=2Cbar=2C=C3=A4=C3=B6=C3=BC?="
 
     assert response.response.status_code == 200
     assert response.response.json() == ntfy_api_response
