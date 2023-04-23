@@ -15,6 +15,7 @@ in progress
 - [ux] Rename subcommand ``mqttwarn make-samplefuncs`` to ``mqttwarn make-udf``,
   and adjust naming.
 - [ntfy] Add dedicated service plugin ``ntfy``
+- [ntfy] Use RFC 2047 for encoding HTTP header values
 
 
 2023-04-11 0.33.0
