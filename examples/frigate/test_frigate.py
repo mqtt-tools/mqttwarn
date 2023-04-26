@@ -79,7 +79,7 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     assert (
         "Sending notification to ntfy. target=test, options={"
         "'url': 'http://username:password@localhost:5555/frigate-testdrive', "
-        "'attachment': '/tmp/mqttwarn-frigate-{camera}-{label}.png', "
+        "'file': '/tmp/mqttwarn-frigate-{camera}-{label}.png', "
         "'click': 'https://httpbin.org/anything?camera={event.camera}&label={event.label}&zone={event.entered_zones[0]}'}"
         in caplog.messages
     )
