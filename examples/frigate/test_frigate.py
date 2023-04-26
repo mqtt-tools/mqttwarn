@@ -72,8 +72,8 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
     assert (
         "Headers: {"
         "'Click': 'https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn', "
-        "'Title': 'goat entered lawn at 2023-04-06 14:31:46.638857+00:00', "
-        "'Message': 'goat was in barn before', "
+        "'Title': '=?utf-8?q?goat_entered_lawn_at_2023-04-06_14=3A31=3A46=2E638857+00=3A00?=', "
+        "'Message': '=?utf-8?q?goat_was_in_barn_before?=', "
         "'Filename': 'mqttwarn-frigate-cam-testdrive-goat.png'}" in caplog.messages
     )
     assert (
@@ -134,8 +134,8 @@ def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqt
     assert (
         "Headers: {"
         "'Click': 'https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn', "
-        "'Title': 'goat entered lawn at 2023-04-06 14:31:46.638857+00:00', "
-        "'Message': 'goat was in barn before', "
+        "'Title': '=?utf-8?q?goat_entered_lawn_at_2023-04-06_14=3A31=3A46=2E638857+00=3A00?=', "
+        "'Message': '=?utf-8?q?goat_was_in_barn_before?=', "
         "'Filename': 'mqttwarn-frigate-cam-testdrive-goat.png'}" in caplog.messages
     )
 
