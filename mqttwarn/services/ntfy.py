@@ -26,6 +26,7 @@ DataDict = t.Dict[str, t.Union[str, bytes]]
 #
 # All other ntfy fields are enumerated here.
 # https://docs.ntfy.sh/publish/#publish-as-json
+# https://docs.ntfy.sh/publish/#list-of-all-parameters
 
 NTFY_FIELD_NAMES: t.List[str] = [
     # "topic",
@@ -38,7 +39,11 @@ NTFY_FIELD_NAMES: t.List[str] = [
     "attach",
     "filename",
     "delay",
+    "icon",
     "email",
+    "cache",
+    "firebase",
+    "unifiedpush",
 ]
 
 logger = logging.getLogger(__name__)

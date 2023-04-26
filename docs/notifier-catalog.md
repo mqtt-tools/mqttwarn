@@ -1828,7 +1828,8 @@ the file fails for whatever reasons.
 #### Publishing options
 You can use all the available [ntfy publishing options], by using the corresponding
 option names listed within `NTFY_FIELD_NAMES`, which are: `message`, `title`, `tags`, 
-`priority`, `actions`, `click`, `attach`, `filename`, `delay`, and `email`. 
+`priority`, `actions`, `click`, `attach`, `filename`, `delay`, `icon`, `email`,
+`cache`, `firebase`, and `unifiedpush`. See also the [list of all ntfy option fields].
 
 You can obtain ntfy option fields from _three_ contexts in total, as implemented
 by the `obtain_ntfy_fields` function. Effectively, that means that you can place
@@ -1878,6 +1879,7 @@ followed by option fields defined on the `[config:ntfy]` configuration section.
    with realtime local object detection for IP cameras.
 
 
+[list of all ntfy option fields]: https://docs.ntfy.sh/publish/#list-of-all-parameters
 [ntfy]: https://ntfy.sh/
 [ntfy publishing options]: https://docs.ntfy.sh/publish/
 [ntfy stored attachments]: https://docs.ntfy.sh/config/#attachments
