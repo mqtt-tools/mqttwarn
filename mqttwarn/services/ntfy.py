@@ -46,6 +46,12 @@ NTFY_FIELD_NAMES: t.List[str] = [
     "unifiedpush",
 ]
 
+NTFY_RFC2047_FIELDS: t.List[str] = [
+    "message",
+    "title",
+    "tags",
+]
+
 logger = logging.getLogger(__name__)
 
 
@@ -77,7 +83,7 @@ class NtfyRequest:
         In this spirit, the header transport does not permit any fancy UTF-8 characters
         within any field, so they will be replaced with placeholder characters `?`.
         """
-        return dict_rfc2047(dict_with_titles(self.fields))
+        return dict_with_titles(encode_ntfy_fields(self.fields))
 
 
 def plugin(srv: Service, item: ProcessorItem) -> bool:
@@ -231,10 +237,19 @@ def dict_ascii_clean(data: DataDict) -> t.Dict[str, str]:
     return outdata
 
 
-def dict_rfc2047(data: DataDict) -> t.Dict[str, str]:
+def encode_ntfy_fields(data: DataDict) -> t.Dict[str, str]:
     """
-    Return dictionary using values encoded with RFC 2047, aka. MIME Message
-    Header Extensions for Non-ASCII Text. Two encodings are possible.
+    Return dictionary suitable for submitting to the ntfy HTTP API using HTTP headers.
+
+    - The field values for `title`, `message` and `tags` are encoded using RFC 2047, aka.
+      MIME Message Header Extensions for Non-ASCII Text.
+
+    - The other field values will be stripped from any special characters to be ASCII-clean.
+
+    Appendix
+
+    When using RFC 2047, two encodings are possible. The Python implementation cited below
+    seems to use the "Q" encoding scheme by default.
 
     4.1 The "B" encoding is identical to the "BASE64" encoding defined by RFC 2045.
     4.2 The "Q" encoding is similar to the "Quoted-Printable" content-transfer-encoding
@@ -252,12 +267,15 @@ def dict_rfc2047(data: DataDict) -> t.Dict[str, str]:
     outdata = OrderedDict()
     for key, value in data.items():
         key = ascii_clean(key).strip()
-        value = encode_rfc2047(value)
+        if key in NTFY_RFC2047_FIELDS:
+            value = encode_rfc2047(value)
+        else:
+            value = ascii_clean(value)
         outdata[key] = value
     return outdata
 
 
-def dict_with_titles(data: DataDict) -> DataDict:
+def dict_with_titles(data: t.Dict[str, str]) -> t.Dict[str, str]:
     """
     Return dictionary with each key title-cased, i.e. uppercasing the first letter.
 

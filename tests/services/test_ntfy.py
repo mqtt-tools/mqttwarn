@@ -289,7 +289,12 @@ def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
         addrs={"url": "http://localhost:9999/testdrive", "file": attachment_dummy.name},
         title="⚽ Message title ⚽",
         message="⚽ Notification message ⚽",
-        data={"priority": "high", "tags": "foo,bar,äöü", "click": "https://example.org/testdrive"},
+        data={
+            "priority": "high",
+            "tags": "foo,bar,äöü",
+            "click": "https://example.org/testdrive",
+            "actions": "view, Adjust temperature 🌡, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'",  # noqa: E501
+        },
     )
 
     outcome = module.plugin(srv, item)
@@ -304,6 +309,10 @@ def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
     assert response.request.body.read() == b"foo"
     assert response.request.headers["User-Agent"] == "mqttwarn"
     assert response.request.headers["Tags"] == "=?utf-8?q?foo=2Cbar=2C=C3=A4=C3=B6=C3=BC?="
+    assert (
+        response.request.headers["Actions"]
+        == "view, Adjust temperature ?, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'"
+    )
 
     assert response.response.status_code == 200
     assert response.response.json() == ntfy_api_response
