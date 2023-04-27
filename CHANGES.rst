@@ -17,8 +17,9 @@ in progress
 - [ntfy] Add dedicated service plugin ``ntfy``
 - [ntfy] Use RFC 2047 for encoding HTTP header values. Thanks, @binwiederhier.
 - [ntfy] Add more fields: icon, cache, firebase, unifiedpush
-- [ntfy] Improve example/tutorial about Frigate event notifications
 - [ntfy] Also interpolate outbound ntfy option fields
+- [ntfy] [Frigate] Improve example/tutorial about Frigate event notifications
+- [ntfy] [Frigate] Synchronize JSON event and snapshot image receive order
 
 
 2023-04-11 0.33.0
