@@ -110,6 +110,28 @@ def test_frigate_with_attachment(mosquitto, ntfy_service, caplog, capmqtt):
     assert "Job queue has 0 items to process" in caplog.messages
     mqttc.disconnect()
 
+    # Verify notification was properly received by ntfy.
+    url = "http://localhost:5555/frigate-testdrive/json?poll=1&since=5s"
+    response = requests.get(url)
+    data = response.json()
+    del data["id"]
+    del data["time"]
+    del data["expires"]
+    del data["attachment"]["url"]
+    del data["attachment"]["expires"]
+    assert data == {
+        "event": "message",
+        "topic": "frigate-testdrive",
+        "title": "goat entered lawn at 2023-04-06 14:31:46.638857+00:00",
+        "message": "goat was in barn before",
+        "click": "https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn",
+        "attachment": {
+           "name": "mqttwarn-frigate-cam-testdrive-goat.png",
+           "size": 283595,
+           "type": "image/png",
+        },
+    }
+
 
 @pytest.mark.parametrize(
     "jsonfile", ["frigate-event-full.json", "frigate-event-new-good.json", "frigate-event-update-good.json"]

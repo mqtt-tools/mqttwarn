@@ -20,6 +20,7 @@ in progress
 - [ntfy] Also interpolate outbound ntfy option fields
 - [ntfy] [Frigate] Improve example/tutorial about Frigate event notifications
 - [ntfy] [Frigate] Synchronize JSON event and snapshot image receive order
+- [ntfy] [Frigate] Tests: Verify notification was properly received by ntfy
 
 
 2023-04-11 0.33.0
