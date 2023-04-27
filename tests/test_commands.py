@@ -33,9 +33,10 @@ def test_mqttwarn_main_help(capsys):
     assert "Usage:" in capsys.readouterr().out
 
 
-def test_run_mqttwarn(mocker, caplog):
+def test_run_mqttwarn_with_configuration_from_environment(mocker, caplog):
     """
     Verify that `mqttwarn.commands.run_mqttwarn` works as expected.
+    Here, a configuration file is obtained using the `MQTTWARNINI` environment variable.
     """
     mocker.patch("os.environ", {"MQTTWARNINI": "tests/etc/no-functions.ini"})
     mocker.patch("sys.argv", ["mqttwarn"])
@@ -48,7 +49,22 @@ def test_run_mqttwarn(mocker, caplog):
     ]
 
 
-def test_run(mocker, caplog):
+def test_run_mqttwarn_with_configuration_from_file(mocker, caplog):
+    """
+    Verify that `mqttwarn.commands.run_mqttwarn` works as expected.
+    Here, a configuration file is obtained using the `--config-file` command line option.
+    """
+    mocker.patch("sys.argv", ["mqttwarn-custom"])
+    mocker.patch("mqttwarn.commands.subscribe_forever")
+    mqttwarn.commands.run_mqttwarn(configfile="tests/etc/no-functions.ini")
+
+    assert caplog.messages == [
+        "Starting mqttwarn-custom",
+        "Log level is DEBUG",
+    ]
+
+
+def test_run_command(mocker, caplog):
     """
     Verify that `mqttwarn.commands.run` works as expected.
     """
