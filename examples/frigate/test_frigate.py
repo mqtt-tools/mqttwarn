@@ -5,6 +5,7 @@ Software test accompanying "Forwarding Frigate events to ntfy" example.
 Full system test verifying mqttwarn end-to-end, using an MQTT broker, and an ntfy instance.
 """
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -29,15 +30,27 @@ HERE = Path(__file__).parent
 ASSETS = HERE.joinpath("assets")
 
 
-def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
+@pytest.fixture(scope="function", autouse=True)
+def reset_filestore():
+    """
+    Make sure there are no temporary spool files around before starting each test case.
+    """
+    for filepath in Path("/tmp").glob("mqttwarn-frigate-*"):
+        os.unlink(filepath)
+
+
+def test_frigate_with_attachment(mosquitto, ntfy_service, caplog, capmqtt):
     """
     A full system test verifying the "Forwarding Frigate events to ntfy" example.
-    This test case submits the `frigate-event-new-good.json` file as MQTT event message.
+    This test case submits the `frigate-event-full.json` file as MQTT event message.
     """
 
     # Bootstrap the core machinery without MQTT.
     config = load_configuration(configfile=HERE / "frigate.ini")
     bootstrap(config=config)
+
+    # Get image payload.
+    payload_image = get_goat_image()
 
     # Add MQTT.
     mqttc = connect()
@@ -47,12 +60,11 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
 
     # Publish the JSON event message.
     # cat frigate-event-new-good.json | jq -c | mosquitto_pub -t 'frigate/events' -l
-    payload_event = open(ASSETS / "frigate-event-new-good.json").read()
+    payload_event = open(ASSETS / "frigate-event-full.json").read()
     capmqtt.publish(topic="frigate/events", payload=payload_event)
 
     # Publish the snapshot image.
     # mosquitto_pub -f goat.png -t 'frigate/cam-testdrive/goat/snapshot'
-    payload_image = get_goat_image()
     capmqtt.publish(topic="frigate/cam-testdrive/goat/snapshot", payload=payload_image)
 
     # Make mqttwarn receive and process the message.
@@ -102,14 +114,15 @@ def test_frigate_event_new(mosquitto, ntfy_service, caplog, capmqtt):
 @pytest.mark.parametrize(
     "jsonfile", ["frigate-event-full.json", "frigate-event-new-good.json", "frigate-event-update-good.json"]
 )
-def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqtt, jsonfile):
+def test_frigate_with_notification(mosquitto, ntfy_service, caplog, capmqtt, jsonfile):
     """
     A full system test verifying the "Forwarding Frigate events to ntfy" example.
-    This test case submits JSON files which raise a notification.
+    This test case submits JSON files which trigger a notification.
     """
 
     # Bootstrap the core machinery without MQTT.
     config = load_configuration(configfile=HERE / "frigate.ini")
+    turn_off_retries(config)
     bootstrap(config=config)
 
     # Add MQTT.
@@ -135,8 +148,7 @@ def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqt
         "Headers: {"
         "'Click': 'https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn', "
         "'Title': '=?utf-8?q?goat_entered_lawn_at_2023-04-06_14=3A31=3A46=2E638857+00=3A00?=', "
-        "'Message': '=?utf-8?q?goat_was_in_barn_before?=', "
-        "'Filename': 'mqttwarn-frigate-cam-testdrive-goat.png'}" in caplog.messages
+        "'Message': '=?utf-8?q?goat_was_in_barn_before?='}" in caplog.messages
     )
 
     # assert "Sent ntfy notification to 'http://localhost:5555'." in caplog.messages
@@ -156,10 +168,10 @@ def test_frigate_event_with_notification(mosquitto, ntfy_service, caplog, capmqt
         "frigate-event-new-ignored.json",
     ],
 )
-def test_frigate_event_without_notification(mosquitto, caplog, capmqtt, jsonfile):
+def test_frigate_without_notification(mosquitto, caplog, capmqtt, jsonfile):
     """
     A full system test verifying the "Forwarding Frigate events to ntfy" example.
-    This test case submits JSON files which should not raise a notification.
+    This test case submits JSON files which should not trigger a notification.
     """
 
     # Bootstrap the core machinery without MQTT.
@@ -197,3 +209,14 @@ def get_goat_image() -> bytes:
     return requests.get(
         "https://user-images.githubusercontent.com/453543/231550862-5a64ac7c-bdfa-4509-86b8-b1a770899647.png"
     ).content
+
+
+def turn_off_retries(config):
+    """
+    For test cases which do not aim to submit any attachments, adjust the configuration
+    to not wait for it to appear. Otherwise, it would take too long, and the verification
+    would fail.
+    """
+    targets = config.getdict("config:ntfy", "targets")
+    targets["test"]["__settings__"]["file_retry_tries"] = None
+    config.set("config:ntfy", "targets", targets)

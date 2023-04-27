@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2022 The mqttwarn developers
+import functools
 import hashlib
 import imp
 import json
+import logging
 import os
 import re
 import string
 import typing as t
 
+import funcy
 import pkg_resources
 from six import string_types
+
+logger = logging.getLogger(__name__)
 
 
 class Formatter(string.Formatter):
@@ -224,3 +229,21 @@ def truncate(s: t.Union[str, bytes], limit: int = 200, ellipsis="...") -> str:
     if len(s) > limit:
         return s[:limit].strip() + ellipsis
     return s
+
+
+def load_file(path: str, retry_tries=None, retry_interval=0.075, unlink=False) -> t.IO[bytes]:
+    """
+    Load file content from filesystem gracefully, with optional retrying.
+    """
+    call = functools.partial(open, path, "rb")
+    if retry_tries:
+        logger.info(f"Retry loading file {path} for {retry_tries} times")
+        payload = funcy.retry(tries=int(retry_tries), timeout=float(retry_interval))(call)()
+    else:
+        payload = call()
+    if unlink:
+        try:
+            os.unlink(path)
+        except:
+            pass
+    return payload

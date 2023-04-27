@@ -13,7 +13,7 @@ import requests
 from funcy import project, merge
 
 from mqttwarn.model import Service, ProcessorItem
-from mqttwarn.util import Formatter
+from mqttwarn.util import Formatter, asbool, load_file
 
 DataDict = t.Dict[str, t.Union[str, bytes]]
 
@@ -127,6 +127,7 @@ def decode_jobitem(item: ProcessorItem) -> NtfyRequest:
     title = item.title
     body = item.message
     options: t.Dict[str, str]
+    settings: t.Dict[str, t.Union[str, int, float, bool]] = {}
 
     if isinstance(item.addrs, str):
         item.addrs = {"url": item.addrs}
@@ -135,10 +136,17 @@ def decode_jobitem(item: ProcessorItem) -> NtfyRequest:
     else:
         raise TypeError(f"Unable to handle `targets` address descriptor data type `{type(item.addrs).__name__}`: {item.addrs}")
 
+    # Decode options from target address descriptor.
     options = item.addrs
 
     url = options["url"]
     attachment_path = options.get("file")
+
+    # Extract settings, purging them from the target address descriptor afterwards.
+    if "__settings__" in options:
+        if isinstance(options["__settings__"], t.Dict):
+            settings = dict(options["__settings__"])
+            del options["__settings__"]
 
     # Collect ntfy fields.
     fields: DataDict = OrderedDict()
@@ -153,10 +161,22 @@ def decode_jobitem(item: ProcessorItem) -> NtfyRequest:
     # Attach a file, or not.
     attachment_data = None
     if attachment_path:
-        attachment_path, attachment_data = load_attachment(attachment_path, item.data)
-        if attachment_data:
-            # TODO: Optionally derive attachment file name from title, using `slugify(title)`.
-            fields.setdefault("filename", Path(attachment_path).name)
+        try:
+            attachment_path = attachment_path.format(**item.data or {})
+            try:
+                attachment_data = load_file(
+                    path=attachment_path,
+                    retry_tries=settings.get("file_retry_tries"),
+                    retry_interval=settings.get("file_retry_interval"),
+                    unlink=asbool(settings.get("file_unlink")),
+                )
+                if attachment_data:
+                    # TODO: Optionally derive attachment file name from title, using `slugify(title)`.
+                    fields.setdefault("filename", Path(attachment_path).name)
+            except Exception as ex:
+                logger.exception(f"ntfy: Attaching local file failed. Reason: {ex}")
+        except:
+            logger.exception("ntfy: Computing attachment file name failed")
 
     ntfy_request = NtfyRequest(
         url=url,
@@ -195,23 +215,6 @@ def obtain_ntfy_fields(item: ProcessorItem) -> DataDict:
             fields[key] = new_value
 
     return fields
-
-
-def load_attachment(path: str, tplvars: t.Optional[DataDict]) -> t.Tuple[str, t.Optional[t.IO]]:
-    """
-    Load attachment file from filesystem gracefully.
-    """
-    data = None
-    try:
-        path = path.format(**tplvars or {})
-    except:
-        logger.exception(f"ntfy: Computing attachment file name failed")
-    if path:
-        try:
-            data = open(path, "rb")
-        except:
-            logger.exception(f"ntfy: Accessing attachment file failed: {path}")
-    return path, data
 
 
 def ascii_clean(data: t.Union[str, bytes]) -> str:

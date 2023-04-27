@@ -17,7 +17,6 @@ from mqttwarn.services.ntfy import (
     dict_ascii_clean,
     dict_with_titles,
     encode_rfc2047,
-    load_attachment,
     obtain_ntfy_fields,
 )
 from mqttwarn.util import load_module_by_name
@@ -76,7 +75,7 @@ def test_ntfy_decode_jobitem_attachment_success(attachment_dummy):
     assert ntfy_request.attachment_data.read() == b"foo"
 
 
-def test_ntfy_decode_jobitem_attachment_failure(caplog):
+def test_ntfy_decode_jobitem_attachment_not_found_failure(caplog):
     """
     Test the `decode_jobitem` function with an invalid attachment.
     """
@@ -93,7 +92,30 @@ def test_ntfy_decode_jobitem_attachment_failure(caplog):
     assert "filename" not in ntfy_request.fields
     assert ntfy_request.attachment_data is None
 
-    assert "ntfy: Accessing attachment file failed: /tmp/mqttwarn-random-unknown" in caplog.messages
+    assert (
+        "ntfy: Attaching local file failed. Reason: [Errno 2] No such file or directory: '/tmp/mqttwarn-random-unknown'"
+        in caplog.messages
+    )
+
+
+def test_ntfy_decode_jobitem_attachment_interpolate_name_failure(caplog):
+    """
+    Check how the `decode_jobitem` function fails when the template variables are invalid, or interpolation fails.
+    """
+
+    item = Item(
+        addrs={"url": "http://localhost:9999/testdrive", "file": "/tmp/mqttwarn-random-{foobar}"},
+    )
+
+    ntfy_request = decode_jobitem(item)
+
+    assert ntfy_request.url == "http://localhost:9999/testdrive"
+    assert ntfy_request.options["url"] == "http://localhost:9999/testdrive"
+    assert ntfy_request.options["file"] == "/tmp/mqttwarn-random-{foobar}"
+    assert "filename" not in ntfy_request.fields
+    assert ntfy_request.attachment_data is None
+
+    assert "ntfy: Computing attachment file name failed" in caplog.messages
 
 
 def test_ntfy_decode_jobitem_attachment_with_filename_success(attachment_dummy):
@@ -191,19 +213,6 @@ def test_ntfy_obtain_ntfy_fields_precedence():
     item = Item(config={"message": "msg-config"})
     outdata = obtain_ntfy_fields(item)
     assert outdata["message"] == "msg-config"
-
-
-def test_ntfy_load_attachment_tplvar_failure(caplog):
-    """
-    Check how the `load_attachment` helper function fails when the template variables are invalid.
-    """
-    path, data = load_attachment(None, None)
-
-    assert path is None
-    assert data is None
-
-    assert "ntfy: Computing attachment file name failed" in caplog.messages
-    assert "AttributeError: 'NoneType' object has no attribute 'format'" in caplog.text
 
 
 def test_ntfy_dict_with_titles():
