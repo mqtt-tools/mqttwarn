@@ -93,7 +93,9 @@ What others are saying about mqttwarn, or what they are using it for.
   - `How do your servers talk to you?`_
   - `Alerting or notifying on SSH logins`_
 - `MQTTwarn\: Ein Rundum-Sorglos-Notifier`_ article in German at JAXenter.
-- `Schwarmalarm using mqttwarn`_.
+- The folks of the Berlin-based beekeeper collective `Hiveeyes`_ are monitoring
+  their beehives and use *mqttwarn* as a building block for their alert
+  notification system, enjoy reading `Schwarmalarm using mqttwarn`_.
 
 
 *****
@@ -146,6 +148,7 @@ the MQTT specifications.
 .. _Alerting or notifying on SSH logins: https://jpmens.net/2018/03/25/alerting-on-ssh-logins/
 .. _Apprise: https://github.com/caronc/apprise
 .. _Apprise notification services: https://github.com/caronc/apprise/wiki#notification-services
+.. _Hiveeyes: https://hiveeyes.org/
 .. _How do your servers talk to you?: https://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/
 .. _Introducing mqttwarn\: a pluggable MQTT notifier: https://jpmens.net/2014/02/17/introducing-mqttwarn-a-pluggable-mqtt-notifier/
 .. _JP: https://jpmens.net/pages/about/

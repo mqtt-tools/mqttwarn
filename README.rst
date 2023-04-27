@@ -56,36 +56,17 @@ A picture says a thousand words.
     :target: #
 
 
-Coverage
-========
+Notification service coverage
+=============================
 
 *mqttwarn* comes with **over 70 notification handler plugins** for a wide
 range of notification services and is very open to further contributions.
-You can enjoy the alphabetical list of plugins at `mqttwarn notification
-services`_.
+You can enjoy the alphabetical list of plugins on the `mqttwarn notifier
+catalog`_ page.
 
 On top of that, it integrates with the excellent `Apprise`_ notification
 library. `Apprise notification services`_ has a complete list of the **80+
 notification services** supported by Apprise.
-
-
-Details
-=======
-
-The program, running as a service, subscribes to any number of MQTT topics
-(including wildcards) and publishes received payloads to one or more notification
-services, including support for notifying more than one distinct service
-for the same message.
-
-Notifications are transmitted to the appropriate service via plugins.
-*mqttwarn* provides built-in plugins for a number of services and you
-can easily add your own.
-
-A more detailed blog post about what mqttwarn can be used for is available
-at `How do your servers talk to you?`_.
-
-For example, you may wish to submit an alarm published as text to the
-MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 
 
 
@@ -93,13 +74,18 @@ MQTT topic ``home/monitoring/+`` as notification via *e-mail* and *Pushover*.
 Documentation
 *************
 
-The `handbook`_ is the right place to read all about *mqttwarn*'s features and
-service plugins.
+The `mqttwarn documentation`_ is the right place to read all about *mqttwarn*'s
+features and integrations, and how you can leverage all its framework components
+for building custom applications. Its service plugins can be inspected on the
+`mqttwarn notifier catalog`_ page.
 
 
 ************
 Installation
 ************
+
+Using pip
+=========
 
 Synopsis::
 
@@ -113,14 +99,10 @@ You can also add support for multiple services, all at once::
 
     pip install --upgrade 'mqttwarn[apprise,asterisk,nsca,desktopnotify,tootpaste,xmpp]'
 
-.. seealso::
+See also: `Installing mqttwarn with pip`_.
 
-   :ref:`using-pip`.
-
-
-***************
-Container image
-***************
+OCI container image
+===================
 
 For running ``mqttwarn`` on a container infrastructure like Docker or
 Kubernetes, corresponding images are automatically published to the
@@ -129,16 +111,16 @@ GitHub Container Registry (GHCR).
 - ``ghcr.io/jpmens/mqttwarn-standard:latest``
 - ``ghcr.io/jpmens/mqttwarn-full:latest``
 
-To learn more about this topic, please follow up reading the `Docker handbook`_.
+To learn more about this topic, please follow up reading the `Using the OCI image
+with Docker or Podman`_ documentation section.
 
 
 *************
 Configuration
 *************
 
-.. seealso::
-
-   :ref:`configure`.
+In order to learn how to configure mqttwarn, please head over to the documentation
+section about the `mqttwarn configuration`_.
 
 
 *****
@@ -206,20 +188,17 @@ path to a configuration file.
 
 Running as system daemon
 ========================
-- We recommend to use Supervisor_ for running *mqttwarn* as a service, see also `supervisor.ini`_.
-- Alternatively, have a look at `mqttwarn.service`_, the systemd unit configuration file for *mqttwarn*.
 
+There are different ways to run mqttwarn as a system daemon. There are examples
+for systemd, traditional init, OpenRC, and Supervisor_ in the ``etc`` directory
+of this repository, for example `supervisor.ini`_ (Supervisor) and
+`mqttwarn.service`_ (systemd).
 
 Running in a development sandbox
 ================================
-For hacking_ on mqttwarn, please install it in development mode.
 
-
-****************
-Acknowledgements
-****************
-Thanks to all the contributors of *mqttwarn* who got their hands dirty with it
-and helped to co-create and conceive it in one way or another. You know who you are.
+For hacking on mqttwarn, please install it in development mode, using a
+`mqttwarn development sandbox`_ installation.
 
 
 *******************
@@ -232,7 +211,7 @@ These links will guide you to the source code of *mqttwarn* and its documentatio
 
 - `mqttwarn on GitHub <https://github.com/jpmens/mqttwarn>`_
 - `mqttwarn on the Python Package Index (PyPI) <https://pypi.org/project/mqttwarn/>`_
-- `mqttwarn documentation <https://github.com/jpmens/mqttwarn/tree/main/doc>`_
+- `mqttwarn documentation <https://mqttwarn.readthedocs.io/>`_
 
 
 Requirements
@@ -240,29 +219,28 @@ Requirements
 You will need at least the following components:
 
 * Python 3.x or PyPy 3.x.
-* An MQTT broker. We recommend Mosquitto_.
-* Some more Python modules to satisfy service dependencies defined in the ``setup.py`` file.
+* An MQTT broker. We recommend `Mosquitto`_.
+* For invoking specific service plugins, additional Python modules may be required.
+  See ``setup.py`` file.
 
 
 Contributing
 ============
+
 We are always happy to receive code contributions, ideas, suggestions
 and problem reports from the community.
 
-So, if you'd like to contribute you're most welcome.
+So, if you would like to contribute, you are most welcome.
 Spend some time taking a look around, locate a bug, design issue or
-spelling mistake and then send us a pull request or create an `issue`_.
+spelling mistake, and then send us a pull request or create an `issue`_.
 
-Thanks in advance for your efforts, we really appreciate any help or feedback.
-
-There are also some extensions to mqttwarn not included in the core package.
-Yet, they are bundled into another package, ``mqttwarn-contrib``, see also
-`community contributions to mqttwarn`_.
+Thank you in advance for your efforts, we really appreciate any help or feedback.
 
 
-Licenses
-========
-This software is copyright © 2014-2023 Jan-Piet Mens and contributors. All
+License
+=======
+
+mqttwarn is copyright © 2014-2023 Jan-Piet Mens and contributors. All
 rights reserved.
 
 It is and will always be **free and open source software**.
@@ -275,26 +253,25 @@ licenses of third-party components.
 ***************
 Troubleshooting
 ***************
+
 If you encounter any problems during setup or operations or if you have further
 suggestions, please let us know by `opening an issue on GitHub`_. Thank you
 already.
 
 
-*************
-Miscellaneous
-*************
+************
+Attributions
+************
 
-
-Press
-=====
-* The article `MQTTwarn: Ein Rundum-Sorglos-Notifier`_ in German at JAXenter.
-* The folks of the Berlin-based beekeeper collective Hiveeyes_ are monitoring their beehives and use *mqttwarn*
-  as a building block for their alert notification system, enjoy reading `Schwarmalarm using mqttwarn`_.
-
+Acknowledgements
+================
+Thanks to all the contributors of *mqttwarn* who helped to conceive it in one
+way or another. You know who you are.
 
 Legal stuff
 ===========
-"MQTT" is a trademark of the OASIS open standards consortium, which publishes the MQTT specifications.
+"MQTT" is a trademark of the OASIS open standards consortium, which publishes
+the MQTT specifications.
 
 
 ----
@@ -305,20 +282,21 @@ Have fun!
 .. _Apprise: https://github.com/caronc/apprise
 .. _Apprise notification services: https://github.com/caronc/apprise/wiki#notification-services
 .. _backlog: https://github.com/jpmens/mqttwarn/blob/main/doc/backlog.rst
-.. _community contributions to mqttwarn: https://pypi.org/project/mqttwarn-contrib/
-.. _Docker handbook: https://github.com/jpmens/mqttwarn/blob/main/DOCKER.md
 .. _EPL-2.0: https://www.eclipse.org/legal/epl-2.0/
 .. _hacking: https://github.com/jpmens/mqttwarn/blob/main/doc/hacking.rst
-.. _handbook: https://github.com/jpmens/mqttwarn/blob/main/HANDBOOK.md
-.. _Hiveeyes: https://hiveeyes.org/
 .. _How do your servers talk to you?: https://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/
+.. _Installing mqttwarn with pip: https://mqttwarn.readthedocs.io/en/latest/usage/pip.html
 .. _issue: https://github.com/jpmens/mqttwarn/issues/new
 .. _LICENSE: https://github.com/jpmens/mqttwarn/blob/main/LICENSE
 .. _Mosquitto: https://mosquitto.org
 .. _MQTTwarn\: Ein Rundum-Sorglos-Notifier: https://web.archive.org/web/20140611040637/http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312
-.. _mqttwarn notification services: https://github.com/jpmens/mqttwarn/blob/main/HANDBOOK.md#supported-notification-services
+.. _mqttwarn configuration: https://mqttwarn.readthedocs.io/en/latest/configure/
+.. _mqttwarn development sandbox: https://mqttwarn.readthedocs.io/en/latest/workbench/sandbox.html
+.. _mqttwarn documentation: https://mqttwarn.readthedocs.io/
+.. _mqttwarn notifier catalog: https://mqttwarn.readthedocs.io/en/latest/notifier-catalog.html
 .. _mqttwarn.service: https://github.com/jpmens/mqttwarn/blob/main/etc/mqttwarn.service
 .. _opening an issue on GitHub: https://github.com/jpmens/mqttwarn/issues/new
 .. _Schwarmalarm using mqttwarn: https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
 .. _Supervisor: https://jpmens.net/2014/02/13/in-my-toolbox-supervisord/
 .. _supervisor.ini: https://github.com/jpmens/mqttwarn/blob/main/etc/supervisor.ini
+.. _Using the OCI image with Docker or Podman: https://mqttwarn.readthedocs.io/en/latest/usage/oci.html
