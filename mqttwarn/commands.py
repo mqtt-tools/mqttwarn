@@ -90,7 +90,7 @@ def run():
 
     # Run mqttwarn in service mode when no command line arguments are given
     else:
-        run_mqttwarn()
+        run_mqttwarn(configfile=options["--config-file"])
 
 
 def launch_plugin_standalone(
@@ -131,13 +131,13 @@ def launch_plugin_standalone(
     run_plugin(config=config, name=plugin, options=options, data=data)
 
 
-def run_mqttwarn():
+def run_mqttwarn(configfile: t.Optional[str] = None):
 
     # Script name (without extension) used as last resort fallback for config/logfile names
     scriptname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 
     # Load configuration file
-    config = load_configuration(name=scriptname)
+    config = load_configuration(configfile=configfile, name=scriptname)
 
     # Setup logging
     setup_logging(config)
