@@ -68,7 +68,7 @@ def test_frigate_with_attachment(mosquitto, ntfy_service, caplog, capmqtt):
     capmqtt.publish(topic="frigate/cam-testdrive/goat/snapshot", payload=payload_image)
 
     # Make mqttwarn receive and process the message.
-    mqtt_process(mqttc, loops=4)
+    mqtt_process(mqttc, loops=6)
 
     # Verify log output.
     assert 'Successfully loaded service "ntfy"' in caplog.messages
@@ -137,7 +137,7 @@ def test_frigate_with_notification(mosquitto, ntfy_service, caplog, capmqtt, jso
     capmqtt.publish(topic="frigate/events", payload=payload_event)
 
     # Make mqttwarn receive and process the message.
-    mqtt_process(mqttc, loops=2)
+    mqtt_process(mqttc, loops=3)
 
     # Verify log output.
     assert "MQTT message received: MqttMessage(topic='frigate/events'" in caplog.text
