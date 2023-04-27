@@ -9,17 +9,17 @@ Iteration +1
 
 Bugs
 ====
-- [o] ``--config-file`` option does not work
 - [o] Documentation vs. code: Clarify and/or fix logic of "filter" function
   https://github.com/jpmens/mqttwarn/issues/637
-- [o] Fallback for ``mqttwarn make-samplefuncs``
 
 Features
 ========
-- [o] ntfy: Encode HTTP headers with RFC 2047
-- [o] ntfy: https://docs.ntfy.sh/publish/#access-tokens
-- [o] ntfy: https://docs.ntfy.sh/publish/#list-of-all-parameters
 - [o] Start even when MQTT broker is not available
+
+Maintenance
+===========
+- [o] mqttwarn/util.py:5: DeprecationWarning: the imp module is deprecated in favour of importlib
+- [o] pytest-mqtt: Truncate message output
 - [o] Remove deprecated ``mqttwarn.services.apprise``
 
 Documentation » Tech
@@ -70,12 +70,15 @@ Documentation » Content
 - [o] Add documentation snippet to ntfy, à la https://docs.ntfy.sh/examples/#traccar, but for OwnTracks
 - [o] Tutorial: MQTT topic rewriting with mqttwarn
 - [o] Tutorial: Periodic MOTD notifier with ntfy
+- [o] Document ``mqttwarn.util``, like ``load_file()``
+- [o] Refactor "README » Running as system daemon" into documentation.
+- [o] Re-add::
 
-Frigate example
-===============
-- [x] Improve topic decoding
-  ``frigate/cam1/goat/snapshot`` should be decoded like ``frigate/<camera>/<label>/snapshot``
-- [o] Rename ``frigate.{py,ini}`` to ``mqttwarn-frigate.{py,ini}``?
+    There are also some extensions to mqttwarn not included in the core package.
+    Instead, they are bundled into another package, ``mqttwarn-contrib``, see also
+    `community contributions to mqttwarn`_.
+
+.. _community contributions to mqttwarn: https://pypi.org/project/mqttwarn-contrib/
 
 
 ************
@@ -91,6 +94,8 @@ Iteration +2
   - The path to the "templates" folder must be specified using command line argument or environment variable.
     Otherwise, look nearby the configuration file /path/to/mqttwarn.ini, so use /path/to/templates.
   - Integrate existing template .j2 files into example folder?
+- [o] Think about introducing mqttwarn "applications", made of user-defined function files,
+  and corresponding configurations.
 - [o] Add some entrypoints
 
   - Wire ``contrib/amqp-puka-get.py`` to ``mqttwarn --plugin=amqp --command=subscribe``
@@ -173,6 +178,6 @@ Goals for 2.0.0
 - [o] Configuration and source tree file watcher like ``pserve ... --reload``
 
 
-.. _autoconf: http://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#autoconf
-.. _Munin: http://munin-monitoring.org/
-.. _suggest: http://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#suggest
+.. _autoconf: https://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#autoconf
+.. _Munin: https://munin-monitoring.org/
+.. _suggest: https://guide.munin-monitoring.org/en/latest/develop/plugins/plugin-concise.html#suggest

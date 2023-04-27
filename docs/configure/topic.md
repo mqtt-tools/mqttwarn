@@ -155,9 +155,9 @@ more meaningful example in this regard.
 The [](#processing-frigate-events) tutorial used a configuration snippet like this.
 ```ini
 [frigate/cam1/goat/snapshot]
-targets = store-jpeg:cam1-goat
+targets = store-image:cam1-goat
 [frigate/cam2/squirrel/snapshot]
-targets = store-jpeg:cam2-squirrel
+targets = store-image:cam2-squirrel
 ```
 
 Using [](#templated-targets), this can be condensed like this, not needing to
@@ -166,7 +166,7 @@ repeat each and every slot to be addressed. Of course, it needs a corresponding
 transformation data.
 ```ini
 [frigate/+/+/snapshot]
-targets = store-jpeg:{camera}-{label}
+targets = store-image:{camera}-{label}
 ```
 
 
