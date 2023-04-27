@@ -6,6 +6,10 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2023-04-28 0.34.0
+=================
+
 - Fix: Don't crash when receiving non-UTF8 payloads. Thanks, @sevmonster.
 - Improve exception logging in ``is_filtered``, ``get_topic_data``, and
   ``get_all_data`` context functions. Thanks, @sevmonster.
