@@ -14,29 +14,32 @@ alphabetically sorted.
 * [apprise_multi](#apprise_multi)
 * [asterisk](#asterisk)
 * [autoremote](#autoremote)
+* [azure_iot](#azure_iot)
 * [carbon](#carbon)
 * [celery](#celery)
 * [chromecast](#chromecast)
 * [dbus](#dbus)
+* [desktopnotify](#desktopnotify)
 * [dnsupdate](#dnsupdate)
 * [emoncms](#emoncms)
-* [execute](#execute)
+* [execute](#execute), see also [pipe](#pipe)
 * [facebook messenger](#fbchat)
 * [file](#file)
 * [freeswitch](#freeswitch)
+* graphite, see [carbon](#carbon)
 * [gss](#gss)
 * [gss2](#gss2)
 * [hangbot](#hangbot)
 * [http](#http)
+* kodi, see [xbmc](#xbmc)
 * [icinga2](#icinga2)
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [ionic](#ionic)
-* [azure_iot](#azure_iot)
 * [irccat](#irccat)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
-* mastodon (see [tootpaste](#tootpaste))
+* mastodon, see [tootpaste](#tootpaste)
 * [mattermost](#mattermost)
 * [mqtt](#mqtt)
 * [mqtt_filter](#mqtt_filter)
@@ -48,10 +51,9 @@ alphabetically sorted.
 * [nntp](#nntp)
 * [nsca](#nsca)
 * [ntfy](#ntfy)
-* [desktopnotify](#desktopnotify)
 * [osxsay](#osxsay)
 * [pastebinpub](#pastebinpub)
-* [pipe](#pipe)
+* [pipe](#pipe), see also [execute](#execute)
 * [postgres](#postgres)
 * [prowl](#prowl)
 * [pushbullet](#pushbullet)
@@ -331,14 +333,43 @@ title    = Alarm from {device}
 ```
 
 
+### `asterisk`
+
+The `asterisk` service will make a VOIP conference between the number and the extension
+(in defined context). Also, it sends the message as variable to the extension, so you can
+'speak' to it. Configuration is similar as with the [freeswitch](#freeswitch) service,
+but this service uses the [Asterisk Manager Interface (AMI)].
+
+The plugin author strongly recommends you use AMI only in trusted networks.
+
+```ini
+[config:asterisk]
+host     = 'localhost'
+port     = 5038
+username = 'mqttwarn'
+password = '<AMI password>'
+extension = 2222
+context = 'default'
+targets  = {
+    'user'    : ['SIP/avaya/', '0123456789']
+          }
+```
+
+Requires
+
+* [Asterisk](https://www.asterisk.org/) with configured AMI interface (manager.conf)
+* pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2)
+
+[Asterisk Manager Interface (AMI)]: https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239
+
+
 ### `autoremote`
 
 The `autoremote` service forwards messages from desired topics to autoremote clients.
 ```ini
-
 [config:autoremote]
 targets = {
-	'conv2' : [ 'ApiKey', 'Password', 'Target', 'Group', 'TTL' ]
+    'conv2' : [ 'ApiKey', 'Password', 'Target', 'Group', 'TTL' ]
   }
 
 [autoremote/user]
@@ -351,9 +382,36 @@ the topic address.
 
 https://joaoapps.com/autoremote/
 
+
+### `azure_iot`
+
+This service is for [Microsoft Azure IoT Hub].
+
+The configuration requires the name of the IoT Hub, optionally a QoS level
+(default 0), and one or more targets. Each target defines which device to
+impersonate when sending the message.
+
+```ini
+[config:azure_iot]
+iothubname = 'MyIoTHub'
+qos = 1
+targets = {
+               # device id   # sas token
+    'test' : [ 'mqttwarn',   'SharedAccessSignature sr=...' ]
+  }
+```
+
+Message delivery is performed using the MQTT protocol, observing the Azure IoT
+Hub requirements.
+
+[Microsoft Azure IoT Hub]: https://azure.microsoft.com/en-us/products/iot-hub/
+
+
 ### `carbon`
 
-The `carbon` service sends a metric to a Carbon-enabled server over TCP.
+A [Carbon daemon], as part of a [Graphite] system, listens on the network for
+time-series data. The `carbon` service sends a metric to a Carbon-enabled server
+over TCP, using one of the [Carbon protocols].
 
 ```ini
 [config:carbon]
@@ -393,7 +451,17 @@ room.living 15				metric name and value
 room.living 15 1405014635		metric name, value, and timestamp
 ```
 
+[Carbon daemon]: https://graphite.readthedocs.io/en/latest/carbon-daemons.html
+[Carbon protocols]: https://graphite.readthedocs.io/en/latest/feeding-carbon.html
+[Graphite]: https://graphite.readthedocs.io/
+
+
 ### `celery`
+
+[Celery] is a simple, flexible, and reliable distributed system to process vast
+amounts of messages, while providing operations with the tools required to
+maintain such a system. It’s a task queue with focus on real-time processing,
+while also supporting task scheduling.
 
 The `celery` service sends messages to celery which celery workers can consume.
 
@@ -417,6 +485,8 @@ targets = celery:hello
 Broker URL can be any broker supported by celery. Celery serializer is usually json or pickle. Json is recommended for security.
 Targets are selected by task name. Message_format can be either "json" or "text". If it is json, the message will be sent as a json payload rather than a string.
 In this configuration, all messages that match hello/ will be sent to the celery task "myapp.hello". The first argument of the celery task will be the message from mqtt.
+
+[Celery]: https://docs.celeryq.dev/
 
 
 ### `chromecast`
@@ -449,6 +519,7 @@ Requires pychromecast to be installed via::
 
     pip install pychromecast
 
+
 ### `dbus`
 
 The `dbus` service send a message over the dbus to the user's desktop (only
@@ -463,7 +534,32 @@ targets = {
 ```
 
 Requires:
-* Python [dbus](http://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
+* Python [dbus](https://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
+
+
+### `desktopnotify`
+
+It invokes desktop notifications, using the fine 
+[desktop-notifier](https://github.com/samschott/desktop-notifier).
+
+```ini
+[config:desktopnotify]
+; title = Optional title; topic if not set
+; sound = Default True [False] - Play sound? 
+targets = {
+  'anything' : [ ],
+  }
+```
+If the MQTT message is a JSON object, it will populate the notification title and message accordingly.
+```json
+{
+	"title" : "YourTitle",
+	"message": "YourMessage"
+}
+```
+
+![desktopnotify](assets/desktopnotify.jpg)
+
 
 ### `dnsupdate`
 
@@ -543,15 +639,22 @@ client 127.0.0.2#52786/key mqttwarn-auth: view internal: updating zone 'foo.aa/I
 ```
 
 Requires:
-* [dnspython](http://www.dnspython.org)
+* [dnspython](https://www.dnspython.org)
+
 
 ### `emoncms`
 
-The `emoncms` service sends a numerical payload to an [EmonCMS](http://emoncms.org/) instance. [EmonCMS](http://emoncms.org/) is a powerful open-source web-app for processing, logging and visualising energy, temperature and other environmental data.
+The `emoncms` service sends a numerical payload to an [EmonCMS] instance.
+EmonCMS is a powerful open-source web-app for processing, logging and 
+visualising energy, temperature and other environmental data.
 
-The web-app can run locally or you can upload your readings to their server for viewing and monitoring via your own login (note this is likely to become a paid service in the medium term). See http://emoncms.org for details on installing and configuring your own instance.
+The web-app can run locally, or you can upload your readings to their server for
+viewing and monitoring via your own login (note this is likely to become a paid
+service in the medium term). You can easily configure and run your own instance.
 
-By specifying the node id and input name in the mqttwarn target (see the ini example below) you can split different feeds into different nodes, and give each one a human readable name to identify them in EmonCMS.
+By specifying the node id and input name in the mqttwarn target (see the ini
+example below) you can split different feeds into different nodes, and give each
+one a human-readable name to identify them in EmonCMS.
 
 ```ini
 [config:emoncms]
@@ -564,12 +667,18 @@ targets = {
     }
 ```
 
+[EmonCMS]: https://emoncms.org/
+
+
 ### `execute`
 
 The `execute` target launches the specified program and its arguments. It is similar
 to `pipe` but it doesn't open a pipe to the program.
-Example use cases are f.e. IoT buttons which publish a message when they are pushed
-and the execute an external program. It is also a light version of [mqtt-launcher](https://github.com/jpmens/mqtt-launcher).
+
+Example use cases are, for example, IoT buttons, which publish a message when they are
+pushed, in order to execute an external program. It is also a light version of [mqtt-launcher].
+
+[mqtt-launcher]: https://github.com/jpmens/mqtt-launcher
 
 ```ini
 [config:execute]
@@ -585,9 +694,10 @@ This can also be configured with the `text_replace` parameter.
 Note, that for each message targeted to the `execute` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
 
+
 ### `fbchat`
 
-Notification of one [Facebook](http://facebook.com) account requires an account.
+Notification of one [Facebook](https://facebook.com) account requires an account.
 For now, this is only done for messaging from one account to another.
 
 Upon configuring this service's targets, make sure the three (3) elements of the
@@ -606,6 +716,7 @@ targets = {
 Requires:
 * A Facebook account
 * [python-fbchat](https://github.com/yakhira/fbchat)
+
 
 ### `file`
 
@@ -658,11 +769,19 @@ overwrite      = True
 
 ### `freeswitch`
 
-The `freeswitch` service will make a VOIP call to the number specified in your target and 'speak' the message using the TTS service you specify. Each target includes the gateway to use as well as the number/extension to call, so you can make internal calls direct to an extension, or call any external number using your external gateway.
+The `freeswitch` service will make a VOIP call to the number specified in your
+target and 'speak' the message using the TTS service you specify. Each target
+includes the gateway to use as well as the number/extension to call, so you can
+make internal calls direct to an extension, or call any external number using
+your external gateway.
 
-In order to use this service you must enable the XML RPC API in Freeswitch - see instructions [here](http://wiki.freeswitch.org/wiki/Mod_xml_rpc).
+In order to use this service you must enable the XML RPC API in Freeswitch -
+see instructions [here](https://wiki.freeswitch.org/wiki/Mod_xml_rpc).
 
-You need to provide a TTS URL to perform the conversion of your message to an announcement. This can be an online service like VoiceRSS or the [Google Translate API](https://translate.google.com) (see example below). Or it could be a local TTS service you are using.
+You need to provide a TTS URL to perform the conversion of your message to an
+announcement. This can be an online service like VoiceRSS or the
+[Google Translate API](https://translate.google.com) (see example below).
+Or, it could be a local TTS service you are using.
 
 ```ini
 [config:freeswitch]
@@ -681,38 +800,16 @@ Requires
 * [Freeswitch](https://www.freeswitch.org/)
 * Internet connection for Google Translate API
 
-### `asterisk`
-
-The `asterisk` service will make a VOIP conference between the number and the extension (in defined context). Also it sends the message as variable to the extension, so you can 'speak' to it. Configuration is similar as with the [freeswitch](#freeswitch) service, but in service uses [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/pages/viewpage.action?pageId=4817239).
-
-The plugin author strongly recommends you use AMI only in trusted networks.
-
-```ini
-[config:asterisk]
-host     = 'localhost'
-port     = 5038
-username = 'mqttwarn'
-password = '<AMI password>'
-extension = 2222
-context = 'default'
-targets  = {
-    'user'    : ['SIP/avaya/', '0123456789']
-          }
-```
-
-Requires
-
-* [Asterisk](http://www.asterisk.org/) with configured AMI interface (manager.conf)
-* pyst2 -  powerful Python abstraction of the various Asterisk APIs (pip install pyst2)
 
 ### `gss`
 
-The `gss` service interacts directly with a Google Docs Spreadsheet. Each message can be written to a row in a selected worksheet.
+The `gss` service interacts directly with a Google Docs Spreadsheet. Each message
+can be written to a row in a selected worksheet.
 
 Each target has two parameters:
 
 1. The spreadsheet key. This is directly obtainable from the URL of the open sheet.
-2. The worksheet id. By default the first sheets id is 'od6'
+2. The worksheet id. By default, the first sheets id is 'od6'
 
 ```ini
 [config:gss]
@@ -787,8 +884,11 @@ Here is an overview how the authentication with Google works:
    but it does not harm to leave it there.
 
 Now to the details of this process:
-The contents of the file `client_secrets_filename` needs to be obtained by you as described in the [Google Developers API Client Library for Python docs](https://developers.google.com/api-client-library/python/auth/installed-app) on OAuth 2.0 for an Installed Application.
-Unfortunately, [Google prohibits](http://stackoverflow.com/a/28109307/217001) developers to publish their credentials as part of open source software. So you need to get the credentials yourself.
+The contents of the file `client_secrets_filename` needs to be obtained by you as described
+in the [Google API Client Library for Python Docs] on OAuth 2.0 for an Installed Application.
+Unfortunately, [Google prohibits](https://stackoverflow.com/a/28109307/217001) developers
+to publish their credentials as part of open source software. So you need to get the
+credentials yourself.
 
 To get them:
 
@@ -813,6 +913,9 @@ Requires:
   (`pip install google-api-python-client`)
 * [gspread](https://github.com/burnash/gspread)
   (`pip install gspread`)
+
+[Google API Client Library for Python Docs]: https://googleapis.github.io/google-api-python-client/docs/
+
 
 ### `hangbot`
 
@@ -865,12 +968,12 @@ directly from the transformation data.
 
 ### `icinga2`
 
-This service is for the REST API in [Icinga2](https://www.icinga.org/products/icinga-2/). Icinga2 is an open source monitoring solution.
+This service is for the REST API in [Icinga2]. Icinga2 is an open source
+monitoring system. Using this service, JSON payloads can be sent to your
+Icinga2 server to indicate host/service states or passive check updates.
 
-Using this service JSON payloads can be sent to your Icinga2 server to indicate host/service states or passive check updates.
-
-By default the service will POST a `process-check-result` to your Icinga2 server with the following payload;
-
+By default, the service will POST a `process-check-result` to your Icinga2
+server with the following payload.
 ```
 payload  = {
     'service'       : 'host-name!service-name',
@@ -880,14 +983,20 @@ payload  = {
     }
 ```
 
-Where the `host-name`, `service-name` and `check-source` come from the service config (see below), the priority is the standard `mqttwarn` priority, either hard coded or derived via a _function_, and the message is the payload arriving on the MQTT topic.
+Where the `host-name`, `service-name` and `check-source` come from the service
+config (see below), the priority is the standard `mqttwarn` priority, either
+hard coded or derived via a _function_, and the message is the payload arriving
+at the MQTT topic.
 
-NOTE: if `service-name` is None in the target config the payload will include `'host' : 'host-name'` instead of the `'service'` entry, and can be used for host checks.
+NOTE: if `service-name` is None in the target config the payload will include
+`'host' : 'host-name'` instead of the `'service'` entry, and can be used for
+host checks.
 
-However it is possible to create your own payload by adding a custom format function where you can specify a dict of key/value pairs and these will be used to update the payload sent to Icinga2.
+However, it is possible to create your own payload by adding a custom format
+function where you can specify a dict of key/value pairs and these will be
+used to update the payload sent to Icinga2.
 
-For example we can add a custom function which returns;
-
+For example, we can add a custom function.
 ```
 def icinga2_format(data, srv):
     icinga2_payload = {
@@ -899,7 +1008,8 @@ def icinga2_format(data, srv):
     return json.dumps(icinga2_payload)
 ```
 
-This allows you to manipulate the status, output and service name by parsing topic names and message payloads.
+This allows you to manipulate the status, output and service name by parsing
+topic names and message payloads.
 
 ```ini
 [config:icinga2]
@@ -915,11 +1025,17 @@ targets  = {
     }
 ```
 
-NOTE: `cacert` is optional but since `icinga2` is typically installed with a self-signed certificate specifying the `icinga2` ca-cert will stop a load of TLS certificate warnings when connecting to the REST API.
+NOTE: `cacert` is optional but since `icinga2` is typically installed with a
+self-signed certificate specifying the `icinga2` ca-cert will stop a load of
+TLS certificate warnings when connecting to the REST API.
+
+[Icinga2]: https://icinga.com/docs/icinga-2/
+
 
 ### `ifttt`
 
-this service is for [ifttt maker applet](https://ifttt.com/maker_webhooks) to send the message as a payload in value1. For example, to get notifications on your mobile devices.
+This service is for [IFTTT Webhooks integrations] to send the message as a payload
+in value1. For example, to get notifications on your mobile devices.
 
 ```ini
 [config:ifttt]
@@ -928,14 +1044,24 @@ targets = {
   }
 ```
 
+[IFTTT Webhooks integrations]: https://ifttt.com/maker_webhooks
+
+
 ### `ionic`
 
-This service is for [Ionic](http://ionicframework.com/). Ionic framework allows easy development of HTML5 hybrid mobile apps. This service can be used for pushing notifications to ionic hybrid apps (android, ios, ...). Please read following for more details on ionic:
-[Ionic tutorial](http://ionicframework.com/getting-started/) and [Ionic push service](http://docs.ionic.io/docs/push-overview)
+This service is for [Ionic]. Ionic framework allows easy development of HTML5 hybrid
+mobile apps. This service can be used for pushing notifications to ionic hybrid apps
+(Android, iOS, ...). Please read following for more details on Ionic:
+[Ionic documentation] and [Ionic Push Notifications API].
 
-You will get Ionic appid and Ionic appsecret (private key) after registering with Ionic push service. And you will get device token(s) when app initiates push service interaction.
+You will get Ionic appid and Ionic appsecret (private key) after registering with
+Ionic push service. And you will get device token(s) when app initiates push service
+interaction.
 
-Using this service, *plain texts* can be sent to one or many ionic apps. And each app can in turn push to many devices. Following is the ini example:
+Using this service, *plain texts* can be sent to one or many ionic apps. Each app
+can in turn push to many devices.
+
+#### Example
 
 ```ini
 [config:ionic]
@@ -946,25 +1072,10 @@ targets = {
 
 ![ionic](assets/ionic.png)
 
-### `azure_iot`
+[Ionic]: https://ionicframework.com/
+[Ionic documentation]: https://ionicframework.com/docs
+[Ionic Push Notifications API]: https://ionicframework.com/docs/native/push-notifications
 
-This service is for [Microsoft Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/).
-The configuration requires the name of the IoT Hub, optionally a QoS level
-(default 0), and one or more targets.
-Each target defines which device to impersonate when sending the message.
-
-```ini
-[config:azure_iot]
-iothubname = 'MyIoTHub'
-qos = 1
-targets = {
-               # device id   # sas token
-    'test' : [ 'mqttwarn',   'SharedAccessSignature sr=...' ]
-  }
-```
-
-Message delivery is performed using the MQTT protocol, observing the Azure IoT
-Hub requirements.
 
 ### `influxdb`
 
@@ -1366,7 +1477,8 @@ To be clear, there is no other way to configure this particular plugin to use di
 
 The MySQL plugin is one of the most complicated to set up.
 
-First it requires the [MySQLDb](http://mysql-python.sourceforge.net/) library to be installed, which is not trivial.
+First, it requires the [MySQLDb](https://mysql-python.sourceforge.net/) library to be
+installed, which is not trivial.
 - _Ubuntu 16.04:_
 ```
 sudo apt-get install -y python-dev libmysqlclient-dev
@@ -1464,7 +1576,7 @@ targets = {
 ```
 
 Requires:
-* [MySQLDb](http://mysql-python.sourceforge.net/)
+* [MySQLDb](https://mysql-python.sourceforge.net/)
 
 Limitations:
 
@@ -1567,7 +1679,7 @@ Example MySQL records:
 
 ### `mythtv`
 
-This service allows for on-screen notification pop-ups on [MythTV](http://www.mythtv.org/) instances. Each target requires
+This service allows for on-screen notification pop-ups on [MythTV](https://www.mythtv.org/) instances. Each target requires
 the address and port of the MythTV backend instance (&lt;hostname&gt;:&lt;port&gt;), and a broadcast address.
 
 ```ini
@@ -1862,29 +1974,6 @@ followed by option fields defined on the `[config:ntfy]` configuration section.
 [RFC 2047]: https://datatracker.ietf.org/doc/html/rfc2047
 
 
-### `desktopnotify`
-
-It invokes desktop notifications, using the fine 
-[desktop-notifier](https://github.com/samschott/desktop-notifier).
-
-```ini
-[config:desktopnotify]
-; title = Optional title; topic if not set
-; sound = Default True [False] - Play sound? 
-targets = {
-  'anything' : [ ],
-  }
-```
-If the MQTT message is a JSON object, it will populate the notification title and message accordingly.
-```json
-{
-	"title" : "YourTitle",
-	"message": "YourMessage"
-}
-```
-
-![desktopnotify](assets/desktopnotify.jpg)
-
 ### `osxsay`
 
 The `osxsay` target alerts you on your Mac (warning: requires a Mac :-) with a spoken voice.
@@ -1916,7 +2005,7 @@ targets = osxsay:alex
 
 ### `pastebinpub`
 
-The `pastebinpub` service is publishing messages to [Pastebin](http://pastebin.com).
+The `pastebinpub` service is publishing messages to [Pastebin](https://pastebin.com).
 
 Note: Be careful what you post on this target, it could be public. If you are
 not a paying customer of Pastebin you are limited to 25 unlisted and
@@ -1937,7 +2026,7 @@ targets = {
 ![pastebin](assets/pastebin.png)
 
 Requires:
-* An account at [Pastebin](http://pastebin.com)
+* An account at [Pastebin](https://pastebin.com)
 * Python bindings for the [Pastebin API](https://github.com/Morrolan/PastebinAPI)
   You don't have to install this -- simply copy `pastebin.py` to the _mqttwarn_ directory.
   `curl -O https://raw.githubusercontent.com/Morrolan/PastebinAPI/master/pastebin.py`
@@ -2036,7 +2125,7 @@ to have those values stored automatically.
 
 ### `prowl`
 
-This service is for [Prowl](http://www.prowlapp.com). Each target requires
+This service is for [Prowl](https://www.prowlapp.com). Each target requires
 an application key and an application name.
 
 ```ini
@@ -2328,8 +2417,8 @@ format = /srv/rrd/sensors/{sensor_id}.rrd -t batt {ts}:{batt}
 
 Requires the rrdtool bindings available with `pip install rrdtool`.
 
-[rrdtool]: http://oss.oetiker.ch/rrdtool/
-[rrdpython's API]: http://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html
+[rrdtool]: https://oss.oetiker.ch/rrdtool/
+[rrdpython's API]: https://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html
 
 ### `serial`
 
@@ -2351,7 +2440,7 @@ Requires the pyserial bindings available with `pip install pyserial`.
 
 ### `slack`
 
-The `slack` plugin posts messages to channels in or users of the [slack.com](http://slack.com) service. The configuration of this service requires an API token obtaininable there.
+The `slack` plugin posts messages to channels in or users of the [slack.com](https://slack.com) service. The configuration of this service requires an API token obtaininable there.
 
 ```ini
 [config:slack]
@@ -2368,7 +2457,7 @@ targets = {
 The service level `token` is optional, but if missing each target must have a `token` defined.
 
 Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
-addressed, the name of the sending user as well as an [emoji icon](http://www.emoji-cheat-sheet.com) to use.
+addressed, the name of the sending user as well as an [emoji icon](https://www.emoji-cheat-sheet.com) to use.
 
 Optionally, a target can define the message to get posted as a user, per
 [Slack Authorship documentation](https://api.slack.com/methods/chat.postMessage#authorship).
@@ -2696,7 +2785,7 @@ Requires:
 
 ### `twitter`
 
-Notification of one or more [Twitter](http://twitter.com) accounts requires setting
+Notification of one or more [Twitter](https://twitter.com) accounts requires setting
 up an application at [apps.twitter.com](https://apps.twitter.com). For each Twitter
 account, you need four (4) bits which are named as shown below.
 
@@ -2737,10 +2826,12 @@ targets = {
 Requires:
 * [websocket-client](https://pypi.python.org/pypi/websocket-client/) - pip install websocket-client
 
+
 ### `xbmc`
 
-This service allows for on-screen notification pop-ups on [XBMC](http://xbmc.org/) instances. Each target requires
-the address and port of the XBMC instance (<hostname>:<port>), and an optional username and password if authentication is required.
+This service allows for on-screen notification pop-ups on [XBMC] instances.
+Each target requires the address and port of the XBMC instance (<hostname>:<port>),
+and an optional username and password if authentication is required.
 
 ```ini
 [config:xbmc]
@@ -2756,10 +2847,12 @@ targets = {
 | `title`       |   O    | notification title                     |
 | `image`       |   O    | notification image URL  ([example](https://github.com/jpmens/mqttwarn/issues/53#issuecomment-39691429))|
 
+[XBMC]: https://xbmc.org/
+
+
 ### `xmpp`
 
-The `xmpp` service sends notification to one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
-(Jabber) recipients.
+The `xmpp` service sends notification to one or more [XMPP] (Jabber) recipients.
 
 ```ini
 [config:xmpp]
@@ -2775,12 +2868,13 @@ recipients get the message.
 
 Requires:
 * XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
-* [xmpppy](http://xmpppy.sourceforge.net)
+* [xmpppy](https://xmpppy.sourceforge.net)
+
+[XMPP]: https://en.wikipedia.org/wiki/XMPP
 
 ### `slixmpp`
 
-The `slixmpp` service sends notification to one or more [XMPP](http://en.wikipedia.org/wiki/XMPP)
-(Jabber) recipients.
+The `slixmpp` service sends notification to one or more [XMPP] (Jabber) recipients.
 
 ```ini
 [config:slixmpp]
