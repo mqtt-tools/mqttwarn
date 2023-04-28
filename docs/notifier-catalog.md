@@ -76,7 +76,6 @@ alphabetically sorted.
 * [xbmc](#xbmc)
 * [xmpp](#xmpp)
 * [slixmpp](#slixmpp)
-* [xively](#xively)
 * [zabbix](#zabbix)
 
 
@@ -2799,33 +2798,6 @@ Requires:
 * XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
 * [slixmpp](https://lab.louiz.org/poezio/slixmpp)
 
-### `xively`
-
-The `xively` service can send a subset of your data to [Xively](http://xively.com) per defined feedid.
-
-```ini
-[config:xively]
-apikey = '1234567890abcdefghiklmnopqrstuvwxyz'
-targets = {
-        # feedid        : [ 'datastream1', 'datastream2']
-        '1234567' : [ 'temperature', 'waterlevel' ],
-        '7654321' : [ 'dataItemA' ]
-  }
-```
-
-Publishing the following JSON message will add a datapoint to the `temperature` and
-`waterlevel` channel of your xively feed 1234567 (`humidity` will be ignored,
-as it's not defined in the xively
-configuration above):
-
-```
-mosquitto_pub -t "osx/json" -m '{"temperature":15,"waterlevel":100,"humidity":35}'
-```
-
-
-Requires:
-* [Xively](http://xively.com) account with an already existing Feed
-* [xively-python](https://github.com/xively/xively-python) - pip install xively-python
 
 ### `zabbix`
 

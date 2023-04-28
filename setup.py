@@ -105,9 +105,6 @@ extras = {
     "websocket": [
         "websocket-client>=0.47.0",
     ],
-    "xively": [
-        "xively-python",
-    ],
     "xmpp": [
         "xmpppy>=0.6.1",
         "dnspython>=1.16.0",
