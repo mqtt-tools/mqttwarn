@@ -32,6 +32,7 @@ RUN chown -R mqttwarn:mqttwarn /etc/mqttwarn
 COPY . /src
 RUN --mount=type=cache,id=pip,target=/root/.cache/pip \
     true \
+    && pip install --upgrade pip \
     && pip install --prefer-binary versioningit wheel \
     && pip install --use-pep517 --prefer-binary '/src'
 
