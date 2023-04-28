@@ -18,7 +18,7 @@ RUN \
     --mount=type=cache,id=apt,sharing=locked,target=/var/lib/apt \
     true \
     && apt-get update \
-    && apt-get install --no-install-recommends --no-install-suggests --yes git build-essential librrd-dev
+    && apt-get install --no-install-recommends --no-install-suggests --yes git
 
 # Create /etc/mqttwarn
 RUN mkdir -p /etc/mqttwarn
