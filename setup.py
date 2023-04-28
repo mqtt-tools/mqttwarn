@@ -135,8 +135,10 @@ for extra, packages in extras.items():
     if machine in ["armv7l", "aarch64"] and extra in ["postgres", "slixmpp", "ssh"]:
         continue
 
-    # FIXME: The `cryptography` package is not available as binary wheel on arm32v7.
-    if machine in ["armv7l"] and extra in ["apprise"]:
+    # FIXME: A few packages are not available as wheels on arm32v7, and take quite an amount
+    #        of time to build, so let's mask them to improve build times significantly.
+    #        Examples: `cryptography`, `aiohttp`, `frozenlist`, `multidict`, `yarl`.
+    if machine in ["armv7l"] and extra in ["apprise", "twilio"]:
         continue
 
     for package in packages:
