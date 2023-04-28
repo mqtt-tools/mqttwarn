@@ -27,7 +27,6 @@ alphabetically sorted.
 * [gss](#gss)
 * [gss2](#gss2)
 * [hangbot](#hangbot)
-* [hipchat](#hipchat)
 * [http](#http)
 * [icinga2](#icinga2)
 * [ifttt](#ifttt)
@@ -829,29 +828,6 @@ targets = {
   }
 ```
 
-### `hipchat`
-
-The `hipchat` plugin posts messages to rooms of the hipchat.com service or self-hosted edition. The configuration of this service requires an API v2 token and RoomID (you can configure them on hipchat.com => Group Admin => Rooms => Tokens) only the Send Notification scope is required.
-
-
-```ini
-[config:hipchat]
-
-#server = "hipchat.example.com"  # Optional, default is api.hipchat.com
-timeout = 10 # Default 60 seconds
-
-targets = {
-                     #token         #roomid  #color #notify
-  'room-ops'    : [ "yyyyyyyyyyyyy", "000", "red", True ],
-  'room-dev'    : [ "xxxxxxxxxxxxx", "111", "green", False ]
-  }
-```
-
-The available colors for the background of the message are: "yellow", "green", "red", "purple", "gray" or if you feel lucky "random"
-
-The notify parameter (True or False) trigger a user notification (change the tab color, play a sound, notify mobile phones, etc).
-
-![Hipchat](assets/hipchat.png)
 
 ### `http`
 
