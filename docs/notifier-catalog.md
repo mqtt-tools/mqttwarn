@@ -55,7 +55,6 @@ alphabetically sorted.
 * [pipe](#pipe)
 * [postgres](#postgres)
 * [prowl](#prowl)
-* [pushalot](#pushalot)
 * [pushbullet](#pushbullet)
 * [pushover](#pushover)
 * [pushsafer](#pushsafer)
@@ -206,7 +205,7 @@ Gotify, Growl, Guilded, Home Assistant, IFTTT, Join, Kavenegar, KODI, Kumulos,
 LaMetric, Line, MacOSX, Mailgun, Mattermost, Matrix, Microsoft Windows,
 Mastodon, Microsoft Teams, MessageBird, MQTT, MSG91, MyAndroid, Nexmo,
 Nextcloud, NextcloudTalk, Notica, Notifico, ntfy, Office365, OneSignal,
-Opsgenie, PagerDuty, ParsePlatform, PopcornNotify, Prowl, Pushalot, PushBullet,
+Opsgenie, PagerDuty, ParsePlatform, PopcornNotify, Prowl, PushBullet,
 Pushjet, Pushover, PushSafer, Reddit, Rocket.Chat, SendGrid, ServerChan, Signal,
 SimplePush, Sinch, Slack, SMSEagle, SMTP2Go, Spontit, SparkPost, Super Toasty,
 Streamlabs, Stride, Syslog, Techulus Push, Telegram, Twilio, Twitter, Twist,
@@ -2087,30 +2086,6 @@ Requires:
 ```
 pip install pyprowl
 ```
-
-
-### `pushalot`
-This service is for [pushalot](http://www.pushalot.com), which is a notifier app for Windows Phone and Windows8.
-
-It requires an Authorization token, which you can generate after creating an account at [pushalot.com](http://www.pushalot.com) We can then use that to configure the target definition:
-
-```ini
-[config:pushalot]
-targets = {
-                   # Authorization token
-    'info'     : ['xxxxxxxxxxxxxxxxxxxxxxx'],
-    'warn'     : ['xxxxxxxxxxxxxxxxxxxxxxx']
-    }
-````
-
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | application title (dflt: `mqttwarn`)   |
-
-![Pushalot](assets/pushalot.png)
-
-Requires:
-* a [pushalot](http://www.pushalot.com) account with Authorization token
 
 
 ### `pushbullet`
