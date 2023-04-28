@@ -205,8 +205,21 @@ If you prefer not to fiddle with those details, but instead want to run a full
 image including dependencies for all modules, we have you covered. Alongside
 the standard image, there is also `ghcr.io/jpmens/mqttwarn-full:latest`.
 
-The `standard` image weighs in with about 130 MB, the `full` image has 230 MB.
+## Image sizes
+
+We determined the **compressed** image sizes using [dockersize]::
+
+    $ dockersize ghcr.io/jpmens/mqttwarn-standard:latest
+    linux/amd64   172.89M
+    linux/arm64   167.12M
+    linux/arm/v7  143.39M
+
+    $ dockersize ghcr.io/jpmens/mqttwarn-full:latest
+    linux/amd64   205.96M
+    linux/arm64   186.81M
+    linux/arm/v7  160.47M
 
 
+[dockersize]: https://gist.github.com/MichaelSimons/fb588539dcefd9b5fdf45ba04c302db6?permalink_comment_id=4243739#gistcomment-4243739
 [Docker]: https://docker.com/
 [Podman]: https://podman.io/
