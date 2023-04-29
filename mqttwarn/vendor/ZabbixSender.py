@@ -22,7 +22,7 @@ class ZabbixSender:
     
     zbx_header = b'ZBXD'
     zbx_version = 1
-    zbx_sender_data = {u'request': u'sender data', u'data': []}
+    zbx_sender_data = {'request': 'sender data', 'data': []}
     send_data = ''
     
     def __init__(self, server_host, server_port = 10051):
@@ -30,9 +30,9 @@ class ZabbixSender:
         self.server_port = server_port
     
     def AddData(self, host, key, value, clock = None):
-        add_data = {u'host': host, u'key': key, u'value': value}
+        add_data = {'host': host, 'key': key, 'value': value}
         if clock != None:
-            add_data[u'clock'] = clock
+            add_data['clock'] = clock
         self.zbx_sender_data['data'].append(add_data)
         return self.zbx_sender_data
     
@@ -49,10 +49,10 @@ class ZabbixSender:
         self.__MakeSendData()
         so = socket.socket()
         so.connect((self.server_ip, self.server_port))
-        wobj = so.makefile(u'wb')
+        wobj = so.makefile('wb')
         wobj.write(self.send_data)
         wobj.close()
-        robj = so.makefile(u'rb')
+        robj = so.makefile('rb')
         recv_data = robj.read()
         robj.close()
         so.close()
@@ -63,9 +63,9 @@ class ZabbixSender:
 
 
 if __name__ == '__main__':
-    sender = ZabbixSender(u'127.0.0.1')
+    sender = ZabbixSender('127.0.0.1')
     for num in range(0, 2):
-        sender.AddData(u'HostA', u'AppX_Logger', u'sent data 第' + str(num))
+        sender.AddData('HostA', 'AppX_Logger', 'sent data 第' + str(num))
     res = sender.Send()
     print(sender.send_data)
     print(res)
