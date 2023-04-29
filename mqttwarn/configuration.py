@@ -175,7 +175,7 @@ class Config(RawConfigParser):
 
         into
 
-            {u'username': None, u'host': 'localhost', u'list': [1, 'aaa', 'bbb', 4]}
+            {'username': None, 'host': 'localhost', 'list': [1, 'aaa', 'bbb', 4]}
 
         Cannot use config.items() because I want each value to be
         retrieved with g() as above"""

@@ -228,7 +228,7 @@ format = "{data}"
 ```
 
 However, by default, the outcome will be the string-serialized form of the
-Python representation, `{u'humidity': 62.18}`, which could not be what you
+Python representation, `{'humidity': 62.18}`, which could not be what you
 want if your data sink is expecting JSON format again.
 
 To make it work as intended, you should use appropriate type coercion
