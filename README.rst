@@ -142,48 +142,8 @@ To supply a different configuration file or log file, optionally use::
     # Run mqttwarn
     mqttwarn
 
-
-Running notification plugins
-============================
-For debugging, or other purposes, you might want to directly run an individual
-notification plugin without the dispatching and transformation machinery of
-*mqttwarn*.
-
-We have you covered. To launch a plugin standalone, those commands will give
-you an idea how to pass relevant information on the command line using JSON::
-
-    # Launch "log" service plugin
-    mqttwarn --plugin=log --options='{"message": "Hello world", "addrs": ["crit"]}'
-
-    # Launch "file" service plugin
-    mqttwarn --plugin=file --options='{"message": "Hello world\n", "addrs": ["/tmp/mqttwarn.err"]}'
-
-    # Launch "pushover" service plugin
-    mqttwarn --plugin=pushover --options='{"title": "About", "message": "Hello world", "addrs": ["userkey", "token"], "priority": 6}'
-
-    # Launch "ntfy" service plugin
-    mqttwarn --plugin=ntfy --options='{"addrs": {"url": "http://localhost:5555/testdrive"}, "title": "Example notification", "message": "Hello world"}' --data='{"tags": "foo,bar,äöü", "priority": "high"}'
-
-    # Launch "ntfy" service plugin, and add remote attachment
-    mqttwarn --plugin=ntfy --options='{"addrs": {"url": "http://localhost:5555/testdrive"}, "title": "Example notification", "message": "Hello world"}' --data='{"attach": "https://unsplash.com/photos/spdQ1dVuIHw/download?w=320", "filename": "goat.jpg"}'
-
-    # Launch "ntfy" service plugin, and add attachment from local filesystem
-    mqttwarn --plugin=ntfy --options='{"addrs": {"url": "http://localhost:5555/testdrive", "file": "goat.jpg"}, "title": "Example notification", "message": "Hello world"}'
-
-    # Launch "ssh" service plugin
-    mqttwarn --plugin=ssh --config='{"host": "ssh.example.org", "port": 22, "user": "foo", "password": "bar"}' --options='{"addrs": ["command with substitution %s"], "payload": "{\"args\": \"192.168.0.1\"}"}'
-
-    # Launch "cloudflare_zone" service plugin from "mqttwarn-contrib"
-    pip install mqttwarn-contrib
-    mqttwarn --plugin=mqttwarn_contrib.services.cloudflare_zone --config='{"auth-email": "foo", "auth-key": "bar"}' --options='{"addrs": ["0815", "www.example.org", ""], "message": "192.168.0.1"}'
-
-
-Also, the ``--config-file`` parameter can be used to optionally specify the
-path to a configuration file.
-
-
-Running as system daemon
-========================
+System daemon
+=============
 
 There are different ways to run mqttwarn as a system daemon. There are examples
 for systemd, traditional init, OpenRC, and Supervisor_ in the ``etc`` directory
@@ -192,6 +152,11 @@ of this repository, for example `supervisor.ini`_ (Supervisor) and
 
 Running in a development sandbox
 ================================
+Standalone
+==========
+
+In order to directly invoke notification plugins from custom programs, or for
+debugging them, see `Running notification plugins standalone`_.
 
 For hacking on mqttwarn, please install it in development mode, using a
 `mqttwarn development sandbox`_ installation.
@@ -292,6 +257,7 @@ Have fun!
 .. _mqttwarn notifier catalog: https://mqttwarn.readthedocs.io/en/latest/notifier-catalog.html
 .. _mqttwarn.service: https://github.com/jpmens/mqttwarn/blob/main/etc/mqttwarn.service
 .. _opening an issue on GitHub: https://github.com/jpmens/mqttwarn/issues/new
+.. _Running notification plugins standalone: https://mqttwarn.readthedocs.io/en/latest/usage/standalone.html
 .. _Schwarmalarm using mqttwarn: https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
 .. _Supervisor: https://jpmens.net/2014/02/13/in-my-toolbox-supervisord/
 .. _supervisor.ini: https://github.com/jpmens/mqttwarn/blob/main/etc/supervisor.ini

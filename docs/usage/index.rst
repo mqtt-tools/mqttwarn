@@ -64,3 +64,4 @@ or::
    pip
    oci
    freebsd
+   standalone
