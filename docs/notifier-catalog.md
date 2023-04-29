@@ -31,19 +31,19 @@ alphabetically sorted.
 * [gss2](#gss2)
 * [hangbot](#hangbot)
 * [http](#http)
-* kodi, see [xbmc](#xbmc)
 * [icinga2](#icinga2)
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [ionic](#ionic)
 * [irccat](#irccat)
+* kodi, see [xbmc](#xbmc)
 * [linuxnotify](#linuxnotify)
 * [log](#log)
 * mastodon, see [tootpaste](#tootpaste)
 * [mattermost](#mattermost)
 * [mqtt](#mqtt)
-* [mqtt_filter](#mqtt_filter)
 * [mqttpub](#mqttpub)
+* [mqtt_filter](#mqtt_filter)
 * [mysql](#mysql)
 * [mysql_dynamic](#mysql_dynamic)
 * [mysql_remap](#mysql_remap)
@@ -63,6 +63,7 @@ alphabetically sorted.
 * [rrdtool](#rrdtool)
 * [serial](#serial)
 * [slack](#slack)
+* [slixmpp](#slixmpp)
 * [sqlite](#sqlite)
 * [sqlite_json2cols](#sqlite_json2cols)
 * [sqlite_timestamp](#sqlite_timestamp)
@@ -76,8 +77,7 @@ alphabetically sorted.
 * [twitter](#twitter)
 * [websocket](#websocket)
 * [xbmc](#xbmc)
-* [xmpp](#xmpp)
-* [slixmpp](#slixmpp)
+* [xmpp](#xmpp), see also [slixmpp](#slixmpp)
 * [zabbix](#zabbix)
 
 
@@ -124,9 +124,8 @@ Requires: [Puka](https://github.com/majek/puka/) (`pip install puka`)
 ### `apns`
 
 The `apns` service interacts with the Apple Push Notification Service (APNS) and
-is a bit special (and one of _mqttwarn_'s more complex services) in as much as
-it requires an X.509 certificate and a key which are typically available to
-developers only.
+is a bit special, and one of _mqttwarn_'s more complex services. It requires an 
+X.509 certificate and a key, which are typically available to developers only.
 
 The following discussion assumes one of these payloads published via MQTT:
 
@@ -138,9 +137,9 @@ The following discussion assumes one of these payloads published via MQTT:
 {"alert": "Vehicle moved", "custom" : { "tid": "C2" }}
 ```
 
-In both cases, the message which will be displayed in the notification of the iOS
-device is "Vehicle moved". The second example depends on the app which receives
-the notification. This custom data is per/app. This example app uses the custom
+In both cases, the message "Vehicle moved" will be displayed in the notification
+of the iOS device. The second example depends on the app which receives the
+notification. This custom data is per-app. This example app uses the custom
 data to show a button:
 
 ![APNS notification](assets/apns.png)
@@ -167,7 +166,7 @@ alldata = apnsdata()
 format  = {alert}
 ```
 
-Certificate and Key files are in PEM format, and the key file must *not* be
+Certificate and key files are in PEM format, and the key file must *not* be
 password-protected.
 
 If you need to extract them from a PKCS#12 file, run:
@@ -175,7 +174,7 @@ If you need to extract them from a PKCS#12 file, run:
 openssl pkcs12 -in apns-CTRL.p12 -nocerts -nodes | openssl rsa > prod.key
 openssl pkcs12 -in apns-CTRL.p12 -clcerts -nokeys > xxxx
 ```
-Then copy/paste from `xxxx` the sandbox or production certificate into `prod.crt`.
+Then, copy/paste from `xxxx` the sandbox or production certificate into `prod.crt`.
 
 The _myfuncs_ function `apnsdata()` extracts the last part of the topic into
 `apns_token`, the hex token for the target device, which is required within the
@@ -189,8 +188,7 @@ def apnsdata(topic, data, srv=None):
 Publishing to topic `test/token/380757b117f15a46dff2bd0be1d57929c34124dacb28d346dedb14d3464325e5`
 will emit the APNS notification to the specified device.
 
-
-Requires [PyAPNs](https://github.com/djacobs/PyAPNs)
+This module depends on the Python [apns](https://pypi.org/project/apns/) package.
 
 
 ### `apprise_about`
@@ -201,7 +199,7 @@ notification services:
 
 Apprise API, AWS SES, AWS SNS, Bark, BulkSMS, Boxcar, ClickSend, DAPNET,
 DingTalk, Discord, E-Mail, Emby, Faast, FCM, Flock, Gitter, Google Chat,
-Gotify, Growl, Guilded, Home Assistant, IFTTT, Join, Kavenegar, KODI, Kumulos,
+Gotify, Growl, Guilded, Home Assistant, IFTTT, Join, Kavenegar, Kodi, Kumulos,
 LaMetric, Line, MacOSX, Mailgun, Mattermost, Matrix, Microsoft Windows,
 Mastodon, Microsoft Teams, MessageBird, MQTT, MSG91, MyAndroid, Nexmo,
 Nextcloud, NextcloudTalk, Notica, Notifico, ntfy, Office365, OneSignal,
@@ -337,7 +335,7 @@ title    = Alarm from {device}
 
 The `asterisk` service will make a VOIP conference between the number and the extension
 (in defined context). Also, it sends the message as variable to the extension, so you can
-'speak' to it. Configuration is similar as with the [freeswitch](#freeswitch) service,
+'speak' to it. Configuration is similar as with the [FreeSWITCH](#freeswitch) service,
 but this service uses the [Asterisk Manager Interface (AMI)].
 
 The plugin author strongly recommends you use AMI only in trusted networks.
@@ -436,19 +434,20 @@ mosquitto_pub -t c/temp/arduino -m 12
 ```
 
 would result in the value `12` being used as the value for the Carbon metric
-`c.temp.arduino`. The published payload may contain up to three white-space-separated
-parts.
+`c.temp.arduino`. The published payload may contain up to three parts separated
+by white-space.
 
-1. The carbon metric name, dot-separated (e.g. `room.temperature`) If this is omitted, the MQTT topic name will be used as described above.
-2. The integer value for the metric
-3. An integer timestamp (UNIX epoch time) which defaults to "now".
+1. The carbon metric name, dot-separated (e.g. `room.temperature`)
+   If this is omitted, the MQTT topic name will be used as described above.
+2. The integer value for the metric.
+3. An integer timestamp (UNIX epoch time), which defaults to "now".
 
 In other words, the following payloads are valid:
 
 ```
-15					just the value (metric name will be MQTT topic)
-room.living 15				metric name and value
-room.living 15 1405014635		metric name, value, and timestamp
+15                          just the value (metric name will be MQTT topic)
+room.living 15              metric name and value
+room.living 15 1405014635   metric name, value, and timestamp
 ```
 
 [Carbon daemon]: https://graphite.readthedocs.io/en/latest/carbon-daemons.html
@@ -522,8 +521,8 @@ Requires pychromecast to be installed via::
 
 ### `dbus`
 
-The `dbus` service send a message over the dbus to the user's desktop (only
-tested with Gnome3).
+The `dbus` service sends a message over [D-Bus] to the user's desktop.
+So far, it has only been tested with Gnome3.
 
 ```ini
 [config:dbus]
@@ -533,8 +532,10 @@ targets = {
     }
 ```
 
-Requires:
-* Python [dbus](https://www.freedesktop.org/wiki/Software/DBusBindings/#Python) bindings
+This module requires the [Python dbus bindings].
+
+[D-Bus]: https://en.wikipedia.org/wiki/D-Bus
+[Python dbus bindings]: https://www.freedesktop.org/wiki/Software/DBusBindings/#Python
 
 
 ### `desktopnotify`
@@ -563,7 +564,7 @@ If the MQTT message is a JSON object, it will populate the notification title an
 
 ### `dnsupdate`
 
-The `dnsupdate` service updates an authoritative DNS server via RFC 2136 DNS Updates.
+The `dnsupdate` service updates an authoritative DNS server via [RFC 2136] DNS Updates.
 Consider the following configuration:
 
 ```ini
@@ -572,7 +573,7 @@ dns_nameserver = '127.0.0.2'
 dns_keyname= 'mqttwarn-auth'
 dns_keyblob= 'kQNwTJ ... evi2DqP5UA=='
 targets = {
-   #target             DNS-Zone      DNS domain              TTL,  type
+   #target             DNS-Zone      DNS domain              TTL   type
    'temp'         :  [ 'foo.aa.',     'temperature.foo.aa.', 300, 'TXT'   ],
    'addr'         :  [ 'foo.aa.',     'www.foo.aa.',         60,  'A'   ],
   }
@@ -586,17 +587,19 @@ targets = log:info, dnsupdate:addr
 format = {payload}
 ```
 
-`dns_nameserver` is the address of the authoritative server the update should be sent
-to via a TCP update. `dns_keyname` and `dns_keyblob` are the TSIG key names and base64-representation of the key respectively. These can be created with either of:
+- `dns_nameserver` is the address of the authoritative server the update should be sent
+  to, using a TCP update.
+- `dns_keyname` and `dns_keyblob` are the TSIG key names and base64-representation of
+  the key respectively. These can be created with either of those commands:
 
-```
-ldns-keygen  -a hmac-sha256 -b 256 keyname
-dnssec-keygen -n HOST -a HMAC-SHA256 -b 256 keyname
-```
+  ```
+  ldns-keygen  -a hmac-sha256 -b 256 keyname
+  dnssec-keygen -n HOST -a HMAC-SHA256 -b 256 keyname
+  ```
 
-where _keyname_ is the name then added to `dns_keyname` (in this example: `mqttwarn-auth`).
+  Here, `keyname` is the name then added to `dns_keyname` (in this example: `mqttwarn-auth`).
 
-Supposing a BIND DNS server configured to allow updates, you would then configure it
+Supposing a BIND DNS server was configured to allow updates, you would then configure it
 as follows:
 
 ```
@@ -631,35 +634,37 @@ $ dig @127.0.0.2 +short www.foo.aa
 172.16.153.44
 ```
 
-Ensure you watch both mqttwarn's logfile as well as the log of your
-authoritative name server which will show you what's going on:
-
+Ensure you watch both mqttwarn's logfile and the log of your authoritative name
+server, in order to follow what is going on.
 ```
 client 127.0.0.2#52786/key mqttwarn-auth: view internal: updating zone 'foo.aa/IN': adding an RR at 'www.foo.aa' A 172.16.153.44
 ```
 
-Requires:
-* [dnspython](https://www.dnspython.org)
+This module is based on the [dnspython] package.
+
+[dnspython]: https://www.dnspython.org
+[RFC 2136]: https://datatracker.ietf.org/doc/html/rfc2136
 
 
 ### `emoncms`
 
 The `emoncms` service sends a numerical payload to an [EmonCMS] instance.
-EmonCMS is a powerful open-source web-app for processing, logging and 
+EmonCMS is a powerful open-source application for processing, logging and
 visualising energy, temperature and other environmental data.
 
-The web-app can run locally, or you can upload your readings to their server for
-viewing and monitoring via your own login (note this is likely to become a paid
-service in the medium term). You can easily configure and run your own instance.
+The application can be deployed on your premises, or you can upload your readings
+to their server for viewing and monitoring within the scope of your account.
 
-By specifying the node id and input name in the mqttwarn target (see the ini
-example below) you can split different feeds into different nodes, and give each
-one a human-readable name to identify them in EmonCMS.
+By specifying the node id and input name in the mqttwarn target, you can split
+different feeds into different nodes, and give each one a human-readable name,
+in order to identify them in EmonCMS.
 
 ```ini
 [config:emoncms]
-url     = <url of emoncms server e.g. http://localhost/emoncms or http://emoncms.org/emoncms>
-apikey  = <apikey generated by the emoncms server>
+# URL of EmonCMS server.
+url     = "https://emoncms.example.org/emoncms"
+# API key generated by the EmonCMS server.
+apikey  = ""
 timeout = 5
 targets = {
     'usage'  : [ 1, 'usage' ],  # [ <nodeid>, <name> ]
@@ -721,10 +726,11 @@ Requires:
 ### `file`
 
 The `file` service can be used for logging incoming topics, archiving, etc.
-Each message is written to a path specified in the targets list. Note that
-by default, files are opened for appending and then closed on each notification.
+Each message is written to a path specified in the target address descriptor,
+as a list. Note that by default, files are opened for appending, and then
+closed on each notification.
 
-Supposing we wish to archive all incoming messages to the branch `arch/#`
+Supposing we wish to archive all messages received on the MQTT topic `arch/#`
 to a file `/data/arch`, we could configure the following:
 
 ```ini
@@ -736,9 +742,13 @@ targets = {
    }
 ```
 
+#### Options
+
 If `append_newline` is `True`, a newline character is unconditionally appended
-to the string written to the file. If `overwrite` is `True`, the file is opened
-for truncation upon writing (i.e. the file will contain the last message only).
+to the string written to the file.
+ 
+If `overwrite` is `True`, the file is opened for truncation upon writing, i.e.
+the file will contain the last message only.
 
 Both parameters can also be specified on a per-file basis, where per-item
 parameters take precedence over global parameters. In order to do that,
@@ -770,18 +780,18 @@ overwrite      = True
 ### `freeswitch`
 
 The `freeswitch` service will make a VOIP call to the number specified in your
-target and 'speak' the message using the TTS service you specify. Each target
-includes the gateway to use as well as the number/extension to call, so you can
-make internal calls direct to an extension, or call any external number using
-your external gateway.
+target, using [FreeSWITCH], and 'speak' the message using the TTS service you
+specify.
 
-In order to use this service you must enable the XML RPC API in Freeswitch -
-see instructions [here](https://wiki.freeswitch.org/wiki/Mod_xml_rpc).
+Each target includes the gateway to use, as well as the number/extension to call,
+so you can make internal calls directly to an extension, or call any external number
+using your external gateway.
 
-You need to provide a TTS URL to perform the conversion of your message to an
-announcement. This can be an online service like VoiceRSS or the
-[Google Translate API](https://translate.google.com) (see example below).
-Or, it could be a local TTS service you are using.
+In order to use this service, you will need to enable the [FreeSWITCH XML RPC API].
+
+You need to provide a TTS URL to perform the text-to-speech conversion of your message
+to an announcement. This can be an online service like VoiceRSS, the [Google Translate
+API], or another local TTS service you are using.
 
 ```ini
 [config:freeswitch]
@@ -796,9 +806,18 @@ targets   = {
     }
 ```
 
-Requires
-* [Freeswitch](https://www.freeswitch.org/)
+This module requires:
+* [FreeSWITCH]
 * Internet connection for Google Translate API
+
+:::{note}
+Only the first 100 chars of the message will be announced, because this is the
+maximum length supported by the Google Translate API.
+:::
+
+[FreeSWITCH]: https://www.freeswitch.org/
+[FreeSWITCH XML RPC API]: https://developer.signalwire.com/freeswitch/FreeSWITCH-Explained/Modules/mod_xml_rpc_1048928/
+[Google Translate API]: https://translate.google.com
 
 
 ### `gss`
@@ -806,10 +825,10 @@ Requires
 The `gss` service interacts directly with a Google Docs Spreadsheet. Each message
 can be written to a row in a selected worksheet.
 
-Each target has two parameters:
+Each target has two parameters.
 
-1. The spreadsheet key. This is directly obtainable from the URL of the open sheet.
-2. The worksheet id. By default, the first sheets id is 'od6'
+1. The spreadsheet key. You can obtain this from the URL of the opened sheet.
+2. The worksheet id. By default, the first sheets id is 'od6'.
 
 ```ini
 [config:gss]
@@ -822,34 +841,36 @@ targets     = {
 ```
 
 Example:
-
 ```
 mosquitto_pub -t nn/ohoh -m '{"username": "jan", "device":"phone", "lat": "-33.8746097", "lon": "18.6292892", "batt": "94"}'
 ```
 
-turns into
-
+turns into:
 ![GSS](assets/gss.png)
 
-Note: It is important that the top row into your blank spreadsheet has column headings that correspond the values that represent your dictionary keys.
-If these column headers are not available, you will most likely see an error like this:
-
+:::{note}
+It is important that the top row into your blank spreadsheet has column headings
+that correspond to the values that represent your dictionary keys. If these column
+headers are not available, you will most likely see an error like this:
 ```
 gdata.service.RequestError: {'status': 400, 'body': 'We&#39;re sorry, a server error occurred. Please wait a bit and try reloading your spreadsheet.', 'reason': 'Bad Request'}
 ```
+:::
 
-Requires:
-* [gdata-python-client](https://code.google.com/p/gdata-python-client/)
+This module is based on the [gdata-python-client] package.
+
+[gdata-python-client]: https://github.com/google/gdata-python-client
 
 
 ### `gss2`
 
-The `gss2` service interacts directly with a Google Docs Spreadsheet. Each message can be written to a row in a selected worksheet.
+The `gss2` service interacts directly with a Google Docs Spreadsheet. Each message
+can be written to a row in a selected worksheet.
 
-Each target has two parameters:
+Each target has two parameters.
 
 1. The spreadsheet URL. You can copy the URL from your browser that shows the spreadsheet.
-2. The worksheet name. Try "Sheet1".
+2. The name of the worksheet. Try `Sheet1`.
 
 ```ini
 [config:gss2]
@@ -863,11 +884,20 @@ targets = {
     }
 ```
 
-Note: It is important that the top row into your blank spreadsheet has column headings that correspond the values that represent your dictionary keys. If these column headers are not available or different from the dictionary keys, the new rows will be empty.
+:::{note}
+It is important that the top row into your blank spreadsheet has column headings
+that correspond to the values that represent your dictionary keys. If these column
+headers are not available, or different from the dictionary keys, the new rows will
+be empty.
+:::
 
-Note: Google Spreadsheets initially consist of 100 or 1,000 empty rows. The new rows added by `gss2` will be *below*, so you might want to delete those empty rows.
+:::{note}
+A Google Spreadsheet initially contains 100 or 1,000 empty rows. New rows added by 
+`gss2` will be *below*, so you might want to delete those empty rows.
+:::
 
-Other than `gss`, `gss2` uses OAuth 2.0 authentication. It is a lot harder to get working - but it does actually work.
+Differently than `gss`, `gss2` uses OAuth 2.0 authentication. It is a lot harder to
+get working - but it does actually work.
 
 Here is an overview how the authentication with Google works:
 
@@ -893,23 +923,28 @@ credentials yourself.
 To get them:
 
 1. Log in to the Google Developers website from
-  [here](https://developers.google.com/).
+   [here](https://developers.google.com/).
 1. Follow the instructions in section `Creating application credentials` from
-  the [OAuth 2.0 for Installed Applications](https://developers.google.com/api-client-library/python/auth/installed-app#creatingcred) chapter.
-  You are looking for an `OAuth client ID`.
+   the [OAuth 2.0 for Installed Applications](https://developers.google.com/api-client-library/python/auth/installed-app#creatingcred) chapter.
+   You are looking for an `OAuth client ID`.
 1. In the [Credentials screen of the API manager](https://console.developers.google.com/apis/credentials)
-  there is a download icon next to your new client ID. The downloaded
-  file should be named something like `client_secret_664...json`.
+   there is a download icon next to your new client ID. The downloaded
+   file should be named something like `client_secret_664...json`.
 1. Store that file near e.g. `mqttwarn.ini` and ensure the setting
-  `client_secrets_filename` has the valid path name of it.
+   `client_secrets_filename` has the valid path name of it.
 
-Then you start with the `gss2` service enabled and with the `client_secrets_filename` readable. Once an event is to be published, you will find an error in the logs with a URL that you need to visit with a web browser that is logged into your Google account. Google will offer you to accept access to
-Google Docs/Drive. Once you accept, you get to copy a code that you need to paste into field `oauth2_code` and restart mqttwarn.
+Then, you start with the `gss2` service enabled and with the `client_secrets_filename`
+readable. Once an event is to be published, you will find an error in the logs with a
+URL that you need to visit with a web browser that is logged into your Google account.
+Google will offer you to accept access to Google Docs/Drive. Once you accept, you get
+to copy a code that you need to paste into field `oauth2_code` and restart mqttwarn.
 
-The file defined in `oauth2_storage_filename` needs to be missing or writable and will be created or overwritten. Once OAuth credentials have been established (using the `oauth2_code`), they are persisted in there.
+The file defined in `oauth2_storage_filename` needs to be missing or writable and will
+be created or overwritten. Once OAuth credentials have been established (using the
+`oauth2_code`), they are persisted in there.
 
-Requires:
-* [google-api-python-client](https://pypi.python.org/pypi/google-api-python-client/)
+This module requires:
+* [google-api-python-client](https://github.com/googleapis/google-api-python-client/)
   (`pip install google-api-python-client`)
 * [gspread](https://github.com/burnash/gspread)
   (`pip install gspread`)
@@ -933,15 +968,17 @@ targets = {
 
 ### `http`
 
-The `http` service allows GET and POST requests to an HTTP service.
+The `http` service allows to invoke GET and POST requests to an HTTP service.
 
-Each target has five parameters:
+Each target has five parameters.
 
-1. The HTTP method (one of `get` or `post`)
-2. The URL, which is transformed if possible (transformation errors are ignored)
+1. The HTTP method, one of `get` or `post`.
+2. The URL, which is transformed if possible, while ignoring any transformation errors.
 3. `None` or a dict of parameters. Each individual parameter value is transformed.
-4. `None` or a list of username/password e.g. `( 'username', 'password')`
-5. `None` or True to force the transformation of the third parameter to a json object and to send the HTTP header `Content-Type` with a value of `application/json` when using `post`
+4. `None` or a list of username/password tuples e.g. `( 'username', 'password')`
+5. `None` or `True`, to force the transformation of the third parameter to a JSON
+   object, and to send the HTTP header `Content-Type` with a value of `application/json`,
+   when using `post`.
 
 ```ini
 [config:http]
@@ -954,16 +991,19 @@ targets = {
   }
 ```
 
-If you want to use the mqtt message content directly in the query parameters use `'{payload}'`
+If you want to use the MQTT message content in the query parameters verbatim,
+use `'{payload}'`.
 
+:::{note}
 Note that transforms in parameters must be quoted strings:
 
 * Wrong: `'q' : {name}`
 * Correct: `'q' : '{name}'`
 
 As a special case, if the quoted parameter starts with an `@` character (e.g.
-`'@name'`, it will not be formatted via `.format()`; instead, `name` is taken
+`'@name'`), it will not be formatted via `.format()`. Instead, `name` is taken
 directly from the transformation data.
+:::
 
 
 ### `icinga2`
@@ -1079,19 +1119,33 @@ targets = {
 
 ### `influxdb`
 
-This service provides a way for forwarding data to the time series database [InfluxDB](https://influxdata.com/) (v9+).
+[InfluxDB]: https://influxdata.com/
 
-You will need to install an instance of InfluxDB (v9+) and create a new user. Then create a new database and give your user write permissions to that database.
+This service provides a way for forwarding data to the time series database [InfluxDB].
 
-You can then setup multiple *targets*, each of which is a different *measurement* in your InfluxDB database.  Individual targets can override the default measurement, retention policy, and/or precision.
+You will need to install an instance of InfluxDB and create a new user. Then, create
+a new database and give your user write permissions to that database.
 
-Each time a value is received for an InfluxDB target, the value is sent to the configured *measurement* with a *topic* tag matching the MQTT topic the data arrived on.
+You can then setup multiple *targets*, each of which is a different *measurement* in
+your InfluxDB database.  Individual targets can override the default measurement,
+retention policy, and/or precision.
 
-The topic name is normalised by replacing `/` with `_`. So a value arriving on `sensor/kitchen/temperature` would be published to InfluxDB with a tag of `topic=sensor_kitchen_temperature`.
+Each time a value is received for an InfluxDB target, the value is sent to the
+configured *measurement* with a *topic* tag matching the MQTT topic the data arrived
+at.
 
-This allows you to setup measurements with multiple time series streams, or have a separate measurement for each stream.
+The topic name is normalised by replacing `/` with `_`. So, a value arriving on
+`sensor/kitchen/temperature` would be published to InfluxDB with a tag of
+`topic=sensor_kitchen_temperature`.
 
-Following is an ini example, showing the various connection properties for the InfluxDB database, and some example target configs.  Retention Policy (rp) and Precision are optional; the default InfluxDB retention policy (autogen) and precision (ns [nanosecond]) will be used if not specified.
+This allows you to set up measurements with multiple time series streams, or have a
+separate measurement for each stream.
+
+Following is an ini example, showing the various connection properties for the
+InfluxDB database, and some example target address descriptor configurations.
+The retention policy (`rp`) and `precision` settings are optional, the default
+InfluxDB retention policy (`autogen`) and precision (`ns` [nanosecond]) will be
+used if not specified.
 
 ```ini
 [config:influxdb]
@@ -1114,7 +1168,8 @@ targets = {
     }
 ```
 
-Individual targets can override the default measurement, retention policy, and/or precision:
+Individual targets can override the default measurement, retention policy,
+and/or precision:
 
 ```ini
 [config:influxdb]
@@ -1137,8 +1192,12 @@ targets = {
     }
 ```
 
-InfluxDB tags and fields can be specified per topic using transformations. The format string should not contain quotes, and should follow these examples. Note that tag set (if any) should be listed first, comma-separated and without spaces, followed by whitespace and then the field set (required, if format is used).
-
+InfluxDB tags and fields can be specified per topic using transformations. The
+format string should not contain quotes, and should follow these examples.
+:::{note}
+The tag set (if any) should be listed first, comma-separated and without spaces,
+followed by whitespace and then the field set (required, if format is used).
+:::
 ```ini
 [topic/one]
 format = tagkey1=tagvalue1,tagkey2=tagvalue2  field=value
@@ -1148,8 +1207,7 @@ format = field=value
 
 The 'topic' tag is always set as described above.
 
-Messages received matching the following config: ...
-
+Messages received matching the following config...
 ```ini
 [environment/temperature/basement]
 targets = influxdb:temperature
@@ -1157,21 +1215,29 @@ format = room=basement,entity=sensor2 temperature={payload}
 ```
 
 ... will be stored as:
-
-```
+```text
              (tag)    (tag)     (field)      (tag)
 time         entity   room      temperature  topic
 ----         ------   ----      -----------  -----
 {timestamp}  sensor2  basement  47.5         environment_temperature_basement
 ```
 
+:::{attention}
+This module will currently only work with InfluxDB 1.x. In order to make the leap
+to InfluxDB 2.x, contributions to [Support for InfluxDB 2 #563] are very much
+welcome.
+:::
+
+[Support for InfluxDB 2 #563]: https://github.com/jpmens/mqttwarn/issues/563
 
 
 ### `irccat`
 
-The `irccat` target fires a message off to a listening [IRCcat](https://github.com/RJ/irccat) which has a connection open on one or more IRC channels.
+The `irccat` target fires a message off to a listening [IRCcat] IRC bot, which is
+a member on one or more IRC channels.
 
-Each target has to be configured with the address, TCP port and channel name of the particular _IRCcat_ instance it should target.
+Each target has to be configured with the IP address, TCP port, and channel name,
+of the particular _IRCcat_ instance it should target.
 
 ```ini
 [config:irccat]
@@ -1189,6 +1255,9 @@ The priority field can be used to indicate a message colour.
 
 ![irccat](assets/irccat.png)
 
+[IRCcat]: https://github.com/RJ/irccat
+
+
 ### `linuxnotify`
 The `linuxnotify` service is used to display notifications on a running desktop
 environment (only tested with Gnome3).
@@ -1202,13 +1271,15 @@ targets = {
 
 ![linuxnotify](assets/linuxnotify.png)
 
-Requires:
-* gobject-introspection Python bindings
+This module requires:
+- Gnome3 as desktop environment
+- `gobject-introspection` Python bindings
+
 
 ### `log`
 
-The `log` service allows us to use the logging system in use by _mqttwarn_
-proper, i.e. messages directed at `log` will land in _mqttwarn_'s log file.
+The `log` service allows you to forward messages to the logging system of _mqttwarn_.
+In turn, messages directed at `log` will land in _mqttwarn_'s log file.
 
 ```ini
 [config:log]
@@ -1219,6 +1290,7 @@ targets = {
     'error'  : [ 'error' ]
   }
 ```
+
 
 ### `mattermost`
 
@@ -1254,16 +1326,23 @@ title = Owntracks position
 targets = mattermost:vehicles
 ```
 
-This will, with appropriate JSON paylods, produce the following posts in Mattermost.
+This will, with appropriate JSON payloads, produce the following posts in Mattermost.
 
 ![mattermost](assets/mattermost.png)
 
 Note how this service attempts to format incoming JSON as a Markdown table.
 
+
 ### `mqtt`
 
-The `mqtt` service fires off a publish on a topic, creating a new connection
-to the configured broker for each message.
+The `mqtt` service publishes outbound messages to MQTT topics on **remote
+MQTT brokers**, effectively providing powerful [MQTT republishing], topic
+rewriting, and bridging/routing capabilities.
+
+:::{seealso}
+In order to publish a message _to the same MQTT broker mqttwarn is connected
+to_, the [mqttpub](#mqttpub) module is the right choice.
+:::
 
 Consider the following configuration snippets:
 
@@ -1283,19 +1362,19 @@ targets = {
 
 [in/a1]
 targets = mqtt:o1, mqtt:o2
-format =  u'Since when does a {fruit} cost {price}?'
+format =  'Since when does a {fruit} cost {price}?'
 ```
 
-The `topicmap` specifies we should subscribe to `in/a1` and republish to two
+The `topicmap` instructs mqttwarn to subscribe to `in/a1`, and republish to two
 MQTT targets. The second target (`mqtt:o2`) has a topic branch with a variable
 in it which is to be interpolated (`{fruit}`).
 
-These are the results for appropriate publishes:
+These are the results for corresponding publishes:
 
 ```
-$ mosquitto_pub -t 'in/a1' -m '{"fruit":"pineapple", "price": 131, "tst" : "1391779336"}'
+$ mosquitto_pub -t 'in/a1' -m '{"fruit": "pineapple", "price": 131, "tst" : "1391779336"}'
 
-in/a1 {"fruit":"pineapple", "price": 131, "tst" : "1391779336"}
+in/a1 {"fruit": "pineapple", "price": 131, "tst" : "1391779336"}
 out/food Since when does a pineapple cost 131?
 out/fruit/pineapple Since when does a pineapple cost 131?
 
@@ -1307,16 +1386,17 @@ out/food temperature: 12
 out/fruit/{fruit} temperature: 12
 ```
 
-In the first case, the JSON payload was decoded and the _fruit_ variable could be
+In the first case, the JSON payload was decoded and the `fruit` variable could be
 interpolated into the topic name of the outgoing publish, whereas the latter shows
 the outgoing topic branch without interpolated values, because they simply didn't
 exist in the original incoming payload.
 
-The optional second value in the topic map (`specialmq.ini` in the example above)
+The optional second value in the topic map, `specialmq.ini` in the example above,
 specifies the name of an INI-type file with parameters which override the basic
 configuration of this service. Assume most of your MQTT targets go to `localhost`,
 but you want one target to be configured to address a distinct MQTT broker. Create
-an INI file with any name you desire and specify that as the optional second parameter:
+an INI file with any name you desire and specify that as the optional second
+parameter.
 
 ```ini
 [defaults]
@@ -1340,8 +1420,44 @@ tls_version = tlsv1
 
 This shows the currently full configuration possible. Global values from the
 `mqtt` service override those not specified here. Also, if you don't need
-authentication (`auth`) or (`tls`) you may omit those sections. (The `defaults`
-section must exist.)
+authentication using `auth` or `tls`, you may omit those sections. However,
+the `defaults` section MUST exist.
+
+:::{note}
+Currently, this module creates a new connection to the configured MQTT broker
+for each outbound message.
+:::
+
+
+### `mqttpub`
+
+The `mqttpub` service publishes outbound messages to MQTT topics on **the same
+MQTT broker** mqttwarn is connected to, effectively providing powerful [MQTT
+republishing], topic rewriting, and bridging/routing capabilities.
+
+In order to publish a message to a _different_ MQTT broker, the [mqtt](#mqtt)
+module is the right choice.
+
+Each target requires a topic name, the desired `qos`, and a `retain` flag.
+
+```ini
+[config:mqttpub]
+targets = {
+                # topic            qos     retain
+    'mout1'   : [ 'mout/1',         0,     False ],
+    'special' : [ 'some/{device}',  0,     False ],
+  }
+```
+
+If the outgoing topic name contains transformation strings, e.g. `out/some/{temp}`,
+values are interpolated accordingly. Should this not be possible, e.g. because a
+string is not available in the _transformation data_, the message is _not_ published.
+
+:::{note}
+This module does not incur the overhead of creating a new connection for each outbound
+message.
+:::
+
 
 ### `mqtt_filter`
 
@@ -1411,34 +1527,22 @@ Use case for backup is to run a dirvish backup triggered by a simple mqtt messag
 Note, that for each message targeted to the `mqtt_filter` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
 
-### `mqttpub`
-
-This service publishes a message to the broker _mqttwarn_ is connected to. (To
-publish a message to a _different_ broker, see `mqtt`.)
-
-Each target requires a topic name, the desired _qos_ and a _retain_ flag.
-
-```ini
-[config:mqttpub]
-targets = {
-                # topic            qos     retain
-    'mout1'   : [ 'mout/1',         0,     False ],
-    'special' : [ 'some/{device}',  0,     False ],
-  }
-```
-
-If the outgoing topic name contains transformation strings (e.g. `out/some/{temp}`)
-values are interpolated accordingly. Should this not be possible, e.g. because a
-string isn't available in the _data_, the message is _not_ published.
 
 ### `mysql`
 
-The MySQL plugin will attempt to add a row for every message received on a given topic, automatically filling in
- columns.
+The MySQL plugin will attempt to add a row for every message received on a given
+topic, automatically filling in columns.
 
-For instance, given a table created with `CREATE TABLE names (id INTEGER, name VARCHAR(25));` then
-the message '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }' on topic 'my/2' will be added to the table like this:
-
+#### How does it work?
+For instance, given a table created with
+```sql
+CREATE TABLE names (id INTEGER, name VARCHAR(25));
+```
+the message
+```json
+{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }
+```
+on topic `my/2` will be added to the table like this:
 ```text
 +------+------------+
 | id   | name       |
@@ -1447,10 +1551,11 @@ the message '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }' on topic 'my/2
 +------+------------+
 ```
 
-The values for the 'id' and 'name' columns are assumed to be filled by the values of the JSON nodes with the same name.
+The values for the `id` and `name` columns are assumed to be filled by the values of
+the JSON nodes with the same name.
 
-If you added columns 'topic', 'payload' and '_dtiso' to the database, then that same message will add this row:
-
+If you added columns `topic`, `payload` and `_dtiso` to the database, then that same
+message will add this row:
 ```text
 +------+------------+-----------------------------------------------------+-----------------------------+-------+
 | id   | name       | payload                                             | _dtiso                      | topic |
@@ -1460,33 +1565,33 @@ If you added columns 'topic', 'payload' and '_dtiso' to the database, then that 
 ```
 Here, the plugin pulled values for the new columns from standard mqttwarn metadata.
 
-When a message is received, the  plugin will attempt to populate the following column names:
-- root-level JSON nodes in the message
-  - e.g. 'name' and 'id' above
-- ['transformation data' fields](https://github.com/jpmens/mqttwarn#outbound-messages) names
-  - e.g. 'topic', 'payload' and '_dtiso' as above
-  - note that these all must be VARCHAR columns; timestamp columns are [not yet supported](https://github.com/jpmens/mqttwarn/issues/334#issuecomment-422141808)
-- the 'fallback' column, as noted below
+When a message is received, the plugin will attempt to populate the following column names:
+- Root-level JSON fields in the message
+  - e.g. `name` and `id` above
+- Names for [transformation data fields](#transformations)
+  - e.g. `topic`, `payload` and `_dtiso` as above
+  - note that these all must be `VARCHAR` columns; timestamp columns are [not yet supported](https://github.com/jpmens/mqttwarn/issues/334#issuecomment-422141808)
+- the _fallbackcolumn_, as noted below
 
-To be clear, there is no other way to configure this particular plugin to use different column names.  If you
- need such a capability (e.g. you want to a column called "receivedAt" to be filled with the timestamp)
- then you can use an `alldata` function to transform the incoming message into a JSON document with the
- desired node names.  Or you can try the [mysql_remap plugin](#mysql_remap) plugin, below.
+To be clear, there is no other way to configure this particular plugin to use different
+column names. If you need such a capability, e.g. you want to a column called `receivedAt`
+to be filled with the timestamp, then you can use an `alldata` function to transform the
+incoming message into a JSON document with the desired node names. Or, you can try the
+[mysql_remap](#mysql_remap) plugin.
 
 #### Setup
 
-The MySQL plugin is one of the most complicated to set up.
+The MySQL plugin module is one of the most complicated to set up, please read this
+documentation section very carefully.
 
 First, it requires the [MySQLDb](https://mysql-python.sourceforge.net/) library to be
-installed, which is not trivial.
-- _Ubuntu 16.04:_
+installed, which is not trivial. On Debian Linux, it works like this:
 ```
 sudo apt-get install -y python-dev libmysqlclient-dev
 sudo pip install MySQL-python
 ```
 
 It then requires the following configuration section:
-
 ```ini
 [config:mysql]
 host  =  'localhost'
@@ -1500,20 +1605,38 @@ targets = {
   }
 ```
 
-Finally a topic section:
+Finally, a topic section:
 ```ini
 [names]
 topic = my/#
 targets = mysql:m2
 ```
 
-The target contains a so-called _fallback column_ into which _mqttwarn_ adds
-the "rest of" the payload for all columns not targeted with JSON data unless that
-is explicitly configured as `NOP` in the service in which case extra data is discarded.
-I'll now add our fallback column to the schema:
+The target contains a so-called _fallbackcolumn_, into which _mqttwarn_ adds the
+remainder of the payload for all columns not targeted with JSON data unless that
+is explicitly configured as `NOP` in the service, in which case extra data gets
+discarded.
 
-The payload of messages which do not contain valid JSON will be coped verbatim
-to the _fallback_ column:
+So, let's add the _fallbackcolumn_ to the schema:
+```sql
+ALTER TABLE names ADD full TEXT;
+```
+
+Publishing the same payload again will insert this row into the table:
+```text
++------+------------+-----------------------------------------------------+
+| id   | name       | full                                                |
++------+------------+-----------------------------------------------------+
+|   90 | Jane Jolie | NULL                                                |
+|   90 | Jane Jolie | { "name" : "Jane Jolie", "id" : 90, "number" : 17 } |
++------+------------+-----------------------------------------------------+
+```
+
+As you can imagine, if we add a `number` column to the table, it too will be
+correctly populated with the value `17`.
+
+The payload of messages which do not contain valid JSON will be copied verbatim
+to the _fallbackcolumn_:
 
 ```text
 +------+------+-------------+--------+
@@ -1522,6 +1645,9 @@ to the _fallback_ column:
 | NULL | NULL | I love MQTT |   NULL |
 +------+------+-------------+--------+
 ```
+
+You can add columns with the names of the built-in transformation types
+(e.g. `_dthhmmss`) to have those values stored automatically.
 
 
 
@@ -1581,6 +1707,7 @@ Requires:
 Limitations:
 
 At this point, if the payload format changes, the tables are not modified and data may fail to be stored. Also, there is no fallback table or column like the case of the MySQL plugin.
+
 
 ### `mysql_remap`
 This service was originally designed to transform and store [SonOff](https://www.itead.cc/sonoff-pow.html) telemetry messages into a MySQL database, where database doen't need to have columns with same name as values in the MQTT messages.
