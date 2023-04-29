@@ -27,7 +27,6 @@ alphabetically sorted.
 * [file](#file)
 * [freeswitch](#freeswitch)
 * graphite, see [carbon](#carbon)
-* [gss](#gss)
 * [gss2](#gss2)
 * [hangbot](#hangbot)
 * [http](#http)
@@ -820,48 +819,6 @@ maximum length supported by the Google Translate API.
 [Google Translate API]: https://translate.google.com
 
 
-### `gss`
-
-The `gss` service interacts directly with a Google Docs Spreadsheet. Each message
-can be written to a row in a selected worksheet.
-
-Each target has two parameters.
-
-1. The spreadsheet key. You can obtain this from the URL of the opened sheet.
-2. The worksheet id. By default, the first sheets id is 'od6'.
-
-```ini
-[config:gss]
-username    = your.username@gmail.com
-password    = yourpassword
-targets     = {
-               # spreadsheet_key                               # worksheet_id
-    'test': [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',  'od6']
-    }
-```
-
-Example:
-```
-mosquitto_pub -t nn/ohoh -m '{"username": "jan", "device":"phone", "lat": "-33.8746097", "lon": "18.6292892", "batt": "94"}'
-```
-
-turns into:
-![GSS](assets/gss.png)
-
-:::{note}
-It is important that the top row into your blank spreadsheet has column headings
-that correspond to the values that represent your dictionary keys. If these column
-headers are not available, you will most likely see an error like this:
-```
-gdata.service.RequestError: {'status': 400, 'body': 'We&#39;re sorry, a server error occurred. Please wait a bit and try reloading your spreadsheet.', 'reason': 'Bad Request'}
-```
-:::
-
-This module is based on the [gdata-python-client] package.
-
-[gdata-python-client]: https://github.com/google/gdata-python-client
-
-
 ### `gss2`
 
 The `gss2` service interacts directly with a Google Docs Spreadsheet. Each message
@@ -896,10 +853,15 @@ A Google Spreadsheet initially contains 100 or 1,000 empty rows. New rows added 
 `gss2` will be *below*, so you might want to delete those empty rows.
 :::
 
-Differently than `gss`, `gss2` uses OAuth 2.0 authentication. It is a lot harder to
-get working - but it does actually work.
+This module requires:
+* [google-api-python-client](https://github.com/googleapis/google-api-python-client/)
+  (`pip install google-api-python-client`)
+* [gspread](https://github.com/burnash/gspread)
+  (`pip install gspread`)
 
-Here is an overview how the authentication with Google works:
+#### Setup OAuth2 with Google
+`gss2` uses OAuth 2.0 authentication, please read the setup procedure documentation
+carefully. Here is an overview how the authentication with Google works:
 
 1. You obtain a `client_secrets.json` file from Google Developers Console.
 1. You reference that file in the `client_secrets_filename` field and restart mqttwarn.
@@ -943,11 +905,17 @@ The file defined in `oauth2_storage_filename` needs to be missing or writable an
 be created or overwritten. Once OAuth credentials have been established (using the
 `oauth2_code`), they are persisted in there.
 
-This module requires:
-* [google-api-python-client](https://github.com/googleapis/google-api-python-client/)
-  (`pip install google-api-python-client`)
-* [gspread](https://github.com/burnash/gspread)
-  (`pip install gspread`)
+#### Example
+
+An [OwnTracks] MQTT message like
+```
+mosquitto_pub -t nn/ohoh -m '{"username": "jan", "device":"phone", "lat": "-33.8746097", "lon": "18.6292892", "batt": "94"}'
+```
+
+will turn into:
+
+![GSS](assets/gss.png)
+
 
 [Google API Client Library for Python Docs]: https://googleapis.github.io/google-api-python-client/docs/
 
