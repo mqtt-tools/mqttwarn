@@ -30,7 +30,7 @@ alphabetically sorted.
 * [gss2](#gss2)
 * [hangbot](#hangbot)
 * [http](#http)
-* [icinga2](#icinga2)
+* [icinga2](#icinga2), see also [nsca](#nsca)
 * [ifttt](#ifttt)
 * [influxdb](#influxdb)
 * [ionic](#ionic)
@@ -48,7 +48,7 @@ alphabetically sorted.
 * [mysql_remap](#mysql_remap)
 * [mythtv](#mythtv)
 * [nntp](#nntp)
-* [nsca](#nsca)
+* [nsca](#nsca), see also [icinga2](#icinga2)
 * [ntfy](#ntfy)
 * [osxsay](#osxsay)
 * [pastebinpub](#pastebinpub)
@@ -539,8 +539,7 @@ This module requires the [Python dbus bindings].
 
 ### `desktopnotify`
 
-It invokes desktop notifications, using the fine 
-[desktop-notifier](https://github.com/samschott/desktop-notifier).
+It invokes desktop notifications, using the [desktop-notifier] package.
 
 ```ini
 [config:desktopnotify]
@@ -559,6 +558,8 @@ If the MQTT message is a JSON object, it will populate the notification title an
 ```
 
 ![desktopnotify](assets/desktopnotify.jpg)
+
+[desktop-notifier]: https://github.com/samschott/desktop-notifier
 
 
 ### `dnsupdate`
@@ -1618,42 +1619,51 @@ You can add columns with the names of the built-in transformation types
 (e.g. `_dthhmmss`) to have those values stored automatically.
 
 
-
 ### `mysql_dynamic`
 
-Similar to the MySQL plugin but tables and columns are created dynamically as needed. The name of the table is composed from the topic, replacing the dash separator with underscores. As an example, the topic ```device/laptop/tracks```results in the creation of a table named ```device_laptop_tracks```.
+This service plugin is similar to the [mysql](#mysql) plugin, but tables and columns
+are created dynamically / on demand, as needed. The name of the table is derived from
+the MQTT topic, replacing the dash separator with underscores. For example, receiving
+data on the MQTT topic `device/laptop/tracks` will create a table named
+`device_laptop_tracks`.
 
-The message will be processed and each JSON field will be stored in a different column. The columns of each table (and the table itself) are created when the first message is published to the topic. The configuration allows to specify the fields to ignore. These will not be stored in the database.
+The message will be processed, and each JSON field will be stored in a dedicated column.
+The columns of each table, and the table itself, are created when the first message is
+received on the corresponding topic. The configuration allows you to ignore specific
+fields. Those will not be stored in the database.
 
-As an example, by publishing this JSON payload:
+As an example, by publishing this JSON payload,
 ```
-mosquitto_pub -t my/2 -m '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }'
+mosquitto_pub -t my/2 -m '{"name": "Jane Jolie", "id": 90, "number": 17}'
 ```
 
-A table named ```my_2``` will be created on the fly with the following structure and content (the table name is derived from the MQTT topic, but slashes are replaced by underscores):
-
+... a table named ```my_2``` will be created on the fly, with the following structure
+and content. The table name is derived from the MQTT topic, and slashes are replaced by
+underscores.
 ```text
-+------+------------+--------+-------------------------------------------------------+
-| id   | name       | number | payload                                               |
-+------+------------+--------+-------------------------------------------------------+
-|   90 | Jane Jolie | 17     | '{ "name" : "Jane Jolie", "id" : 90, "number" : 17 }' |
-+------+------------+--------+-------------------------------------------------------+
-```
-Please note that by default, the information is always stored in a duplicated form: each field, and all fields together as sent. If you can use the field ignore capability (see below) to disable this behaviour. Actually, lots of other fields (created by mqttwarn) may be present. Adjust your configuration as required.
-
-An index table, containing a timestamp and the name of the topic, will keep track of the latest update to the remaining tables. The name of the index table can be specified in the configuration, and must be created manually. The following statements create an index table named ```index_table_name``:
-
-```
-CREATE TABLE `index_table_name` (
-  `topic` text NOT NULL,
-  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY `topic` (`topic`(128))
-);
++------+------------+--------+--------------------------------------------------+
+| id   | name       | number | payload                                          |
++------+------------+--------+--------------------------------------------------+
+|   90 | Jane Jolie | 17     | '{"name": "Jane Jolie", "id": 90, "number": 17}' |
++------+------------+--------+--------------------------------------------------+
 ```
 
+:::{note}
+By default, the information is always stored redundantly: Each field separately
+within a dedicated column, and all fields together as received within the `payload`
+column. If you can use the field ignore capability to disable this behaviour. Actually,
+lots of other fields (created by mqttwarn) may be present. Adjust your configuration as
+required.
+:::
 
-This module requires the following configuration to be present in the configuration file:
+:::{attention} **Limitations:**
+At this point, if the payload format or shape changes, the tables are not modified
+and data may fail to be stored. Also, there is no fallback table or column like the
+[mysql](#mysql) plugin maintains.
+:::
 
+#### Configuration
+The module requires the following configuration to be present in the configuration file.
 ```ini
 [config:mysql_dynamic]
 host  =  'localhost'
@@ -1669,12 +1679,22 @@ targets = {
     }
 ```
 
-Requires:
-* [MySQLDb](https://mysql-python.sourceforge.net/)
+#### Index table
+An index table, containing a timestamp and the name of the topic, will keep track of
+the latest update to the remaining tables. The name of the index table can be specified
+in the configuration, and must be created manually. The following statements create an
+index table named `index_table_name`.
 
-Limitations:
+```
+CREATE TABLE `index_table_name` (
+  `topic` text NOT NULL,
+  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY `topic` (`topic`(128))
+);
+```
 
-At this point, if the payload format changes, the tables are not modified and data may fail to be stored. Also, there is no fallback table or column like the case of the MySQL plugin.
+#### Requirements
+* [MySQL-python](https://pypi.org/project/MySQL-python/)
 
 
 ### `mysql_remap`
@@ -1774,28 +1794,31 @@ Example MySQL records:
 
 ### `mythtv`
 
-This service allows for on-screen notification pop-ups on [MythTV](https://www.mythtv.org/) instances. Each target requires
-the address and port of the MythTV backend instance (&lt;hostname&gt;:&lt;port&gt;), and a broadcast address.
+This service allows for on-screen notification pop-ups on [MythTV] instances.
+Each target address descriptor requires the address and port of the MythTV
+backend instance (`<hostname>:<port>`), and a broadcast address.
 
 ```ini
 [config:mythtv]
 timeout = 10  # duration of notification
 targets = {
-                          # host:port,            broadcast address
+                          # host:port             broadcast address
     'all'               :  [ '192.168.1.40:6544', '192.168.1.255'],
     'frontend_bedroom'  :  [ '192.168.1.40:6544', '192.168.1.74' ]
     }
 ```
 
-| Topic option  |  M/O   | Description                           |
-| ------------- | :----: | --------------------------------------|
-| `title`       |   O    | notification title (dflt: `mqttwarn`) |
-| `image`       |   O    | notification image URL                |
+| Topic option  |  M/O   | Description                              |
+| ------------- | :----: |------------------------------------------|
+| `title`       |   O    | notification title (default: `mqttwarn`) |
+| `image`       |   O    | notification image URL                   |
+
+[MythTV]: https://www.mythtv.org/
 
 
 ### `nntp`
 
-The `nntp` target is used to post articles to an NNTP news server on a particular newsgroup.
+The `nntp` service is used to post articles to an NNTP news server on a particular newsgroup.
 
 ```ini
 [config:nntp]
@@ -1804,7 +1827,7 @@ port    = 119
 ; username = "jane@example.com"
 ; password = "secret"
 targets = {
-    #              from_hdr                       newsgroup
+    #            from_hdr                        newsgroup
     'aa'     : [ 'Me and I <jj@example.com>',    'jp.aa' ],
   }
 ```
@@ -1812,19 +1835,19 @@ targets = {
 Each target's configuration includes the value given to the `From:` header as well as
 a single newsgroup to which the article is posted.
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | The post's subject (dflt: `mqttwarn`)  |
+| Topic option  |  M/O   | Description                              |
+| ------------- | :----: |------------------------------------------|
+| `title`       |   O    | The post's subject (default: `mqttwarn`) |
 
-Example:
+#### Example
 
+Publishing a message to MQTT...
+```shell
+mosquitto_pub -t nn/ohoh -m '{"name": "Jane Jolie", "number": 47, "id": 91}'
 ```
-mosquitto_pub -t nn/ohoh -m '{"name":"Jane Jolie","number":47, "id":91}'
-```
 
-turns into
-
-```
+...turns into:
+```text
 Path: t1.prox!t1.prox!not-for-mail
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
@@ -1838,34 +1861,35 @@ Lines: 1
 Message-ID: <5332caf6$0$20197$41d98655@t1.prox>
 
 Jane Jolie: 47 => 13:41
-
 ```
+
 
 ### `nsca`
 
-The `nsca` target is used to submit passive Nagios/Icinga checks to an NSCA daemon.
+The `nsca` service is used to submit passive Nagios/Icinga checks to an [NSCA] daemon.
+NSCA is a Linux/Unix daemon allows you to integrate passive alerts and checks from
+remote machines and applications with Nagios.
 
-Consider the following Icinga service description which configures a passive service:
-
+#### Example
+Consider the following Icinga service description which configures a passive service.
 ```
-define service{
+define service {
         use                    generic-service
         host_name              localhost
         service_description    Current temp via MQTT
         active_checks_enabled  0
         passive_checks_enabled 1
-        check_freshness         0
+        check_freshness        0
         check_command          check_dummy!1
         }
 ```
 
-with the following target definition in `mqttwarn.ini`
-
+with the following target definition in `mqttwarn.ini`.
 ```ini
 [config:nsca]
 nsca_host = '172.16.153.112'
 targets = {
-   #              Nagios host_name,     Nagios service_description,
+   #              Nagios hostname       Nagios service description
    'temp'    :  [ 'localhost',          'Current temp via MQTT' ],
   }
 
@@ -1876,27 +1900,16 @@ priority = check_temperature()
 format = Current temperature: {temp}C
 ```
 
-Also, consider the following PUB via MQTT:
-
-```
-mosquitto_pub -t arduino/temp -m '{"temp": 20}'
-```
-
-Using a transformation function for _priority_ to decide on the status to
-be sent to Nagios/Icinga, we obtain the following:
-
-![Icinga](assets/icinga.jpg)
-
-
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `priority`    |   O    | Nagios/Icinga status. (dflt: 0)        |
-
-The transformation function I've defined as follows:
-
+The transformation function assigned by `priority = check_temperature()` computes
+the status to be submitted to Nagios/Icinga. It has been defined like this within
+`udf.py`.
 ```python
+from pynsca import OK, WARNING, CRITICAL, UNKNOWN
+
 def check_temperature(data):
-    '''Calculate Nagios/Icinga warning status'''
+    """
+    Compute Nagios/Icinga warning status, depending on the temperature value.
+    """
     OK = 0
     WARNING = 1
     CRITICAL = 2
@@ -1913,8 +1926,24 @@ def check_temperature(data):
     return UNKNOWN
 ```
 
-Requires:
-* [pynsca](https://github.com/djmitche/pynsca).
+Now, when publishing a message to MQTT,
+```shell
+mosquitto_pub -t arduino/temp -m '{"temp": 20}'
+```
+... a corresponding monitoring event has been produced.
+
+![Icinga](assets/icinga.jpg)
+
+
+| Topic option  |  M/O   | Description                        |
+| ------------- | :----: |------------------------------------|
+| `priority`    |   O    | Nagios/Icinga status. (default: 0) |
+
+
+#### Requirements
+* [pynsca](https://github.com/djmitche/pynsca)
+
+[NSCA]: https://exchange.nagios.org/directory/Addons/Passive-Checks/NSCA--2D-Nagios-Service-Check-Acceptor/details
 
 
 ### `ntfy`
@@ -2071,77 +2100,83 @@ followed by option fields defined on the `[config:ntfy]` configuration section.
 
 ### `osxsay`
 
-The `osxsay` target alerts you on your Mac (warning: requires a Mac :-) with a spoken voice.
-It pipes the message (which is hopefully text only) to the _say(1)_ utility. You can configure
-any number of different targets, each with a different voice (See `say -v ?` for a list of allowed
-voice names.)
+The `osxsay` service alerts you on your macOS system with a spoken voice, using
+the [say] utility. You can configure any number of different targets, each with
+a different voice. See `say -v ?` for a list of allowed voice names.
 
 ```ini
 [config:osxsay]
 targets = {
-                 # voice (see say(1) or `say -v ?`)
+                 # voice (see `man say or `say -v ?`)
     'victoria' : [ 'Victoria' ],
     'alex'     : [ 'Alex' ],
   }
-```
 
-```ini
 [say/warn]
 targets = osxsay:victoria
-```
 
-
-```ini
 [say/alert]
 targets = osxsay:alex
 ```
+:::{note}
+Your speakers need to be enabled, and it can be a pain for your co-workers or family
+members. Also, we can't show you a screenshot.
+:::
 
-* Note: this requires your speakers be enabled and can be a pain for co-workers or family members, and we can't show you a screen shot...
+[say]: https://ss64.com/osx/say.html
+
 
 ### `pastebinpub`
 
-The `pastebinpub` service is publishing messages to [Pastebin](https://pastebin.com).
-
-Note: Be careful what you post on this target, it could be public. If you are
-not a paying customer of Pastebin you are limited to 25 unlisted and
-10 private pastes.
+The `pastebinpub` service is publishing messages to [Pastebin], using the
+[Pastebin API] package.
 
 ```ini
 [config:pastebinpub]
 targets = {
-    'warn' : [ 'api_dev_key',  # API dev key
-               'username',  # Username
-               'password',  # Password
-                1,  # Privacy level
-               '1H'  # Expire
+    'warn': [ 'api_dev_key',  # API dev key
+              'username',     # Username
+              'password',     # Password
+              1,             # Privacy level
+              '1H'            # Expiration
             ]
     }
 ```
 
 ![pastebin](assets/pastebin.png)
 
-Requires:
-* An account at [Pastebin](https://pastebin.com)
-* Python bindings for the [Pastebin API](https://github.com/Morrolan/PastebinAPI)
-  You don't have to install this -- simply copy `pastebin.py` to the _mqttwarn_ directory.
-  `curl -O https://raw.githubusercontent.com/Morrolan/PastebinAPI/master/pastebin.py`
+:::{note}
+If you are not a paying customer of Pastebin, you are limited to 25 unlisted
+and 10 private pastes.
+:::
+
+:::{attention}
+Be careful what you post on this target, it could be public.
+:::
+
+[Pastebin]: https://pastebin.com
+[Pastebin API]: https://github.com/Morrolan/PastebinAPI
+
 
 ### `pipe`
 
 The `pipe` target launches the specified program and its arguments and pipes the
-(possibly formatted) message to the program's _stdin_. If the message doesn't have
-a trailing newline (`\n`), _mqttwarn_ appends one.
+outbound message from mqttwarn into the program's _stdin_ channel. If the message
+does not have a trailing newline (`\n`), _mqttwarn_ appends one.
 
 ```ini
 [config:pipe]
 targets = {
-             # argv0 .....
-   'wc'    : [ 'wc',   '-l' ]
+         # argv0 ...
+   'wc': [ 'wc', '-l' ]
    }
 ```
 
-Note, that for each message targeted to the `pipe` service, a new process is
-spawned (fork/exec), so it is quite "expensive".
+:::{warning}
+For each message processed by the `pipe` service, a new process is spawned (fork/exec),
+so this service plugin is more expensive than other pure-Python ones.
+:::
+
 
 ### `postgres`
 
@@ -2218,72 +2253,75 @@ to the _fallback_ column:
 You can add columns with the names of the built-in transformation types (e.g. `_dthhmmss`, see below)
 to have those values stored automatically.
 
+
 ### `prowl`
 
-This service is for [Prowl](https://www.prowlapp.com). Each target requires
-an application key and an application name.
+This service is for [Prowl], based on [pyprowl]. Each target requires an application
+key and an application name.
 
 ```ini
 [config:prowl]
 targets = {
-                    # application key                           # app name
+                 # application key                           # app name
     'pjpm'    :  [ 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'SuperAPP' ]
     }
 ```
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | application title (dflt: `mqttwarn`)   |
-| `priority`    |   O    | priority. (dflt: 0)                    |
+| Topic option  |  M/O   | Description                             |
+| ------------- | :----: |-----------------------------------------|
+| `title`       |   O    | application title (default: `mqttwarn`) |
+| `priority`    |   O    | priority. (default: 0)                     |
 
 
 ![Prowl](assets/prowl.jpg)
 
-Requires:
-* [pyprowl](https://pypi.org/project/pyprowl/). Setup:
-
-```
-pip install pyprowl
-```
+[Prowl]: https://www.prowlapp.com
+[pyprowl]: https://github.com/toddrob99/pyprowl
 
 
 ### `pushbullet`
 
-This service is for [PushBullet](https://www.pushbullet.com), an app for
-Android along with an extension for Chrome, which allows notes, links,
-pictures, addresses and files to be sent between devices.
+This service is for [PushBullet], an app for Android along with an extension for
+Chrome and Firefox, which allows notes, links, pictures, addresses and files to be
+sent between devices. It is based on the [PushbulletPythonLibrary] package.
 
-You can get your API key from [here](https://www.pushbullet.com/account) after
-signing up for a PushBullet account. You will also need the device ID to push
-the notifications to. To obtain this you need  to follow the instructions at
-[pyPushBullet](https://github.com/Azelphur/pyPushBullet) and run
-``./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices``.
+You can get your API key from the [PushBullet account page] after signing up.
+You will also need the device ID to push the notifications to. To obtain this,
+you will need to follow the instructions at [pyPushBullet], by running
+```shell
+./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices
+```
 
+The configuration layout looks like this.
 ```ini
 [config:pushbullet]
 targets = {
-                   # API KEY                  device ID,    recipient_type
+                   # API KEY                  device ID     recipient_type
     'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy',     'tttt' ]
     }
 ```
 
-where the optional _recipient_type_ could be one of `device_iden` (default), `email`, `channel` or `client`.
+The optional _recipient_type_ could be one of `device_iden` (default), `email`, `channel` or `client`.
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | application title (dflt: `mqttwarn`)   |
+| Topic option  |  M/O   | Description                             |
+| ------------- | :----: |-----------------------------------------|
+| `title`       |   O    | application title (default: `mqttwarn`) |
 
 ![Pushbullet](assets/pushbullet.jpg)
 
-Requires:
-* a [Pushbullet](https://www.pushbullet.com) account with API key
-* [pyPushBullet](https://github.com/Azelphur/pyPushBullet). You don't have to install this -- simply copy `pushbullet.py` to the _mqttwarn_ directory.
+[PushBullet]: https://www.pushbullet.com
+[PushBullet account page]: https://www.pushbullet.com/#settings/account
+[PushbulletPythonLibrary]: https://pypi.org/project/PushbulletPythonLibrary/
+[pyPushBullet]: https://github.com/Azelphur/pyPushBullet
+
 
 ### `pushover`
 
-This service is for [Pushover](https://pushover.net), an app for iOS and Android.
-In order to receive pushover notifications you need what is called a _user key_
-and one or more _application keys_ which you configure in the targets definition:
+This service is for [Pushover], an app for iOS and Android.
+
+In order to receive pushover notifications, you need what is called a _user key_
+and one or more _application keys_, which you configure within the target address
+descriptor definition.
 
 ```ini
 [config:pushover]
@@ -2296,23 +2334,26 @@ targets = {
     }
 ```
 
-This defines four targets (`nagios`, `alerts`, etc.) which are directed to the
+This defines four targets (`nagios`, `alerts`, etc.), which are directed to the
 configured _user key_ and _app key_ combinations. This in turn enables you to
 notify, say, one or more of your devices as well as one for your spouse. As you
 can see in the example, you can even specify an optional sound to be played for
-the individual users. For a list of available sounds see the [Pushover API List](https://pushover.net/api#sounds).
+the individual users. For a list of available sounds see the [list of Pushover
+sounds].
 
-You can also specify the devices that should be notified, this is a comma-separated list of device names specified as a single string.
-If you want to specify custom devices but don't want to specify a custom sound, you have to pass None for the sound.
+You can also specify the devices that should be notified, this is a comma-separated
+list of device names specified as a single string. If you want to specify custom
+devices, but don't want to specify a custom sound, you have to pass `None` for the
+sound.
 
-NOTE: `callback` is an optional URL for pushover to [ack messages](https://pushover.net/api#receipt).
+| Topic option  |  M/O   | Description                                   |
+| ------------- | :----: |-----------------------------------------------|
+| `title`       |   O    | application title (default: pushover default) |
+| `priority`    |   O    | priority. (default: pushover setting)         |
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | application title (dflt: pushover dflt) |
-| `priority`    |   O    | priority. (dflt: pushover setting)     |
-
-Users can enable Pushover's [HTML styling](https://pushover.net/api#html) or [Supplementary URLs](https://pushover.net/api#urls) support in messages by adding the `html`, `url`, and `url_title` keys to the data object:
+Users can enable the [Pushover HTML/Message Styling] or [Pushover Supplementary URLs]
+support options in messages, by adding the `html`, `url`, and `url_title` keys to the
+data object. `callback` is an optional URL to [acknowledge Pushover messages].
 
 ```ini
 [config:pushover]
@@ -2320,20 +2361,24 @@ callback = None
 alldata = PushoverAllData()
 ```
 
-```
+```python
 def PushoverAllData(topic, data, srv=None):
 	return {
 		'url': 'https://somedomain/path',
 	}
 ```
 
-The pushover service will accept a payload with either a simple text message, or a json payload which contains
-a `message` and either an `imageurl` or `imagebase64` encoded image.
+The pushover service will accept a payload with either a simple text message, or a
+JSON payload which contains a `message` and either an `imageurl` or `imagebase64`
+encoded image.
 
-The default values for PushOver's API `expire` and `retry` settings can be adjusted either by setting the `api_expire` / `api_retry` keys in the config section, or via the `PUSHOVER_API_RETRY` / `PUSHOVER_API_EXPIRE` environmental variables.
-The configuration settings will take prescience over environmental variables.  The default values are 60 and 3600 respectively.
-These settings can further be set on a per-message basis by setting the `expire` and `retry` keys in the data object:
+The default values for PushOver's API `expire` and `retry` settings can be adjusted
+either by setting the `api_expire` / `api_retry` keys in the config section, or via
+the `PUSHOVER_API_RETRY` / `PUSHOVER_API_EXPIRE` environmental variables.
 
+The configuration settings will take precedence over environmental variables.
+The default values are 60 and 3600 respectively. These settings can further be adjusted
+on a per-message basis by setting the `expire` and `retry` keys in the data object.
 ```ini
 [config:pushover]
 callback = None
@@ -2342,7 +2387,7 @@ api_retry = 1800
 alldata = PushoverAllData()
 ```
 
-```
+```python
 def PushoverAllData(topic, data, srv=None):
 	return {
 		'expire': 120,
@@ -2350,9 +2395,12 @@ def PushoverAllData(topic, data, srv=None):
 	}
 ```
 
-Further, the imageurl payload, can have the additional parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
+Further, the imageurl payload can have the additional parameters of an auth type
+(basic, digest) and a user and password. This is useful if your imaging device uses
+authentication. For example, some IP cameras, or some other simple internet based image
+services.
 
-The following payloads are valid;
+The following payloads are valid examples.
 
 ```
 Simple text message
@@ -2365,34 +2413,40 @@ Simple text message
 ```
 
 ```json
- {
+{
     "message": "Message with base64 encoded image",
     "imagebase64": "<base64 encoded image>"
- }
+}
 ```
 
 ```json
- {
+{
     "message": "Message with image downloaded from URL",
     "imageurl": "<image url>"
- }
+}
 ```
 
 ```json
- {
+{
     "message": "Message with image downloaded from URL: digest authentication",
     "imageurl": "<image url>",
     "auth": "digest",
     "user": "myspecialuser",
     "password": "myspecialpassword"
- }
+}
 ```
-For the above example, I would only recommend this be used in a local MQTT server instance, as the password for your imaging device is being transmitted in the clear to mqttwarn.
+For the above example, we recommend this to be used in a local MQTT environment
+only, because the password for your imaging device is being transmitted in clear-text
+to mqttwarn.
 
 ![pushover on iOS](assets/pushover.png)
 
-Requires:
-* An account at [pushover.net](https://pushover.net/).
+[Pushover]: https://pushover.net/
+[acknowledge Pushover messages]: https://pushover.net/api/receipts
+[list of Pushover sounds]: https://pushover.net/api#sounds
+[Pushover HTML/Message Styling]: https://pushover.net/api#html
+[Pushover Supplementary URLs]: https://pushover.net/api#urls
+
 
 ### `pushsafer`
 
@@ -2461,7 +2515,8 @@ targets = {
 
 ### `redispub`
 
-The `redispub` plugin publishes to a Redis channel.
+The `redispub` plugin publishes to a [Redis] channel, using the [redis-py]
+package.
 
 ```ini
 [config:redispub]
@@ -2472,13 +2527,14 @@ targets = {
     }
 ```
 
-Requires:
-* [redis-py](https://github.com/andymccurdy/redis-py)
+[Redis]: https://github.com/redis/redis
+[redis-py]: https://pypi.org/project/redis/
+
 
 ### `rrdtool`
 
 The `rrdtool` plugin updates a round-robin database created by [rrdtool] with
-the message payload.
+the message payload, using the [Python rrdtool bindings].
 
 ```ini
 [config:rrdtool]
@@ -2510,10 +2566,10 @@ datamap = ...
 format = /srv/rrd/sensors/{sensor_id}.rrd -t batt {ts}:{batt}
 ```
 
-Requires the rrdtool bindings available with `pip install rrdtool`.
-
 [rrdtool]: https://oss.oetiker.ch/rrdtool/
 [rrdpython's API]: https://oss.oetiker.ch/rrdtool/prog/rrdpython.en.html
+[Python rrdtool bindings]: https://pypi.org/project/rrdtool/
+
 
 ### `serial`
 
