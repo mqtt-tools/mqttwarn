@@ -62,8 +62,8 @@ A picture says a thousand words.
 Notification service coverage
 =============================
 
-*mqttwarn* comes with **over 70 notification handler plugins** for a wide
-range of notification services and is very open to further contributions.
+*mqttwarn* comes with **over 70 notification handler plugins**, covering a
+wide range of notification services and is very open to further contributions.
 You can enjoy the alphabetical list of plugins on the `mqttwarn notifier
 catalog`_ page.
 
