@@ -23,7 +23,7 @@ About
    :target: #
 
 *mqttwarn* is a highly configurable MQTT message router, where the routing targets
-are notification plugins, written in Python. A picture says a thousand words.
+are notification plugins, primarily written in Python. A picture says a thousand words.
 
 
 ********
