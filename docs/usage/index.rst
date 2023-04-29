@@ -19,9 +19,13 @@ to :ref:`configure <configure>` it.
 Installation variants
 =====================
 
-Installation of mqttwarn can be done natively on your system, or by running an
-OCI container image on Docker, Podman, Kubernetes, or friends. Depending on your
-preferences, please follow either :ref:`using-pip` or by :ref:`using-oci-image`.
+mqttwarn can be installed natively on your system, or by running an OCI container
+image on Docker, Podman, Kubernetes, or friends. Depending on your preferences or
+system environment, please use either of those variants:
+
+- :ref:`using-pip`
+- :ref:`using-oci-image`
+- :ref:`using-freebsd`
 
 If you are interested in contributing to mqttwarn, you should setup a development
 sandbox, see :ref:`sandbox`.
@@ -59,3 +63,4 @@ or::
 
    pip
    oci
+   freebsd
