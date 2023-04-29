@@ -5,3 +5,9 @@ prune examples
 prune vendor
 prune templates
 prune tests
+
+# Documentation
+recursive-include docs *
+prune docs/_build
+global-exclude */__pycache__/*
+global-exclude *.pyc
