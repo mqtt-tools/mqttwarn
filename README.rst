@@ -19,8 +19,15 @@
 .. image:: https://pepy.tech/badge/mqttwarn/month
     :target: https://pepy.tech/project/mqttwarn
 
-.. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
+`GitHub <https://github.com/jpmens/mqttwarn>`_
+| `PyPI <https://pypi.org/project/mqttwarn/>`_
+| `Documentation <https://mqttwarn.readthedocs.io>`_
+| `Issues <https://github.com/jpmens/mqttwarn/issues>`_
+| `Changelog <https://github.com/jpmens/mqttwarn/blob/main/CHANGES.rst>`_
 
+|
+
+.. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
 
 ########
 mqttwarn
@@ -123,8 +130,8 @@ section about the `mqttwarn configuration`_.
 Usage
 *****
 
-Running interactively
-=====================
+Interactive service
+===================
 Just launch ``mqttwarn``::
 
     # Run mqttwarn
@@ -150,13 +157,14 @@ for systemd, traditional init, OpenRC, and Supervisor_ in the ``etc`` directory
 of this repository, for example `supervisor.ini`_ (Supervisor) and
 `mqttwarn.service`_ (systemd).
 
-Running in a development sandbox
-================================
 Standalone
 ==========
 
 In order to directly invoke notification plugins from custom programs, or for
 debugging them, see `Running notification plugins standalone`_.
+
+Development sandbox
+===================
 
 For hacking on mqttwarn, please install it in development mode, using a
 `mqttwarn development sandbox`_ installation.
@@ -180,7 +188,7 @@ Requirements
 You will need at least the following components:
 
 * Python 3.x or PyPy 3.x.
-* An MQTT broker. We recommend `Mosquitto`_.
+* An MQTT broker. We recommend `Eclipse Mosquitto`_.
 * For invoking specific service plugins, additional Python modules may be required.
   See ``setup.py`` file.
 
@@ -231,9 +239,8 @@ way or another. You know who you are.
 
 Legal stuff
 ===========
-"MQTT" is a trademark of the OASIS open standards consortium, which publishes
-the MQTT specifications.
-
+"MQTT" is a trademark of the OASIS open standards consortium, which publishes the
+MQTT specifications. "Eclipse Mosquitto" is a trademark of the Eclipse Foundation.
 
 ----
 
@@ -243,13 +250,13 @@ Have fun!
 .. _Apprise: https://github.com/caronc/apprise
 .. _Apprise notification services: https://github.com/caronc/apprise/wiki#notification-services
 .. _backlog: https://github.com/jpmens/mqttwarn/blob/main/doc/backlog.rst
+.. _Eclipse Mosquitto: https://mosquitto.org
 .. _EPL-2.0: https://www.eclipse.org/legal/epl-2.0/
 .. _hacking: https://github.com/jpmens/mqttwarn/blob/main/doc/hacking.rst
 .. _How do your servers talk to you?: https://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/
 .. _Installing mqttwarn with pip: https://mqttwarn.readthedocs.io/en/latest/usage/pip.html
 .. _issue: https://github.com/jpmens/mqttwarn/issues/new
 .. _LICENSE: https://github.com/jpmens/mqttwarn/blob/main/LICENSE
-.. _Mosquitto: https://mosquitto.org
 .. _MQTTwarn\: Ein Rundum-Sorglos-Notifier: https://web.archive.org/web/20140611040637/http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312
 .. _mqttwarn configuration: https://mqttwarn.readthedocs.io/en/latest/configure/
 .. _mqttwarn development sandbox: https://mqttwarn.readthedocs.io/en/latest/workbench/sandbox.html
