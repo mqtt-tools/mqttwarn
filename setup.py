@@ -152,7 +152,7 @@ extras["test"] = [
     "pytest-mqtt<1",
     "tox<4",
     'dataclasses; python_version<"3.7"',
-    "requests-toolbelt>=0.9.1,<1",
+    "requests-toolbelt>=1,<2",
     "responses>=0.13.3,<1",
     "pyfakefs>=4.5,<5",
 ] + extras["all"]
