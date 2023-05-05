@@ -54,8 +54,8 @@ extras = {
     "mysql": [
         "mysql",
     ],
-    "nma": [
-        "PyNMA>=1.0",
+    "mysql_dynamic": [
+        "mysqlclient",
     ],
     "nsca": [
         "pynsca>=1.6",
