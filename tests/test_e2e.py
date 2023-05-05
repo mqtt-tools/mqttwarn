@@ -97,13 +97,13 @@ def test_system_dispatch_to_log_service_plaintext(mosquitto, caplog, capmqtt):
     mqttc = connect()
 
     # Make mqttwarn run the subscription to the broker.
-    mqtt_process(mqttc)
+    mqtt_process(mqttc, loops=3)
 
     # Submit a message to the broker.
     capmqtt.publish(topic="test/log-1", payload="foobar")
 
     # Make mqttwarn receive and process the message.
-    mqtt_process(mqttc, loops=3)
+    mqtt_process(mqttc, loops=4)
 
     # Verify log output.
     assert 'Successfully loaded service "log"' in caplog.messages
