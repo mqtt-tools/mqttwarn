@@ -2,6 +2,7 @@
 # (c) 2014-2023 The mqttwarn developers
 import os
 import platform
+import sys
 
 from setuptools import find_packages, setup
 from versioningit import get_cmdclasses
@@ -124,6 +125,10 @@ for extra, packages in extras.items():
     # FIXME: Skip specific packages having build issues.
     # https://github.com/commx/python-rrdtool/issues/36
     if extra in ["mysql", "rrdtool"]:
+        continue
+
+    # FIXME: `mysqlclient` needs MySQL or MariaDB client libraries.
+    if extra in ["mysql_dynamic"] and sys.platform in ["darwin", "win32"]:
         continue
 
     # FIXME: Skip specific packages on specific platforms,
