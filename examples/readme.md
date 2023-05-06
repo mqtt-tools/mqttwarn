@@ -8,6 +8,7 @@ and about how mqttwarn can be used with more advanced configurations.
 alexa/readme.md
 arduino-temperature/readme.md
 frigate/README.rst
+mediaplayer/readme.md
 owntracks-battery/readme.md
 warntoggle/README.rst
 zabbix-iot/README.md

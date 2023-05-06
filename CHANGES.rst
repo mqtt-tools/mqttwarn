@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- Add example "Simple MQTT media player". Thanks, @nagyrobi.
+
 
 2023-04-28 0.34.0
 =================
