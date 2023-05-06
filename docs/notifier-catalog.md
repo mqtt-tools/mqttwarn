@@ -675,6 +675,7 @@ targets = {
 [EmonCMS]: https://emoncms.org/
 
 
+{#execute}
 ### `execute`
 
 The `execute` target launches the specified program and its arguments. It is similar
@@ -683,13 +684,12 @@ to `pipe` but it doesn't open a pipe to the program.
 Example use cases are, for example, IoT buttons, which publish a message when they are
 pushed, in order to execute an external program. It is also a light version of [mqtt-launcher].
 
-[mqtt-launcher]: https://github.com/jpmens/mqtt-launcher
-
 ```ini
 [config:execute]
 targets = {
              # argv0 .....
-   'touch' : [ 'touch', '/tmp/executed' ]
+   'touch' : [ 'touch', '/tmp/executed' ],
+   'cat'   : [ 'cat', '[TEXT]' ]
    }
 ```
 
@@ -698,6 +698,12 @@ This can also be configured with the `text_replace` parameter.
 
 Note, that for each message targeted to the `execute` service, a new process is
 spawned (fork/exec), so it is quite "expensive".
+
+:::{seealso}
+A real-world example how this feature can be used is demonstrated at [](#mqtt-media-player).
+:::
+
+[mqtt-launcher]: https://github.com/jpmens/mqtt-launcher
 
 
 ### `fbchat`
