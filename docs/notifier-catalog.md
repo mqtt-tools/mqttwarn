@@ -62,11 +62,11 @@ alphabetically sorted.
 * [rrdtool](#rrdtool)
 * [serial](#serial)
 * [slack](#slack)
-* [slixmpp](#slixmpp)
+* [slixmpp](#slixmpp), see also [xmpp](#xmpp)
+* [smtp](#smtp)
 * [sqlite](#sqlite)
 * [sqlite_json2cols](#sqlite_json2cols)
 * [sqlite_timestamp](#sqlite_timestamp)
-* [smtp](#smtp)
 * [ssh](#ssh)
 * [syslog](#syslog)
 * [telegram](#telegram)
@@ -75,7 +75,7 @@ alphabetically sorted.
 * [twilio](#twilio)
 * [twitter](#twitter)
 * [websocket](#websocket)
-* [xbmc](#xbmc)
+* [xbmc](#xbmc) (kodi)
 * [xmpp](#xmpp), see also [slixmpp](#slixmpp)
 * [zabbix](#zabbix)
 
@@ -203,7 +203,7 @@ LaMetric, Line, MacOSX, Mailgun, Mattermost, Matrix, Microsoft Windows,
 Mastodon, Microsoft Teams, MessageBird, MQTT, MSG91, MyAndroid, Nexmo,
 Nextcloud, NextcloudTalk, Notica, Notifico, ntfy, Office365, OneSignal,
 Opsgenie, PagerDuty, ParsePlatform, PopcornNotify, Prowl, PushBullet,
-Pushjet, Pushover, PushSafer, Reddit, Rocket.Chat, SendGrid, ServerChan, Signal,
+Pushjet, Pushover, Pushsafer, Reddit, Rocket.Chat, SendGrid, ServerChan, Signal,
 SimplePush, Sinch, Slack, SMSEagle, SMTP2Go, Spontit, SparkPost, Super Toasty,
 Streamlabs, Stride, Syslog, Techulus Push, Telegram, Twilio, Twitter, Twist,
 XBMC, Vonage, Webex Teams.
@@ -2448,6 +2448,7 @@ to mqttwarn.
 [Pushover Supplementary URLs]: https://pushover.net/api#urls
 
 
+{#pushsafer}
 ### `pushsafer`
 
 [Pushsafer](https://www.pushsafer.com) is an app for iOS, Android and Windows 10.
@@ -2589,9 +2590,12 @@ If `append_newline` is True, a newline character is unconditionally appended to 
 
 Requires the pyserial bindings available with `pip install pyserial`.
 
+
 ### `slack`
 
-The `slack` plugin posts messages to channels in or users of the [slack.com](https://slack.com) service. The configuration of this service requires an API token obtaininable there.
+The `slack` plugin posts messages to channels in or users of the [slack.com]
+service, using the [Python Slack SDK]. The configuration of this service
+requires an API token.
 
 ```ini
 [config:slack]
@@ -2605,26 +2609,30 @@ targets = {
   }
 ```
 
-The service level `token` is optional, but if missing each target must have a `token` defined.
+The service level `token` is optional, but if missing, each target must have a
+`token` defined.
 
-Each target defines the name of an existing channel (`#channelname`) or a user (`@username`) to be
-addressed, the name of the sending user as well as an [emoji icon](https://www.emoji-cheat-sheet.com) to use.
+Each target defines the name of an existing channel (`#channelname`), or a user
+(`@username`), to be addressed, the name of the sending user, as well as an
+optional [emoji icon] to use.
 
-Optionally, a target can define the message to get posted as a user, per
-[Slack Authorship documentation](https://api.slack.com/methods/chat.postMessage#authorship).
-Note that posting as a user in a channel is only possible, if the user has
-joined the channel.
+Also, optionally, a target can define the message to get posted as a user, per
+[Slack message authorship]. Note that posting as a user in a channel is only
+possible, if the user has already joined the channel.
 
 ![Slack](assets/slack.png)
 
-This plugin requires [Python slack-sdk](https://github.com/slackapi/python-slack-sdk).
 
-The slack service will accept a payload with either a simple text message, or a json payload which contains
-a `message` and either an `imageurl` or `imagebase64` encoded image.
+The slack service will accept a payload with either a simple text message, or a
+JSON payload, which contains a `message` and either an `imageurl` or `imagebase64`
+encoded image.
 
-Further, the imageurl payload, can have the additional parameters of an auth type (basic, digest) and a user and password.  This is useful if your imaging device uses authentication.  Some examples are some IP cameras, or some other simple internet based image services.
+Further, the `imageurl` payload can have the additional parameters of an auth type
+(basic, digest), and a user and password. This is useful if your imaging device
+uses authentication, for example some IP cameras, or some other simple internet
+based image services.
 
-The following payloads are valid;
+The following messages are valid payloads.
 
 ```
 Simple text message
@@ -2659,73 +2667,18 @@ Simple text message
     "password": "myspecialpassword"
  }
 ```
-For the above example, I would only recommend this be used in a local MQTT server instance, as the password for your imaging device is being transmitted in the clear to mqttwarn.
+For the above example, we only recommend this be used on a local MQTT server instance,
+because the password for your imaging device is being transmitted in clear-text to mqttwarn.
 
-### `sqlite`
+[emoji icon]: https://www.emoji-cheat-sheet.com
+[Python Slack SDK]: https://github.com/slackapi/python-slack-sdk
+[slack.com]: https://slack.com
+[Slack message authorship]: https://api.slack.com/methods/chat.postMessage#legacy_authorship
 
-The `sqlite` plugin creates a table in the database file specified in the targets,
-and creates a schema with a single column called `payload` of type `TEXT`. _mqttwarn_
-commits messages routed to such a target immediately.
-
-```ini
-[config:sqlite]
-targets = {
-                   #path        #tablename
-  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
-  }
-```
-
-### `sqlite_json2cols`
-
-The `sqlite_json2cols` plugin creates a table in the database file specified in the targets
-and creates a schema based on the JSON payload.
-It will create a column for each JSON entry and rudimentary try to determine its datatype on creation (Float or Char).
-
-As an example, publishing this JSON payload:
-
-```
-mosquitto_pub -t test/hello -m '{ "name" : "Thor", "Father" : 'Odin', "Age" : 30 }'
-```
-
-A table as stated in the configuration will be created on the fly with the following structure and content:
-
-```
-+------+--------+------+
-| name | Father | Age  |
-+------+--------+------+
-| Thor | Odin   | 30.0 |
-+------+--------+------+
-```
-No table is created if the table name already exists.
-
- _mqttwarn_
-commits messages routed to such a target immediately.
-
-```ini
-[config:sqlite_json2cols]
-targets = {
-                   #path        #tablename
-  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
-  }
-```
-
-### `sqlite_timestamp`
-
-The `sqlite_timestamp` plugin works just like the 'sqlite' plugin, but it creates 3 columns: id, payload and timestamp.
-The id is the table index and the timestamp is the insertion date and time in seconds.
-
-```ini
-[config:sqlite_timestamp]
-targets = {
-                   #path        #tablename
-  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
-  }
-```
 
 ### `smtp`
 
-The `smtp` service basically implements an MQTT to SMTP gateway which needs
-configuration.
+The `smtp` service effectively implements an MQTT to SMTP gateway.
 
 ```ini
 [config:smtp]
@@ -2743,25 +2696,77 @@ targets = {
 ```
 
 Targets may contain more than one recipient, in which case all specified
-recipients get the message.
+recipients will get the message.
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | e-mail subject. (dflt: `mqttwarn notification`) |
+| Topic option  |  M/O   | Description                                        |
+| ------------- | :----: |----------------------------------------------------|
+| `title`       |   O    | e-mail subject. (default: `mqttwarn notification`) |
+
+
+### `sqlite`
+
+The `sqlite` plugin creates a table in the database file specified in the target address
+descriptor, and creates a schema with a **single column** called `payload` of type `TEXT`.
+_mqttwarn_ will write and commit messages into this table correspondingly.
+
+```ini
+[config:sqlite]
+targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
+  }
+```
+
+
+### `sqlite_json2cols`
+
+The `sqlite_json2cols` plugin creates a table in the database file specified in the target
+address descriptor, and creates a schema based on the JSON payload. It will create a **column
+for each JSON field** and rudimentary try to determine its datatype on creation (`float` or
+`char`). If the table already exists, no table will be created.
+
+```ini
+[config:sqlite_json2cols]
+targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
+  }
+```
+
+As an example, let's publish a JSON payload.
+```
+mosquitto_pub -t test/hello -m '{ "name": "Thor", "Father": "Odin", "Age": 30 }'
+```
+
+When _mqttwarn_ receives that message, it will create a database table with the following
+structure and content.
+```
++------+--------+------+
+| name | Father | Age  |
++------+--------+------+
+| Thor | Odin   | 30.0 |
++------+--------+------+
+```
+
+
+### `sqlite_timestamp`
+
+The `sqlite_timestamp` plugin works just like the [](#sqlite) plugin, but it creates three
+columns: `id`, `payload` and `timestamp`. The `id` is the table index, and the `timestamp`
+is the record insertion date and time in seconds.
+```ini
+[config:sqlite_timestamp]
+targets = {
+                   #path        #tablename
+  'demotable' : [ '/tmp/m.db',  'mqttwarn'  ]
+  }
+```
+
 
 ### `ssh`
 
-The `ssh` service can run commands over ssh.
-If both user and password are defined in the config, they will be used to connect to the host.
-If both user and password are *not* defined in the config, the service will parse the user's
-ssh config file to see which key (IdentityFile) to use; it will also look for User and Port
-in this file.
-
-If using a key, only the host is *required*.
-
-The output is ignored for now.
-
-Note: using this module lets you specify a username and a password which can be used to login to the target system. As such, your `mqttwarn.ini` configuration file should be well protected from prying eyes! (This applies generally, for other target specifications with credentials as well.)
+The `ssh` service can run commands over SSH. Target address descriptors may contain
+**exactly one command**.
 
 ```ini
 [config:ssh]
@@ -2783,30 +2788,54 @@ format = {args}
 targets = ssh:s02
 ```
 
-Targets may contain ONE command.
+```shell
+mosquitto_pub -t dualssh/test -m '{ "args": ["test", "test2"] }'
+```
 
-`mosquitto_pub -t dualssh/test -m '{ "args" : ["test","test2"] }'`
+#### Authentication
+
+If both username and password are defined in the mqttwarn configuration, they will be used
+to connect to the host. If both user and password are *not* defined in the configuration,
+the service will parse the user's SSH config file to see which key (`IdentityFile`) to use.
+It will also use `User` and `Port` options from this file.
+
+When using a key, only the host name is required. The output is ignored for now.
+
+:::{attention}
+Using this module lets you specify a username and a password which can be used to log in to
+the target system. As such, your `mqttwarn.ini` configuration file should be well protected
+from prying eyes! Of course, this applies in general, for other target specifications with
+credentials as well.
+:::
+
+:::{todo}
+How to configure keys?
+:::
 
 
 ### `syslog`
 
-The `syslog` service transfers MQTT messages to a local syslog server.
+The `syslog` service transfers MQTT messages to a local syslog server. Example output:
+```
+Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
+```
 
 ```ini
 [config:syslog]
 targets = {
-              # facility    option
-    'user'   : ['user',     'pid'],
-    'kernel' : ['kernel',   'pid']
+              # facility    priority,  option
+    'user'   : ['user',     'debug',  'pid'],
+    'kernel' : ['kernel',   'warn',   'pid']
     }
 ```
 
-| Topic option  |  M/O   | Description                            |
-| ------------- | :----: | -------------------------------------- |
-| `title`       |   O    | application title (dflt: `mqttwarn`)   |
-| `priority`    |   O    | log level (dflt: -1)                   |
+| Topic option  |  M/O   | Description                             |
+| ------------- | :----: |-----------------------------------------|
+| `title`       |   O    | application title (default: `mqttwarn`) |
+| `priority`    |   O    | log level (default: -1)                 |
 
-Where `priority` can be between -2 and 5 and maps to `syslog` levels by;
+The value of the `priority` field can be between -2 and 5, and maps to corresponding
+`syslog` levels, according to this table.
 
 | Priority | Syslog Log Level |
 | -------- | ---------------- |
@@ -2819,21 +2848,16 @@ Where `priority` can be between -2 and 5 and maps to `syslog` levels by;
 | 4        | LOG_ALERT        |
 | 5        | LOG_EMERG        |
 
-```
-Apr 22 12:42:42 mqttest019 mqttwarn[9484]: Disk utilization: 94%
-```
 
 ### `telegram`
 
-This is to send messages as a Bot to a [Telegram](https://telegram.org) chat. First set up a Bot and obtain its authentication token which you add to _mqttwarn_'s configuration. You'll also need to start a chat with this bot so it's able to communicate with particular user.
+This service plugin submits messages as a Bot to a [Telegram] chat. In order to configure it
+properly, you will need to set up a Bot and obtain its authentication token which you add to
+_mqttwarn_'s configuration. You will also need to start a chat with this Bot, so it is able to
+communicate with a particular user.
 
-Optionally you can specify `parse_mode` which will be used during message sending. Please, check [docs](https://core.telegram.org/bots/api#formatting-options) for additional information.
-
-If you have the `chatId` you can specify the telegram service to use the chatId directly. Warning, this will need to be the case for all the targets in this notifier!
-
-Quickest way to get the `chatid` is by visiting this URL (insert your api key): https://api.telegram.org/botYOUR_API_TOKEN/getUpdates and getting the id from the "from" section.
-
-Configure the `telegram` service WITHOUT chatId:
+Optionally, you can specify `parse_mode`, which will be used during message sending. Please
+check the [Telegram formatting options] for additional information.
 
 ```ini
 [config:telegram]
@@ -2847,7 +2871,26 @@ targets = {
    'j03' : [ '#chat_id' ]
     }
 ```
-Configure the `telegram` service WITH chatid:
+
+![Telegram](assets/telegram.png)
+
+:::{attention}
+There is a possible issue: When `First name`, or `@username` was specified as recipient, the
+plugin will call the [Telegram "getUpdates" API], in order to retrieve the `chat_id`, but this
+call returns just the most recent 100 messages. So, if you haven't spoken to your Bot recently,
+it may well be possible _mqttwarn_ can't find the `chat_id` associated with you. If the
+`chat_id` is known, it can be set as a recipient using the `#` prefix.
+:::
+
+#### Using `chat_id`
+
+If you know the `chat_id`, you can specify the `telegram` service to use that `chat_id` directly.
+If you configure the service plugin this way, please note that this mode will be used for all
+the configured recipients.
+
+The quickest way to get the `chat_id`, is by visiting this URL (insert your api key), and getting
+the id from the "from" section: https://api.telegram.org/botYOUR_API_TOKEN/getUpdates 
+
 ```ini
 [config:telegram]
 timeout = 60
@@ -2855,20 +2898,20 @@ parse_mode = 'Markdown'
 token = 'mmmmmmmmm:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 use_chat_id = True
 targets = {
-    #       chatId (in quotes)
+    #       chat_id (in quotes)
     'j01' : ['123456789']
     }
 ```
 
-Possible issue:
+[Telegram]: https://telegram.org
+[Telegram formatting options]: https://core.telegram.org/bots/api#formatting-options
+[Telegram "getUpdates" API]: https://core.telegram.org/bots/api#getupdates
 
-* If First name or @username was specified as target, plugin will call [getUpdates](https://core.telegram.org/bots/api#getupdates) to get `chat_id` but this call returns only last 100 messages; if _you_ haven't spoken to your Bot recently it may well be possible we can't find the _chat-id_ associated with _you_. If chat_id is known, it can be set as target using `#` sign.
-
-![Telegram](assets/telegram.png)
 
 ### `thingspeak`
 
-The `thingspeak` service publishes data to thingspeak.com using the thingspeak API.
+The `thingspeak` service publishes data to the [ThingSpeak] platform, using its HTTP API,
+see [ThingSpeak "Write Data" API].
 
 ```ini
 [config:thingspeak]
@@ -2879,46 +2922,85 @@ targets = {
     'composite': [ 'XXYYZZXXYYZZXXYY', [ 'temp', 'hum' ] ]
   }
 ```
-Using `builddata=true` you can build an update with multiple fields in one update. Using this function no direct update is performed. Only with the next update without builddata=true all entries are sent (e.g. when multiple sensors are updating different topics, then you can do the build the data and submit when the last sensor is sending the data).
+Using `builddata=true`, you can build an update with multiple fields in one update. When
+using this function, no direct update is performed. Only with the next update, without
+`builddata=true`, all entries are sent. For example, when multiple sensors are updating
+different topics, you can buffer/record the data, and submit it when data has been received
+from the last sensor subscription.
 
-Supply an ordered list of message data field names to extract several values from a single message (e.g. `{ "temp": 10, "hum": 77 }`). Values will be assigned to field1, field2, etc in order.
+Supply an ordered list of message data field names to extract several values from a single
+message, for example `{ "temp": 10, "hum": 77 }`. Values will be assigned to the venerable
+ThingSpeak `field1`, `field2`, ... telemetry fields, in order of decoding.
 
-Note: Use the field as per the example (lower case, `'field1'` with the last digit being the field number).
+:::{note}
+Make sure to define the field name like in the example shown above, using `'field1'`:
+It should be defined as string, lower case, with the last digit being the field number.
+:::
+
+[ThingSpeak]: https://thingspeak.com/
+[ThingSpeak "Write Data" API]: https://www.mathworks.com/help/thingspeak/writedata.html
+
 
 ### `tootpaste`
 
-The `tootpaste` service is for posting to the [Mastodon social network](https://mastodon.social/about).
+The `tootpaste` service is for posting to the [Mastodon social network], based on the
+[Mastodon.py] Python wrapper.
+
+```shell
+pip install 'mqttwarn[tootpaste]'
+```
 
 ```ini
 [config:tootpaste]
 targets = {
-             # clientcreds, usercreds, base_url
-    'uno'  : [ 'a.client',  'a.user', 'https://masto.io' ],
+             # client credentials,       user credentials,      base_url
+    'uno'  : [ '/path/to/client.creds',  '/path/to/user.creds', 'https://masto.io' ],
   }
 ```
+:::{note}
+The specified _client credentials_ and _user credentials_ options are paths to files
+created with the command presented in the next section.
+:::
 
-The specified `clientcreds` and `usercreds` are paths to files created with the service, as follows:
+:::{warning}
+The credentials files should be protected from prying eyes.
+:::
 
+![tootpaste (Mastodon)](assets/tootpaste.png)
+
+#### Configure authentication
+
+In order to configure the plugin properly, you will need to obtain both client/application
+credentials, and a user authorization token. [Mastodon » Logging in with an account] is the
+canonical documentation, and [How to get credentials for the Mastodon API with Mastodon.py]
+also outlines corresponding step-by-step instructions.
+
+_mqttwarn_'s `tootpaste` service plugin ships with an implementation for that authorization
+process, which boils down the instructions to invoking a single command.
 ```
-python services/tootpaste.py 'https://masto.io' 'jane@example.org' 'xafa5280890' warnme su03-a.client su03-a.user
+#   baseurl            email              password      client   client credentials    user credentials      
+python -m mqttwarn.services.tootpaste \
+    'https://masto.io' 'jane@example.org' 'xafa5280890' mqttwarn /path/to/client.creds /path/to/user.creds
 ```
 
-The arguments, in order:
+The arguments are, in order:
 
 1. base URL (e.g. `https://mastodon.social`)
 2. your e-mail address
 3. the password corresponding to the e-mail address
 4. the client name (name of the posting program)
-5. the clientcreds file
-6. the usercreds file.
+5. path to the file storing the client credentials
+6. path to the file storing the user credentials
 
-The two last files are created and should be protected from prying eyes.
+[How to get credentials for the Mastodon API with Mastodon.py]: https://gist.github.com/aparrish/661fca5ce7b4882a8c6823db12d42d26
+[Mastodon » Logging in with an account]: https://docs.joinmastodon.org/client/authorized/
+[Mastodon social network]: https://mastodon.social/about
+[Mastodon.py]: https://pypi.org/project/Mastodon.py/
 
-![tootpaste (Mastodon)](assets/tootpaste.png)
-
-`tootpaste` requires a `pip install Mastodon.py` ([Mastodon.py](https://github.com/halcy/Mastodon.py)).
 
 ### `twilio`
+
+The `twilio` service submits messages to the [Twilio] API, using the [twilio-python] package.
 
 ```ini
 [config:twilio]
@@ -2928,26 +3010,30 @@ targets = {
    }
 ```
 
-![Twilio test](assets/twillio.jpg)
+![Twilio test](assets/twilio.jpg)
 
-Requires:
- * a Twilio account
- * [twilio-python](https://github.com/twilio/twilio-python)
+[Twilio]: https://www.twilio.com/
+[twilio-python]: https://twilio.com/docs/libraries/reference/twilio-python/
+
 
 ### `twitter`
 
-Notification of one or more [Twitter](https://twitter.com) accounts requires setting
-up an application at [apps.twitter.com](https://apps.twitter.com). For each Twitter
-account, you need four (4) bits which are named as shown below.
+The `twitter` service plugin submits notification events to the [Twitter] platform,
+using the [python-twitter] API wrapper package.
+
+It will need you to set up a [Twitter Developer App], in order to generate and obtain
+four credential values: 
+
+- API Key and Secret (also known as Consumer Key and Secret)
+- Access Token and Secret
 
 Upon configuring this service's targets, make sure the four (4) elements of the
 list are in the order specified!
-
 ```ini
 [config:twitter]
 targets = {
-  'janejol'   :  [ 'vvvvvvvvvvvvvvvvvvvvvv',                              # consumer_key
-                   'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # consumer_secret
+  'janejol'   :  [ 'vvvvvvvvvvvvvvvvvvvvvv',                              # api_key
+                   'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',          # api_secret
                    'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',  # access_token_key
                    'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'           # access_token_secret
                   ]
@@ -2956,72 +3042,80 @@ targets = {
 
 ![a tweet](assets/twitter.jpg)
 
-Requires:
-* A Twitter account
-* app keys for Twitter, from [apps.twitter.com](https://apps.twitter.com)
-* [python-twitter](https://github.com/bear/python-twitter)
+
+:::{note}
+Please make sure the four credential values are specified in the correct order.
+:::
+:::{todo}
+This is a perfect candidate to use [named target address descriptor options] instead. 
+[named target address descriptor options]: https://github.com/jpmens/mqttwarn/issues/628
+:::
+
+[Twitter]: https://twitter.com
+[Twitter Developer App]: https://developer.twitter.com/en/docs/apps/overview
+[python-twitter]: https://github.com/bear/python-twitter
+
 
 ### `websocket`
 
-The websocket service can be used to send data to a websocket server defined by its uri. `ws://` or `wss://` schemas
-are supported.
+The websocket service can be used to send data to a websocket endpoint defined by its URI,
+using the [websocket-client] Python package. Both `ws://` or `wss://` URI schemas are supported.
 
 ```ini
 [config:websocket]
 targets = {
-        # targetid        : [ 'wsuri']
+        # targetid      wsuri
         'wssserver' : [ 'ws://localhost/ws' ],
 } 
 ```
 
-Requires:
-* [websocket-client](https://pypi.python.org/pypi/websocket-client/) - pip install websocket-client
+[websocket-client]: https://pypi.org/project/websocket-client/
 
 
 ### `xbmc`
 
-This service allows for on-screen notification pop-ups on [XBMC] instances.
-Each target requires the address and port of the XBMC instance (<hostname>:<port>),
-and an optional username and password if authentication is required.
+The `xbmc` service plugin invokes on-screen notification pop-ups on [Kodi] (formerly [XBMC])
+instances. For each target, you will need to configure the address and port of the Kodi instance
+(`<hostname>:<port>`), and an optional username and password, when authentication is required.
 
 ```ini
 [config:xbmc]
 targets = {
-                          # host:port,           [user], [password]
-    'living_with_auth' :  [ '192.168.1.40:8080', 'xbmc', 'xbmc' ],
-    'bedroom_no_auth'  :  [ '192.168.1.41:8080' ]
+                          # host:port,           user    password
+    'bedroom_no_auth'  :  [ '192.168.1.41:8080' ],
+    'living_with_auth' :  [ '192.168.1.40:8080', 'xbmc', 'xbmc' ]
     }
 ```
+
+![](https://user-images.githubusercontent.com/453543/236633180-a3151a0f-3b43-472b-b05d-99b3de929629.png)
 
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | notification title                     |
 | `image`       |   O    | notification image URL  ([example](https://github.com/jpmens/mqttwarn/issues/53#issuecomment-39691429))|
 
-[XBMC]: https://xbmc.org/
+[Kodi]: https://kodi.tv/
+[XBMC]: https://en.wikipedia.org/wiki/Xbmc#History
 
 
 ### `xmpp`
 
-The `xmpp` service sends notification to one or more [XMPP] (Jabber) recipients.
+The `xmpp` service sends notifications to one or more [XMPP] (Jabber) recipients,
+using the [xmpppy] Python package.
 
 ```ini
 [config:xmpp]
 sender = 'mqttwarn@jabber.server'
-password = 'Password for sender'
+password = '<password>'
 targets = {
-    'admin' : [ 'admin1@jabber.server', 'admin2@jabber.server' ]
+    'admin' : [ 'admin1@jabber.server' ],
+    'sig'   : [ 'user1@jabber.server', 'user2@jabber.server' ]
     }
 ```
 
-Targets may contain more than one recipient, in which case all specified
-recipients get the message.
-
-Requires:
-* XMPP (Jabber) accounts (at least one for the sender and one for the recipient)
-* [xmpppy](https://xmpppy.sourceforge.net)
-
 [XMPP]: https://en.wikipedia.org/wiki/XMPP
+[xmpppy]: https://github.com/xmpppy/xmpppy
+
 
 ### `slixmpp`
 
@@ -3046,10 +3140,12 @@ Requires:
 
 ### `zabbix`
 
-The `zabbix` service serves two purposes:
+As an introduction, the blog post [Zabbix meets MQTT] explains a bit of the background,
+and which thought process went into integrating [Zabbix] with MQTT and mqttwarn. Following
+this rationale, the `zabbix` service plugin implements two things.
 
-1. it can create a [Zabbix] host on-the-fly via Low-level Discovery (LLD)
-2. it can send an item/value pair to a [Zabbix] trapper
+1. Create a Zabbix host on the fly, via [Zabbix low-level discovery] (LLD).
+2. Send a metric item/value pair to a [Zabbix trapper].
 
 ![Zabbix](assets/zabbix.png)
 
@@ -3131,5 +3227,11 @@ def ZabbixData(topic, data, srv=None):
     return dict(client=client, key=key, status_key=status_key)
 ```
 
+For another scenario using the `zabbix` plugin, please refer to the [Zabbix IoT example].
+
 
 [Zabbix]: https://www.zabbix.com/
+[Zabbix IoT example]: https://github.com/jpmens/mqttwarn/tree/main/examples/zabbix-iot
+[Zabbix low-level discovery]: https://www.zabbix.com/documentation/current/en/manual/discovery/low_level_discovery
+[Zabbix meets MQTT]: http://jpmens.net/2014/05/27/zabbix-meets-mqtt/
+[Zabbix trapper]: https://www.zabbix.com/documentation/current/en/manual/config/items/itemtypes/trapper
