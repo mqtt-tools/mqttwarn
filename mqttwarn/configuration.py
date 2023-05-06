@@ -88,8 +88,6 @@ class Config(RawConfigParser):
                 self.tls_version = ssl.PROTOCOL_TLSv1_1
             if self.tls_version == "tlsv1":
                 self.tls_version = ssl.PROTOCOL_TLSv1
-            if self.tls_version == "sslv3":
-                self.tls_version = ssl.PROTOCOL_SSLv3
 
         self.loglevelnumber = self.level2number(self.loglevel)
         self.filteredmessagesloglevelnumber = self.level2number(self.filteredmessagesloglevel)
