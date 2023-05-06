@@ -109,7 +109,7 @@ def plugin(srv, item):
     try:
         tg = TelegramAPI(token, parse_mode)
         if useChatId:
-            srv.logging.debug("Setting chatid directly to %r", tg_contact)
+            srv.logging.debug("Setting chat_id directly to %r", tg_contact)
             uid = int(tg_contact)
         else:
             uid = tg.get_uid(tg_contact)
