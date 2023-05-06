@@ -10,4 +10,5 @@ arduino-temperature/readme.md
 frigate/README.rst
 owntracks-battery/readme.md
 warntoggle/README.rst
+zabbix-iot/README.md
 :::
