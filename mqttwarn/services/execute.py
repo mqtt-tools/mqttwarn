@@ -20,7 +20,7 @@ def plugin(srv, item):
     cmd = [i.replace(replace, text) for i in item.addrs]
 
     try:
-        res = subprocess.check_output(cmd, stdin=None, stderr=subprocess.STDOUT, shell=False, universal_newlines=True, cwd='/tmp')
+        subprocess.check_call(cmd, stdin=None, stderr=subprocess.STDOUT, shell=False, universal_newlines=True, cwd='/tmp')
     except Exception as e:
         srv.logging.warning("Cannot execute %s because %s" % (cmd, e))
         return False
