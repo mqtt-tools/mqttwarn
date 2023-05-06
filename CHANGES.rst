@@ -8,6 +8,8 @@ in progress
 
 - Add example "Simple MQTT media player". Thanks, @nagyrobi.
 - Add example "Forwarding data from IoT devices to Zabbix"
+- Remove support for Secure Sockets Layer Version 3.0 (SSLv3).
+  As per RFC 7568, SSLv3 has been deprecated in 2015 already.
 
 
 2023-04-28 0.34.0

@@ -37,7 +37,6 @@ def test_config_notls_is_default():
     assert config.tls is False
 
 
-# FIXME: Adding `sslv3` raises `AttributeError: module 'ssl' has no attribute 'PROTOCOL_SSLv3'`.
 @pytest.mark.parametrize("tls_version", ["tlsv1", "tlsv1_1", "tlsv1_2"])
 def test_config_tls_active(tls_version):
     """
