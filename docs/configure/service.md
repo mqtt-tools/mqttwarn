@@ -15,21 +15,22 @@ You can choose from a variety of [](#notification-services), or you can write
 your own notification plugin easily, see [](#custom-notification-plugins).
 
 
-## Overview
+## Configuration
 
 Configuration sections called `[config:xxx]` configure settings for a service,
-where `xxx` is the name of the service.
+where `xxx` is the name of the service. When a service is launched, a corresponding
+section is mandatory to be present in the mqttwarn configuration file.
 
 {#service-targets}
-Each of these sections has a mandatory option called `targets`, which is a 
-dictionary of target names, each pointing to an array of "addresses". The 
-address formats depend on the particular service.
+A service configuration section has a mandatory option called `targets`, which is
+used to define groups of multiple recipients or targets. It is expected to be a
+dictionary, where each item defines an individual service point for a particular
+service.
 
-Other than the mandatory `targets` option, and an optional `module` option, 
-these sections _may_ have more options. Some of them may even be _required_
-for a particular service.
+The keys are _target names_, and the structure and value depends on what the
+particular service plugin implementation expects.
 
-The anatomy of such a service configuration snippet is:
+The original configuration variant, still used by many service plugins, looks like this.
 ```ini
 [config:xxx]
 targets = {
@@ -38,8 +39,31 @@ targets = {
   }
 ```
 
-This snippet defines individual groups of "target addresses" for a particular 
-service, and assigns them "target names". Using those groups, it is, for 
+:::{note}
+Historically, as outlined in the example above, the value / right-hand side of the
+recipient/target group map, was exclusively defined as a `list`, and as such, the
+term _address list_ was used.
+
+Nowadays, after a few evolution cycles of mqttwarn, the value can have a different
+data type and structure, depending on the particular service plugin. As such, the
+term _target address descriptor_ is used now.
+
+For example, after implementing [named target address descriptor options], the
+configuration of the [Pushsafer service plugin](#pushsafer) is much more capable now.
+```ini
+[config:pushsafer]
+targets = {
+    'basic': { 'private_key': '3SAz1a2iTYsh19eXIMiO' },
+    'extraphone': { 'private_key': '3SAz1a2iTYsh19eXIMiO', 'time_to_live': 60, 'priority': 2, 'retry': 60, 'expire': 600, 'answer': 0 }
+    }
+```
+:::
+
+Other than the mandatory `targets` option, and an optional `module` option, these sections
+_may_ have more options. Some of them may even be _required_ for a particular service.
+
+Effectively, this configuration snippet defines individual groups of "target addresses"
+for a particular service, and assigns them "target names". Using those groups, it is, for
 example, possible to define different...
 
 - target paths for the `file` service.
@@ -227,25 +251,26 @@ plugin as a blueprint and start from there.
 
 Plugins are invoked with two arguments, `srv` and `item`. `srv` is an object
 with some helper functions, and `item` a dictionary which contains information
-on the message which is to be handled by the plugin. `item` contains the
-following  elements:
+on the message which is to be handled by the plugin. `item` has the following
+top-level keys:
 
 ```python
 item = {
-    'service'       : 'string',       # name of handling service (`twitter`, `file`, ..)
-    'target'        : 'string',       # name of target (`o1`, `janejol`) in service
-    'addrs'         : list,           # list of addresses from SERVICE_targets
+    'service'       : 'string',       # Name of handling service (`twitter`, `file`, ...)
+    'target'        : 'string',       # Name of target (`o1`, `janejol`) in service
+    'addrs'         : list,           # List of addresses from SERVICE_targets
     'config'        : dict,           # None or dict from SERVICE_config {}
-    'topic'         : 'string',       # incoming topic branch name
-    'payload'       : 'string',       # raw message payload
-    'message'       : 'string',       # formatted message (if no format string then = payload)
-    'data'          : None,           # dict with transformation data
-    'title'         : 'mqttwarn',     # possible title from title{}
-    'priority'      : 0,              # possible priority from priority{}
+    'topic'         : 'string',       # MQTT topic the message was received on
+    'payload'       : 'string',       # Raw message payload
+    'message'       : 'string',       # Formatted message (if no format string, then equals payload)
+    'data'          : None,           # Dictionary with transformation data
+    'title'         : 'mqttwarn',     # Optional title from title{}
+    'priority'      : 0,              # Optional priority from priority{}
 }
 ```
 
 
 [mqttwarn/services]: https://github.com/mqtt-tools/mqttwarn/tree/main/mqttwarn/services
+[named target address descriptor options]: https://github.com/mqtt-tools/mqttwarn/issues/628
 [`PYTHONPATH`]: https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH
 [`sys.path`]: https://docs.python.org/3/library/sys.html#sys.path
