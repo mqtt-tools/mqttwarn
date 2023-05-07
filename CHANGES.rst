@@ -10,6 +10,7 @@ in progress
 - Add example "Forwarding data from IoT devices to Zabbix"
 - Remove support for Secure Sockets Layer Version 3.0 (SSLv3).
   As per RFC 7568, SSLv3 has been deprecated in 2015 already.
+- Tests: Add more test cases to increase mqttwarn core coverage to ~100%
 
 
 2023-04-28 0.34.0

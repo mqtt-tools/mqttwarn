@@ -55,13 +55,15 @@ SCRIPTNAME = "mqttwarn"
 
 # Global runtime context object
 context: RuntimeContext
+context = None  # type: ignore[assignment]
 
 # Global configuration object
 cf: mqttwarn.configuration.Config
+cf = None  # type: ignore[assignment]
 
 # Global handle to MQTT client
 mqttc: paho.Client
-mqttc = None
+mqttc = None  # type: ignore[assignment]
 
 # Initialize processor queue
 q_in: Queue = Queue(maxsize=0)
@@ -234,8 +236,8 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
     # `targets` is a function symbol.
     if function_name is not None:
         targetlist = context.get_topic_targets(section, topic, data)
-        # TODO: Verify if this is still the case. @amotl thinks that the
-        #       target address descriptor may be of any type these days.
+
+        # Make sure the function returned a target _list_ of elements.
         if not isinstance(targetlist, list):
             targetlist_type = type(targetlist)
             logger.error(
@@ -246,7 +248,7 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
             return
 
     # `targets` is a dictionary.
-    elif isinstance(dispatcher_dict, dict):
+    elif isinstance(dispatcher_dict, dict) and dispatcher_dict:
 
         def get_key(item):
             # precede a key with the number of topic levels and then use reverse alphabetic sort order
@@ -278,16 +280,17 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
     else:
         targetlist = cf.getlist(section, "targets")
 
-        # Exit if `targets` is not a `list`.
+        # Make sure targets are actually a _list_ of elements.
         # TODO: Not tested yet. How can this code be reached?
-        if not isinstance(targetlist, list):
-            logger.error("Target definition in section [%s] is incorrect, should be dictionary or list." % section)
-            # TODO: Review this.
-            cleanup(0)
+        if targetlist is None:
+            logger.error(
+                f'Topic target definition in section "{section}" is empty or incorrect. Should be a list. '
+                "targetlist={targetlist}".format(**locals())
+            )
             return
 
-    # interpolate transformation data values into topic targets
-    # be graceful if interpolation fails, but log a meaningful message
+    # Interpolate transformation data values into topic targets.
+    # Be graceful if interpolation fails, but log a meaningful message.
     targetlist_resolved = []
     for target in targetlist:
         try:
@@ -296,8 +299,9 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
         except Exception as ex:
             error = repr(ex)
             logger.error(
-                f"Cannot interpolate transformation data into topic target '{target}': {error}. "
-                f"section={section}, topic={topic}, payload={truncate(payload)}, data={data}"
+                f"Interpolating transformation data into topic target '{target}' failed. Reason: {error}. "
+                f"section={section}, topic={topic}, payload={truncate(payload)}, data=%s",
+                data,
             )
     targetlist = targetlist_resolved
 
@@ -313,10 +317,10 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
             try:
                 service, target = item.split(":", 2)
             except:
-                logger.warning("Invalid target %s - should be 'service:target'" % (item))
+                logger.error(f"Invalid topic target: {item}. Should be 'service:target'.")
                 continue
 
-        # skip targets with invalid services
+        # Skip targets with invalid services.
         if service not in service_plugins:
             logger.error("Invalid configuration: Topic '%s' points to non-existing service '%s'" % (topic, service))
             continue
@@ -377,15 +381,15 @@ def xform(function: str, orig_value: t.Any, transform_data: TdataType) -> t.Unio
             try:
                 res = context.invoker.datamap(function_name, transform_data)
                 return res
-            except Exception:
-                logger.exception(f"Invoking function '{function}' failed")
+            except:
+                logger.exception(f"Invoking function failed: {function}")
         except:
             pass
 
         try:
             res = Formatter().format(function, **transform_data)
-        except Exception:
-            logger.exception(f"Formatting message with function '{function}' failed")
+        except:
+            logger.exception(f"Formatting message with function failed: {function}")
 
     if isinstance(res, str):
         res = res.replace("\\n", "\n")
@@ -437,10 +441,20 @@ def processor(worker_id=None):
     Queue runner. Pull a job from the queue, find the module in charge
     of handling the service, and invoke the module's plugin to do so.
     """
-
     while not exit_flag:
         logger.debug("Job queue has %s items to process" % q_in.qsize())
         job = q_in.get()
+        if process_job(job=job, worker_id=worker_id):
+            q_in.task_done()
+    logger.debug("Worker thread exiting")
+
+
+def process_job(job, worker_id=None):
+    """
+    Process a single job item.
+    """
+
+    if True:
 
         service = job.service
         section = job.section
@@ -465,8 +479,7 @@ def processor(worker_id=None):
 
         except Exception:
             logger.exception(f"Cannot handle service={service}, target={target}")
-            q_in.task_done()
-            continue
+            return True
 
         # Be more graceful with jobs w/o any target address information (2021-10-18 [amo]).
         if target is None:
@@ -499,9 +512,9 @@ def processor(worker_id=None):
 
         try:
             item["priority"] = int(xform(context.get_config(section, "priority"), 0, transform_data))
-        except Exception as e:
+        except:
             item["priority"] = 0
-            logger.warning("Failed to determine the priority, defaulting to zero: %s" % e)
+            logger.exception("Failed to determine the priority, defaulting to zero")
 
         if HAVE_JINJA is False and context.get_config(section, "template"):
             logger.warning("Templating not possible because Jinja2 is not installed")
@@ -513,8 +526,8 @@ def processor(worker_id=None):
                     text = render_template(template, transform_data)
                     if text is not None:
                         item["message"] = text
-                except Exception as e:
-                    logger.warning("Cannot render `%s' template: %s" % (template, e))
+                except:
+                    logger.exception(f"Rendering template failed: {template}")
 
         if item.get("message") is not None and len(item.get("message")) > 0:
             st = Struct(**item)
@@ -530,16 +543,14 @@ def processor(worker_id=None):
                 srv = make_service(mqttc=mqttc, name=service_logger_name)
                 notified = timeout(module.plugin, (srv, st))
             except Exception as ex:
-                logger.exception(f"Invoking service '{service}' failed: {ex}")
+                logger.exception(f"Invoking service failed. Reason: {ex}. service={service}, topic={topic}")
 
             if not notified:
-                logger.warning("Notification of %s for `%s' FAILED or TIMED OUT" % (service, item.get("topic")))
+                logger.warning(f"Notification failed or timed out. service={service}, topic={topic}")
         else:
-            logger.warning("Notification of %s for `%s' suppressed: text is empty" % (service, item.get("topic")))
+            logger.info(f"Notification suppressed. Reason: Payload is empty. service={service}, topic={topic}")
 
-        q_in.task_done()
-
-    logger.debug("Thread exiting")
+        return True
 
 
 def load_services(services):
@@ -552,10 +563,6 @@ def load_services(services):
         service_plugins[service] = {}
 
         service_config = cf.config("config:" + service)
-        if service_config is None:
-            logger.error("Service `%s' has no config section" % service)
-            sys.exit(1)
-
         service_plugins[service]["config"] = service_config
 
         module = cf.g("config:" + service, "module", service)
@@ -575,7 +582,7 @@ def load_services(services):
                 service_plugins[service]["module"] = load_module_by_name(module)
                 logger.info('Successfully loaded service "{}" from module "{}"'.format(service, module))
                 continue
-            except Exception:
+            except:
                 logger.exception('Loading service "{}" from module "{}" failed'.format(service, module))
 
         # Load built-in service module.
@@ -589,13 +596,14 @@ def load_services(services):
         success = False
         for modulefile in modulefile_candidates:
             if not os.path.isfile(modulefile):
+                logger.error('Module "{}" is not a file'.format(modulefile))
                 continue
             logger.debug('Trying to load service "{}" from file "{}"'.format(service, modulefile))
             try:
                 service_plugins[service]["module"] = load_module_from_file(modulefile)
                 logger.info('Successfully loaded service "{}"'.format(service))
                 success = True
-            except Exception:
+            except:
                 logger.exception(f'Loading service "{service}" from file "{modulefile}" failed')
 
         if not success:
@@ -606,7 +614,7 @@ def load_services(services):
 
 def connect():
     """
-    Load service plugins, connect to the broker, launch daemon threads and listen forever
+    Load service plugins, connect to the MQTT broker, launch daemon threads, and listen forever.
     """
 
     # FIXME: Remove global variables
@@ -800,7 +808,7 @@ def bootstrap(config=None, scriptname=None):
         SCRIPTNAME = scriptname
 
 
-def run_plugin(config=None, name=None, options=None, data=None):
+def run_plugin(config=None, name=None, options=None, data=None, message=None):
     """
     Run service plugins directly without the
     dispatching and transformation machinery.
@@ -828,12 +836,14 @@ def run_plugin(config=None, name=None, options=None, data=None):
     srv = make_service(mqttc=None, name=service_logger_name)
 
     # Build a mimikry item instance for feeding to the service plugin
-    item = Struct(**options)
+    item = Struct(**options or {})
     # TODO: Read configuration optionally from data.
     item.config = config.config("config:" + name)
     item.service = srv
     item.target = "mqttwarn"
     item.data = data or {}
+    if not hasattr(item, "message"):
+        item.message = message
 
     # Launch plugin
     module = service_plugins[name]["module"]

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2022 The mqttwarn developers
+from unittest.mock import Mock
+
 import pytest
 
 from mqttwarn.configuration import Config
@@ -87,7 +89,7 @@ def test_runtime_context_callfunc_failures(caplog, runtime_ini_file):
     ]
 
 
-def test_runtime_context_get_service_config(runtime_ini_file):
+def test_runtime_context_get_service_config_success(runtime_ini_file):
     """
     Verify the `RuntimeContext.get_service_config` method.
     """
@@ -99,7 +101,25 @@ def test_runtime_context_get_service_config(runtime_ini_file):
         "filter": "filter_function()",
         "qos": 1,
     }
-    assert context.get_service_config("unknown") == {}
+
+
+def test_runtime_context_get_service_config_empty():
+    """
+    Verify the `RuntimeContext.get_service_config` method, when the result is an empty dictionary.
+    """
+    context = RuntimeContext(config=Mock(config=Mock(return_value=None)), invoker=None)
+    assert context.get_service_config("foo") == {}
+
+
+def test_runtime_context_get_service_config_unknown(runtime_ini_file):
+    """
+    Verify the `RuntimeContext.get_service_config` method, when the configuration section does not exist.
+    """
+    config = Config(configuration_file=runtime_ini_file)
+    context = RuntimeContext(config=config, invoker=None)
+    with pytest.raises(KeyError) as ex:
+        context.get_service_config("unknown")
+    assert ex.match("Configuration section does not exist: config:unknown")
 
 
 def test_runtime_context_get_service_targets(runtime_ini_file):

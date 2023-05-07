@@ -115,7 +115,7 @@ def test_system_dispatch_to_log_service_plaintext(mosquitto, caplog, capmqtt):
     assert "Message on test/log-1 going to log:info" in caplog.messages
     assert "New `log:info' job: test/log-1" in caplog.messages
     assert "Processor #0 is handling: `log' for info" in caplog.messages
-    assert "Formatting message with function '{name}: {value}' failed" in caplog.messages
+    assert "Formatting message with function failed: {name}: {value}" in caplog.messages
     assert "Invoking service plugin for `log'" in caplog.messages
     assert ("mqttwarn.services.log", 20, "foobar") in caplog.record_tuples
     assert "Job queue has 0 items to process" in caplog.messages

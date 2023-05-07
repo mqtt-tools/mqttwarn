@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 import typing as t
-from configparser import NoOptionError, RawConfigParser
+from configparser import NoOptionError, NoSectionError, RawConfigParser
 
 from mqttwarn.util import load_functions
 
@@ -96,12 +96,8 @@ class Config(RawConfigParser):
 
             logger.info("Loading user-defined functions from %s" % self.functions)
 
-            # Load function file as given (backward-compatibility).
+            # Load function file as given.
             if os.path.isfile(self.functions):
-                functions_file = self.functions
-
-            # Load function file as given if path is absolute.
-            elif os.path.isabs(self.functions):
                 functions_file = self.functions
 
             # Load function file relative to path of configuration file if path is relative.
@@ -132,7 +128,7 @@ class Config(RawConfigParser):
             if isinstance(val, str) and val.upper() in self.specials:
                 return self.specials[val.upper()]
             return ast.literal_eval(val)
-        except NoOptionError:
+        except (NoOptionError, NoSectionError):
             return default
         except ValueError:  # e.g. %(xxx)s in string
             return val
@@ -178,10 +174,15 @@ class Config(RawConfigParser):
         Cannot use config.items() because I want each value to be
         retrieved with g() as above"""
 
-        d = {}
         if self.has_section(section):
-            d = dict((key, self.g(section, key)) for (key) in self.options(section) if key not in ["targets", "module"])
-        return d
+            return dict(
+                (key, self.g(section, key)) for (key) in self.options(section) if key not in ["targets", "module"]
+            )
+        else:
+            if section == "defaults":
+                return {}
+            else:
+                raise KeyError(f"Configuration section does not exist: {section}")
 
 
 def load_configuration(configfile: t.Optional[str] = None, name: str = "mqttwarn") -> Config:

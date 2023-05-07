@@ -3,7 +3,7 @@
 from copy import deepcopy
 
 from mqttwarn.core import make_service
-from mqttwarn.model import Job, Struct
+from mqttwarn.model import Job, ProcessorItem, Struct
 
 JOB_PRIO1 = dict(
     prio=1, service="service", section="section", topic="topic", payload="payload", data="data", target="target"
@@ -60,3 +60,20 @@ def test_struct():
     assert struct.get("unknown", default=42) == 42
     assert repr(struct) == "<hello: 'world'>"
     assert struct.enum() == data
+
+
+def test_processoritem():
+    item = ProcessorItem()
+    assert item.asdict() == {
+        "service": None,
+        "target": None,
+        "config": {},
+        "addrs": [],
+        "priority": None,
+        "section": None,
+        "topic": None,
+        "title": None,
+        "message": None,
+        "data": None,
+    }
+    assert item.get("foo") is None

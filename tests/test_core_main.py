@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2018-2022 The mqttwarn developers
+# (c) 2018-2023 The mqttwarn developers
 import io
 import json
 import os
@@ -255,7 +255,7 @@ def test_plugin_file(caplog, configfile):
     assert "Plugin invoked" in caplog.messages
 
 
-def test_xform_func(caplog):
+def test_xform_func_success(caplog):
     """
     Submit a message to the `log` plugin and proof everything gets dispatched properly.
 
@@ -272,6 +272,24 @@ def test_xform_func(caplog):
     # Proof that the message has been dispatched properly.
     assert "'value': 42.42" in caplog.text, caplog.text
     assert "'xform-key': 'xform-value'" in caplog.text, caplog.text
+
+
+def test_xform_func_failure(caplog):
+    """
+    Submit a message to the `log` plugin and proof everything gets dispatched properly.
+
+    This time, it validates the `xform` function in the context of invoking
+    a user-defined function defined through the `format` setting.
+    """
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=configfile_full)
+
+    # Signal mocked MQTT message to the core machinery for processing.
+    send_message(topic="test/log-unknown-func", payload='{"name": "temperature", "value": 42.42}')
+
+    # Proof that the message has been dispatched properly.
+    assert "Invoking function failed: unknown_func()" in caplog.messages
 
 
 def test_no_targets(tmp_ini, caplog):
@@ -373,7 +391,7 @@ def test_targets_function_invalid(caplog):
     assert (
         "mqttwarn.core",
         30,
-        "Notification of log for `test/targets-function-invalid' FAILED or TIMED OUT",
+        "Notification failed or timed out. service=log, topic=test/targets-function-invalid",
     ) in caplog.record_tuples
 
 
@@ -582,14 +600,36 @@ format = {name}: {value}
     ) in caplog.record_tuples
 
 
-def test_targets_service_invalid(tmp_ini, caplog):
+def test_targets_service_unknown(tmp_ini, caplog):
     """
     There is no service named `foo`. `mqttwarn` should warn correspondingly.
     """
     tmp_ini.write_text(
         """
-[test/target-invalid]
+[test/target-unknown]
 targets = foo:info
+    """
+    )
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=tmp_ini)
+
+    # Signal mocked MQTT messages to the core machinery for processing.
+    send_message(topic="test/target-unknown", payload=json.dumps({"name": "foobar"}))
+
+    # Proof that the message has been routed to the `log` plugin properly.
+    assert ("mqttwarn.core", 10, "Message on test/target-unknown going to foo:info") in caplog.record_tuples
+    assert "Invalid configuration: Topic 'test/target-unknown' points to non-existing service 'foo'" in caplog.text
+
+
+def test_targets_service_invalid(tmp_ini, caplog):
+    """
+    Topic targets like `foo:bar:baz` can not be decoded. `mqttwarn` should emit a corresponding log message.
+    """
+    tmp_ini.write_text(
+        """
+[test/target-invalid]
+targets = foo:bar:baz
     """
     )
 
@@ -600,11 +640,59 @@ targets = foo:info
     send_message(topic="test/target-invalid", payload=json.dumps({"name": "foobar"}))
 
     # Proof that the message has been routed to the `log` plugin properly.
-    assert ("mqttwarn.core", 10, "Message on test/target-invalid going to foo:info") in caplog.record_tuples
-    assert "Invalid configuration: Topic 'test/target-invalid' points to non-existing service 'foo'" in caplog.text
+    assert ("mqttwarn.core", 10, "Message on test/target-invalid going to foo:bar:baz") in caplog.record_tuples
+    assert (
+        "mqttwarn.core",
+        40,
+        "Invalid topic target: foo:bar:baz. Should be 'service:target'.",
+    ) in caplog.record_tuples
 
 
-def test_process_template_with_jinja(caplog):
+def test_targets_service_interpolation_success(tmp_ini, caplog):
+    """
+    Verify interpolating transformation data values into topic targets works.
+    """
+    tmp_ini.write_text(
+        """
+[test/target-interpolate]
+targets = example:{name}
+    """
+    )
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=tmp_ini)
+
+    # Signal mocked MQTT messages to the core machinery for processing.
+    send_message(topic="test/target-interpolate", payload=json.dumps({"name": "foobar"}))
+
+
+def test_targets_service_interpolation_failure(tmp_ini, caplog):
+    """
+    When interpolating transformation data values into topic targets, and it fails,
+    a meaningful log message should have been generated.
+    """
+    tmp_ini.write_text(
+        """
+[test/target-interpolate]
+targets = example:{name}
+    """
+    )
+
+    # Bootstrap the core machinery without MQTT.
+    core_bootstrap(configfile=tmp_ini)
+
+    # Signal mocked MQTT messages to the core machinery for processing.
+    send_message(topic="test/target-interpolate", payload="foobar")
+
+    # Verify the log message indicating the failure.
+    messages = list(map(lambda x: x.msg, caplog.records))
+    assert (
+        "Interpolating transformation data into topic target 'example:{name}' failed. Reason: KeyError('name'). "
+        "section=test/target-interpolate, topic=test/target-interpolate, payload=foobar, data=%s" in messages
+    )
+
+
+def test_template_with_jinja(caplog):
     """
     Verify that the Jinja2 templating subsystem works.
     """
@@ -621,7 +709,7 @@ def test_process_template_with_jinja(caplog):
     assert ("mqttwarn.services.log", 20, "Name: FOOBAR") in caplog.record_tuples
 
 
-def test_process_template_without_jinja(caplog, without_jinja):
+def test_template_without_jinja(caplog, without_jinja):
     """
     Verify that mqttwarn behaves correctly when using the templating subsystem without having Jinja2 installed.
     """

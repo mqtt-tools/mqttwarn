@@ -9,6 +9,7 @@ import re
 import string
 import types
 import typing as t
+from pathlib import Path
 
 import funcy
 import pkg_resources
@@ -231,19 +232,22 @@ def truncate(s: t.Union[str, bytes], limit: int = 200, ellipsis="...") -> str:
     return s
 
 
-def load_file(path: str, retry_tries=None, retry_interval=0.075, unlink=False) -> t.IO[bytes]:
+def load_file(path: t.Union[str, Path], retry_tries=None, retry_interval=0.075, unlink=False) -> t.IO[bytes]:
     """
     Load file content from filesystem gracefully, with optional retrying.
+
+    TODO: Use better variant.
+          https://github.com/Suor/funcy/issues/126#issuecomment-1527279230
     """
     call = functools.partial(open, path, "rb")
     if retry_tries:
         logger.info(f"Retry loading file {path} for {retry_tries} times")
-        payload = funcy.retry(tries=int(retry_tries), timeout=float(retry_interval))(call)()
+        reader = funcy.retry(tries=int(retry_tries), timeout=float(retry_interval))(call)()
     else:
-        payload = call()
+        reader = call()
     if unlink:
         try:
             os.unlink(path)
-        except:
+        except:  # pragma: nocover
             pass
-    return payload
+    return reader
