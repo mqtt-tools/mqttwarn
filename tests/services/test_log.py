@@ -29,7 +29,7 @@ def test_log_invalid_target(caplog):
     assert (
         "mqttwarn.core",
         30,
-        "Notification of log for `test/targets-interpolated' FAILED or TIMED OUT",
+        "Notification failed or timed out. service=log, topic=test/targets-interpolated",
     ) in caplog.record_tuples
 
 
@@ -51,10 +51,10 @@ def test_log_broken_target(caplog):
     assert (
         "mqttwarn.core",
         40,
-        "Invoking service 'log' failed: `item.addrs` is not a list",
+        "Invoking service failed. Reason: `item.addrs` is not a list. service=log, topic=test/targets-interpolated",
     ) in caplog.record_tuples
     assert (
         "mqttwarn.core",
         30,
-        "Notification of log for `test/targets-interpolated' FAILED or TIMED OUT",
+        "Notification failed or timed out. service=log, topic=test/targets-interpolated",
     ) in caplog.record_tuples

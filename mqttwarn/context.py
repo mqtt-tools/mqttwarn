@@ -112,15 +112,11 @@ class RuntimeContext:
 
         2021-10-18 [amo]: Be more graceful with jobs w/o any target address information.
         """
-        targets: t.List[TopicTargetType] = []
-        try:
-            targets = self.config.getdict("config:" + service, "targets")
-        except:
-            logger.exception("Unable to access targets for service `%s'" % service)
+        targets: t.List[TopicTargetType] = self.config.getdict("config:" + service, "targets")
 
         # TODO: The target address descriptor may be of any type these days,
         #       and not necessarily a list.
-        # TODO: Currently, this makes sure to always return one element.
+        # TODO: Currently, make sure to always return one element.
         #       Verify if this is really needed.
         targets = targets or [None]
         return targets

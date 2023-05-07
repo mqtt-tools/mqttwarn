@@ -59,6 +59,7 @@ class ProcessorItem:
     service: Optional[str] = None
     target: Optional[str] = None
     config: Dict = field(default_factory=dict)
+    section: Optional[str] = None
     # TODO: `addrs` can also be a string or dictionary now.
     addrs: TopicTargetType = field(default_factory=list)  # type: ignore[assignment]
     priority: Optional[int] = None
@@ -72,6 +73,17 @@ class ProcessorItem:
 
     def get(self, key, default=None):
         return getattr(self, key, default)
+
+    def to_job(self) -> "Job":
+        return Job(
+            prio=self.priority,
+            service=self.service,
+            section=self.section,
+            topic=self.topic,
+            payload=self.message,
+            data=self.data,
+            target=self.target,
+        )
 
 
 @dataclasses.dataclass

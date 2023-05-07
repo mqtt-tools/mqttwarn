@@ -14,6 +14,7 @@ from mqttwarn.util import (
     asbool,
     get_resource_content,
     import_module,
+    load_file,
     load_function,
     load_functions,
     load_module_by_name,
@@ -190,3 +191,15 @@ def test_import_module():
 
     symbol = import_module("mqttwarn.services.log.plugin")
     assert symbol.__name__ == "plugin"
+
+
+def test_load_file_success(tmp_path):
+    tmpfile = tmp_path / "foo.txt"
+    tmpfile.write_text("Hello, world.")
+    payload = load_file(tmpfile)
+    assert payload.read() == b"Hello, world."
+
+
+def test_load_file_failure(tmp_path):
+    with pytest.raises(FileNotFoundError):
+        load_file("/tmp/foobar.txt", retry_tries=0)
