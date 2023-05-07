@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2018-2023 The mqttwarn developers
 import configparser
-import re
 import socket
 import sys
 import threading
@@ -717,19 +716,22 @@ def test_load_services_spec_not_found(caplog):
     assert ex.match("1")
 
 
-def test_load_services_file_not_found(caplog):
+def test_load_services_file_not_found(tmp_path, caplog):
     """
     Loading a service where its module can not be discovered from a file name path, should fail.
     """
+
+    modulefile = tmp_path / "foo_bar.py"
+
     config = Config()
-    config.configuration_path = "/tmp"
+    config.configuration_path = tmp_path
     config.add_section("config:foo.bar")
     config.set("config:foo.bar", "module", "foo_bar.py")
     bootstrap(config=config)
     with pytest.raises(SystemExit) as ex:
         load_services(["foo.bar"])
     assert 'Module "foo_bar.py" is not a file' in caplog.messages
-    assert 'Module "/tmp/foo_bar.py" is not a file' in caplog.messages
+    assert f'Module "{modulefile}" is not a file' in caplog.messages
     assert 'Unable to load service "foo.bar"' in caplog.messages
     assert ex.match("1")
 
@@ -751,7 +753,7 @@ def test_load_services_file_failure(tmp_path, caplog):
 
     with pytest.raises(SystemExit) as ex:
         load_services(["foo.bar"])
-    assert re.match(r'.*Loading service "foo.bar" from file ".+/foo_bar.py" failed.*', caplog.text, re.DOTALL)
+    assert f'Loading service "foo.bar" from file "{modulefile}" failed' in caplog.text
     assert "AssertionError" in caplog.text
     assert 'Unable to load service "foo.bar"' in caplog.messages
     assert ex.match("1")
