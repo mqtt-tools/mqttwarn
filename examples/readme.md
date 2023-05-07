@@ -11,5 +11,5 @@ frigate/README.rst
 mediaplayer/readme.md
 owntracks-battery/readme.md
 warntoggle/README.rst
-zabbix-iot/README.md
+zabbix-iot/readme.md
 :::

@@ -7,6 +7,7 @@ in progress
 ===========
 
 - Add example "Simple MQTT media player". Thanks, @nagyrobi.
+- Add example "Forwarding data from IoT devices to Zabbix"
 
 
 2023-04-28 0.34.0
