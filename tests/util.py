@@ -53,7 +53,7 @@ def send_message(topic=None, payload=None, retain=False):
     delay()
 
 
-def delay(seconds=0.05):
+def delay(seconds=0.075):
     """
     Wait for designated number of seconds.
     """
