@@ -3,6 +3,7 @@
 import io
 import json
 import os
+import sys
 import tempfile
 
 import pytest
@@ -666,6 +667,7 @@ targets = example:{name}
     send_message(topic="test/target-interpolate", payload=json.dumps({"name": "foobar"}))
 
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="This test only works on Python >= 3.7")
 def test_targets_service_interpolation_failure(tmp_ini, caplog):
     """
     When interpolating transformation data values into topic targets, and it fails,
