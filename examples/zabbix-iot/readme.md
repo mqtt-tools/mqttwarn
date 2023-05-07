@@ -53,8 +53,8 @@ docker run --name=mosquitto -it --rm --publish=1883:1883 eclipse-mosquitto:2.0 m
 
 Let's acquire the configuration assets, and start `mqttwarn`.
 ```shell
-wget https://github.com/jpmens/mqttwarn/raw/main/examples/zabbix-iot/mqttwarn-zabbix-iot.ini
-wget https://github.com/jpmens/mqttwarn/raw/main/examples/zabbix-iot/mqttwarn-zabbix-iot.py
+wget https://github.com/mqtt-tools/mqttwarn/raw/main/examples/zabbix-iot/mqttwarn-zabbix-iot.ini
+wget https://github.com/mqtt-tools/mqttwarn/raw/main/examples/zabbix-iot/mqttwarn-zabbix-iot.py
 mqttwarn --config-file=mqttwarn-zabbix-iot.ini
 ```
 

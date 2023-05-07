@@ -1203,7 +1203,7 @@ to InfluxDB 2.x, contributions to [Support for InfluxDB 2 #563] are very much
 welcome.
 :::
 
-[Support for InfluxDB 2 #563]: https://github.com/jpmens/mqttwarn/issues/563
+[Support for InfluxDB 2 #563]: https://github.com/mqtt-tools/mqttwarn/issues/563
 
 
 ### `irccat`
@@ -1545,7 +1545,7 @@ When a message is received, the plugin will attempt to populate the following co
   - e.g. `name` and `id` above
 - Names for [transformation data fields](#transformations)
   - e.g. `topic`, `payload` and `_dtiso` as above
-  - note that these all must be `VARCHAR` columns; timestamp columns are [not yet supported](https://github.com/jpmens/mqttwarn/issues/334#issuecomment-422141808)
+  - note that these all must be `VARCHAR` columns; timestamp columns are [not yet supported](https://github.com/mqtt-tools/mqttwarn/issues/334#issuecomment-422141808)
 - the _fallbackcolumn_, as noted below
 
 To be clear, there is no other way to configure this particular plugin to use different
@@ -3054,7 +3054,7 @@ Please make sure the four credential values are specified in the correct order.
 :::
 :::{todo}
 This is a perfect candidate to use [named target address descriptor options] instead. 
-[named target address descriptor options]: https://github.com/jpmens/mqttwarn/issues/628
+[named target address descriptor options]: https://github.com/mqtt-tools/mqttwarn/issues/628
 :::
 
 [Twitter]: https://twitter.com
@@ -3098,7 +3098,7 @@ targets = {
 | Topic option  |  M/O   | Description                            |
 | ------------- | :----: | -------------------------------------- |
 | `title`       |   O    | notification title                     |
-| `image`       |   O    | notification image URL  ([example](https://github.com/jpmens/mqttwarn/issues/53#issuecomment-39691429))|
+| `image`       |   O    | notification image URL  ([example](https://github.com/mqtt-tools/mqttwarn/issues/53#issuecomment-39691429))|
 
 [Kodi]: https://kodi.tv/
 [XBMC]: https://en.wikipedia.org/wiki/Xbmc#History
@@ -3237,7 +3237,7 @@ For another scenario using the `zabbix` plugin, please refer to the [Zabbix IoT 
 
 
 [Zabbix]: https://www.zabbix.com/
-[Zabbix IoT example]: https://github.com/jpmens/mqttwarn/tree/main/examples/zabbix-iot
+[Zabbix IoT example]: https://github.com/mqtt-tools/mqttwarn/tree/main/examples/zabbix-iot
 [Zabbix low-level discovery]: https://www.zabbix.com/documentation/current/en/manual/discovery/low_level_discovery
 [Zabbix meets MQTT]: http://jpmens.net/2014/05/27/zabbix-meets-mqtt/
 [Zabbix trapper]: https://www.zabbix.com/documentation/current/en/manual/config/items/itemtypes/trapper

@@ -70,5 +70,5 @@ defining how messages will be filtered, decoded, and re-formatted while
 mqttwarn is processing them.
 
 
-.. _mqttwarn.ini: https://github.com/jpmens/mqttwarn/blob/main/mqttwarn/examples/basic/mqttwarn.ini
-.. _udf.py: https://github.com/jpmens/mqttwarn/blob/main/mqttwarn/examples/basic/udf.py
+.. _mqttwarn.ini: https://github.com/mqtt-tools/mqttwarn/blob/main/mqttwarn/examples/basic/mqttwarn.ini
+.. _udf.py: https://github.com/mqtt-tools/mqttwarn/blob/main/mqttwarn/examples/basic/udf.py

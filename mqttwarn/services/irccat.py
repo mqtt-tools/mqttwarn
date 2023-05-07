@@ -31,7 +31,7 @@ def plugin(srv, item):
     srv.logging.debug("Sending to IRCcat: %s" % (message))
 
     # Apparently, a trailing newline is needed.
-    # https://github.com/jpmens/mqttwarn/issues/547#issuecomment-944632712
+    # https://github.com/mqtt-tools/mqttwarn/issues/547#issuecomment-944632712
     message += "\n"
 
     try:

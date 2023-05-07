@@ -42,4 +42,4 @@ pip install pyserial slixmpp
 [py-pyserial]: https://www.freshports.org/comms/py-pyserial/
 [py-slixmpp]: https://www.freshports.org/net-im/py-slixmpp/
 [Python package index]: https://pypi.org/
-[`setup.py`]: https://github.com/jpmens/mqttwarn/blob/main/setup.py
+[`setup.py`]: https://github.com/mqtt-tools/mqttwarn/blob/main/setup.py

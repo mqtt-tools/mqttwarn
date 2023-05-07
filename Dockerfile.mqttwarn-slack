@@ -1,5 +1,4 @@
 # Docker build file for mqttwarn, with Slack SDK.
-# Based on https://hub.docker.com/r/jpmens/mqttwarn.
 #
 # Invoke like:
 #
@@ -7,7 +6,7 @@
 #
 
 # Derive from upstream image.
-FROM ghcr.io/jpmens/mqttwarn-standard:latest
+FROM ghcr.io/mqtt-tools/mqttwarn-standard:latest
 
 # Make package installation run as "root" user
 USER root

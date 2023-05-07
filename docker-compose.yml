@@ -1,13 +1,13 @@
 # To use this Docker Compose file for mqttwarn:
 #
 # 1. Acquire "docker-compose.yml":
-# wget https://raw.githubusercontent.com/jpmens/mqttwarn/main/docker-compose.yml
+# wget https://raw.githubusercontent.com/mqtt-tools/mqttwarn/main/docker-compose.yml
 #
 # 2. Create a directory for mqttwarn to store "mqttwarn.ini" and "funcs.py" in:
 # mkdir /path/to/mqttwarn
 #
 # 3. Acquire "mqttwarn.ini":
-# wget https://raw.githubusercontent.com/jpmens/mqttwarn/main/mqttwarn/examples/basic/mqttwarn.ini -O /path/to/mqtwarn/mqttwarn.ini
+# wget https://raw.githubusercontent.com/mqtt-tools/mqttwarn/main/mqttwarn/examples/basic/mqttwarn.ini -O /path/to/mqtwarn/mqttwarn.ini
 #
 # 4. Define the location to the custom functions file within "mqttwarn.ini":
 #
@@ -16,7 +16,7 @@ version: '3'
 
 services:
   mqttwarn:
-    image: ghcr.io/jpmens/mqttwarn-full:latest
+    image: ghcr.io/mqtt-tools/mqttwarn-full:latest
     container_name: mqttwarn
     restart: always
     volumes:

@@ -23,7 +23,7 @@ def plugin(srv, item):
         # passed along to rrdtool
         # mofified by otfdr @ github to accept abitray arguments with
         # the payload and to not always add the 'N' in front
-        # 2017-06-05 - fix/enhancement for https://github.com/jpmens/mqttwarn/issues/248
+        # 2017-06-05 - fix/enhancement for https://github.com/mqtt-tools/mqttwarn/issues/248
         if re.match( "^\d+$", text ):
                 rrdtool.update(item.addrs, "N:" + text)
         else:

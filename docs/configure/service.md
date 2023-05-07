@@ -246,6 +246,6 @@ item = {
 ```
 
 
-[mqttwarn/services]: https://github.com/jpmens/mqttwarn/tree/main/mqttwarn/services
+[mqttwarn/services]: https://github.com/mqtt-tools/mqttwarn/tree/main/mqttwarn/services
 [`PYTHONPATH`]: https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH
 [`sys.path`]: https://docs.python.org/3/library/sys.html#sys.path
