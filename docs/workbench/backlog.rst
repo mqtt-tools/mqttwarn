@@ -10,7 +10,7 @@ Iteration +1
 Bugs
 ====
 - [o] Documentation vs. code: Clarify and/or fix logic of "filter" function
-  https://github.com/jpmens/mqttwarn/issues/637
+  https://github.com/mqtt-tools/mqttwarn/issues/637
 
 Features
 ========
@@ -25,7 +25,7 @@ Maintenance
 Documentation » Tech
 ====================
 - [x] Add documentation on RTD
-  https://github.com/jpmens/mqttwarn/issues/389#issuecomment-1428353079
+  https://github.com/mqtt-tools/mqttwarn/issues/389#issuecomment-1428353079
 - [x] ogp-metadata-plugin
 - [x] sphinx-copybutton
 - [x] sphinx-autodoc
@@ -56,7 +56,7 @@ Documentation » Content
 - [o] Improve default output for ``mqttwarn make-udf``, ``basic/udf.py``.
 - [o] Deprecate the ``datamap`` function. ``alldata`` is the new thing.
 - [o] Screen the Wiki for more content
-  https://github.com/jpmens/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets
+  https://github.com/mqtt-tools/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets
 - [o] Naming things: "Transforming" is actually "Decoding"
 - [o] Add example from https://jpmens.net/2018/03/25/alerting-on-ssh-logins/
 - [o] Add "Acknowledgements" section
@@ -111,7 +111,7 @@ Iteration +2
 - [o] Adapt configuration for Supervisor and systemd
 - [o] Improve documentation: Add a complete roundtrip example involving ``mosquitto_pub``
 - [o] Improve documentation: Add "credits" section. At least add the author of Mosquitto.
-- [o] Add ``mqttwarn make-pubs`` or ``mqttwarn selftest``, see https://github.com/jpmens/mqttwarn/issues/127#issuecomment-381690557
+- [o] Add ``mqttwarn make-pubs`` or ``mqttwarn selftest``, see https://github.com/mqtt-tools/mqttwarn/issues/127#issuecomment-381690557
 - [o] Improve logging: Let "file" service report about where it's writing to
 
 
@@ -174,7 +174,7 @@ Goals for 2.0.0
             """
             return snippet
 - [o] Think about adding further support for plugins, e.g. for provisioning databases appropriately, see also
-  https://github.com/jpmens/mqttwarn/issues/283
+  https://github.com/mqtt-tools/mqttwarn/issues/283
 - [o] Configuration and source tree file watcher like ``pserve ... --reload``
 
 

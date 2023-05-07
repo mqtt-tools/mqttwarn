@@ -13,7 +13,7 @@ For hacking on mqttwarn, please install it in development mode.
 
 Get hold of the sources, initialize a Python virtualenv, and run the software tests::
 
-    git clone https://github.com/jpmens/mqttwarn
+    git clone https://github.com/mqtt-tools/mqttwarn
     cd mqttwarn
     make test
 

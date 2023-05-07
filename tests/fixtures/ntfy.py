@@ -46,7 +46,7 @@ class Ntfy(BaseImage):
         Image needs to be pulled explicitly.
         Workaround against `404 Client Error: Not Found for url: http+docker://localhost/v1.23/containers/create`.
 
-        - https://github.com/jpmens/mqttwarn/pull/589#issuecomment-1249680740
+        - https://github.com/mqtt-tools/mqttwarn/pull/589#issuecomment-1249680740
         - https://github.com/docker/docker-py/issues/2101
         """
         docker_client = docker.from_env(version=self.docker_version)

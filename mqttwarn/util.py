@@ -34,7 +34,7 @@ class Formatter(string.Formatter):
         This also adds the '!j' conversion flag, which serializes the
         value to JSON format.
 
-        See also https://github.com/jpmens/mqttwarn/issues/146.
+        See also https://github.com/mqtt-tools/mqttwarn/issues/146.
         """
         if conversion == "j":
             value = json.dumps(value)

@@ -212,7 +212,7 @@ where you pick values of interest from your nested JSON document.
 
 :::{todo}
 We are looking into providing a generic way to access nested elements at 
-[access nested elements in JSON payloads](https://github.com/jpmens/mqttwarn/issues/303).
+[access nested elements in JSON payloads](https://github.com/mqtt-tools/mqttwarn/issues/303).
 In the meanwhile, for doing it in a custom way, please have a look at the
 (#nested-json-example).
 :::

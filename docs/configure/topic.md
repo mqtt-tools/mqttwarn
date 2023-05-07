@@ -170,5 +170,5 @@ targets = store-image:{camera}-{label}
 ```
 
 
-[incorporate topic names into topic targets]: https://github.com/jpmens/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets
+[incorporate topic names into topic targets]: https://github.com/mqtt-tools/mqttwarn/wiki/Incorporating-topic-names#incorporate-topic-names-into-topic-targets
 [`mosquitto_pub`]: https://mosquitto.org/man/mosquitto_pub-1.html

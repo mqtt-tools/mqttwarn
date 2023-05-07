@@ -40,7 +40,7 @@
 
 [Unit]
 Description=mqttwarn pluggable mqtt notification service
-Documentation=https://github.com/jpmens/mqttwarn
+Documentation=https://github.com/mqtt-tools/mqttwarn
 After=network.target
 
 [Service]

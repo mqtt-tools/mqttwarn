@@ -17,8 +17,8 @@ date-published: 2014-02-09
 date-released: 2023-04-13
 type: software
 license: EPL
-license-url: https://github.com/jpmens/mqttwarn/blob/main/LICENSE
-repository-code: https://github.com/jpmens/mqttwarn
+license-url: https://github.com/mqtt-tools/mqttwarn/blob/main/LICENSE
+repository-code: https://github.com/mqtt-tools/mqttwarn
 keywords:
   - acquisition
   - data

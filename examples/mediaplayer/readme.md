@@ -30,7 +30,7 @@ docker run --name=mosquitto -it --rm --publish=1883:1883 eclipse-mosquitto:2.0 m
 ```
 Let's acquire the `mqttwarn-mplayer.ini` configuration file, and start `mqttwarn`.
 ```shell
-wget https://github.com/jpmens/mqttwarn/raw/main/examples/mediaplayer/mqttwarn-mplayer.ini
+wget https://github.com/mqtt-tools/mqttwarn/raw/main/examples/mediaplayer/mqttwarn-mplayer.ini
 mqttwarn --config-file=mqttwarn-mplayer.ini
 ```
 Now, when publishing the URL to the audio resource on the designated MQTT topic, `mqttwarn` will

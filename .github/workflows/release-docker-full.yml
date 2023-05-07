@@ -24,7 +24,7 @@ concurrency:
 
 # The name for the produced image at ghcr.io.
 env:
-  GHCR_IMAGE_NAME: jpmens/mqttwarn-full
+  GHCR_IMAGE_NAME: mqtt-tools/mqttwarn-full
 
 jobs:
   docker:

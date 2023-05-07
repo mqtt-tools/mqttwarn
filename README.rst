@@ -1,8 +1,8 @@
-.. image:: https://github.com/jpmens/mqttwarn/workflows/Tests/badge.svg
-    :target: https://github.com/jpmens/mqttwarn/actions?workflow=Tests
+.. image:: https://github.com/mqtt-tools/mqttwarn/workflows/Tests/badge.svg
+    :target: https://github.com/mqtt-tools/mqttwarn/actions?workflow=Tests
 
-.. image:: https://codecov.io/gh/jpmens/mqttwarn/branch/main/graph/badge.svg
-    :target: https://codecov.io/gh/jpmens/mqttwarn
+.. image:: https://codecov.io/gh/mqtt-tools/mqttwarn/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/mqtt-tools/mqttwarn
 
 .. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
@@ -19,11 +19,11 @@
 .. image:: https://pepy.tech/badge/mqttwarn/month
     :target: https://pepy.tech/project/mqttwarn
 
-`GitHub <https://github.com/jpmens/mqttwarn>`_
+`GitHub <https://github.com/mqtt-tools/mqttwarn>`_
 | `PyPI <https://pypi.org/project/mqttwarn/>`_
 | `Documentation <https://mqttwarn.readthedocs.io>`_
-| `Issues <https://github.com/jpmens/mqttwarn/issues>`_
-| `Changelog <https://github.com/jpmens/mqttwarn/blob/main/CHANGES.rst>`_
+| `Issues <https://github.com/mqtt-tools/mqttwarn/issues>`_
+| `Changelog <https://github.com/mqtt-tools/mqttwarn/blob/main/CHANGES.rst>`_
 
 |
 
@@ -35,7 +35,7 @@ mqttwarn
 
 To *warn*, *alert*, or *notify*.
 
-.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/main/assets/google-definition.jpg
+.. image:: https://raw.githubusercontent.com/mqtt-tools/mqttwarn/main/assets/google-definition.jpg
 
 
 
@@ -55,7 +55,7 @@ sophisticated transformations.
 
 A picture says a thousand words.
 
-.. image:: https://raw.githubusercontent.com/jpmens/mqttwarn/main/assets/mqttwarn.png
+.. image:: https://raw.githubusercontent.com/mqtt-tools/mqttwarn/main/assets/mqttwarn.png
     :target: #
 
 
@@ -111,8 +111,8 @@ For running ``mqttwarn`` on a container infrastructure like Docker or
 Kubernetes, corresponding images are automatically published to the
 GitHub Container Registry (GHCR).
 
-- ``ghcr.io/jpmens/mqttwarn-standard:latest``
-- ``ghcr.io/jpmens/mqttwarn-full:latest``
+- ``ghcr.io/mqtt-tools/mqttwarn-standard:latest``
+- ``ghcr.io/mqtt-tools/mqttwarn-full:latest``
 
 To learn more about this topic, please follow up reading the `Using the OCI image
 with Docker or Podman`_ documentation section.
@@ -178,7 +178,7 @@ About
 =====
 These links will guide you to the source code of *mqttwarn* and its documentation.
 
-- `mqttwarn on GitHub <https://github.com/jpmens/mqttwarn>`_
+- `mqttwarn on GitHub <https://github.com/mqtt-tools/mqttwarn>`_
 - `mqttwarn on the Python Package Index (PyPI) <https://pypi.org/project/mqttwarn/>`_
 - `mqttwarn documentation <https://mqttwarn.readthedocs.io/>`_
 
@@ -249,23 +249,23 @@ Have fun!
 
 .. _Apprise: https://github.com/caronc/apprise
 .. _Apprise notification services: https://github.com/caronc/apprise/wiki#notification-services
-.. _backlog: https://github.com/jpmens/mqttwarn/blob/main/doc/backlog.rst
+.. _backlog: https://github.com/mqtt-tools/mqttwarn/blob/main/doc/backlog.rst
 .. _Eclipse Mosquitto: https://mosquitto.org
 .. _EPL-2.0: https://www.eclipse.org/legal/epl-2.0/
-.. _hacking: https://github.com/jpmens/mqttwarn/blob/main/doc/hacking.rst
+.. _hacking: https://github.com/mqtt-tools/mqttwarn/blob/main/doc/hacking.rst
 .. _How do your servers talk to you?: https://jpmens.net/2014/04/03/how-do-your-servers-talk-to-you/
 .. _Installing mqttwarn with pip: https://mqttwarn.readthedocs.io/en/latest/usage/pip.html
-.. _issue: https://github.com/jpmens/mqttwarn/issues/new
-.. _LICENSE: https://github.com/jpmens/mqttwarn/blob/main/LICENSE
+.. _issue: https://github.com/mqtt-tools/mqttwarn/issues/new
+.. _LICENSE: https://github.com/mqtt-tools/mqttwarn/blob/main/LICENSE
 .. _MQTTwarn\: Ein Rundum-Sorglos-Notifier: https://web.archive.org/web/20140611040637/http://jaxenter.de/news/MQTTwarn-Ein-Rundum-Sorglos-Notifier-171312
 .. _mqttwarn configuration: https://mqttwarn.readthedocs.io/en/latest/configure/
 .. _mqttwarn development sandbox: https://mqttwarn.readthedocs.io/en/latest/workbench/sandbox.html
 .. _mqttwarn documentation: https://mqttwarn.readthedocs.io/
 .. _mqttwarn notifier catalog: https://mqttwarn.readthedocs.io/en/latest/notifier-catalog.html
-.. _mqttwarn.service: https://github.com/jpmens/mqttwarn/blob/main/etc/mqttwarn.service
-.. _opening an issue on GitHub: https://github.com/jpmens/mqttwarn/issues/new
+.. _mqttwarn.service: https://github.com/mqtt-tools/mqttwarn/blob/main/etc/mqttwarn.service
+.. _opening an issue on GitHub: https://github.com/mqtt-tools/mqttwarn/issues/new
 .. _Running notification plugins standalone: https://mqttwarn.readthedocs.io/en/latest/usage/standalone.html
 .. _Schwarmalarm using mqttwarn: https://hiveeyes.org/docs/system/schwarmalarm-mqttwarn.html
 .. _Supervisor: https://jpmens.net/2014/02/13/in-my-toolbox-supervisord/
-.. _supervisor.ini: https://github.com/jpmens/mqttwarn/blob/main/etc/supervisor.ini
+.. _supervisor.ini: https://github.com/mqtt-tools/mqttwarn/blob/main/etc/supervisor.ini
 .. _Using the OCI image with Docker or Podman: https://mqttwarn.readthedocs.io/en/latest/usage/oci.html

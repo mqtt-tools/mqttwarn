@@ -70,7 +70,7 @@ Prerequisites
 
 Acquire sources and go to the right directory::
 
-    git clone https://github.com/jpmens/mqttwarn
+    git clone https://github.com/mqtt-tools/mqttwarn
     cd mqttwarn/examples/frigate
 
 
@@ -174,17 +174,17 @@ Example snapshot image
 .. _events in JSON format: https://docs.frigate.video/integrations/mqtt/#frigateevents
 .. _Frigate: https://frigate.video/
 .. _Frigate on GitHub: https://github.com/blakeblackshear/frigate
-.. _frigate.ini: https://github.com/jpmens/mqttwarn/blob/main/examples/frigate/frigate.ini
-.. _frigate.py: https://github.com/jpmens/mqttwarn/blob/main/examples/frigate/frigate.py
+.. _frigate.ini: https://github.com/mqtt-tools/mqttwarn/blob/main/examples/frigate/frigate.ini
+.. _frigate.py: https://github.com/mqtt-tools/mqttwarn/blob/main/examples/frigate/frigate.py
 .. _Jaromír Kalina: https://unsplash.com/@jkalinaofficial
 .. _Mosquitto on GitHub: https://github.com/eclipse/mosquitto
 .. _mqttwarn: https://mqttwarn.readthedocs.io/
-.. _mqttwarn on GitHub: https://github.com/jpmens/mqttwarn
+.. _mqttwarn on GitHub: https://github.com/mqtt-tools/mqttwarn
 .. _ntfy: https://ntfy.sh/
 .. _ntfy on GitHub: https://github.com/binwiederhier/ntfy
 .. _ntfy service plugin: https://mqttwarn.readthedocs.io/en/latest/notifier-catalog.html#ntfy
 .. _Philipp C. Heckel: https://github.com/binwiederhier
 .. _pub-sub: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
 .. _Sev: https://github.com/sevmonster
-.. _test_frigate.py: https://github.com/jpmens/mqttwarn/blob/main/examples/frigate/test_frigate.py
+.. _test_frigate.py: https://github.com/mqtt-tools/mqttwarn/blob/main/examples/frigate/test_frigate.py
 .. _Unsplash License: https://unsplash.com/license

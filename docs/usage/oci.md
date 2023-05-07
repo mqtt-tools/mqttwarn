@@ -9,18 +9,18 @@ interactively, perhaps to help diagnose a problem.
 
 OCI images are available at:
 
-- https://github.com/orgs/jpmens/packages/container/package/mqttwarn-standard
-- https://github.com/orgs/jpmens/packages/container/package/mqttwarn-full
+- https://github.com/orgs/mqtt-tools/packages/container/package/mqttwarn-standard
+- https://github.com/orgs/mqtt-tools/packages/container/package/mqttwarn-full
 
 ## Choosing the OCI image
 
 Choose one of those OCI images.
 ```shell
 # The standard image on GHCR.
-export IMAGE=ghcr.io/jpmens/mqttwarn-standard:latest
+export IMAGE=ghcr.io/mqtt-tools/mqttwarn-standard:latest
 
 # The full image on GHCR.
-export IMAGE=ghcr.io/jpmens/mqttwarn-full:latest
+export IMAGE=ghcr.io/mqtt-tools/mqttwarn-full:latest
 ```
 
 ## Interactively
@@ -189,7 +189,7 @@ images.
 
 In order to use `mqttwarn` with additional Python modules not included in the
 baseline image, you will need to build custom OCI images based on the
-canonical `ghcr.io/jpmens/mqttwarn-standard:latest`.
+canonical `ghcr.io/mqtt-tools/mqttwarn-standard:latest`.
 
 We prepared an example which outlines how this would work with the Slack SDK.
 By using the `Dockerfile.mqttwarn-slack`, this command will build an OCI
@@ -203,18 +203,18 @@ docker build --tag=mqttwarn-slack --file=Dockerfile.mqttwarn-slack .
 
 If you prefer not to fiddle with those details, but instead want to run a full
 image including dependencies for all modules, we have you covered. Alongside
-the standard image, there is also `ghcr.io/jpmens/mqttwarn-full:latest`.
+the standard image, there is also `ghcr.io/mqtt-tools/mqttwarn-full:latest`.
 
 ## Image sizes
 
 We determined the **compressed** image sizes using [dockersize]::
 
-    $ dockersize ghcr.io/jpmens/mqttwarn-standard:latest
+    $ dockersize ghcr.io/mqtt-tools/mqttwarn-standard:latest
     linux/amd64   172.89M
     linux/arm64   167.12M
     linux/arm/v7  143.39M
 
-    $ dockersize ghcr.io/jpmens/mqttwarn-full:latest
+    $ dockersize ghcr.io/mqtt-tools/mqttwarn-full:latest
     linux/amd64   205.96M
     linux/arm64   186.81M
     linux/arm/v7  160.47M

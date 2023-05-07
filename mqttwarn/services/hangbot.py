@@ -5,7 +5,7 @@ __author__    = 'Bram Hendrickx'
 __copyright__ = 'Copyright 2016 Bram Hendrickx'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-Original script by Bram Hendrickx. https://github.com/jpmens/mqttwarn/blob/main/mqttwarn/services/ifttt.py
+Original script by Bram Hendrickx. https://github.com/mqtt-tools/mqttwarn/blob/main/mqttwarn/services/ifttt.py
 Modified to work with hangoutsbot api plugin https://github.com/hangoutsbot/hangoutsbot/wiki/API-Plugin
 """
 
