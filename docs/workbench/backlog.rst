@@ -7,6 +7,17 @@ mqttwarn backlog
 Iteration +1
 ************
 
+Next
+====
+- [o] Frigate: Rename goat.png to goat.jpg
+- [o] Test ``test_system_dispatch_to_log_service_plaintext`` is flaky on CI
+- [o] Test ``test_subscribe_forever_fails_socket_error`` is flaky on CI
+
+  - https://github.com/jpmens/mqttwarn/actions/runs/4839474570/jobs/8624518352?pr=649#step:7:421
+- [o] https://mqttwarn.readthedocs.io/en/latest/usage/index.html#configuration-file is not enough,
+  because it already references an ``udf.py`` file, which needs to be created using ``mqttwarn
+  make-udf``.
+
 Bugs
 ====
 - [o] Documentation vs. code: Clarify and/or fix logic of "filter" function
@@ -67,7 +78,10 @@ Documentation » Content
 
 - [o] The ``format`` option should be renamed to ``message`` or ``body``
 - [o] Rename ``alldata`` to ``decode``, or ``decoder``
-- [o] Add documentation snippet to ntfy, à la https://docs.ntfy.sh/examples/#traccar, but for OwnTracks
+- [o] Add documentation snippet to ntfy
+
+  - https://github.com/binwiederhier/ntfy/blob/main/docs/integrations.md
+  - À la https://docs.ntfy.sh/examples/#traccar, but for OwnTracks
 - [o] Tutorial: MQTT topic rewriting with mqttwarn
 - [o] Tutorial: Periodic MOTD notifier with ntfy
 - [o] Document ``mqttwarn.util``, like ``load_file()``
@@ -77,6 +91,34 @@ Documentation » Content
     There are also some extensions to mqttwarn not included in the core package.
     Instead, they are bundled into another package, ``mqttwarn-contrib``, see also
     `community contributions to mqttwarn`_.
+- [o] Python <-> Go bindings
+  - https://github.com/tliron/py4go
+  - https://github.com/sbinet/go-python
+  - https://github.com/qur/gopy
+  - https://github.com/go-python/gopy
+  - https://github.com/asottile/setuptools-golang
+  - https://github.com/dop251/goja
+  - https://github.com/robertkrimen/otto
+  - https://github.com/traefik/yaegi
+  - https://github.com/tetratelabs/wazero
+  - https://github.com/wasmerio/wasmer-go
+  - https://github.com/dbohdan/embedded-scripting-languages
+
+- [o] Example for ``mqttwarn-contrib``: https://github.com/jpmens/mqttwarn/issues/526#issuecomment-864423040
+- [o] Tutorial with Wetterdienst
+- [o] MQTT republishing and topic rewriting
+
+  - https://hiveeyes.org/docs/beradio/research/mqtt.html
+  - https://lodge.glasgownet.com/2012/09/23/mqtt-republishing-itch/
+  - https://github.com/kylegordon/mqtt-republisher
+  - https://docs.aws.amazon.com/iot/latest/developerguide/iot-repub-rule.html
+  - https://docs.netscaler.com/en-us/citrix-adc/current-release/appexpert/rewrite/mqtt-support-rewrite.html
+  - https://groups.google.com/g/mqtt/c/lUrwt9p2NDk
+  - https://emqx.medium.com/emq-x-mqtt-5-0-topic-rewrite-b3728427cf8c
+
+- [o] https://github.com/padelt/docker-owntracks-private-mqtt-broker
+- [o] https://cedalo.com/blog/best-mqtt-tools/
+
 
 .. _community contributions to mqttwarn: https://pypi.org/project/mqttwarn-contrib/
 
@@ -113,6 +155,19 @@ Iteration +2
 - [o] Improve documentation: Add "credits" section. At least add the author of Mosquitto.
 - [o] Add ``mqttwarn make-pubs`` or ``mqttwarn selftest``, see https://github.com/mqtt-tools/mqttwarn/issues/127#issuecomment-381690557
 - [o] Improve logging: Let "file" service report about where it's writing to
+- [o] Only ship a single OCI image?
+  https://github.com/jpmens/mqttwarn/pull/645#discussion_r1180798080
+- [o] https://github.com/eclipse/paho.mqtt.testing
+- [o] Support MQTT Sparkplug?
+
+  - https://modelbasedtesting.co.uk/2022/01/22/getting-started-with-mqtt-and-sparkplug/
+  - https://cirrus-link.com/mqtt-sparkplug-tahu/
+  - https://www.youtube.com/watch?v=-9vMAe7P25A
+  - https://github.com/eclipse/tahu/blob/master/python/examples/example.py
+  - https://github.com/eclipse/tahu/blob/master/python/examples/example_simple.py
+  - https://newsroom.eclipse.org/eclipse-newsletter/2023/february/sparkplug-30-brings-cleaner-implementations-and-greater
+- [o] Use ``outgoing`` for email plugin?
+  https://github.com/jwodder/outgoing
 
 
 ************
