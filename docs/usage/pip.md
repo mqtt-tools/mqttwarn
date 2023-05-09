@@ -11,6 +11,11 @@ that.
 pip install --upgrade mqttwarn
 ```
 
+Add JavaScript support for user-defined functions.
+```bash
+pip install --upgrade 'mqttwarn[javascript]'
+```
+
 You can also add support for a specific service plugin.
 
 ```bash

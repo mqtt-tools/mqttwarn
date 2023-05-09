@@ -34,7 +34,7 @@ RUN --mount=type=cache,id=pip,target=/root/.cache/pip \
     true \
     && pip install --upgrade pip \
     && pip install --prefer-binary versioningit wheel \
-    && pip install --use-pep517 --prefer-binary '/src'
+    && pip install --use-pep517 --prefer-binary '/src[javascript]'
 
 # Uninstall build prerequisites again.
 RUN apt-get --yes remove --purge git && apt-get --yes autoremove

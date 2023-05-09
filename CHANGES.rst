@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- [udf] Unlock JavaScript for user-defined functions. Thanks, @extremeheat.
 
 - CI: Validated on Python 3.14
 - OCI: Updated to Python 3.14
