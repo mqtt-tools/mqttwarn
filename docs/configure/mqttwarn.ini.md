@@ -71,6 +71,7 @@ your output file `/tmp/mqtt.log`:
 -->Jane<--
 ```
 
+(configuration-defaults-section)=
 ## The `[defaults]` section
 
 Most of the options in the configuration file have sensible defaults, and/or ought to be self-explanatory:
