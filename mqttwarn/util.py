@@ -13,6 +13,7 @@ import logging
 import os
 import re
 import string
+import threading
 import types
 import typing as t
 from pathlib import Path
@@ -147,8 +148,10 @@ def load_module_from_file(path: t.Union[str, Path]) -> types.ModuleType:
         loader = importlib.machinery.SourceFileLoader(fullname=name, path=str(path))
     elif path.suffix == ".pyc":
         loader = importlib.machinery.SourcelessFileLoader(fullname=name, path=str(path))
+    elif path.suffix in [".js", ".javascript"]:
+        return load_source_js(name, str(path))
     else:
-        raise ImportError(f"Loading file failed (only .py and .pyc): {path}")
+        raise ImportError(f"Loading file type failed (only .py, .pyc, .js, .javascript): {path}")
     spec = importlib.util.spec_from_loader(loader.name, loader)
     if spec is None:
         raise ModuleNotFoundError(f"Failed loading module from file: {path}")
@@ -216,16 +219,17 @@ def import_symbol(name: str, parent: t.Optional[types.ModuleType] = None) -> typ
     return import_symbol(remaining_names, parent=module)
 
 
-def load_functions(filepath: t.Optional[str] = None) -> t.Optional[types.ModuleType]:
+def load_functions(filepath: t.Optional[t.Union[str, Path]] = None) -> t.Optional[types.ModuleType]:
 
     if not filepath:
         return None
 
+    filepath = str(filepath)
+
     if not os.path.isfile(filepath):
         raise IOError("'{}' not found".format(filepath))
 
-    py_mod = load_module_from_file(filepath)
-    return py_mod
+    return load_module_from_file(filepath)
 
 
 def load_function(name: str, py_mod: t.Optional[types.ModuleType]) -> t.Callable:
@@ -277,3 +281,39 @@ def load_file(path: t.Union[str, Path], retry_tries=None, retry_interval=0.075, 
         except:  # pragma: nocover
             pass
     return reader
+
+
+def imp_new_module(name):
+    """
+    Create a new module.
+
+    The module is not entered into sys.modules.
+
+    """
+    return types.ModuleType(name)
+
+
+def module_factory(name, variables):
+    """
+    Create a synthetic Python module object.
+
+    Derived from:
+    https://www.oreilly.com/library/view/python-cookbook/0596001673/ch15s03.html
+    """
+    module = imp_new_module(name)
+    module.__dict__.update(variables)
+    module.__file__ = "<synthesized>"
+    return module
+
+
+def load_source_js(mod_name, filepath):
+    """
+    Load a JavaScript module, and import its exported symbols into a synthetic Python module.
+    """
+    import javascript
+
+    js_code = load_file(filepath, retry_tries=0).read().decode("utf-8")
+    module = {}
+    javascript.eval_js(js_code)
+    threading.Event().wait(0.01)
+    return module_factory(mod_name, module["exports"])

@@ -407,6 +407,68 @@ the invocation of your function, you will create an endless loop.
 :::
 
 
+(user-defined-functions-languages)=
+### Using other languages
+
+This section is about using languages other than Python within the mqttwarn transformation
+subsystem.
+
+#### Introduction
+Imagine you are running a large cloud infrastructure for [4IR] purposes, where hardware
+appliances or industrial machines submit telemetry data to concentrators or hubs, in order
+to converge them to a message bus like [Kafka], where, because you favoured a [FaaS]
+solution, your [serverless] function handler will consume the telemetry messages, in
+order to conduct further processing, like to filter, transform, and store the data.
+Chances are that you used the [Serverless Framework], built on [Node.js], so your application
+infrastructure is effectively based on a bunch of [JavaScript] code.
+
+Now, you know how the story ends. The infrastructure costs exploded, you had to fire your
+engineering team, and now you are sitting in front of a mixture of infrastructure setup
+recipes and actual application code, and you are not able to make any sense of that at all.
+After some  digging, you are able to identify the spot where the real application logic
+evaluates a set of transformation rules, in order to mangle inbound data appropriately
+into outbound data, written in JavaScript.
+
+You quickly realize that the same thing could effectively be solved using [MQTT] and Python,
+and operated on a single server machine, because you are doing only a few hundred requests
+per second anyway. However, you don't have the time, because, well, the customer quickly
+needs a fix because they added another telemetry data field waiting to be consumed and
+handled appropriately. Well, and it's Kafka anyway, how would one get rid of _that_?
+
+After a glimpse of desperation, you are reading the fine manual again, and catch up with
+the fact that telemetry data _is actually ingested using MQTT!_ That is useful, indeed!
+Remembering conversations about a thing called _mqttwarn_ at the Späti the other day,
+and that it gained the ability to run JavaScript code recently, in order to bring cloud
+computing techniques back to personal computing, you think it would be feasible to change
+that architecture of your system in the blink of an eye.
+
+There you go: You rip out the JavaScript transformation rules into a single-file version,
+export its main entry point symbol, configure mqttwarn to use `functions = mycloud.js`,
+and adjust its settings to use your MQTT broker endpoint at the beginning of the data
+pipeline, invoke mqttwarn, and turn off Kafka. It works!
+
+:::{note}
+Rest assured we are overexaggerating a bit, and [Kafka] can only be compared to [MQTT]
+if you are also willing to compare apples with oranges, but you will get the point that
+we believe simpler systems are more often than not able to solve problems equally well,
+if not more efficient, both at runtime, and on details of maintenance and operation.
+
+Other than this, every kind of system migration should be conducted with better planning
+than outlined in our rant above.
+:::
+
+#### JavaScript
+
+For running user-defined functions code written in [JavaScript], mqttwarn uses the
+excellent [JSPyBridge] package. For adding JavaScript support to mqttwarn, install
+it using pip like `pip install --upgrade 'mqttwarn[javascript]'`, or use one of the
+available [OCI images](#using-oci-image).
+
+You can find an example implementation for a `filter` function written in JavaScript
+at the [OwnTracks-to-ntfy example tutorial](#owntracks-ntfy-variants-udf).
+
+
+
 ## User-defined function examples
 
 In this section, you can explore a few example scenarios where user-defined
@@ -506,6 +568,12 @@ The `topic` parameter will be the name of the specific topic that the message
 was received on, here `owntracks/jane/phone`. The name of the section will be 
 the `section` argument, here `owntracks/#/phone`.
 :::
+
+:::{note}
+The recipe about how to use [](#owntracks-ntfy-variants-udf) demonstrates
+corresponding examples for writing a `filter` function.
+:::
+
 
 (decode-topic)=
 ### `alldata`: Decoding topic names
@@ -631,10 +699,19 @@ weather,topic=tasmota/temp/ds/1 temperature=19.7 1517525319000
 ```
 
 
+[4IR]: https://en.wikipedia.org/wiki/Fourth_Industrial_Revolution
+[FaaS]: https://en.wikipedia.org/wiki/Cloud_computing#Serverless_computing_or_Function-as-a-Service_(FaaS)
 [geo-fence]: https://en.wikipedia.org/wiki/Geo-fence
 [InfluxDB line format]: https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/
+[JavaScript]: https://en.wikipedia.org/wiki/JavaScript
 [Jinja2 templates]: https://jinja.palletsprojects.com/templates/
+[JSPyBridge]: https://pypi.org/project/javascript/
+[Kafka]: https://en.wikipedia.org/wiki/Apache_Kafka
+[MQTT]: https://en.wikipedia.org/wiki/MQTT
+[Node.js]: https://en.wikipedia.org/wiki/Node.js
+[OwnTracks]: https://owntracks.org
 [Tasmota]: https://github.com/arendst/Tasmota
 [Tasmota JSON status response for a DS18B20 sensor]: https://tasmota.github.io/docs/JSON-Status-Responses/#ds18b20
-[OwnTracks]: https://owntracks.org
+[serverless]: https://en.wikipedia.org/wiki/Serverless_computing
+[Serverless Framework]: https://github.com/serverless/serverless
 [waypoint]: https://en.wikipedia.org/wiki/Waypoint

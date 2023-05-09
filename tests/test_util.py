@@ -4,6 +4,7 @@ from __future__ import division
 
 import py_compile
 import re
+import sys
 import time
 import types
 from builtins import str
@@ -138,7 +139,9 @@ def test_load_functions():
     # Load functions file that is not a python file
     with pytest.raises(ImportError) as excinfo:
         load_functions(filepath=configfile_full)
-    assert re.match(r"Loading file failed \(only .py and .pyc\): .+full.ini", str(excinfo.value))
+    assert re.match(
+        re.escape("Loading file type failed (only .py, .pyc, " ".js, .javascript)") + ": .+full.ini", str(excinfo.value)
+    )
 
     # Load bad functions file
     with pytest.raises(Exception):
@@ -157,6 +160,46 @@ def test_load_functions_pyc(tmp_path):
 
     py_mod = load_functions(filepath=funcfile_pyc)
     assert py_mod is not None
+
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="JavaScript support only works on Python >= 3.7")
+def test_load_functions_javascript_success(tmp_path):
+    """
+    Verify that JavaScript module loading, including symbol exporting and invocation, works well.
+    """
+    jsfile = tmp_path / "test.js"
+    jsfile.write_text("module.exports = { forty_two: function() { return 42; } };")
+    jsmod = load_functions(jsfile)
+    assert jsmod.forty_two() == 42
+
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="JavaScript support only works on Python >= 3.7")
+def test_load_functions_javascript_compile_failure(tmp_path):
+    """
+    Verify that JavaScript module loading, including symbol exporting and invocation, works well.
+    """
+    from javascript.errors import JavaScriptError
+
+    jsfile = tmp_path / "test.js"
+    jsfile.write_text("Hotzenplotz")
+    with pytest.raises(JavaScriptError) as ex:
+        load_functions(jsfile)
+    assert ex.match("ReferenceError: Hotzenplotz is not defined")
+
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="JavaScript support only works on Python >= 3.7")
+def test_load_functions_javascript_runtime_failure(tmp_path):
+    """
+    Verify that JavaScript module loading, including symbol exporting and invocation, works well.
+    """
+    from javascript.errors import JavaScriptError
+
+    jsfile = tmp_path / "test.js"
+    jsfile.write_text("module.exports = { foo: function() { bar(); } };")
+    jsmod = load_functions(jsfile)
+    with pytest.raises(JavaScriptError) as ex:
+        jsmod.foo()
+    assert ex.match("ReferenceError: bar is not defined")
 
 
 def test_load_function():
