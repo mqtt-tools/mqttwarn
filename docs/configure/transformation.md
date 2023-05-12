@@ -447,6 +447,19 @@ export its main entry point symbol, configure mqttwarn to use `functions = myclo
 and adjust its settings to use your MQTT broker endpoint at the beginning of the data
 pipeline, invoke mqttwarn, and turn off Kafka. It works!
 
+On the next day, after investigating if you need to migrate any other system components,
+you realize that there is an Nginx instance, which receives a certain share of telemetry
+traffic using HTTP, and processes it using Lua. One quick `mosquitto_pub` later, you are
+sure those telemetry messages are _also_ available on the MQTT bus already. Another set
+of transformation rules written in Lua was quickly identified, and, after applying the
+same procedure of inlining it into a single-file version, and configuring another mqttwarn
+instance with `functions = mycloud.lua`, you are ready to turn off your whole cloud
+infrastructure, and save valuable resources.
+
+After a while, you are able to hire back half of your previous engineering team, and,
+based on the new architecture, you will happily start contributing back to mqttwarn,
+both in terms of maintenance, and by adding new features.
+
 :::{note}
 Rest assured we are overexaggerating a bit, and [Kafka] can only be compared to [MQTT]
 if you are also willing to compare apples with oranges, but you will get the point that
@@ -467,6 +480,15 @@ available [OCI images](#using-oci-image).
 You can find an example implementation for a `filter` function written in JavaScript
 at the [OwnTracks-to-ntfy example tutorial](#owntracks-ntfy-variants-udf).
 
+#### Lua
+
+For running user-defined functions code written in Lua, mqttwarn uses the excellent
+[lupa] package. For adding JavaScript support to mqttwarn, install it using pip like
+`pip install --upgrade 'mqttwarn[lua]'`, or use one of the available
+[OCI images](#using-oci-image).
+
+You can find an example implementation for a `filter` function written in Lua
+at the [OwnTracks-to-ntfy example tutorial](#owntracks-ntfy-variants-udf).
 
 
 ## User-defined function examples
@@ -707,6 +729,7 @@ weather,topic=tasmota/temp/ds/1 temperature=19.7 1517525319000
 [Jinja2 templates]: https://jinja.palletsprojects.com/templates/
 [JSPyBridge]: https://pypi.org/project/javascript/
 [Kafka]: https://en.wikipedia.org/wiki/Apache_Kafka
+[lupa]: https://github.com/scoder/lupa
 [MQTT]: https://en.wikipedia.org/wiki/MQTT
 [Node.js]: https://en.wikipedia.org/wiki/Node.js
 [OwnTracks]: https://owntracks.org

@@ -201,37 +201,42 @@ def test_load_functions_javascript_runtime_failure(tmp_path):
     assert ex.match("ReferenceError: bar is not defined")
 
 
-def test_load_function():
->>>>>>> 0fd8700 ([udf] Unlock JavaScript for user-defined functions)
-
-
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="JavaScript support only works on Python >= 3.7")
-def test_load_functions_javascript_compile_failure(tmp_path):
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Lua support only works on Python >= 3.8")
+def test_load_functions_lua_success(tmp_path):
     """
-    Verify that JavaScript module loading, including symbol exporting and invocation, works well.
+    Verify that Lua module loading, including symbol exporting and invocation, works well.
     """
-    from javascript.errors import JavaScriptError
-
-    jsfile = tmp_path / "test.js"
-    jsfile.write_text("Hotzenplotz")
-    with pytest.raises(JavaScriptError) as ex:
-        load_functions(jsfile)
-    assert ex.match("ReferenceError: Hotzenplotz is not defined")
+    luafile = tmp_path / "test.lua"
+    luafile.write_text("return { forty_two = function() return 42 end }")
+    luamod = load_functions(luafile)
+    assert luamod.forty_two() == 42
 
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="JavaScript support only works on Python >= 3.7")
-def test_load_functions_javascript_runtime_failure(tmp_path):
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Lua support only works on Python >= 3.8")
+def test_load_functions_lua_compile_failure(tmp_path):
     """
-    Verify that JavaScript module loading, including symbol exporting and invocation, works well.
+    Verify that Lua module loading, including symbol exporting and invocation, works well.
     """
-    from javascript.errors import JavaScriptError
+    luafile = tmp_path / "test.lua"
+    luafile.write_text("Hotzenplotz")
+    with pytest.raises(Exception) as ex:
+        load_functions(luafile)
+    assert ex.typename == "LuaError"
+    assert ex.match("syntax error near <eof>")
 
-    jsfile = tmp_path / "test.js"
-    jsfile.write_text("module.exports = { foo: function() { bar(); } };")
-    jsmod = load_functions(jsfile)
-    with pytest.raises(JavaScriptError) as ex:
-        jsmod.foo()
-    assert ex.match("ReferenceError: bar is not defined")
+
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Lua support only works on Python >= 3.8")
+def test_load_functions_lua_runtime_failure(tmp_path):
+    """
+    Verify that Lua module loading, including symbol exporting and invocation, works well.
+    """
+    luafile = tmp_path / "test.lua"
+    luafile.write_text("return { foo = function() bar() end }")
+    luamod = load_functions(luafile)
+    with pytest.raises(Exception) as ex:
+        luamod.foo()
+    assert ex.typename == "LuaError"
+    assert ex.match(re.escape("attempt to call a nil value (global 'bar')"))
 
 
 def test_load_function():
