@@ -9,7 +9,7 @@ alexa/readme.md
 arduino-temperature/readme.md
 frigate/README.rst
 mediaplayer/readme.md
-owntracks-battery/readme.md
+owntracks-ntfy/readme.md
 warntoggle/README.rst
 zabbix-iot/readme.md
 :::
