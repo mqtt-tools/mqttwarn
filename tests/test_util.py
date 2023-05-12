@@ -202,6 +202,41 @@ def test_load_functions_javascript_runtime_failure(tmp_path):
     assert ex.match("ReferenceError: bar is not defined")
 
 
+def test_load_functions_lua_success(tmp_path):
+    """
+    Verify that Lua module loading, including symbol exporting and invocation, works well.
+    """
+    luafile = tmp_path / "test.lua"
+    luafile.write_text("return { forty_two = function() return 42 end }")
+    luamod = load_functions(luafile)
+    assert luamod.forty_two() == 42
+
+
+def test_load_functions_lua_compile_failure(tmp_path):
+    """
+    Verify that Lua module loading, including symbol exporting and invocation, works well.
+    """
+    luafile = tmp_path / "test.lua"
+    luafile.write_text("Hotzenplotz")
+    with pytest.raises(Exception) as ex:
+        load_functions(luafile)
+    assert ex.typename == "LuaError"
+    assert ex.match("syntax error near <eof>")
+
+
+def test_load_functions_lua_runtime_failure(tmp_path):
+    """
+    Verify that Lua module loading, including symbol exporting and invocation, works well.
+    """
+    luafile = tmp_path / "test.lua"
+    luafile.write_text("return { foo = function() bar() end }")
+    luamod = load_functions(luafile)
+    with pytest.raises(Exception) as ex:
+        luamod.foo()
+    assert ex.typename == "LuaError"
+    assert ex.match(re.escape("attempt to call a nil value (global 'bar')"))
+
+
 def test_load_function():
 
     # Load valid functions file
