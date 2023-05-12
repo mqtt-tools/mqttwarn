@@ -1,6 +1,6 @@
 """
 Forward OwnTracks low-battery warnings to ntfy.
-https://mqttwarn.readthedocs.io/en/latest/examples/owntracks-battery/readme.html
+https://mqttwarn.readthedocs.io/en/latest/examples/owntracks-ntfy/readme.html
 """
 import json
 

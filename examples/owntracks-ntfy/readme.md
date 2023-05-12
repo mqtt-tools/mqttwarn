@@ -1,4 +1,5 @@
-{#owntracks-battery-warnings}
+(owntracks-ntfy-recipe)=
+
 # Forward OwnTracks low-battery warnings to ntfy
 
 
@@ -59,8 +60,8 @@ docker run --name=mosquitto -it --rm --publish=1883:1883 eclipse-mosquitto:2.0 m
 Let's acquire the configuration file `mqttwarn-owntracks.ini`, and the user-defined
 functions file `mqttwarn-owntracks.py`, and start `mqttwarn`.
 ```shell
-wget https://github.com/mqtt-tools/mqttwarn/raw/main/examples/owntracks-battery/mqttwarn-owntracks.ini
-wget https://github.com/mqtt-tools/mqttwarn/raw/main/examples/owntracks-battery/mqttwarn-owntracks.py
+wget https://github.com/mqtt-tools/mqttwarn/raw/main/examples/owntracks-ntfy/mqttwarn-owntracks.ini
+wget https://github.com/mqtt-tools/mqttwarn/raw/main/examples/owntracks-ntfy/mqttwarn-owntracks.py
 mqttwarn --config-file=mqttwarn-owntracks.ini
 ```
 
