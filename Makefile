@@ -44,7 +44,7 @@ test-coverage: install-tests
 # ----------------------
 # Linting and Formatting
 # ----------------------
-format: install-releasetools
+format: install-tests
 	$(poe) format
 
 
@@ -53,7 +53,8 @@ format: install-releasetools
 # -------
 
 # Release this piece of software
-release: push build pypi-upload
+release:
+	poe release
 
 
 # -------------
@@ -74,21 +75,9 @@ docs-autobuild: install-doctools
 # ===============
 # Utility targets
 # ===============
-push:
-	git push && git push --tags
-
-build: install-releasetools
-	@$(python) -m build
-
-pypi-upload: install-releasetools
-	$(twine) upload --skip-existing --verbose dist/*{.tar.gz,.whl}
-
 install-doctools:
 	@test -e $(python) || python3 -m venv $(venvpath)
 	$(pip) install --quiet --upgrade --requirement=docs/requirements.txt
-
-install-releasetools: setup-virtualenv
-	@$(pip) install --requirement requirements-release.txt --upgrade
 
 install-tests: setup-virtualenv
 	@test -e $(pytest) || $(pip) install --editable=.[test,develop] --upgrade

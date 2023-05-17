@@ -128,3 +128,14 @@ test = [
 ]
 build = {cmd="python -m build"}
 check = ["lint", "test"]
+release = [
+  { cmd = "pip install --upgrade --editable=.[develop]" },
+  { cmd = "pip install --upgrade --requirement requirements-release.txt" },
+  # TODO: Add a basic bump step, which only runs the `git tag` and `git push` commands,
+  #       but offers a convenience option to bump by "patch", "minor", or "major" levels.
+  # TODO: Remind user about updating the changelog file accordingly. Or use `towncrier`?
+  { cmd = "git push" },
+  { cmd = "git push --tags" },
+  { cmd = "python -m build" },
+  { cmd = "twine upload --skip-existing --verbose dist/*" },
+]
