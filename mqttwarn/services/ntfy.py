@@ -239,7 +239,7 @@ def encode_rfc2047(data: t.Union[str, bytes]) -> str:
     if isinstance(data, bytes):
         data = data.decode()
     if isinstance(data, str):
-        return Header(s=data, charset="utf-8").encode()
+        return Header(s=data, charset="utf-8", maxlinelen=10000).encode()
     else:
         raise TypeError(f"Unknown data type to compute ASCII-clean variant: {type(data).__name__}")
 

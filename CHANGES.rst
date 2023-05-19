@@ -6,6 +6,9 @@ mqttwarn changelog
 in progress
 ===========
 
+- Fix sending ntfy notifications with longer messages than 76 characters.
+  Thanks, @codebude.
+
 
 2023-05-15 0.34.1
 =================

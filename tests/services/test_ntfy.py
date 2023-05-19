@@ -346,3 +346,30 @@ def test_ntfy_plugin_api_failure(srv, caplog):
 
     assert outcome is False
     assert "Request to ntfy API failed" in caplog.messages
+
+
+@responses.activate
+def test_ntfy_long_message(srv, caplog):
+    """
+    Test submitting messages longer than 76 characters.
+    """
+
+    responses.add(
+        responses.PUT,
+        "http://localhost:9999/testdrive",
+        json={"not": "relevant"},
+        status=200,
+    )
+
+    module = load_module_by_name("mqttwarn.services.ntfy")
+
+    item = Item(
+        addrs={"url": "http://localhost:9999/testdrive"},
+        title="Gerät angelernt",
+        message="Das Gerät Kaffeevollautomat vom Typ Siemens TQ703D07 wurde angelernt",
+    )
+
+    outcome = module.plugin(srv, item)
+    assert outcome is True
+    assert "Successfully sent message using ntfy" in caplog.messages
+    assert "requests.exceptions.InvalidHeader" not in caplog.text
