@@ -11,8 +11,9 @@ on:
   pull_request:
     branches: [ main ]
 
+  # Produce a nightly image every day at 6 a.m. CEST.
   schedule:
-    - cron: '0 10 * * *' # everyday at 10am
+    - cron: '0 4 * * *'
 
   # Allow job to be triggered manually.
   workflow_dispatch:
