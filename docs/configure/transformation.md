@@ -304,9 +304,9 @@ Within the mqttwarn processing pipeline, filtering functions will be invoked
 first, and will permit you to terminate processing early.
 
 A function called from the `filter` option in a [topic section](#topics) needs
-to return `False` to stop the outbound notification. It obtains `topic`, 
+to return `True` to stop the outbound notification. It obtains `topic`,
 `payload`, `section`, and `srv` arguments, where `payload` is the MQTT message
-payload as a [Python string](inv:python#tut-strings) decoded from UTF-8.  
+payload as a [Python string](inv:python#tut-strings) decoded from UTF-8.
 
 The function signature looks like this.
 ```python
