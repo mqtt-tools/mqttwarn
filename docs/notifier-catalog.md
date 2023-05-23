@@ -2287,13 +2287,15 @@ targets = {
 
 ### `pushbullet`
 
-This service is for [PushBullet], an app for Android along with an extension for
+This service is for [Pushbullet], an app for Android along with an extension for
 Chrome and Firefox, which allows notes, links, pictures, addresses and files to be
-sent between devices. It is based on the [PushbulletPythonLibrary] package.
+sent between devices.
 
-You can get your API key from the [PushBullet account page] after signing up.
+You can get your API key from the [Pushbullet account page] after signing up, see
+also [Pushbullet » Getting an access token].
+
 You will also need the device ID to push the notifications to. To obtain this,
-you will need to follow the instructions at [pyPushBullet], by running
+you can, for example, follow the instructions at [pyPushBullet], by running
 ```shell
 ./pushbullet_cmd.py YOUR_API_KEY_HERE getdevices
 ```
@@ -2302,12 +2304,20 @@ The configuration layout looks like this.
 ```ini
 [config:pushbullet]
 targets = {
-                   # API KEY                  device ID     recipient_type
-    'warnme'   : [ 'xxxxxxxxxxxxxxxxxxxxxxx', 'yyyyyy',     'tttt' ]
+    "warnme"   : {
+        "access_token": "a6FJVAA0LVJKrT8k",
+        "recipient": "test@example.org",
+        "recipient_type": "email",
+        },
+    "alertme"   : {
+        "access_token": "a6FJVAA0LVJKrT8k",
+        "recipient": "ujpah72o0sjAoRtnM0jc",
+        },
     }
 ```
 
-The optional _recipient_type_ could be one of `device_iden` (default), `email`, `channel` or `client`.
+The optional _recipient_type_ could be one of `device` (default), `email`, `channel`
+or `client`. See also [Pushbullet target parameters].
 
 | Topic option  |  M/O   | Description                             |
 | ------------- | :----: |-----------------------------------------|
@@ -2315,10 +2325,16 @@ The optional _recipient_type_ could be one of `device_iden` (default), `email`, 
 
 ![Pushbullet](assets/pushbullet.jpg)
 
-[PushBullet]: https://www.pushbullet.com
-[PushBullet account page]: https://www.pushbullet.com/#settings/account
-[PushbulletPythonLibrary]: https://pypi.org/project/PushbulletPythonLibrary/
+[Pushbullet]: https://www.pushbullet.com
+[Pushbullet account page]: https://www.pushbullet.com/#settings/account
+[Pushbullet target parameters]: https://docs.pushbullet.com/#target-parameters
+[Pushbullet » Getting an access token]: https://docs.pushbullet.com/#getting-an-access-token
 [pyPushBullet]: https://github.com/Azelphur/pyPushBullet
+
+:::{note}
+The client currently only implements sending message with `type=note`. If you have a
+need to submit files or links, please let us know on the [mqttwarn issue tracker].
+:::
 
 
 ### `pushover`
@@ -3241,3 +3257,7 @@ For another scenario using the `zabbix` plugin, please refer to the [Zabbix IoT 
 [Zabbix low-level discovery]: https://www.zabbix.com/documentation/current/en/manual/discovery/low_level_discovery
 [Zabbix meets MQTT]: http://jpmens.net/2014/05/27/zabbix-meets-mqtt/
 [Zabbix trapper]: https://www.zabbix.com/documentation/current/en/manual/config/items/itemtypes/trapper
+
+
+
+[mqttwarn issue tracker]: https://github.com/mqtt-tools/mqttwarn/issues

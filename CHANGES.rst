@@ -8,6 +8,7 @@ in progress
 
 - Fix sending ntfy notifications with longer messages than 76 characters.
   Thanks, @codebude.
+- Modernize Pushbullet service plugin. Thanks, @DNicholai.
 
 
 2023-05-15 0.34.1

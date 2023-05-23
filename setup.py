@@ -74,7 +74,8 @@ extras = {
         "pyprowl>=3.0.1",
     ],
     "pushbullet": [
-        "PushbulletPythonLibrary>=2.3",
+        # TODO: Upstream `send_note` utility function.
+        # "pushbullet-python<2",
     ],
     "redispub": [
         "redis>=2.10.6",
