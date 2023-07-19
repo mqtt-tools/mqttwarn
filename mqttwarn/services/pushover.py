@@ -154,7 +154,7 @@ def plugin(srv, item):
     elif 'imagebase64' in item.data:
         imagebase64 = item.data['imagebase64']
         srv.logging.debug("Image (base64 encoded) detected")
-        image = base64.decodebytes(imagebase64)
+        image = base64.b64decode(imagebase64)
 
     try:
         srv.logging.debug("Sending pushover notification to %s [%s]" % (item.target, params))
