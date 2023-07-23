@@ -4,9 +4,10 @@ import ast
 import codecs
 import logging
 import os
+import re
 import sys
 import typing as t
-from configparser import NoOptionError, NoSectionError, RawConfigParser
+from configparser import Interpolation, NoOptionError, NoSectionError, RawConfigParser
 
 from mqttwarn.util import load_functions
 
@@ -18,6 +19,72 @@ except ImportError:
 
 
 logger = logging.getLogger(__name__)
+
+
+def expand_vars(input: str, sources: t.Dict[str, t.Callable[[str], str]]) -> str:
+    """
+    Expand variables in `input` string with values from `sources` dict.
+
+    Variables may be in two forms, either $TYPE:KEY or ${TYPE:KEY}. The second form must be used when `KEY` contains
+    characters other than numbers, alphabets or underscore. Supported `TYPE`s depends on keys of `sources` dict.
+
+    The `sources` is a dict where key is name of `TYPE` in the pattern above and value is a function that takes `KEY`
+    as argument and returns contents of the variable to be expanded.
+
+    :return: Input string with variables expanded
+    """
+    expanded = ""
+    input_index = 0
+    match = None
+    # `input` may have multiple variables in form of $TYPE:KEY or ${TYPE:KEY} pattern, iterate through them
+    for match in re.finditer(r"\$(\w+):(\w+)|\$\{(\w+):([^}]+)\}", input):
+        var_type = match[1] if match[1] else match[3]  # TYPE part in the variable pattern
+        var_key = match[2] if match[2] else match[4]  # KEY part in the variable pattern
+
+        if var_type not in sources:
+            raise KeyError(f"{match[0]}: Variable type '{var_type}' not supported")
+        source = sources[var_type]
+
+        try:
+            value = source(var_key)
+        except Exception as ex:
+            raise KeyError(f"{match[0]}: {str(ex)}") from ex
+
+        match_start, match_end = match.span()
+        expanded += input[input_index:match_start] + value
+        input_index = match_end
+
+    if match:
+        return expanded + input[input_index:]
+    return input
+
+
+class VariableInterpolation(Interpolation):
+    def __init__(self, configuration_path):
+        self.configuration_path = configuration_path
+        self.sources = {
+            "ENV": self.get_env_variable,
+            "FILE": self.get_file_contents,
+        }
+
+    def before_get(self, parser, section, option, value, defaults):
+        return expand_vars(value, self.sources) if type(value) == str else value
+
+    def get_env_variable(self, name: str) -> str:
+        """
+        Get environment variable of `name` and return it
+        """
+        return os.environ[name]
+
+    def get_file_contents(self, filepath: str) -> str:
+        """
+        Get file contents from `filepath` and return it
+        """
+        if not os.path.isfile(filepath):
+            # Read file contents relative to path of configuration file if path is relative
+            filepath = os.path.join(self.configuration_path, filepath)
+        with open(filepath) as file:
+            return file.read()
 
 
 class Config(RawConfigParser):
@@ -34,13 +101,14 @@ class Config(RawConfigParser):
 
         self.configuration_path = None
 
-        RawConfigParser.__init__(self)
+        configuration_path = os.path.dirname(configuration_file) if configuration_file else None
+        RawConfigParser.__init__(self, interpolation=VariableInterpolation(configuration_path))
         if configuration_file is not None:
             f = codecs.open(configuration_file, "r", encoding="utf-8")
             self.read_file(f)
             f.close()
 
-            self.configuration_path = os.path.dirname(configuration_file)
+            self.configuration_path = configuration_path
 
         """ set defaults """
         self.hostname = "localhost"
