@@ -218,3 +218,29 @@ display them on all XBMC targets:
 targets  = log:error, xbmc
 title    = mqttwarn
 ```
+
+## Variables
+
+You can load option values either from environment variables or file content.
+To do this, replace option's value with one of the following:
+
+- `${ENV:FOO}` - Replaces option's value with environment variable `FOO`.
+- `${FILE:/path/to/foo.txt}` - Replaces option's value with file contents from
+  `/path/to/foo.txt`. The file path can also be relative like `${FILE:foo.txt}`
+  in which case the file is loaded relative to configuration file's location.
+
+The variable pattern can take either form like `$TYPE:NAME` or `${TYPE:NAME}`.
+Latter pattern is required when variable name (`NAME`) contains characters that
+are not alphanumeric or underscore.
+
+For example:
+```ini
+[defaults]
+username = $ENV:MQTTWARN_USERNAME
+password = $ENV:MQTTWARN_PASSWORD
+
+[config:xxx]
+targets = {
+    'targetname1': [ '${FILE:/run/secrets/address.txt}' ],
+  }
+```
