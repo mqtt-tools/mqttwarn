@@ -344,7 +344,7 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
             q_in.put(job)
 
 
-def builtin_transform_data(topic: str, payload: t.AnyStr) -> TdataType:
+def builtin_transform_data(topic: str, payload: t.Union[str, bytes]) -> TdataType:
     """Return a dict with initial transformation data which is made
     available to all plugins"""
 
@@ -397,10 +397,16 @@ def xform(function: str, orig_value: t.Any, transform_data: TdataType) -> t.Unio
     return res
 
 
-def decode_payload(section: str, topic: str, payload: t.AnyStr) -> TdataType:
+def decode_payload(section: str, topic: str, payload: t.Union[str, bytes]) -> TdataType:
     """
     Decode message payload through transformation machinery.
     """
+
+    if isinstance(payload, bytes):
+        try:
+            payload = payload.decode("utf-8")
+        except Exception as ex:
+            logger.debug(f"Decoding from UTF-8 failed: {ex}. payload={truncate(payload)}")
 
     transform_data = builtin_transform_data(topic, payload)
 
@@ -423,12 +429,9 @@ def decode_payload(section: str, topic: str, payload: t.AnyStr) -> TdataType:
     # the JSON keys into item to pass to the plugin, and create the outgoing
     # (i.e. transformed) message.
     try:
-        if isinstance(payload, bytes):
-            outdata = payload.decode("utf-8")
-        else:
-            outdata = payload
-        outdata = outdata.rstrip("\0")
-        payload_data = json.loads(outdata)
+        if isinstance(payload, str):
+            payload = payload.rstrip("\0")
+        payload_data = json.loads(payload)
         transform_data.update(payload_data)
     except Exception as ex:
         logger.debug(f"Decoding JSON failed: {ex}. payload={truncate(payload)}")

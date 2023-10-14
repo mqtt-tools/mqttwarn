@@ -13,6 +13,8 @@ in progress
 - [Pushover]: Switch to using ``base64.b64decode()`` to support decoding
   a string. Thanks, @sumnerboy12.
 - [ntfy] Fix submitting newline characters in notification message text
+- Core: Fix decoding non-JSON messages, which negatively impacted outbound
+  templating. Thanks, @Sc0th.
 
 
 2023-05-15 0.34.1
