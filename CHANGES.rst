@@ -12,9 +12,15 @@ in progress
 - Documentation: Clarify data type of "target address descriptor"
 - [Pushover]: Switch to using ``base64.b64decode()`` to support decoding
   a string. Thanks, @sumnerboy12.
-- [ntfy] Fix submitting newline characters in notification message text
+- [ntfy] Fix submitting newline characters in notification message text.
+  Thanks, @zoic21 and @codebude.
 - Core: Fix decoding non-JSON messages, which negatively impacted outbound
   templating. Thanks, @Sc0th.
+- Add support for Python 3.12
+
+  - Use ``importlib`` instead of ``imp``
+  - Use ``importlib.resources`` instead of ``pkg_resources``
+  - [http,pushsafer] Remove dependency on ``future`` package
 
 
 2023-05-15 0.34.1
