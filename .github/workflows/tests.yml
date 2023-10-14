@@ -18,9 +18,10 @@ jobs:
   tests:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: ["ubuntu-20.04"]
-        python-version: ["3.6", "3.12"]
+        python-version: ["3.6", "3.7", "3.12"]
         include:
           - os: "macos-latest"
             python-version: "3.12"
