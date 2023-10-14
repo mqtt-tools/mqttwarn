@@ -182,7 +182,7 @@ setup(
     long_description=README,
     license="EPL 2.0",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Environment :: Plugins",
         "Intended Audience :: Developers",
