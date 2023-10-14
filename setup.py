@@ -25,7 +25,7 @@ requires = [
 
 extras = {
     "amqp": [
-        "puka>=0.0.7",
+        "puka>=0.0.7; python_version<'3.12'",
     ],
     "apns": [
         "apns>=2.0.1",
@@ -40,7 +40,7 @@ extras = {
         "celery",
     ],
     "chromecast": [
-        "pychromecast>=7.5.0",
+        "pychromecast>=7.5.0; python_version>='3.7'",
     ],
     "dnsupdate": [
         "dnspython>=1.15.0",
@@ -49,7 +49,7 @@ extras = {
         "fbchat>=1.3.6",
     ],
     "gss2": [
-        "google-api-python-client<2",
+        "google-api-python-client<2; python_version>='3.7'",
         "gspread>=2.1.1",
         "oauth2client>=4.1.2",
     ],
@@ -91,7 +91,7 @@ extras = {
         "slack-sdk>=3.1.0",
     ],
     "ssh": [
-        "paramiko>=2.4.1",
+        "paramiko>=2.4.1; python_version>='3.7'",
     ],
     "tootpaste": [
         "Mastodon.py>=1.2.2",
@@ -162,7 +162,7 @@ extras["test"] = [
     "pytest-mock<4",
     "pytest-mqtt<1",
     "tox<4",
-    'dataclasses; python_version<"3.7"',
+    "dataclasses; python_version<'3.7'",
     "requests-toolbelt>=1,<2",
     "responses>=0.13.3,<1",
     "pyfakefs>=4.5,<6",
@@ -175,7 +175,7 @@ extras["develop"] = [
     "build<1",
     "mypy<1.3",
     "poethepoet<1",
-    'ruff==0.0.254; python_version>="3.7"',
+    "ruff==0.0.254; python_version>='3.7'",
     "sphinx-autobuild",
 ]
 
