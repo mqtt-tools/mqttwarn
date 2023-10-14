@@ -16,6 +16,7 @@ requires = [
     "funcy<3",
     "future>=0.18.0,<1",
     "importlib-metadata; python_version<'3.8'",
+    "importlib-resources; python_version<'3.8'",
     "jinja2<4",
     "paho-mqtt<2",
     "requests<3",

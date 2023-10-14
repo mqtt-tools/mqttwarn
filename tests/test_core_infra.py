@@ -709,11 +709,11 @@ def test_load_services_spec_not_found(caplog):
     config = Config()
     config.add_section("config:foo.bar")
     bootstrap(config=config)
-    with pytest.raises(SystemExit) as ex:
+    with pytest.raises(ImportError) as ex:
         load_services(["foo.bar"])
     assert 'Loading service "foo.bar" from module "foo.bar" failed' in caplog.messages
-    assert 'Unable to load service "foo.bar"' in caplog.messages
-    assert ex.match("1")
+    assert "Failed loading service: foo.bar" in caplog.messages
+    assert ex.match("Failed loading service: foo.bar")
 
 
 def test_load_services_file_not_found(tmp_path, caplog):
@@ -728,12 +728,12 @@ def test_load_services_file_not_found(tmp_path, caplog):
     config.add_section("config:foo.bar")
     config.set("config:foo.bar", "module", "foo_bar.py")
     bootstrap(config=config)
-    with pytest.raises(SystemExit) as ex:
+    with pytest.raises(ImportError) as ex:
         load_services(["foo.bar"])
     assert 'Module "foo_bar.py" is not a file' in caplog.messages
     assert f'Module "{modulefile}" is not a file' in caplog.messages
-    assert 'Unable to load service "foo.bar"' in caplog.messages
-    assert ex.match("1")
+    assert "Failed loading service: foo.bar" in caplog.messages
+    assert ex.match("Failed loading service: foo.bar")
 
 
 def test_load_services_file_failure(tmp_path, caplog):
@@ -751,12 +751,12 @@ def test_load_services_file_failure(tmp_path, caplog):
     config.set("config:foo.bar", "module", "foo_bar.py")
     bootstrap(config=config)
 
-    with pytest.raises(SystemExit) as ex:
+    with pytest.raises(ImportError) as ex:
         load_services(["foo.bar"])
     assert f'Loading service "foo.bar" from file "{modulefile}" failed' in caplog.text
     assert "AssertionError" in caplog.text
-    assert 'Unable to load service "foo.bar"' in caplog.messages
-    assert ex.match("1")
+    assert "Failed loading service: foo.bar" in caplog.messages
+    assert ex.match("Failed loading service: foo.bar")
 
 
 def test_run_plugin_success(caplog):

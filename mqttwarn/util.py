@@ -1,6 +1,12 @@
 # (c) 2014-2023 The mqttwarn developers
 import functools
 import importlib.machinery
+
+try:
+    from importlib.resources import files as resource_files  # type: ignore[attr-defined]
+except ImportError:
+    from importlib_resources import files as resource_files  # type: ignore[no-redef]
+
 import importlib.util
 import json
 import logging
@@ -12,7 +18,6 @@ import typing as t
 from pathlib import Path
 
 import funcy
-import pkg_resources
 from six import string_types
 
 if t.TYPE_CHECKING:
@@ -128,19 +133,20 @@ def sanitize_function_name(name: str) -> str:
     raise ValueError(f"Invalid function name: {name}")
 
 
-def load_module_from_file(path: str) -> types.ModuleType:
+def load_module_from_file(path: t.Union[str, Path]) -> types.ModuleType:
     """
     http://code.davidjanes.com/blog/2008/11/27/how-to-dynamically-load-python-code/
 
     :param path:
     :return:
     """
-    name = Path(path).stem
+    path = Path(path)
+    name = path.stem
     loader: "FileLoader"
-    if path.endswith(".py"):
-        loader = importlib.machinery.SourceFileLoader(fullname=name, path=path)
-    elif path.endswith(".pyc"):
-        loader = importlib.machinery.SourcelessFileLoader(fullname=name, path=path)
+    if path.suffix == ".py":
+        loader = importlib.machinery.SourceFileLoader(fullname=name, path=str(path))
+    elif path.suffix == ".pyc":
+        loader = importlib.machinery.SourcelessFileLoader(fullname=name, path=str(path))
     else:
         raise ImportError(f"Loading file failed (only .py and .pyc): {path}")
     spec = importlib.util.spec_from_loader(loader.name, loader)
@@ -235,8 +241,8 @@ def load_function(name: str, py_mod: t.Optional[types.ModuleType]) -> t.Callable
 
 
 def get_resource_content(package: str, filename: str) -> str:
-    with pkg_resources.resource_stream(package, filename) as stream:
-        return stream.read().decode("utf-8")
+    path = resource_files(package) / filename
+    return path.read_text()
 
 
 def truncate(s: t.Union[str, bytes], limit: int = 200, ellipsis="...") -> str:
