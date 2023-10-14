@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2023 The mqttwarn developers
+try:
+    from importlib.resources import files as resource_files  # type: ignore[attr-defined]
+except ImportError:
+    from importlib_resources import files as resource_files  # type: ignore[no-redef]
+
 import logging
 import os
 import socket
@@ -14,7 +19,6 @@ from queue import Queue
 import paho.mqtt.client as paho
 from paho.mqtt.client import Client as MqttClient
 from paho.mqtt.client import MQTTMessage
-from pkg_resources import resource_filename
 
 import mqttwarn.configuration
 from mqttwarn.context import FunctionInvoker, RuntimeContext
@@ -594,7 +598,9 @@ def load_services(services):
             if module == "http":
                 module = "http_urllib"
             logger.debug('Trying to load built-in service "{}" from "{}"'.format(service, module))
-            modulefile_candidates = [resource_filename("mqttwarn.services", module + ".py")]
+            service_filename = module + ".py"
+            service_filepath = resource_files("mqttwarn.services") / service_filename
+            modulefile_candidates = [service_filepath]
 
         success = False
         for modulefile in modulefile_candidates:
@@ -610,9 +616,9 @@ def load_services(services):
                 logger.exception(f'Loading service "{service}" from file "{modulefile}" failed')
 
         if not success:
-            logger.critical('Unable to load service "{}"'.format(service))
-            # TODO: Review this.
-            sys.exit(1)
+            msg = "Failed loading service: {}".format(service)
+            logger.critical(msg)
+            raise ImportError(msg)
 
 
 def connect():
