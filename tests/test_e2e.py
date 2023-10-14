@@ -147,7 +147,7 @@ def test_system_dispatch_to_log_service_json(mosquitto, caplog, capmqtt):
     capmqtt.publish(topic="test/log-1", payload=json.dumps({"name": "foo", "value": "bar"}))
 
     # Make mqttwarn receive and process the message.
-    mqtt_process(mqttc, loops=3)
+    mqtt_process(mqttc, loops=4)
 
     # Verify log output.
     assert 'Successfully loaded service "log"' in caplog.messages
@@ -189,7 +189,7 @@ def test_system_dispatch_to_file_service_binary(mosquitto, caplog, capmqtt, pyte
     capmqtt.publish(topic="test/file-1", payload=b"foobar")
 
     # Make mqttwarn receive and process the message.
-    mqtt_process(mqttc, loops=3)
+    mqtt_process(mqttc, loops=4)
 
     # Verify log output.
     assert 'Successfully loaded service "log"' in caplog.messages
