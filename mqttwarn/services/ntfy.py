@@ -4,6 +4,7 @@ __license__ = "Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-
 
 import dataclasses
 import logging
+import re
 from collections import OrderedDict
 import typing as t
 from email.header import Header
@@ -74,7 +75,7 @@ class NtfyRequest:
     attachment_path: t.Optional[str]
     attachment_data: t.Optional[t.Union[bytes, t.IO]]
 
-    def to_http_headers(self) -> t.Dict[str, str]:
+    def to_http_headers(self, no_message: t.Optional[bool] = False) -> t.Dict[str, str]:
         """
         Provide a variant for `fields` to be submitted as HTTP headers to the ntfy API.
 
@@ -84,12 +85,27 @@ class NtfyRequest:
         In this spirit, the header transport does not permit any fancy UTF-8 characters
         within any field, so they will be replaced with placeholder characters `?`.
         """
-        return dict_with_titles(encode_ntfy_fields(self.fields))
+        data = dict_with_titles(encode_ntfy_fields(self.fields))
+        if no_message and "Message" in data:
+            del data["Message"]
+        return data
 
 
 def plugin(srv: Service, item: ProcessorItem) -> bool:
     """
     mqttwarn service plugin for ntfy.
+
+    Regarding newline support, this procedure implements the following suggestion by @codebude from [1]:
+
+    - Per default, send the message as HTTP body, enabling line breaks.
+    - When submitting a local attachment without a text message, encode the
+      attachment data into the HTTP body, and all other fields into HTTP headers.
+    - When it is a notification with both a local attachment, and a text message,
+      also encode the attachment data into the HTTP body, but replace all newline
+      characters `\n` of the text message, because they can not be encoded into
+      HTTP headers.
+
+    [1] https://github.com/mqtt-tools/mqttwarn/issues/677#issuecomment-1575060446
     """
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
@@ -97,17 +113,38 @@ def plugin(srv: Service, item: ProcessorItem) -> bool:
     # Decode inbound mqttwarn job item into `NtfyRequest`.
     ntfy_request = decode_jobitem(item)
 
-    # Convert field dictionary to HTTP header dictionary.
-    headers = ntfy_request.to_http_headers()
-    srv.logging.debug(f"Headers: {dict(headers)}")
-
     # Submit request to ntfy HTTP API.
+    srv.logging.info("Sending notification to ntfy. target=%s, options=%s", item.target, ntfy_request.options)
     try:
-        srv.logging.info("Sending notification to ntfy. target=%s, options=%s", item.target, ntfy_request.options)
-        response = http.put(ntfy_request.url, data=ntfy_request.attachment_data, headers=headers)
-        response.raise_for_status()
+        if ntfy_request.attachment_data is not None:
+            # HTTP PUT: Use body for attachment, convert field dictionary to HTTP header dictionary.
+            headers = ntfy_request.to_http_headers()
+            body = ntfy_request.attachment_data
+            response = http.put(
+                ntfy_request.url,
+                data=body,
+                headers=headers,
+            )
+            srv.logging.debug(f"Headers: {dict(headers)}")
+        else:
+            # HTTP POST: Use body for message, other fields via HTTP headers.
+            headers = ntfy_request.to_http_headers(no_message=True)
+            body = to_string(ntfy_request.fields["message"]).encode("utf-8")
+            response = http.post(
+                ntfy_request.url,
+                data=body,
+                headers=headers,
+            )
     except Exception:
         srv.logging.exception("Request to ntfy API failed")
+        return False
+    srv.logging.debug(f"Body:    {body!r}")
+    srv.logging.debug(f"Headers: {dict(headers)}")
+
+    try:
+        response.raise_for_status()
+    except Exception:
+        srv.logging.exception(f"Error response from ntfy API:\n{response.text}")
         return False
 
     # Report about ntfy response.
@@ -217,13 +254,21 @@ def obtain_ntfy_fields(item: ProcessorItem) -> DataDict:
     return fields
 
 
+def to_string(value: t.Union[str, bytes]) -> str:
+    """
+    Cast from string or bytes to string.
+    """
+    if isinstance(value, bytes):
+        value = value.decode()
+    return value
+
+
 def ascii_clean(data: t.Union[str, bytes]) -> str:
     """
     Return ASCII-clean variant of input string.
     https://stackoverflow.com/a/18430817
     """
-    if isinstance(data, bytes):
-        data = data.decode()
+    data = to_string(data)
     if isinstance(data, str):
         return data.encode("ascii", errors="replace").decode()
     else:
@@ -284,9 +329,12 @@ def encode_ntfy_fields(data: DataDict) -> t.Dict[str, str]:
     - https://docs.python.org/3/library/email.header.html
     """
 
+    rm_newlines = re.compile(r"\r?\n")
+
     outdata = OrderedDict()
     for key, value in data.items():
         key = ascii_clean(key).strip()
+        value = re.sub(rm_newlines, " ", to_string(value))
         if key in NTFY_RFC2047_FIELDS:
             value = encode_rfc2047(value)
         else:

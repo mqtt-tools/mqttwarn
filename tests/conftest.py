@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
+# (c) 2018-2023 The mqttwarn developers
 import importlib
+import os
 import pathlib
 import shutil
 import sys
+import typing as t
+from tempfile import NamedTemporaryFile
 
 import pytest
 
@@ -76,3 +81,15 @@ def tmp_ini(tmp_path) -> pathlib.Path:
     """
     filepath = tmp_path.joinpath("testdrive.ini")
     return filepath
+
+
+@pytest.fixture
+def attachment_dummy() -> t.Generator[t.IO[bytes], None, None]:
+    """
+    Provide a temporary file to the test cases to be used as an attachment with defined content.
+    """
+    tmp = NamedTemporaryFile(suffix=".txt", delete=False)
+    tmp.write(b"foo")
+    tmp.close()
+    yield tmp
+    os.unlink(tmp.name)

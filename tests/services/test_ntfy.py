@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 # (c) 2023 The mqttwarn developers
 import io
-import os
 import re
-import typing as t
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 import pytest
 import responses
@@ -20,18 +17,6 @@ from mqttwarn.services.ntfy import (
     obtain_ntfy_fields,
 )
 from mqttwarn.util import load_module_by_name
-
-
-@pytest.fixture
-def attachment_dummy() -> t.Generator[t.IO[bytes], None, None]:
-    """
-    Provide a temporary files to the test cases to be used as an attachment with defined content.
-    """
-    tmp = NamedTemporaryFile(suffix=".txt", delete=False)
-    tmp.write(b"foo")
-    tmp.close()
-    yield tmp
-    os.unlink(tmp.name)
 
 
 def test_ntfy_decode_jobitem_overview_success():
@@ -262,33 +247,15 @@ def test_ntfy_ascii_clean_failure():
 
 
 @responses.activate
-def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
+def test_ntfy_plugin_attachment(srv, caplog, attachment_dummy):
     """
-    Test the whole plugin with a successful outcome.
+    Run a notification with an attachment.
     """
-
-    ntfy_api_response = {
-        "id": "jBXrDQF4e8ab",
-        "time": 1681939903,
-        "expires": 1681983103,
-        "event": "message",
-        "topic": "frigate-test",
-        "title": "goat entered lawn at 2023-04-06 14:31:46.638857+00:00",
-        "message": "goat was in barn before",
-        "click": "https://frigate.local/events?camera=cam-testdrive\\u0026label=goat\\u0026zone=lawn",
-        "attachment": {
-            "name": "mqttwarn-frigate-cam-testdrive-goat.png",
-            "type": "image/png",
-            "size": 283595,
-            "expires": 1681950703,
-            "url": "http://localhost:5555/file/jBXrDQF4e8ab.png",
-        },
-    }
 
     responses.add(
         responses.PUT,
         "http://localhost:9999/testdrive",
-        json=ntfy_api_response,
+        json={},
         status=200,
     )
 
@@ -317,6 +284,60 @@ def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
     assert isinstance(response.request.body, io.BufferedReader)
     assert response.request.body.read() == b"foo"
     assert response.request.headers["User-Agent"] == "mqttwarn"
+    assert response.request.headers["Message"] == "=?utf-8?q?=E2=9A=BD_Notification_message_=E2=9A=BD?="
+    assert response.request.headers["Tags"] == "=?utf-8?q?foo=2Cbar=2C=C3=A4=C3=B6=C3=BC?="
+    assert (
+        response.request.headers["Actions"]
+        == "view, Adjust temperature ?, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'"  # noqa: E501
+    )
+
+    assert response.response.status_code == 200
+
+    assert "Successfully sent message using ntfy" in caplog.messages
+
+
+@responses.activate
+def test_ntfy_plugin_newline(srv, caplog, attachment_dummy):
+    """
+    Run a notification using newline characters.
+    """
+
+    responses.add(
+        responses.POST,
+        "http://localhost:9999/testdrive",
+        json={},
+        status=200,
+    )
+
+    module = load_module_by_name("mqttwarn.services.ntfy")
+
+    item = Item(
+        addrs={"url": "http://localhost:9999/testdrive"},
+        title="⚽ Message title ⚽",
+        message="Some\nmore\ntext...\n" + "⚽ Notification\nmessage ⚽" + "\nEven\nmore\ntext...",
+        data={
+            "priority": "high",
+            "tags": "foo,bar,äöü",
+            "click": "https://example.org/testdrive",
+            "actions": "view, Adjust temperature 🌡, https://example.org/home-automation/temperature, body='{{\"temperature\": 18}}'",  # noqa: E501
+        },
+    )
+
+    outcome = module.plugin(srv, item)
+
+    assert "Successfully sent message using ntfy" in caplog.messages
+    assert outcome is True
+
+    assert len(responses.calls) == 1
+    response = responses.calls[0]
+    assert response.request.url == "http://localhost:9999/testdrive"
+    assert isinstance(response.request.body, bytes)
+    assert (
+        response.request.body == b"Some\nmore\ntext...\n\xe2\x9a\xbd "
+        b"Notification\nmessage \xe2\x9a\xbd\nEven\nmore\ntext..."
+    )
+    assert response.request.headers["User-Agent"] == "mqttwarn"
+    assert "Message" not in response.request.headers
     assert response.request.headers["Tags"] == "=?utf-8?q?foo=2Cbar=2C=C3=A4=C3=B6=C3=BC?="
     assert (
         response.request.headers["Actions"]
@@ -324,7 +345,59 @@ def test_ntfy_plugin_success(srv, caplog, attachment_dummy):
     )
 
     assert response.response.status_code == 200
-    assert response.response.json() == ntfy_api_response
+
+    assert "Successfully sent message using ntfy" in caplog.messages
+
+
+@responses.activate
+def test_ntfy_plugin_attachment_and_newline(srv, caplog, attachment_dummy):
+    """
+    Run a notification with an attachment, and newlines within the text message.
+    """
+
+    responses.add(
+        responses.PUT,
+        "http://localhost:9999/testdrive",
+        json={},
+        status=200,
+    )
+
+    module = load_module_by_name("mqttwarn.services.ntfy")
+
+    item = Item(
+        addrs={"url": "http://localhost:9999/testdrive", "file": attachment_dummy.name},
+        title="⚽ Message title ⚽",
+        message="Some\nmore\ntext...\n" + "⚽ Notification\nmessage ⚽" + "\nEven\nmore\ntext...",
+        data={
+            "priority": "high",
+            "tags": "foo,bar,äöü",
+            "click": "https://example.org/testdrive",
+            "actions": "view, Adjust temperature 🌡, https://example.org/home-automation/temperature, body='{{\"temperature\": 18}}'",  # noqa: E501
+        },
+    )
+
+    outcome = module.plugin(srv, item)
+
+    assert "Successfully sent message using ntfy" in caplog.messages
+    assert outcome is True
+
+    assert len(responses.calls) == 1
+    response = responses.calls[0]
+    assert response.request.url == "http://localhost:9999/testdrive"
+    assert isinstance(response.request.body, io.BufferedReader)
+    assert response.request.body.read() == b"foo"
+    assert response.request.headers["User-Agent"] == "mqttwarn"
+    assert (
+        response.request.headers["Message"]
+        == "=?utf-8?q?Some_more_text=2E=2E=2E_=E2=9A=BD_Notification_message_=E2=9A=BD_Even_more_text=2E=2E=2E?="
+    )  # noqa: E501
+    assert response.request.headers["Tags"] == "=?utf-8?q?foo=2Cbar=2C=C3=A4=C3=B6=C3=BC?="
+    assert (
+        response.request.headers["Actions"]
+        == "view, Adjust temperature ?, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'"  # noqa: E501
+    )
+
+    assert response.response.status_code == 200
 
     assert "Successfully sent message using ntfy" in caplog.messages
 
@@ -355,7 +428,7 @@ def test_ntfy_long_message(srv, caplog):
     """
 
     responses.add(
-        responses.PUT,
+        responses.POST,
         "http://localhost:9999/testdrive",
         json={"not": "relevant"},
         status=200,
