@@ -6,6 +6,10 @@ mqttwarn changelog
 in progress
 ===========
 
+
+2023-10-15 0.35.0
+=================
+
 - Fix sending ntfy notifications with longer messages than 76 characters.
   Thanks, @codebude.
 - Modernize Pushbullet service plugin. Thanks, @DNicholai.
