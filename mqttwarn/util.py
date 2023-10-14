@@ -1,7 +1,7 @@
 # (c) 2014-2023 The mqttwarn developers
 import functools
-import hashlib
-import imp
+import importlib.machinery
+import importlib.util
 import json
 import logging
 import os
@@ -14,6 +14,9 @@ from pathlib import Path
 import funcy
 import pkg_resources
 from six import string_types
+
+if t.TYPE_CHECKING:
+    from importlib._bootstrap_external import FileLoader
 
 logger = logging.getLogger(__name__)
 
@@ -132,15 +135,20 @@ def load_module_from_file(path: str) -> types.ModuleType:
     :param path:
     :return:
     """
-    try:
-        fp = open(path, "rb")
-        digest = hashlib.md5(path.encode("utf-8")).hexdigest()
-        return imp.load_source(digest, path, fp)  # type: ignore[arg-type]
-    finally:
-        try:
-            fp.close()
-        except:
-            pass
+    name = Path(path).stem
+    loader: "FileLoader"
+    if path.endswith(".py"):
+        loader = importlib.machinery.SourceFileLoader(fullname=name, path=path)
+    elif path.endswith(".pyc"):
+        loader = importlib.machinery.SourcelessFileLoader(fullname=name, path=path)
+    else:
+        raise ImportError(f"Loading file failed (only .py and .pyc): {path}")
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    if spec is None:
+        raise ModuleNotFoundError(f"Failed loading module from file: {path}")
+    mod = importlib.util.module_from_spec(spec)
+    loader.exec_module(mod)
+    return mod
 
 
 def load_module_by_name(name: str) -> types.ModuleType:
@@ -150,11 +158,11 @@ def load_module_by_name(name: str) -> types.ModuleType:
     :param name:
     :return:
     """
-    module = import_module(name)
+    module = import_symbol(name)
     return module
 
 
-def import_module(name: str, path: t.Optional[t.List[str]] = None) -> types.ModuleType:
+def import_symbol(name: str, parent: t.Optional[types.ModuleType] = None) -> types.ModuleType:
     """
     Derived from `import_from_dotted_path`:
     https://chase-seibert.github.io/blog/2014/04/23/python-imp-examples.html
@@ -168,16 +176,38 @@ def import_module(name: str, path: t.Optional[t.List[str]] = None) -> types.Modu
         next_module = name
         remaining_names = None
 
-    fp, pathname, description = imp.find_module(next_module, path)
-    module = imp.load_module(next_module, fp, pathname, description)  # type: ignore[arg-type]
+    parent_name = None
+    next_module_real = next_module
+
+    if parent is not None:
+        next_module_real = "." + next_module
+        parent_name = parent.__name__
+    try:
+        spec = importlib.util.find_spec(next_module_real, parent_name)
+    except (AttributeError, ModuleNotFoundError):
+        module = parent
+        if module is None or module.__loader__ is None:
+            raise ImportError(f"Symbol not found: {name}")
+        if hasattr(module, next_module):
+            return getattr(module, next_module)
+        else:
+            raise ImportError(f"Symbol not found: {name}, module={module}")
+
+    if spec is None:
+        msg = f"Symbol not found: {name}"
+        if parent is not None:
+            msg += f", module={parent.__name__}"
+        raise ImportError(msg)
+    module = importlib.util.module_from_spec(spec)
+
+    # Actually load the module.
+    loader: FileLoader = module.__loader__
+    loader.exec_module(module)
 
     if remaining_names is None:
         return module
 
-    if hasattr(module, remaining_names):
-        return getattr(module, remaining_names)
-    else:
-        return import_module(remaining_names, path=list(module.__path__))
+    return import_symbol(remaining_names, parent=module)
 
 
 def load_functions(filepath: t.Optional[str] = None) -> t.Optional[types.ModuleType]:
@@ -188,17 +218,7 @@ def load_functions(filepath: t.Optional[str] = None) -> t.Optional[types.ModuleT
     if not os.path.isfile(filepath):
         raise IOError("'{}' not found".format(filepath))
 
-    mod_name, file_ext = os.path.splitext(os.path.split(filepath)[-1])
-
-    if file_ext.lower() == ".py":
-        py_mod = imp.load_source(mod_name, filepath)
-
-    elif file_ext.lower() == ".pyc":
-        py_mod = imp.load_compiled(mod_name, filepath)
-
-    else:
-        raise ValueError("'{}' does not have the .py or .pyc extension".format(filepath))
-
+    py_mod = load_module_from_file(filepath)
     return py_mod
 
 

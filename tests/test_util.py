@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-# (c) 2018-2022 The mqttwarn developers
+# (c) 2018-2023 The mqttwarn developers
 from __future__ import division
 
 import py_compile
 import re
 import time
+import types
 from builtins import str
 
 import pytest
@@ -13,7 +14,7 @@ from mqttwarn.util import (
     Formatter,
     asbool,
     get_resource_content,
-    import_module,
+    import_symbol,
     load_file,
     load_function,
     load_functions,
@@ -135,9 +136,9 @@ def test_load_functions():
     assert str(excinfo.value) == "'{}' not found".format("unknown.txt")
 
     # Load functions file that is not a python file
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ImportError) as excinfo:
         load_functions(filepath=configfile_full)
-    assert str(excinfo.value) == "'{}' does not have the .py or .pyc extension".format(configfile_full)
+    assert re.match(r"Loading file failed \(only .py and .pyc\): .+full.ini", str(excinfo.value))
 
     # Load bad functions file
     with pytest.raises(Exception):
@@ -172,7 +173,7 @@ def test_load_function():
     with pytest.raises(AttributeError) as excinfo:
         load_function(name="unknown", py_mod=py_mod)
     assert re.match(
-        "Function 'unknown' does not exist in '.*{}c?'".format(funcfile_good),
+        "Function 'unknown' does not exist in '.+functions_good.py'",
         str(excinfo.value),
     )
 
@@ -182,15 +183,40 @@ def test_get_resource_content():
     assert "[defaults]" in payload
 
 
-def test_import_module():
+def test_import_symbol_module_success():
     """
-    Proof that the `import_module` function works as intended.
+    Proof that the `import_symbol` function works as intended.
     """
-    symbol = import_module("mqttwarn.services.log")
-    assert symbol.__name__ == "log"
+    symbol = import_symbol("mqttwarn.services.log")
+    assert symbol.__name__ == "mqttwarn.services.log"
+    assert isinstance(symbol, types.ModuleType)
 
-    symbol = import_module("mqttwarn.services.log.plugin")
+
+def test_import_symbol_module_fail():
+    """
+    Proof that the `import_symbol` function works as intended.
+    """
+    with pytest.raises(ImportError) as ex:
+        import_symbol("foo.bar.baz")
+    assert ex.match("Symbol not found: foo.bar.baz")
+
+
+def test_import_symbol_function_success():
+    """
+    Proof that the `import_symbol` function works as intended.
+    """
+    symbol = import_symbol("mqttwarn.services.log.plugin")
     assert symbol.__name__ == "plugin"
+    assert isinstance(symbol, types.FunctionType)
+
+
+def test_import_symbol_function_fail():
+    """
+    Proof that the `import_symbol` function works as intended.
+    """
+    with pytest.raises(ImportError) as ex:
+        import_symbol("mqttwarn.services.log.foo.bar.baz")
+    assert ex.match("Symbol not found: foo.bar.baz, module=<module 'mqttwarn.services.log' from")
 
 
 def test_load_file_success(tmp_path):
