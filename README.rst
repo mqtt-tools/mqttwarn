@@ -1,3 +1,18 @@
+########
+mqttwarn
+########
+
+.. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
+
+To *warn*, *alert*, or *notify*.
+
+.. image:: https://raw.githubusercontent.com/mqtt-tools/mqttwarn/main/assets/google-definition.jpg
+
+
+******
+Status
+******
+
 .. image:: https://github.com/mqtt-tools/mqttwarn/workflows/Tests/badge.svg
     :target: https://github.com/mqtt-tools/mqttwarn/actions?workflow=Tests
 
@@ -7,8 +22,7 @@
 .. image:: https://img.shields.io/pypi/pyversions/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
 
-.. image:: https://img.shields.io/pypi/v/mqttwarn.svg
-    :target: https://pypi.org/project/mqttwarn/
+|
 
 .. image:: https://img.shields.io/pypi/l/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
@@ -16,27 +30,19 @@
 .. image:: https://img.shields.io/pypi/status/mqttwarn.svg
     :target: https://pypi.org/project/mqttwarn/
 
+.. image:: https://img.shields.io/pypi/v/mqttwarn.svg
+    :target: https://pypi.org/project/mqttwarn/
+
 .. image:: https://pepy.tech/badge/mqttwarn/month
     :target: https://pepy.tech/project/mqttwarn
+
+|
 
 `GitHub <https://github.com/mqtt-tools/mqttwarn>`_
 | `PyPI <https://pypi.org/project/mqttwarn/>`_
 | `Documentation <https://mqttwarn.readthedocs.io>`_
 | `Issues <https://github.com/mqtt-tools/mqttwarn/issues>`_
 | `Changelog <https://github.com/mqtt-tools/mqttwarn/blob/main/CHANGES.rst>`_
-
-|
-
-.. image:: https://cloud.githubusercontent.com/assets/2345521/6320105/4dd7a826-bade-11e4-9a61-72aa163a40a9.png
-
-########
-mqttwarn
-########
-
-To *warn*, *alert*, or *notify*.
-
-.. image:: https://raw.githubusercontent.com/mqtt-tools/mqttwarn/main/assets/google-definition.jpg
-
 
 
 *****
