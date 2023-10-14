@@ -144,6 +144,10 @@ for extra, packages in extras.items():
     if machine in ["armv7l"] and extra in ["apprise", "twilio"]:
         continue
 
+    # FIXME: aiohttp (needed by twilio) is not available for Python 3.12 yet.
+    if sys.version_info >= (3, 12) and extra in ["twilio"]:
+        continue
+
     for package in packages:
         extras_all.append(package)
 
