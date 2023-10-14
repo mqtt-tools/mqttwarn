@@ -164,7 +164,7 @@ extras["test"] = [
     'dataclasses; python_version<"3.7"',
     "requests-toolbelt>=1,<2",
     "responses>=0.13.3,<1",
-    "pyfakefs>=4.5,<5",
+    "pyfakefs>=4.5,<6",
 ] + extras["all"]
 
 # Packages needed for development and running CI.
