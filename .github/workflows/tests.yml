@@ -26,7 +26,7 @@ jobs:
           - os: "macos-latest"
             python-version: "3.12"
           - os: "windows-latest"
-            python-version: "3.12"
+            python-version: "3.11"
     env:
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python-version }}
