@@ -8,13 +8,17 @@ __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/ep
 import dataclasses
 from collections import OrderedDict
 
-from future import standard_library
-standard_library.install_aliases()
 import os
 import json
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
-import urllib.parse
+
+try:
+    from urllib.parse import urlparse, urlencode, urljoin
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
+except ImportError:
+    from urlparse import urlparse  # type: ignore[no-redef]
+    from urllib import urlencode, urljoin  # type: ignore[no-redef,attr-defined]
+    from urllib2 import urlopen, Request, HTTPError  # type: ignore[no-redef]
 
 import typing as t
 
@@ -39,10 +43,10 @@ def pushsafer(**kwargs):
     # Don't submit empty parameters to Pushsafer.
     filter_empty_parameters(kwargs)
 
-    url = urllib.parse.urljoin(PUSHSAFER_API, "api")
-    data = urllib.parse.urlencode(kwargs).encode('utf-8')
-    req = urllib.request.Request(url, data)
-    response = urllib.request.urlopen(req, timeout=3)
+    url = urljoin(PUSHSAFER_API, "api")
+    data = urlencode(kwargs).encode('utf-8')
+    req = Request(url, data)
+    response = urlopen(req, timeout=3)
     output = response.read()
     data = json.loads(output)
 
