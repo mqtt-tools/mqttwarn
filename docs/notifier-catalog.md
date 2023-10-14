@@ -1992,9 +1992,21 @@ targets  = {
 
 :::{note}
 [ntfy publishing options] outlines different ways to marshal data to the ntfy
-HTTP API. mqttwarn is using the HTTP PUT method, where the HTTP body is used
-for the attachment file, and HTTP headers are used for all other ntfy option 
-fields, encoded with [RFC 2047] MIME [quoted-printable encoding].
+HTTP API. mqttwarn utilizes two variants to submit the notification to ntfy,
+using both the HTTP PUT and POST methods, and encoding ntfy option fields into
+HTTP headers with [RFC 2047] MIME [quoted-printable encoding].
+
+- Per default, send the message as HTTP body, enabling line breaks.
+- When submitting a local attachment without a text message, encode the
+  attachment data into the HTTP body, and all other fields into HTTP headers.
+- When it is a notification with both a local attachment, and a text message,
+  also encode the attachment data into the HTTP body, but replace all newline
+  characters `\n` of the text message, because they can not be encoded into
+  HTTP headers.
+
+Effectively, this means you can not submit notification message texts including
+newline characters and local attachments at the same time. When adding a local
+attachment, all newline characters will implicitly be replaced by space characters.
 :::
 
 {#ntfy-remote-attachments}

@@ -166,11 +166,11 @@ def test_frigate_with_notification(mosquitto, ntfy_service, caplog, capmqtt, jso
     assert "Section [frigate/events] matches message on frigate/events, processing it" in caplog.messages
     assert "Message on frigate/events going to ntfy:test" in caplog.messages
     assert "Invoking service plugin for `ntfy'" in caplog.messages
+    assert "Body:    b'goat was in barn before'" in caplog.messages
     assert (
         "Headers: {"
         "'Click': 'https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn', "
-        "'Title': '=?utf-8?q?goat_entered_lawn_at_2023-04-06_14=3A31=3A46=2E638857+00=3A00?=', "
-        "'Message': '=?utf-8?q?goat_was_in_barn_before?='}" in caplog.messages
+        "'Title': '=?utf-8?q?goat_entered_lawn_at_2023-04-06_14=3A31=3A46=2E638857+00=3A00?='}" in caplog.messages
     )
 
     # assert "Sent ntfy notification to 'http://localhost:5555'." in caplog.messages

@@ -73,5 +73,6 @@ def ntfy_service():
         yield "localhost", 5555
         return
 
-    yield ntfy_image.run()
+    ntfy_image.run()
+    yield "localhost", 5555
     ntfy_image.stop()

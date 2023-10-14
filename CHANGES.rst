@@ -12,6 +12,7 @@ in progress
 - Documentation: Clarify data type of "target address descriptor"
 - [Pushover]: Switch to using ``base64.b64decode()`` to support decoding
   a string. Thanks, @sumnerboy12.
+- [ntfy] Fix submitting newline characters in notification message text
 
 
 2023-05-15 0.34.1
