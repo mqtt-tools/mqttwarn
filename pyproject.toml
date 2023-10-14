@@ -114,17 +114,17 @@ omit = [
 
 [tool.poe.tasks]
 format = [
-  {cmd="black ."},
-  {cmd="isort ."},
+  { cmd = "black ." },
+  # Ignore unused imports (F401), unused variables (F841), `print` statements (T201), and commented-out code (ERA001).
+  { cmd = "ruff --fix --ignore=ERA --ignore=F401 --ignore=F841 --ignore=T20 --ignore=ERA001 ." },
 ]
 lint = [
-  {cmd="ruff ."},
-  {cmd="black --check ."},
-  {cmd="isort --check ."},
-  {cmd="mypy --install-types --non-interactive"},
+  { cmd = "ruff ." },
+  { cmd = "black --check ." },
+  { cmd = "mypy --install-types --non-interactive" },
 ]
 test = [
-  {cmd="pytest"},
+  { cmd="pytest" },
 ]
 build = {cmd="python -m build"}
 check = ["lint", "test"]

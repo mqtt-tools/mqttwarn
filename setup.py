@@ -170,7 +170,6 @@ extras["test"] = [
 
 # Packages needed for development and running CI.
 extras["develop"] = [
-    "isort<6",
     "black<23",
     "build<1",
     "mypy<1.3",
