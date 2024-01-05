@@ -50,9 +50,9 @@ targets   = {'testdrive': 'http://localhost:5555/testdrive'}
 
 ### JavaScript
 
-In order to try that on the OwnTracks-to-ntfy example, use the alternative
-`mqttwarn-owntracks.js` implementation by adjusting the `functions` setting within the
-`[defaults]` section of your configuration file, and restart mqttwarn.
+In order to explore JavaScript user-defined functions using the OwnTracks-to-ntfy recipe,
+use the alternative `mqttwarn-owntracks.js` implementation by adjusting the `functions`
+setting within the `[defaults]` section of your configuration file, and restart mqttwarn.
 ```ini
 [defaults]
 functions = mqttwarn-owntracks.js
@@ -67,5 +67,27 @@ previous one, which was written in Python.
 
 :::{attention}
 The feature to run JavaScript code is currently considered to be experimental.
+Please use it responsibly.
+:::
+
+### Lua
+
+In order to explore Lua user-defined functions using the OwnTracks-to-ntfy recipe,
+use the alternative `mqttwarn-owntracks.lua` implementation by adjusting the `functions`
+setting within the `[defaults]` section of your configuration file, and restart mqttwarn.
+```ini
+[defaults]
+functions = mqttwarn-owntracks.lua
+```
+
+The Lua function `owntracks_batteryfilter()` implements the same rule as the
+previous ones, which was written in Python and JavaScript.
+
+:::{literalinclude} mqttwarn-owntracks.lua
+:language: lua
+:::
+
+:::{attention}
+The feature to run Lua code is currently considered to be experimental.
 Please use it responsibly.
 :::

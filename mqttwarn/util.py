@@ -13,6 +13,7 @@ import logging
 import os
 import re
 import string
+import sys
 import threading
 import types
 import typing as t
@@ -150,6 +151,8 @@ def load_module_from_file(path: t.Union[str, Path]) -> types.ModuleType:
         loader = importlib.machinery.SourcelessFileLoader(fullname=name, path=str(path))
     elif path.suffix in [".js", ".javascript"]:
         return load_source_js(name, str(path))
+    elif path.suffix == ".lua":
+        return load_source_lua(name, str(path))
     else:
         raise ImportError(f"Loading file type failed (only .py, .pyc, .js, .javascript): {path}")
     spec = importlib.util.spec_from_loader(loader.name, loader)
@@ -317,3 +320,41 @@ def load_source_js(mod_name, filepath):
     javascript.eval_js(js_code)
     threading.Event().wait(0.01)
     return module_factory(mod_name, module["exports"])
+
+
+class LuaJsonAdapter:
+    """
+    Support Lua as if it had its `json` module.
+
+    Wasn't able to make Lua's `json` module work, so this provides minimal functionality
+    instead. It will be injected into the Lua context's global `json` symbol.
+    """
+
+    @staticmethod
+    def decode(data):
+        if data is None:
+            return None
+        return json.loads(data)
+
+
+def load_source_lua(mod_name, filepath):
+    """
+    Load a Lua module, and import its exported symbols into a synthetic Python module.
+    """
+    import lupa
+
+    lua = lupa.LuaRuntime(unpack_returned_tuples=True)
+
+    # Lua modules want to be loaded without suffix, but the interpreter would like to know about their path.
+    modfile = Path(filepath).with_suffix("").name
+    modpath = Path(filepath).parent
+    # Yeah, Windows.
+    if sys.platform == "win32":
+        modpath = str(modpath).replace("\\", "\\\\")
+    lua.execute(rf'package.path = package.path .. ";{str(modpath)}/?.lua"')
+
+    logger.info(f"Loading Lua module {modfile} from path {modpath}")
+    module, filepath = lua.require(modfile)
+    # FIXME: Add support for common modules, as long as they are not available natively.
+    lua.globals()["json"] = LuaJsonAdapter
+    return module_factory(mod_name, module)

@@ -3,8 +3,7 @@ name: Tests
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  pull_request: ~
 
   # Allow job to be triggered manually.
   workflow_dispatch:
@@ -36,6 +35,8 @@ jobs:
 
     - name: Acquire sources
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     # https://github.com/docker-practice/actions-setup-docker
     # - name: Install Docker
