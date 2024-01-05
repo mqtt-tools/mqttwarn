@@ -25,6 +25,7 @@ in progress
   - Use ``importlib`` instead of ``imp``
   - Use ``importlib.resources`` instead of ``pkg_resources``
   - [http,pushsafer] Remove dependency on ``future`` package
+- Add configuration variable expansion. Thanks, @jhakonen.
 
 
 2023-05-15 0.34.1
