@@ -3,8 +3,7 @@ name: Tests
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  pull_request: ~
 
   # Allow job to be triggered manually.
   workflow_dispatch:
