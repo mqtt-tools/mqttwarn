@@ -3052,6 +3052,8 @@ targets = {
 
 ### `twitter`
 
+Note it is highly unlikely that this will work again; twitter's no longer what it was before it was shredded.
+
 The `twitter` service plugin submits notification events to the [Twitter] platform,
 using the [python-twitter] API wrapper package.
 
