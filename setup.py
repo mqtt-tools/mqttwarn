@@ -53,6 +53,9 @@ extras = {
         "gspread>=2.1.1",
         "oauth2client>=4.1.2",
     ],
+    "javascript": [
+        "javascript==1!1.0.1; python_version>='3.7'",
+    ],
     "mysql": [
         "mysql",
     ],
@@ -200,6 +203,8 @@ setup(
         "Operating System :: POSIX",
         "Operating System :: Unix",
         "Operating System :: MacOS",
+        "Operating System :: Microsoft :: Windows",
+        "Programming Language :: JavaScript",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -229,7 +234,7 @@ setup(
     author="Jan-Piet Mens, Ben Jones, Andreas Motl",
     author_email="jpmens@gmail.com",
     url="https://github.com/mqtt-tools/mqttwarn",
-    keywords="mqtt notification plugins data acquisition push transformation engine mosquitto",
+    keywords="mqtt notification plugins data acquisition push transformation engine mosquitto python javascript",
     packages=find_packages(),
     include_package_data=True,
     package_data={
