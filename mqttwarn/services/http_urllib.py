@@ -24,8 +24,8 @@ except ImportError:
 
 def plugin(srv, item):
     """ addrs: (method, url, dict(params), list(username, password), json) 
-        or (shorthand)
-        addrs: (method, url, list(params), list(username, password), json)  """
+        or (shorthand for quoted fields)
+        addrs: (method, url, list(param_names), list(username, password), json)  """
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
@@ -73,7 +73,8 @@ def plugin(srv, item):
             # Quoted field, starts with '@'. Do not use .format, instead grab
             # the item's [message] and inject as parameter value.
             # { 'x' : '?param' }
-            # optional quoted field, add to query string only if it exists in item's data and is not empty 
+            # Optional quoted field, add to query string only if it exists
+            # in item's data and is not empty 
             if params[key].startswith('@'):         # "@message"
                 params[key] = item.get(params[key][1:], "NOP")
 
