@@ -56,7 +56,8 @@ def plugin(srv, item):
 
     if params is not None:
         
-        # shorthand [ 'param1' ] for { 'param1': '{param1}', ...}
+        # shorthand [ 'param1' , '@param2', '?param3' ] 
+        # for { 'param1': '@param1', 'param2': '@param2', 'param3': '?param3' }
         if isinstance(params, list):
             # create dict from list and replace params
             newparams = {}
@@ -72,14 +73,14 @@ def plugin(srv, item):
             # { 'q' : '@message' }
             # Quoted field, starts with '@'. Do not use .format, instead grab
             # the item's [message] and inject as parameter value.
-            # { 'x' : '?param' }
+            # new { 'x' : '?param' }
             # Optional quoted field, add to query string only if it exists
             # in item's data and is not empty 
             if params[key].startswith('@'):         # "@message"
-                params[key] = item.get(params[key][1:], "NOP")
+                params[key] = item.data.get(params[key][1:], "NOP")
 
             elif params[key].startswith('?'):
-                myitem = item.get(params[key][1:], None)
+                myitem = item.data.get(params[key][1:], None)
                 if myitem is None:
                     params.pop(key,None)
                 else:
