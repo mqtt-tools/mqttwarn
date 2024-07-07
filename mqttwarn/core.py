@@ -35,6 +35,7 @@ from mqttwarn.util import (
     timeout,
     truncate,
 )
+from mqttwarn.topic import TopicTimeout
 
 try:
     import json
@@ -75,6 +76,9 @@ exit_flag = False
 
 # Instances of PeriodicThread objects
 ptlist: t.Dict[str, PeriodicThread] = {}
+
+# Instances of TopicTimeout objects
+topic_timeout_list: t.Dict[str, TopicTimeout] = {}
 
 # Instances of loaded service plugins
 service_plugins: t.Dict[str, t.Dict[str, t.Any]] = dict()
@@ -131,6 +135,7 @@ def on_connect(mosq: MqttClient, userdata: t.Dict[str, str], flags: t.Dict[str, 
         for section in context.get_sections():
             topic = context.get_topic(section)
             qos = context.get_qos(section)
+            topic_timeout = context.get_timeout(section)
 
             if topic in subscribed:
                 continue
@@ -138,6 +143,10 @@ def on_connect(mosq: MqttClient, userdata: t.Dict[str, str], flags: t.Dict[str, 
             logger.debug("Subscribing to %s (qos=%d)" % (topic, qos))
             mqttc.subscribe(topic, qos)
             subscribed.append(topic)
+            if topic_timeout > 0:
+                logger.debug("Setting up timeout thread for %s (timeout=%d)" % (topic, topic_timeout))
+                topic_timeout_list[topic] = TopicTimeout(timeout=topic_timeout, topic=topic, on_timeout=message_to_targets_handler)
+                topic_timeout_list[topic].start()
 
         if cf.lwt is not None:
             mqttc.publish(cf.lwt, cf.lwt_alive, qos=0, retain=True)
@@ -160,6 +169,9 @@ def on_disconnect(mosq: MqttClient, userdata: t.Dict[str, str], result_code: int
     """
     Handle disconnections from the broker
     """
+    for topic, thread in topic_timeout_list.items():
+        thread.stop()
+
     if result_code == 0:
         logger.info("Clean disconnection from broker")
     else:
@@ -192,6 +204,22 @@ def on_message_handler(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMe
             logger.debug("Skipping retained message on %s" % topic)
             return
 
+    if topic in topic_timeout_list:
+        logger.debug("Message received, restarting timeout on %s" % topic)
+        topic_timeout_list[topic].restart()
+        return
+
+    message_to_targets_handler(topic, payload)
+
+
+# End of MQTT broker callbacks
+
+
+def message_to_targets_handler(topic: str, payload: t.AnyStr):
+    """
+    Identify targets for message and send the message to these targets
+    """
+
     # Try to find matching settings for this topic
     for section in context.get_sections():
         # Get the topic for this section (usually the section name but optionally overridden)
@@ -207,9 +235,6 @@ def on_message_handler(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMe
                 continue
             # Send the message to any targets specified
             send_to_targets(section, topic, payload)
-
-
-# End of MQTT broker callbacks
 
 
 def send_failover(reason: str, message: t.AnyStr):

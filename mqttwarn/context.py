@@ -51,6 +51,12 @@ class RuntimeContext:
             qos = int(self.config.get(section, "qos"))
         return qos
 
+    def get_timeout(self, section: str) -> int:
+        timeout = -1
+        if self.config.has_option(section, "timeout"):
+            timeout = int(self.config.get(section, "timeout"))
+        return timeout
+
     def get_config(self, section: str, name: str) -> t.Any:
         value = None
         if self.config.has_option(section, name):
