@@ -17,11 +17,15 @@ class TopicTimeout(threading.Thread):
         self,
         topic: t.Optional[str] = None,
         timeout: t.Optional[int] = 1,
+        section: t.Optional[str] = None,
+        notify_only_on_timeout: t.Optional[bool] = False,
         on_timeout: t.Optional[t.Callable] = None
     ):
         threading.Thread.__init__(self)
         self.topic = topic
         self.timeout = timeout
+        self.section = section
+        self.notify_only_on_timeout = notify_only_on_timeout
         self._on_timeout = on_timeout
         self._restart_event = threading.Event();
         self._stop_event = threading.Event()
@@ -43,11 +47,11 @@ class TopicTimeout(threading.Thread):
                     break
                 logger.debug("%s waiting... %i" % (self.name, timeout))
                 time.sleep(1)
-                timeout = timeout - 1;
+                timeout = timeout - 1
                 if timeout == 0:
                     logger.debug("%s timeout for topic %s" % (self.name, self.topic))
                     message = "Timeout for topic %s after %i" % (self.topic, self.timeout)
-                    self._on_timeout(self.topic, message.encode('UTF-8'))
+                    self._on_timeout(self.section, self.topic, message.encode('UTF-8'))
                     break
 
     def restart(self):

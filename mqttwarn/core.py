@@ -136,6 +136,7 @@ def on_connect(mosq: MqttClient, userdata: t.Dict[str, str], flags: t.Dict[str, 
             topic = context.get_topic(section)
             qos = context.get_qos(section)
             topic_timeout = context.get_timeout(section)
+            notify_only_on_timeout = context.get_notify_only_on_timeout(section)
 
             if topic in subscribed:
                 continue
@@ -145,7 +146,9 @@ def on_connect(mosq: MqttClient, userdata: t.Dict[str, str], flags: t.Dict[str, 
             subscribed.append(topic)
             if topic_timeout > 0:
                 logger.debug("Setting up timeout thread for %s (timeout=%d)" % (topic, topic_timeout))
-                topic_timeout_list[topic] = TopicTimeout(timeout=topic_timeout, topic=topic, on_timeout=message_to_targets_handler)
+                topic_timeout_list[topic] = TopicTimeout(timeout=topic_timeout, topic=topic, section=section,
+                                                         notify_only_on_timeout=notify_only_on_timeout,
+                                                         on_timeout=send_to_targets)
                 topic_timeout_list[topic].start()
 
         if cf.lwt is not None:
@@ -207,18 +210,8 @@ def on_message_handler(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMe
     if topic in topic_timeout_list:
         logger.debug("Message received, restarting timeout on %s" % topic)
         topic_timeout_list[topic].restart()
-        return
-
-    message_to_targets_handler(topic, payload)
-
-
-# End of MQTT broker callbacks
-
-
-def message_to_targets_handler(topic: str, payload: t.AnyStr):
-    """
-    Identify targets for message and send the message to these targets
-    """
+        if topic_timeout_list[topic].notify_only_on_timeout:
+            return
 
     # Try to find matching settings for this topic
     for section in context.get_sections():
@@ -235,6 +228,9 @@ def message_to_targets_handler(topic: str, payload: t.AnyStr):
                 continue
             # Send the message to any targets specified
             send_to_targets(section, topic, payload)
+
+
+# End of MQTT broker callbacks
 
 
 def send_failover(reason: str, message: t.AnyStr):
