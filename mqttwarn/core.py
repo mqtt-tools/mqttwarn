@@ -207,11 +207,12 @@ def on_message_handler(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMe
             logger.debug("Skipping retained message on %s" % topic)
             return
 
-    if topic in topic_timeout_list:
-        logger.debug("Message received, restarting timeout on %s" % topic)
-        topic_timeout_list[topic].restart()
-        if topic_timeout_list[topic].notify_only_on_timeout:
-            return
+    for match_topic in topic_timeout_list:
+        if paho.topic_matches_sub(match_topic, topic):
+            logger.debug("Message received, restarting timeout on %s" % match_topic)
+            topic_timeout_list[match_topic].restart()
+            if topic_timeout_list[match_topic].notify_only_on_timeout:
+                return
 
     # Try to find matching settings for this topic
     for section in context.get_sections():
