@@ -13,6 +13,7 @@ import base64
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
+import time
 
 
 def plugin(srv, item):
@@ -82,11 +83,21 @@ def plugin(srv, item):
         if image is None:
             slack.chat_postMessage(channel=channel, text=text, username=username, icon_emoji=icon, unfurl_links=True)
         else:
-            
             srv.logging.debug("Channel id: %s" % channel);
-
-            slack.files_upload(file=image,title=text,channels=channel)
-            srv.logging.debug("image posted")
+            filename = "%s.jpg" % time.time() # generate a filename
+            sr = slack.files_getUploadURLExternal(filename=filename, length=len(image), alt_text=text)
+            if sr["ok"]:
+                r = requests.post(sr["upload_url"], data=image)
+                if r.ok:
+                    sr = slack.files_completeUploadExternal(files=[{"id": sr["file_id"], "title": text}], channel_id=channel)
+                    if sr["ok"]:
+                        srv.logging.debug("image posted")
+                    else:
+                        srv.logging.warning("Cannot complete upload: %s" % sr["error"])
+                else:
+                    srv.logging.warning("Failed to post image to url: %s" % r.reason)
+            else:
+                srv.logging.warning("Cannot upload image: %s" % sr["error"])
     except SlackApiError as e:
         assert e.response["ok"] is False
         assert e.response["error"]
