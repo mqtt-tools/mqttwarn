@@ -211,6 +211,7 @@ def on_message_handler(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMe
         if paho.topic_matches_sub(match_topic, topic):
             logger.debug("Message received, restarting timeout on %s" % match_topic)
             topic_timeout_list[match_topic].restart()
+            # Sometimes it is only relevant if a timeout is reached or not
             if topic_timeout_list[match_topic].notify_only_on_timeout:
                 return
 
