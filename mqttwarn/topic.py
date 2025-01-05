@@ -26,7 +26,7 @@ class TopicTimeout(threading.Thread):
         self.timeout = timeout
         self.section = section
         self.notify_only_on_timeout = notify_only_on_timeout
-        self.last_state_timeout = False
+        self._last_state_timeout = True
         self._on_timeout = on_timeout
         self._restart_event = threading.Event();
         self._stop_event = threading.Event()
@@ -50,10 +50,10 @@ class TopicTimeout(threading.Thread):
                     # If the topic notifies only about timeout / no timeout and the last state was timeout
                     # a notification for the OK state should be published, otherwise just restart the thread
                     # and the received message will be handled by mqttwarn.
-                    if self.last_state_timeout and self.notify_only_on_timeout:
+                    if self.notify_only_on_timeout and self._last_state_timeout:
                         logger.debug("%s received message for topic %s before timeout" % (self.name, self.topic))
                         message = "Message received for topic %s within %i" % (self.topic, self.timeout)
-                        self.last_state_timeout = False
+                        self._last_state_timeout = False
                         self._on_timeout(self.section, self.topic, message.encode('UTF-8'))
                     self._restart_event = threading.Event()
                     break
@@ -63,7 +63,7 @@ class TopicTimeout(threading.Thread):
                 if timeout == 0:
                     logger.debug("%s timeout for topic %s" % (self.name, self.topic))
                     message = "Timeout for topic %s after %i" % (self.topic, self.timeout)
-                    self.last_state_timeout = True
+                    self._last_state_timeout = True
                     self._on_timeout(self.section, self.topic, message.encode('UTF-8'))
                     break
 
