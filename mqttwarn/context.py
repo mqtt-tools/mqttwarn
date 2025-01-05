@@ -51,6 +51,18 @@ class RuntimeContext:
             qos = int(self.config.get(section, "qos"))
         return qos
 
+    def get_timeout(self, section: str) -> int:
+        timeout = -1
+        if self.config.has_option(section, "timeout"):
+            timeout = int(self.config.get(section, "timeout"))
+        return timeout
+
+    def get_notify_only_on_timeout(self, section: str) -> int:
+        notify_only_on_timeout = False
+        if self.config.has_option(section, "notify_only_on_timeout"):
+            notify_only_on_timeout = bool(self.config.get(section, "notify_only_on_timeout"))
+        return notify_only_on_timeout
+
     def get_config(self, section: str, name: str) -> t.Any:
         value = None
         if self.config.has_option(section, name):
