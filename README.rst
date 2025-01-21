@@ -248,6 +248,18 @@ Legal stuff
 "MQTT" is a trademark of the OASIS open standards consortium, which publishes the
 MQTT specifications. "Eclipse Mosquitto" is a trademark of the Eclipse Foundation.
 
+
+************
+Supported by
+************
+
+.. image:: https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg
+    :target: https://jb.gg/OpenSourceSupport
+
+Special thanks to the people at JetBrains s.r.o. for supporting us with
+excellent development tooling.
+
+
 ----
 
 Have fun!
