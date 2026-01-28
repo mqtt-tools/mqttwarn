@@ -22,7 +22,6 @@ jobs:
       matrix:
         os: ["ubuntu-22.04"]
         python-version: [
-          "3.6",
           "3.7",
           "3.12",
           "3.13",
