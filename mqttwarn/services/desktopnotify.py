@@ -8,6 +8,7 @@ __license__   = 'Eclipse Public License - v 2.0 - https://www.eclipse.org/legal/
 
 import json
 import typing as t
+import asyncio
 
 from desktop_notifier import DesktopNotifier, Urgency, Button, ReplyField
 
@@ -20,7 +21,12 @@ def is_json(msg: t.Union[str, bytes]) -> bool:
      json.loads(msg)
    except ValueError as e:
      return False
+   except TypeError as e:
+      return False
    return True
+
+async def send_notification(message,title,sound=True):
+   await notify.send(message=message, title=title,sound=sound)
 
 def plugin(srv: Service, item: ProcessorItem):
     # Log
@@ -30,25 +36,28 @@ def plugin(srv: Service, item: ProcessorItem):
     config = item.config
 
     # Play Sound ?
-    playSound = True
+    playSound = False
     if isinstance(config, dict):
-       playSound = config.get('sound', True)
+       playSound = config.get('sound', False)
 
     # Get Message
-    message = item.message
+    message = item.message   
     if message and is_json(message):
        data = json.loads(message)
-    else:
+    else:       
+       try:
+          msg = message.get('message', str(message))
+       except:
+          msg = str(message)
        data = {
          "title"  : item.get('title', item.topic),
-         "message": message
+         "message": msg
        }
 
     srv.logging.debug("Sending desktop notification")
     try:
-        # Synchronous Notification (allows no callbacks in OSX)
-        # Asynchronous would require asyncio and require some changes to the plugin handler
-        notify.send_sync(message=data['message'], title=data['title'],sound=playSound)
+        # TODO: Fix issue where this keeps running until the notification is closed.
+        asyncio.run(send_notification(message=data['message'], title=data['title'],sound=False))       
 
     except Exception as e:
         srv.logging.warning("Invoking desktop notifier failed: %s" % e)
