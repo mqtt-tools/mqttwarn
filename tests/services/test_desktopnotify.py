@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # (c) 2022 The mqttwarn developers
 import json
+import sys
+from unittest import mock
 from unittest.mock import Mock, call
 
 import pytest
@@ -12,7 +14,9 @@ from mqttwarn.util import load_module_by_name
 
 @pytest.fixture
 def desktop_notifier_mock(mocker):
-    notifier = mocker.patch("desktop_notifier.DesktopNotifier", create=True)
+    if sys.version_info < (3, 8):
+        raise pytest.skip(reason="mock.AsyncMock not available on Python 3.7 and earlier")
+    notifier = mocker.patch("desktop_notifier.DesktopNotifier.send", new_callable=mock.AsyncMock, return_value=True)
     mocker.patch("desktop_notifier.Urgency", create=True)
     mocker.patch("desktop_notifier.Button", create=True)
     mocker.patch("desktop_notifier.ReplyField", create=True)
@@ -32,10 +36,9 @@ def test_desktopnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
 
     outcome = module.plugin(srv, item)
 
-    assert desktop_notifier_mock.mock_calls == [
-        call(),
-        call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
-    ]
+    desktop_notifier_mock.assert_awaited_once_with(
+        message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=False
+    )
 
     assert outcome is True
     assert "Sending desktop notification" in caplog.messages
@@ -52,13 +55,13 @@ def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv: Servi
     # Plugin needs a real `Struct`.
     item = Struct(**processor_item.asdict())
 
-    # Make the `send_sync` method fail.
+    # Make the `send` method fail.
     notifier_mock: Mock = mocker.patch.object(
         module,
         "notify",
         Mock(
             **{  # ty: ignore[invalid-argument-type, unused-ignore-comment, unused-ignore-comment]
-                "send_sync.side_effect": Exception("Something failed")
+                "send.side_effect": Exception("Something failed")
             }
         ),
     )
@@ -66,7 +69,7 @@ def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv: Servi
     outcome = module.plugin(srv, item)
 
     assert notifier_mock.mock_calls == [
-        call.send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
+        call.send(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=False),
     ]
 
     assert outcome is False
@@ -93,22 +96,23 @@ def test_desktopnotify_json_success(desktop_notifier_mock, srv, caplog):
 
     outcome = module.plugin(srv, item)
 
-    assert desktop_notifier_mock.mock_calls == [
-        call(),
-        call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True),
-    ]
+    desktop_notifier_mock.assert_awaited_once_with(
+        message="⚽ Notification message ⚽",
+        title="⚽ Notification title ⚽",
+        sound=False,
+    )
 
     assert outcome is True
     assert "Sending desktop notification" in caplog.messages
 
 
-def test_desktopnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
+def test_desktopnotify_with_sound_success(desktop_notifier_mock, srv, caplog):
     module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     item = Item(
         title="⚽ Notification title ⚽",
         message="⚽ Notification message ⚽",
-        config={"sound": False},
+        config={"sound": True},
     )
 
     # Plugin needs a real `Struct`.
@@ -116,10 +120,9 @@ def test_desktopnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
 
     outcome = module.plugin(srv, item)
 
-    assert desktop_notifier_mock.mock_calls == [
-        call(),
-        call().send_sync(message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=False),
-    ]
+    desktop_notifier_mock.assert_awaited_once_with(
+        message="⚽ Notification message ⚽", title="⚽ Notification title ⚽", sound=True
+    )
 
     assert outcome is True
     assert "Sending desktop notification" in caplog.messages
