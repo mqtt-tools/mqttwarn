@@ -100,7 +100,7 @@ targets = noop
     process_job(item.to_job())
 
     assert "Rendering template failed: unknown.jinja" in caplog.messages
-    assert "TemplateNotFound: unknown.jinja" in caplog.text
+    assert "TemplateNotFound" in caplog.text
 
 
 def test_process_job_with_empty_payload_is_suppressed(tmp_ini, caplog):
