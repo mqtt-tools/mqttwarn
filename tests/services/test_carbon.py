@@ -23,7 +23,7 @@ def test_carbon_success_metric_value_timestamp(mocker, srv, caplog):
     assert socket_mock.mock_calls == [
         call(),
         call().connect(("localhost", 2003)),
-        call().sendall("foo 42.42 1623887596\n"),
+        call().sendall(b"foo 42.42 1623887596\n"),
         call().close(),
     ]
 
@@ -168,7 +168,11 @@ def test_carbon_failure_connect(mocker, srv, caplog):
     socket_mock = mocker.patch("socket.socket")
 
     # Inject exception to be raised on `socket.connect`.
-    socket_mock.return_value = Mock(**{"connect.side_effect": Exception("something failed")})
+    socket_mock.return_value = Mock(
+        **{  # ty: ignore[invalid-argument-type, unused-ignore-comment, unused-ignore-comment]
+            "connect.side_effect": Exception("something failed")
+        }
+    )
 
     outcome = module.plugin(srv, item)
     assert socket_mock.mock_calls == [call(), call().connect(("localhost", 2003))]

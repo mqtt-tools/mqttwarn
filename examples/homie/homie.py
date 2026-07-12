@@ -23,12 +23,14 @@ def decode_homie_topic(topic):
     enriching transformation data inside mqttwarn.
     """
     if type(topic) == str:
+        topology = {}
         try:
             pattern = r"^(?P<realm>.+?)/(?P<device>.+?)/(?P<node>.+?)/(?P<property>.+?)$"
             p = re.compile(pattern)
             m = p.match(topic)
-            topology = m.groupdict()
+            if m:
+                topology = m.groupdict()
         except:
-            topology = {}
+            pass
         return topology
     return None

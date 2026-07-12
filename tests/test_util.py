@@ -71,7 +71,7 @@ def test_timeout():
     # FIXME: Better catch and report the exception?
     # FIXME: Derive "timeout_secs" from "duration"
     with pytest.raises(ValueError) as excinfo:
-        timeout(errfunc, timeout_secs=0.1, default="foobar")
+        timeout(errfunc, timeout_secs=0.1, default="foobar")  # ty: ignore[invalid-argument-type]
 
     assert str(excinfo.value) == "Something went wrong"
 

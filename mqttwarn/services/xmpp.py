@@ -5,6 +5,8 @@ __author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
 __copyright__ = 'Copyright 2014 Fabian Affolter'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
+from ssl import SSLContext
+
 import xmpp
 
 
@@ -30,7 +32,7 @@ def plugin(srv, item):
             connection = xmpp.Client(jid.getDomain(),debug=[])
             connection.connect()
             connection.auth(jid.getNode(), password, resource=jid.getResource())
-            connection.send(xmpp.protocol.Message(target, text))
+            connection.send(xmpp.protocol.Message(target, text))  # ty: ignore[unresolved-attribute]
         srv.logging.debug("Successfully sent message")
     except Exception as e:
         srv.logging.error("Error sending message to %s: %s" % (item.target, e))
@@ -52,11 +54,11 @@ def xmpppy_monkeypatch_ssl():
         """ Immidiatedly switch socket to TLS mode. Used internally."""
         """ Here we should switch pending_data to hint mode."""
         tcpsock=self._owner.Connection
-        tcpsock._sslObj    = ssl.wrap_socket(tcpsock._sock, None, None)
-        tcpsock._sslIssuer = tcpsock._sslObj.getpeercert().get('issuer')
-        tcpsock._sslServer = tcpsock._sslObj.getpeercert().get('server')
-        tcpsock._recv = tcpsock._sslObj.read
-        tcpsock._send = tcpsock._sslObj.write
+        tcpsock._sslObj    = ssl.wrap_socket(tcpsock._sock, None, None)  # ty: ignore[deprecated, unresolved-attribute, unused-ignore-comment, unused-ignore-comment]
+        tcpsock._sslIssuer = tcpsock._sslObj.getpeercert().get('issuer')  # ty: ignore[unresolved-attribute, unused-ignore-comment, unused-ignore-comment]
+        tcpsock._sslServer = tcpsock._sslObj.getpeercert().get('server')  # ty: ignore[unresolved-attribute, unused-ignore-comment, unused-ignore-comment]
+        tcpsock._recv = tcpsock._sslObj.recv
+        tcpsock._send = tcpsock._sslObj.send
 
         tcpsock._seen_data=1
         self._tcpsock=tcpsock

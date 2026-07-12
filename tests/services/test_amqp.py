@@ -55,7 +55,11 @@ def test_amqp_failure(srv, mocker, caplog):
         message="⚽ Notification message ⚽",
     )
 
-    mock_connection = Mock(**{"basic_publish.side_effect": Exception("something failed")})
+    mock_connection = Mock(
+        **{  # ty: ignore[invalid-argument-type, unused-ignore-comment, unused-ignore-comment]
+            "basic_publish.side_effect": Exception("something failed")
+        }
+    )
     mock_client = mocker.patch("puka.Client", side_effect=[mock_connection], create=True)
 
     outcome = module.plugin(srv, item)

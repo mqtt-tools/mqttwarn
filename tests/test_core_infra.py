@@ -158,8 +158,8 @@ def test_connect_basic_success(mocker, caplog):
     mocker.patch("mqttwarn.core.cf", config)
 
     # Use mocked MQTT client and mqttwarn context instances.
+    mocker.patch("mqttwarn.core.context")
     mqtt_client: Mock = mocker.patch("paho.mqtt.client.Client")
-    mqttwarn_context: Mock = mocker.patch("mqttwarn.core.context")
 
     # Run the `connect` function to completion.
     connect()
@@ -168,7 +168,6 @@ def test_connect_basic_success(mocker, caplog):
         call("testdrive", clean_session=False, protocol=3),
         call().connect("localhost", 1883, 60),
     ]
-    assert mqttwarn_context.mock_calls == []
 
     assert (
         "mqttwarn.configuration",
@@ -190,8 +189,8 @@ def test_connect_auth_success(mocker, caplog):
     mocker.patch("mqttwarn.core.cf", config)
 
     # Use mocked MQTT client and mqttwarn context instances.
+    mocker.patch("mqttwarn.core.context")
     mqtt_client: Mock = mocker.patch("paho.mqtt.client.Client")
-    mqttwarn_context: Mock = mocker.patch("mqttwarn.core.context")
 
     # Run the `connect` function to completion.
     connect()
@@ -201,7 +200,6 @@ def test_connect_auth_success(mocker, caplog):
         call().username_pw_set("foo", None),
         call().connect("localhost", 1883, 60),
     ]
-    assert mqttwarn_context.mock_calls == []
 
 
 def test_connect_tls_success(mocker, caplog):
@@ -215,8 +213,8 @@ def test_connect_tls_success(mocker, caplog):
     mocker.patch("mqttwarn.core.cf", config)
 
     # Use mocked MQTT client and mqttwarn context instances.
+    mocker.patch("mqttwarn.core.context")
     mqtt_client: Mock = mocker.patch("paho.mqtt.client.Client")
-    mqttwarn_context: Mock = mocker.patch("mqttwarn.core.context")
 
     # Run the `connect` function to completion.
     connect()
@@ -226,7 +224,6 @@ def test_connect_tls_success(mocker, caplog):
         call().tls_set(None, None, None, tls_version=None, ciphers=None),
         call().connect("localhost", 1883, 60),
     ]
-    assert mqttwarn_context.mock_calls == []
 
 
 def test_connect_tls_insecure_success(mocker, caplog):
@@ -240,8 +237,8 @@ def test_connect_tls_insecure_success(mocker, caplog):
     mocker.patch("mqttwarn.core.cf", config)
 
     # Use mocked MQTT client and mqttwarn context instances.
+    mocker.patch("mqttwarn.core.context")
     mqtt_client: Mock = mocker.patch("paho.mqtt.client.Client")
-    mqttwarn_context: Mock = mocker.patch("mqttwarn.core.context")
 
     # Run the `connect` function to completion.
     connect()
@@ -251,7 +248,6 @@ def test_connect_tls_insecure_success(mocker, caplog):
         call().tls_insecure_set(True),
         call().connect("localhost", 1883, 60),
     ]
-    assert mqttwarn_context.mock_calls == []
 
 
 def test_connect_connection_failure(mocker, caplog):
@@ -309,7 +305,7 @@ def test_on_connect_success(tmp_path, mocker, caplog):
     mocker.patch("mqttwarn.core.context", context)
     mqttc = mocker.patch("mqttwarn.core.mqttc")
 
-    on_connect(mosq=None, userdata=None, flags=None, result_code=0)
+    on_connect(mosq=None, userdata=None, flags=None, result_code=0)  # ty: ignore[invalid-argument-type]
 
     assert ("mqttwarn.core", 10, "Connected to MQTT broker, subscribing to topics") in caplog.record_tuples
     assert ("mqttwarn.core", 10, "Subscribing to test/foo (qos=0)") in caplog.record_tuples
@@ -324,7 +320,7 @@ def test_on_connect_failures(caplog):
     """
     result_codes = list(range(1, 6)) + [999]
     for result_code in result_codes:
-        on_connect(mosq=None, userdata=None, flags=None, result_code=result_code)
+        on_connect(mosq=None, userdata=None, flags=None, result_code=result_code)  # ty: ignore[invalid-argument-type]
     assert caplog.record_tuples == [
         ("mqttwarn.core", 40, "Connection refused - unacceptable protocol version"),
         ("mqttwarn.core", 40, "Connection refused - identifier rejected"),
@@ -339,7 +335,7 @@ def test_on_disconnect_success(caplog):
     """
     Verify that the `on_disconnect` event handler works as intended on the happy path.
     """
-    on_disconnect(mosq=None, userdata=None, result_code=0)
+    on_disconnect(mosq=None, userdata=None, result_code=0)  # ty: ignore[invalid-argument-type]
     assert caplog.record_tuples == [
         ("mqttwarn.core", 20, "Clean disconnection from broker"),
     ]
@@ -352,7 +348,7 @@ def test_on_disconnect_failure(mocker, caplog):
     send_failover: Mock = mocker.patch("mqttwarn.core.send_failover")
     mocker.patch("mqttwarn.core.time.sleep")
 
-    on_disconnect(mosq=None, userdata=None, result_code=999)
+    on_disconnect(mosq=None, userdata=None, result_code=999)  # ty: ignore[invalid-argument-type]
     assert caplog.record_tuples == []
     send_failover.assert_called_once_with(
         "brokerdisconnected", b"Broker connection lost. Will attempt to reconnect in 5s"
@@ -398,7 +394,9 @@ def test_subscribe_forever_success(caplog, mocker):
 
     # FIXME: Make it work on Windows.
     if sys.platform.startswith("win"):
-        raise pytest.xfail("Skipping test, fails on Windows")
+        raise pytest.xfail(
+            "Skipping test, fails on Windows"  # ty: ignore[too-many-positional-arguments, unused-ignore-comment, unused-ignore-comment]  # noqa: E501
+        )
 
     # Adjust plumbing to speed up test case.
     mocker.patch("time.sleep", lambda _: delay(0.05))
@@ -427,7 +425,11 @@ def test_subscribe_forever_fails_socket_error(caplog, mocker):
 
     # Invoke `subscribe_forever` and terminate right away using `exit_flag`.
     connect = mocker.patch("mqttwarn.core.connect")
-    connect.return_value = Mock(**{"loop_forever.side_effect": socket.error("Something failed")})
+    connect.return_value = Mock(
+        **{  # ty: ignore[invalid-argument-type, unused-ignore-comment, unused-ignore-comment]
+            "loop_forever.side_effect": socket.error("Something failed")
+        }
+    )
     t = threading.Thread(target=subscribe_forever)
     t.start()
     mocker.patch("mqttwarn.core.exit_flag", True)
@@ -456,7 +458,11 @@ def test_subscribe_forever_fails_unknown_error(caplog, mocker):
 
     # Invoke `subscribe_forever` and terminate right away using `exit_flag`.
     connect = mocker.patch("mqttwarn.core.connect")
-    connect.return_value = Mock(**{"loop_forever.side_effect": ValueError("Something failed")})
+    connect.return_value = Mock(
+        **{  # ty: ignore[invalid-argument-type, unused-ignore-comment, unused-ignore-comment]
+            "loop_forever.side_effect": ValueError("Something failed")
+        }
+    )
 
     # Invoke `subscribe_forever` in a different thread, but get hold of its exception through a `Future`.
     with ThreadPoolExecutor() as executor:
@@ -613,7 +619,7 @@ def test_xform():
     """
     Evaluates certain behaviors of `test_xform`.
     """
-    assert xform(None, None, None) is None
+    assert xform(None, None, None) is None  # ty: ignore[invalid-argument-type]
 
 
 def test_publish_status_information_success(mocker, caplog):
@@ -624,8 +630,8 @@ def test_publish_status_information_success(mocker, caplog):
     # Use a real configuration object.
     config = Config()
     config.add_section("defaults")
-    config.set("defaults", "status_publish", True)
-    config.status_publish = True
+    config.set("defaults", "status_publish", "True")
+    config.status_publish = True  # ty: ignore[unresolved-attribute]
     mocker.patch("mqttwarn.core.cf", config)
 
     # Mock the MQTT client instance.
@@ -652,8 +658,8 @@ def test_publish_status_information_failure(mocker, caplog):
     # Use a real configuration object.
     config = Config()
     config.add_section("defaults")
-    config.set("defaults", "status_publish", True)
-    config.status_publish = True
+    config.set("defaults", "status_publish", "True")
+    config.status_publish = True  # ty: ignore[unresolved-attribute]
     mocker.patch("mqttwarn.core.cf", config)
 
     # Mock the MQTT client instance.

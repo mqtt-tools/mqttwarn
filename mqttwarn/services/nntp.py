@@ -47,7 +47,7 @@ def plugin(srv, item):
         srv.logging.debug(nntp.getwelcome())
         nntp.set_debuglevel(0)
 
-        nntp.post(msg_file)
+        nntp.post(msg_file.read().encode("utf-8"))
         nntp.quit()
     except Exception as e:
         srv.logging.warn("Cannot post to %s newsgroup: %s" % (newsgroup, e))

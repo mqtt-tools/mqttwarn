@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2023 The mqttwarn developers
+from pathlib import Path
+
 try:
-    from importlib.resources import files as resource_files  # type: ignore[attr-defined]
+    from importlib.resources import files as resource_files
 except ImportError:
-    from importlib_resources import files as resource_files  # type: ignore[no-redef]
+    from importlib_resources import files as resource_files  # ty: ignore[unresolved-import]
 
 import logging
 import os
@@ -13,7 +15,7 @@ import threading
 import time
 import typing as t
 from builtins import chr, str
-from datetime import datetime
+from datetime import datetime, timezone
 from queue import Queue
 
 import paho.mqtt.client as paho
@@ -40,7 +42,7 @@ from mqttwarn.topic import TopicTimeout
 try:
     import json
 except ImportError:  # pragma: nocover
-    import simplejson as json  # type: ignore
+    import simplejson as json
 
 
 HAVE_JINJA = True
@@ -60,15 +62,15 @@ SCRIPTNAME = "mqttwarn"
 
 # Global runtime context object
 context: RuntimeContext
-context = None  # type: ignore[assignment]
+context = None  # ty: ignore[invalid-assignment]
 
 # Global configuration object
 cf: mqttwarn.configuration.Config
-cf = None  # type: ignore[assignment]
+cf = None  # ty: ignore[invalid-assignment]
 
 # Global handle to MQTT client
 mqttc: paho.Client
-mqttc = None  # type: ignore[assignment]
+mqttc = None  # ty: ignore[invalid-assignment]
 
 # Initialize processor queue
 q_in: Queue = Queue(maxsize=0)
@@ -84,7 +86,7 @@ topic_timeout_list: t.Dict[str, TopicTimeout] = {}
 service_plugins: t.Dict[str, t.Dict[str, t.Any]] = dict()
 
 
-def make_service(mqttc: paho.Client = None, name: t.Optional[str] = None) -> Service:
+def make_service(name: str, mqttc: t.Optional[paho.Client] = None) -> Service:
     """
     Service object factory.
     Prepare service object for plugin.
@@ -147,8 +149,8 @@ def on_connect(mosq: MqttClient, userdata: t.Dict[str, str], flags: t.Dict[str, 
             if topic_timeout > 0:
                 logger.debug("Setting up timeout thread for %s (timeout=%d)" % (topic, topic_timeout))
                 topic_timeout_list[topic] = TopicTimeout(
-                    timeout=topic_timeout,
                     topic=topic,
+                    timeout=topic_timeout,
                     section=section,
                     notify_only_on_timeout=notify_only_on_timeout,
                     on_timeout=send_to_targets,
@@ -187,10 +189,11 @@ def on_disconnect(mosq: MqttClient, userdata: t.Dict[str, str], result_code: int
         time.sleep(5)
 
 
-def on_message(mosq: MqttClient, userdata: t.Dict[str, str], msg: MQTTMessage):
+def on_message(mosq: MqttClient, userdata: t.Optional[t.Dict[str, str]], msg: MQTTMessage):
     """
     Dispatch message received from the MQTT broker to mqttwarn's handler machinery.
     """
+    userdata = userdata or {}
     try:
         return on_message_handler(mosq, userdata, msg)
     except:
@@ -264,9 +267,11 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
         pass
     dispatcher_dict = cf.getdict(section, "targets")
 
+    targetlist: t.List[str]
+
     # `targets` is a function symbol.
     if function_name is not None:
-        targetlist = context.get_topic_targets(section, topic, data)
+        targetlist = t.cast(t.List[str], context.get_topic_targets(section, topic, data))
 
         # Make sure the function returned a target _list_ of elements.
         if not isinstance(targetlist, list):
@@ -299,7 +304,7 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
         for match_topic, targets in sorted_dispatcher:
             if paho.topic_matches_sub(match_topic, topic):
                 # hocus pocus, let targets become a list
-                targetlist = targets if isinstance(targets, list) else [targets]
+                targetlist = t.cast(t.List[str], targets if isinstance(targets, list) else [targets])
                 logger.debug("Most specific match %s dispatched to %s" % (match_topic, targets))
                 # first most specific topic matches then stops processing
                 break
@@ -309,7 +314,7 @@ def send_to_targets(section: str, topic: str, payload: t.AnyStr):
             return
 
     else:
-        targetlist = cf.getlist(section, "targets")
+        targetlist = t.cast(t.List[str], cf.getlist(section, "targets"))
 
         # Make sure targets are actually a _list_ of elements.
         # TODO: Not tested yet. How can this code be reached?
@@ -385,7 +390,7 @@ def builtin_transform_data(topic: str, payload: t.Union[str, bytes]) -> TdataTyp
     tdata["topic"] = topic
     tdata["payload"] = payload
     tdata["_dtepoch"] = int(time.time())  # 1392628581
-    tdata["_dtiso"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")  # 2014-02-17T10:38:43.910691Z
+    tdata["_dtiso"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")  # 2014-02-17T10:38:43.910691Z
     tdata["_ltiso"] = datetime.now().isoformat()  # local time in iso format
     tdata["_dthhmm"] = dt.strftime("%H:%M")  # 10:16
     tdata["_dthhmmss"] = dt.strftime("%H:%M:%S")  # hhmmss=10:16:21
@@ -410,6 +415,7 @@ def xform(function: str, orig_value: t.Any, transform_data: TdataType) -> t.Unio
         try:
             function_name = sanitize_function_name(function)
             try:
+                assert context.invoker
                 res = context.invoker.datamap(function_name, transform_data)
                 return res
             except:
@@ -544,7 +550,9 @@ def process_job(job, worker_id=None):
         item["message"] = xform(context.get_config(section, "format"), job.payload, transform_data)
 
         try:
-            item["priority"] = int(xform(context.get_config(section, "priority"), 0, transform_data))
+            item["priority"] = int(
+                xform(context.get_config(section, "priority"), 0, transform_data)  # ty: ignore[invalid-argument-type]
+            )
         except:
             item["priority"] = 0
             logger.exception("Failed to determine the priority, defaulting to zero")
@@ -562,7 +570,8 @@ def process_job(job, worker_id=None):
                 except:
                     logger.exception(f"Rendering template failed: {template}")
 
-        if item.get("message") is not None and len(item.get("message")) > 0:
+        msg = item.get("message")
+        if msg is not None and len(t.cast(str, msg)) > 0:
             st = Struct(**item)
             notified = False
             logger.info("Invoking service plugin for `%s'" % service)
@@ -600,12 +609,14 @@ def load_services(services):
         module = cf.g("config:" + service, "module", service)
 
         # Load external service from file.
-        modulefile_candidates = []
+        modulefile_candidates: t.List[Path] = []
         if module.endswith(".py"):
+            if cf.configuration_path is None:
+                raise RuntimeError("cf.configuration_path is not defined")
             # Add two candidates: a) Use the file as given and b) treat the file as relative to
             # the directory of the configuration file. That retains backward compatibility.
             modulefile_candidates.append(module)
-            modulefile_candidates.append(os.path.join(cf.configuration_path, module))
+            modulefile_candidates.append(Path(cf.configuration_path) / module)
 
         # Load external service with module specification.
         elif "." in module:
@@ -624,7 +635,7 @@ def load_services(services):
                 module = "http_urllib"
             logger.debug('Trying to load built-in service "{}" from "{}"'.format(service, module))
             service_filename = module + ".py"
-            service_filepath = resource_files("mqttwarn.services") / service_filename
+            service_filepath = t.cast(Path, resource_files("mqttwarn.services") / service_filename)
             modulefile_candidates = [service_filepath]
 
         success = False
@@ -698,6 +709,8 @@ def connect():
         sys.exit(2)
 
     # Update our runtime context (used by functions etc) now we have a connected MQTT client
+    if not context.invoker or not context.invoker.srv:
+        raise RuntimeError("Cannot connect to MQTT broker")
     context.invoker.srv.mqttc = mqttc
 
     # Publish status information to `mqttwarn/$SYS` topic.
@@ -747,7 +760,7 @@ def publish_status_information():
       mqttwarn/$SYS/python/version 3.9.7
 
     """
-    if cf.has_option("defaults", "status_publish") and cf.status_publish:
+    if cf.has_option("defaults", "status_publish") and cf.status_publish:  # ty: ignore[unresolved-attribute]
         status_topic = cf.g("defaults", "status_topic", "mqttwarn/$SYS")
         logger.info(f"Publishing status information to {status_topic}")
 
@@ -788,7 +801,7 @@ def start_workers():
                 continue
 
             cron_options = parse_cron_options(val)
-            interval = cron_options["interval"]
+            interval = float(cron_options["interval"])
             logger.info(
                 "Scheduling periodic task '{name}' to run each "
                 "{interval} seconds via [cron] section".format(name=name, interval=interval)
@@ -829,18 +842,18 @@ def cleanup(signum=None, frame=None):
     sys.exit(signum)
 
 
-def bootstrap(config=None, scriptname=None):
+def bootstrap(config, scriptname=None):
     # FIXME: Remove global variables
     global context, cf, SCRIPTNAME
     # NOTE: this is called before we connect to the MQTT broker, so mqttc is not initialised yet
-    invoker = FunctionInvoker(config=config, srv=make_service(mqttc=None, name="mqttwarn.context"))
+    invoker = FunctionInvoker(config=config, srv=make_service(name="mqttwarn.context"))
     context = RuntimeContext(config=config, invoker=invoker)
     cf = config
     if scriptname is not None:
         SCRIPTNAME = scriptname
 
 
-def run_plugin(config=None, name=None, options=None, data=None, message=None):
+def run_plugin(config, name: str, options=None, data=None, message=None):
     """
     Run service plugins directly without the
     dispatching and transformation machinery.
@@ -865,17 +878,17 @@ def run_plugin(config=None, name=None, options=None, data=None, message=None):
         service_logger_name = name
     else:
         service_logger_name = "mqttwarn.services.{}".format(name)
-    srv = make_service(mqttc=None, name=service_logger_name)
+    srv = make_service(name=service_logger_name)
 
     # Build a mimikry item instance for feeding to the service plugin
     item = Struct(**options or {})
     # TODO: Read configuration optionally from data.
-    item.config = config.config("config:" + name)
-    item.service = srv
-    item.target = "mqttwarn"
-    item.data = data or {}
+    item.config = config.config("config:" + name)  # ty: ignore[unresolved-attribute]
+    item.service = srv  # ty: ignore[unresolved-attribute]
+    item.target = "mqttwarn"  # ty: ignore[unresolved-attribute]
+    item.data = data or {}  # ty: ignore[unresolved-attribute]
     if not hasattr(item, "message"):
-        item.message = message
+        item.message = message  # ty: ignore[invalid-assignment]
 
     # Launch plugin
     module = service_plugins[name]["module"]

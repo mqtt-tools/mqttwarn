@@ -17,7 +17,7 @@ def conf(ini_file, params):
     try:
         c = configparser.ConfigParser()
         f = open(ini_file, 'r')
-        c.readfp(f)
+        c.read_file(f)
         f.close()
     except Exception as e:
         raise

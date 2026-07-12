@@ -5,7 +5,7 @@ __author__ = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import MySQLdb
+import MySQLdb  # ty: ignore[unresolved-import, unused-ignore-comment, unused-ignore-comment]
 
 
 # https://mail.python.org/pipermail/tutor/2010-December/080701.html

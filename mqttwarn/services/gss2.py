@@ -68,7 +68,7 @@ def plugin(srv, item):
                     (client_secrets_filename, oauth2_code, e))
                 return False
             except oauth2client.client.FlowExchangeError as e:
-                if 'invalid_grantCode' in e.message:
+                if 'invalid_grantCode' in str(e):
                     srv.logging.error("It seems you need to start over: Clear the "
                         "'oauth2_code'-field and restart mqttwarn.")
                     return False

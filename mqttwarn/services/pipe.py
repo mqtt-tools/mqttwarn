@@ -29,7 +29,8 @@ def plugin(srv, item):
         return False
 
     try:
-        proc.stdin.write(text.encode('utf-8'))
+        if proc.stdin:
+            proc.stdin.write(text.encode('utf-8'))
     except IOError as e:
         srv.logging.warn("Cannot write to pipe: errno %d" % (e.errno))
         return False
@@ -37,6 +38,7 @@ def plugin(srv, item):
         srv.logging.warn("Cannot write to pipe: %s" % e)
         return False
 
-    proc.stdin.close()
+    if proc.stdin:
+        proc.stdin.close()
     proc.wait()
     return True

@@ -55,7 +55,7 @@ def test_job_ordering_by_priority():
 def test_struct():
     data = {"hello": "world"}
     struct = Struct(**data)
-    assert struct.hello == "world"
+    assert struct.hello == "world"  # ty: ignore[unresolved-attribute]
     assert struct.get("hello") == "world"
     assert struct.get("unknown", default=42) == 42
     assert repr(struct) == "<hello: 'world'>"

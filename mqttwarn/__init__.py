@@ -8,6 +8,6 @@ __license__ = "Eclipse Public License - v 2.0 (http://www.eclipse.org/legal/epl-
 try:
     from importlib.metadata import version
 except ImportError:  # pragma: nocover
-    from importlib_metadata import version  # type: ignore[no-redef]
+    from importlib_metadata import version  # ty: ignore[unresolved-import]
 
 __version__ = version("mqttwarn")

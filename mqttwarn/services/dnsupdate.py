@@ -9,6 +9,7 @@ __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-
 
 import dns.update
 import dns.query
+import dns.rcode
 import dns.tsigkeyring
 
 

@@ -65,17 +65,10 @@ extend-exclude = [
   "mqttwarn/vendor",
 ]
 
-[tool.mypy]
-ignore_missing_imports = true
-exclude = [
-  "tests/etc/functions_bad.py",
-]
-files = [
-  "examples/**/*.py",
-  "mqttwarn/**/*.py",
-  "tests/acme/**/*.py",
-  "tests/fixtures/**/*.py",
-  "tests/services/**/*.py",
+[tool.ty]
+src.exclude = [
+  "tests/etc/functions_bad.py",  # Invalid syntax.
+  "mqttwarn/services/syslog.py",  # Module `syslog` has no member `LOG_KERN` on Windows.
 ]
 
 
@@ -121,7 +114,7 @@ format = [
 lint = [
   { cmd = "ruff ." },
   { cmd = "black --check ." },
-  { cmd = "mypy --install-types --non-interactive" },
+  { cmd = "ty check" },
 ]
 test = [
   { cmd="pytest" },

@@ -238,7 +238,7 @@ def obtain_ntfy_fields(item: ProcessorItem) -> DataDict:
     fields_config = item.config and project(item.config, NTFY_FIELD_NAMES) or {}
     fields: DataDict = OrderedDict()
     fields.update(fields_config)
-    fields.update(fields_addrs)
+    fields.update(fields_addrs)  # ty: ignore[no-matching-overload]
     fields.update(fields_data)
 
     # Run an interpolation step also on the outbound ntfy option

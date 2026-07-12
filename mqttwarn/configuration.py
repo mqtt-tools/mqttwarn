@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # (c) 2014-2023 The mqttwarn developers
 import ast
-import codecs
 import logging
 import os
 import re
 import sys
 import typing as t
 from configparser import Interpolation, NoOptionError, NoSectionError, RawConfigParser
+from pathlib import Path
 
 from mqttwarn.util import load_functions
 
@@ -62,7 +62,7 @@ def expand_vars(input: str, sources: t.Dict[str, t.Callable[[str], str]]) -> str
 class VariableInterpolation(Interpolation):
     def __init__(self, configuration_path):
         self.configuration_path = configuration_path
-        self.sources = {
+        self.sources: t.Dict[str, t.Callable[[str], str]] = {
             "ENV": self.get_env_variable,
             "FILE": self.get_file_contents,
         }
@@ -94,7 +94,7 @@ class Config(RawConfigParser):
         "NONE": None,
     }
 
-    def __init__(self, configuration_file: t.Optional[str] = None, defaults: t.Optional[t.Dict] = None):
+    def __init__(self, configuration_file: t.Optional[t.Union[str, Path]] = None, defaults: t.Optional[t.Dict] = None):
         defaults = defaults or {}
 
         self.configuration_path = None
@@ -102,7 +102,7 @@ class Config(RawConfigParser):
         configuration_path = os.path.dirname(configuration_file) if configuration_file else None
         RawConfigParser.__init__(self, interpolation=VariableInterpolation(configuration_path))
         if configuration_file is not None:
-            f = codecs.open(configuration_file, "r", encoding="utf-8")
+            f = open(configuration_file, "r", encoding="utf-8")
             self.read_file(f)
             f.close()
 
@@ -116,6 +116,7 @@ class Config(RawConfigParser):
         self.clientid = None
         self.lwt = None
         self.lwt_alive = None
+        self.lwt_dead = None
         self.skipretained = False
         self.cleansession = False
         self.protocol = 3
@@ -249,11 +250,12 @@ class Config(RawConfigParser):
                 raise KeyError(f"Configuration section does not exist: {section}")
 
 
-def load_configuration(configfile: t.Optional[str] = None, name: str = "mqttwarn") -> Config:
+def load_configuration(configfile: t.Optional[t.Union[str, Path]] = None, name: str = "mqttwarn") -> Config:
     if configfile is None:
         configfile = str(os.getenv(name.upper() + "INI", name + ".ini"))
 
-    if not os.path.exists(configfile):
+    configfile = Path(configfile)
+    if not configfile.exists():
         raise FileNotFoundError('Configuration file "{}" does not exist'.format(configfile))
 
     # TODO: There should be a factory method which creates a `Config` instance,

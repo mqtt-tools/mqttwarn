@@ -16,9 +16,9 @@ try:
     from urllib.request import urlopen, Request
     from urllib.error import HTTPError
 except ImportError:
-    from urlparse import urlparse  # type: ignore[no-redef]
-    from urllib import urlencode, urljoin  # type: ignore[no-redef,attr-defined]
-    from urllib2 import urlopen, Request, HTTPError  # type: ignore[no-redef]
+    from urlparse import urlparse  # ty: ignore[unresolved-import]
+    from urllib import urlencode, urljoin  # ty: ignore[unresolved-import]
+    from urllib2 import urlopen, Request, HTTPError  # ty: ignore[unresolved-import]
 
 import typing as t
 
@@ -96,7 +96,7 @@ class PushsaferParameterEncoder:
     def __init__(self, item: ProcessorItem):
         self.item = item
         self.private_key: t.Optional[str] = None
-        self.params: t.Dict[str, str] = {}
+        self.params: t.Dict[str, t.Any] = {}
 
     def encode(self):
         addrs = self.item.addrs
@@ -129,7 +129,7 @@ class PushsaferParameterEncoder:
         14 (if present) is the Pushsafer message will be repeated after specified time delay when not confirmed
         """
 
-        addrs = self.item.addrs
+        addrs = t.cast(t.List, self.item.addrs)
         title = self.item.title
 
         # Decode Private or Alias Key.
@@ -192,7 +192,7 @@ class PushsaferParameterEncoder:
         New-style configuration layout with named parameters for Pushsafer.
         """
 
-        addrs = self.item.addrs
+        addrs = t.cast(t.Dict, self.item.addrs)
         title = self.item.title
 
         # Decode Private or Alias Key.

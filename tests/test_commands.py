@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # (c) 2018-2022 The mqttwarn developers
-import os
+import subprocess
 import sys
 from unittest import mock
 from unittest.mock import Mock, patch
@@ -81,10 +81,10 @@ def test_command_dump_config(mqttwarn_bin, capfd):
     Verify that `mqttwarn make-config` works as expected.
     """
 
-    command = f"{mqttwarn_bin} make-config"
+    command = [mqttwarn_bin, "make-config"]
     stdout, stderr = invoke_command(capfd, command)
 
-    os.system(command)
+    subprocess.check_call(command)
     stdout = capfd.readouterr().out
 
     assert 'mqttwarn example configuration file "mqttwarn.ini"' in stdout, stdout
@@ -95,11 +95,11 @@ def test_command_dump_udf(mqttwarn_bin, capfd):
     Verify that `mqttwarn make-udf` works as expected.
     """
 
-    command = f"{mqttwarn_bin} make-udf"
+    command = [mqttwarn_bin, "make-udf"]
     stdout, stderr = invoke_command(capfd, command)
     assert "# mqttwarn example function extensions" in stdout, stdout
 
-    os.system(command)
+    subprocess.check_call(command)
     stdout = capfd.readouterr().out
 
     assert "# mqttwarn example function extensions" in stdout, stdout
@@ -112,7 +112,9 @@ def test_command_standalone_plugin(mqttwarn_bin, capfd, caplog):
 
     # FIXME: Make it work on Windows.
     if sys.platform.startswith("win"):
-        raise pytest.xfail("Skipping test, fails on Windows")
+        raise pytest.xfail(
+            "Skipping test, fails on Windows"  # ty: ignore[too-many-positional-arguments, unused-ignore-comment, unused-ignore-comment]  # noqa: E501
+        )
 
     command = [
         mqttwarn_bin,
@@ -136,7 +138,9 @@ def test_command_standalone_plugin_with_configfile(mqttwarn_bin, tmp_path, capfd
 
     # FIXME: Make it work on Windows.
     if sys.platform.startswith("win"):
-        raise pytest.xfail("Skipping test, fails on Windows")
+        raise pytest.xfail(
+            "Skipping test, fails on Windows"  # ty: ignore[too-many-positional-arguments, unused-ignore-comment, unused-ignore-comment]  # noqa: E501
+        )
 
     ini_file = tmp_path.joinpath("empty.ini")
     ini_file.touch()
@@ -164,7 +168,7 @@ def test_command_dump_config_real(mqttwarn_bin, tmp_path, capfd):
     ini_file = tmp_path.joinpath("testdrive.ini")
 
     command = f"{mqttwarn_bin} make-config > {ini_file}"
-    exitcode = os.system(command) % 255
+    exitcode = subprocess.run(command, shell=True).returncode
     assert exitcode == 0, f"Invoking command '{command}' failed"
 
     ini_content = open(ini_file, encoding="utf-8").read()

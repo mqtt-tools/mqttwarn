@@ -54,7 +54,13 @@ def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv: Servi
 
     # Make the `send_sync` method fail.
     notifier_mock: Mock = mocker.patch.object(
-        module, "notify", Mock(**{"send_sync.side_effect": Exception("Something failed")})
+        module,
+        "notify",
+        Mock(
+            **{  # ty: ignore[invalid-argument-type, unused-ignore-comment, unused-ignore-comment]
+                "send_sync.side_effect": Exception("Something failed")
+            }
+        ),
     )
 
     outcome = module.plugin(srv, item)
