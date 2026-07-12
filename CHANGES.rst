@@ -6,6 +6,9 @@ mqttwarn changelog
 in progress
 ===========
 
+2026-07-13 0.36.1
+=================
+
 - Dependencies: Added missing module ``simplejson``
 - Dependencies: Stopped skipping ``mysql`` package in ``all`` extra
 - Modernized Desktop-Notifier. Thanks, @ignorantbliss.
