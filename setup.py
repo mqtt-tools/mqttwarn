@@ -184,7 +184,7 @@ setup(
     name="mqttwarn",
     description="mqttwarn - subscribe to MQTT topics and notify pluggable services",
     long_description=README,
-    license="EPL 2.0",
+    license="EPL-2.0",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
@@ -196,7 +196,6 @@ setup(
         "Intended Audience :: Science/Research",
         "Intended Audience :: System Administrators",
         "Intended Audience :: Telecommunications Industry",
-        "License :: OSI Approved :: Eclipse Public License 2.0 (EPL-2.0)",
         "Operating System :: POSIX",
         "Operating System :: Unix",
         "Operating System :: MacOS",
