@@ -6,6 +6,9 @@ mqttwarn changelog
 in progress
 ===========
 
+2026-07-12 0.36.0
+=================
+
 - CI: Validated on Python 3.14
 - OCI: Updated to Python 3.14
 - Added list shorthand definition for params dict of quoted fields
