@@ -4,7 +4,7 @@
 #
 #   docker build --tag=local/mqttwarn-full --file=Dockerfile.full .
 #
-FROM python:3.11-slim-bullseye
+FROM python:3.13-slim-bullseye
 
 
 # =====

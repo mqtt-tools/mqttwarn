@@ -7,6 +7,7 @@ in progress
 ===========
 
 - CI: Validated on Python 3.13
+- OCI: Updated to Python 3.13
 
 2023-10-15 0.35.0
 =================
