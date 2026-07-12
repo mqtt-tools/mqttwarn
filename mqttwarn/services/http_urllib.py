@@ -23,7 +23,9 @@ except ImportError:
 
 
 def plugin(srv, item):
-    """ addrs: (method, url, dict(params), list(username, password), json) """
+    """ addrs: (method, url, dict(params), list(username, password), json) 
+        or (shorthand for quoted fields)
+        addrs: (method, url, list(param_names), list(username, password), json)  """
 
     srv.logging.debug("*** MODULE=%s: service=%s, target=%s", __file__, item.service, item.target)
 
@@ -53,13 +55,36 @@ def plugin(srv, item):
         pass
 
     if params is not None:
+        
+        # shorthand [ 'param1' , '@param2', '?param3' ] 
+        # for { 'param1': '@param1', 'param2': '@param2', 'param3': '?param3' }
+        if isinstance(params, list):
+            # create dict from list and replace params
+            newparams = {}
+            for key in params:
+                if key.startswith('@') or key.startswith('?'):
+                    newparams[key[1:]] = key
+                else:
+                    newparams[key] = '@' + key
+            params = newparams
+            
         for key in list(params.keys()):
 
             # { 'q' : '@message' }
             # Quoted field, starts with '@'. Do not use .format, instead grab
             # the item's [message] and inject as parameter value.
+            # new { 'x' : '?param' }
+            # Optional quoted field, add to query string only if it exists
+            # in item's data and is not empty 
             if params[key].startswith('@'):         # "@message"
-                params[key] = item.get(params[key][1:], "NOP")
+                params[key] = item.data.get(params[key][1:], "NOP")
+
+            elif params[key].startswith('?'):
+                myitem = item.data.get(params[key][1:], None)
+                if myitem is None:
+                    params.pop(key,None)
+                else:
+                    params[key] = myitem
 
             else:
                 try:
