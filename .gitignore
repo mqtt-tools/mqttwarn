@@ -4,6 +4,7 @@
 /dist*
 /docs/_build
 /build
+/var
 *.pyc
 *.egg-info
 *.sln
@@ -19,4 +20,5 @@ udf.py
 .coverage*
 coverage.xml
 .tox
+.mypy_cache
 .ruff_cache
