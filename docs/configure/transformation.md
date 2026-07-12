@@ -269,6 +269,9 @@ Those [topic options](#topic-options) *do **not** accept* a user-defined functio
 - `topic`
 - `qos`
 
+Functions get invoked once per target. If idempotency of a custom function is
+not guaranteed (function(msg) returns always the same result), the message
+might not get dispatched to every target the same way.
 
 ### Getting started
 
