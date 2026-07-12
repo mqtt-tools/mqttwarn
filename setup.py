@@ -127,7 +127,7 @@ extras_all = []
 for extra, packages in extras.items():
     # FIXME: Skip specific packages having build issues.
     # https://github.com/commx/python-rrdtool/issues/36
-    if extra in ["mysql", "rrdtool"]:
+    if extra in ["rrdtool"]:
         continue
 
     # FIXME: `mysqlclient` needs MySQL or MariaDB client libraries.
