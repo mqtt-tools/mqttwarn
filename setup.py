@@ -20,6 +20,7 @@ requires = [
     "jinja2<4",
     "paho-mqtt<2",
     "requests<3",
+    "simplejson<5",
     "six<2",
 ]
 
