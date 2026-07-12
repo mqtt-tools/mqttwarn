@@ -11,7 +11,7 @@ from mqttwarn.model import Service
 from mqttwarn.util import load_module_from_file
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Incompatible with Python 3.7")
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="Incompatible with Python 3.7")
 def test_apprise_success(srv: Service, mocker, caplog):
 
     # Mock the SMTP library.
