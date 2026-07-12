@@ -9,7 +9,6 @@ from mqttwarn.util import load_module_from_file
 
 @mock.patch("asterisk.manager.Manager", create=True)
 def test_asterisk_success(asterisk_mock, srv, caplog):
-
     asterisk_mock.return_value = Mock(**{"login.return_value": 42, "originate.return_value": 42})
 
     module = load_module_from_file("mqttwarn/services/asterisk.py")
@@ -66,7 +65,6 @@ class ManagerException(Exception):
 @mock.patch("asterisk.manager.Manager", create=True)
 @mock.patch("asterisk.manager.ManagerSocketException", ManagerSocketException, create=True)
 def test_asterisk_failure_no_connection(asterisk_mock, srv, caplog):
-
     asterisk_mock.return_value = Mock(**{"connect.side_effect": ManagerSocketException("something failed")})
 
     module = load_module_from_file("mqttwarn/services/asterisk.py")
@@ -101,7 +99,6 @@ def test_asterisk_failure_no_connection(asterisk_mock, srv, caplog):
 @mock.patch("asterisk.manager.ManagerSocketException", ManagerSocketException, create=True)
 @mock.patch("asterisk.manager.ManagerAuthException", ManagerAuthException, create=True)
 def test_asterisk_failure_login_invalid(asterisk_mock, srv, caplog):
-
     asterisk_mock.return_value = Mock(**{"login.side_effect": ManagerAuthException("something failed")})
 
     module = load_module_from_file("mqttwarn/services/asterisk.py")
@@ -138,7 +135,6 @@ def test_asterisk_failure_login_invalid(asterisk_mock, srv, caplog):
 @mock.patch("asterisk.manager.ManagerAuthException", ManagerAuthException, create=True)
 @mock.patch("asterisk.manager.ManagerException", ManagerException, create=True)
 def test_asterisk_failure_originate_croaks(asterisk_mock, srv, caplog):
-
     attrs = {
         "login.return_value": 42,
         "originate.side_effect": ManagerException("something failed"),
@@ -187,7 +183,6 @@ def test_asterisk_failure_originate_croaks(asterisk_mock, srv, caplog):
 @mock.patch("asterisk.manager.ManagerAuthException", ManagerAuthException, create=True)
 @mock.patch("asterisk.manager.ManagerException", ManagerException, create=True)
 def test_asterisk_success_with_broken_close(asterisk_mock, srv, caplog):
-
     attrs = {
         "login.return_value": 42,
         "originate.return_value": 42,

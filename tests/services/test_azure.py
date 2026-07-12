@@ -8,7 +8,6 @@ from mqttwarn.util import load_module_from_file
 
 
 def test_azure_iot_success_string(srv, mocker, caplog):
-
     item = Item(
         config={"iothubname": "acmehub"},
         target="test",
@@ -52,7 +51,6 @@ def test_azure_iot_success_string(srv, mocker, caplog):
 
 
 def test_azure_iot_success_bytes(srv, mocker, caplog):
-
     item = Item(
         config={"iothubname": "acmehub"},
         target="test",
@@ -96,7 +94,6 @@ def test_azure_iot_success_bytes(srv, mocker, caplog):
 
 
 def test_azure_iot_failure_wrong_qos(srv, caplog):
-
     item = Item(
         config={"iothubname": "acmehub", "qos": 999},
         target="test",
@@ -113,7 +110,6 @@ def test_azure_iot_failure_wrong_qos(srv, caplog):
 
 
 def test_azure_iot_failure_invalid_message(srv, mocker, caplog):
-
     item = Item(
         config={"iothubname": "acmehub"},
         target="test",
@@ -131,7 +127,6 @@ def test_azure_iot_failure_invalid_message(srv, mocker, caplog):
 
 
 def test_azure_iot_failure_mqtt_publish(srv, mocker, caplog):
-
     item = Item(
         config={"iothubname": "acmehub"},
         target="test",

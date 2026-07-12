@@ -88,7 +88,6 @@ class VariableInterpolation(Interpolation):
 
 
 class Config(RawConfigParser):
-
     specials: t.Dict[str, t.Union[bool, None]] = {
         "TRUE": True,
         "FALSE": False,
@@ -96,7 +95,6 @@ class Config(RawConfigParser):
     }
 
     def __init__(self, configuration_file: t.Optional[str] = None, defaults: t.Optional[t.Dict] = None):
-
         defaults = defaults or {}
 
         self.configuration_path = None
@@ -161,7 +159,6 @@ class Config(RawConfigParser):
         self.filteredmessagesloglevelnumber = self.level2number(self.filteredmessagesloglevel)
 
         if self.functions is not None and self.functions.strip() != "":
-
             logger.info("Loading user-defined functions from %s" % self.functions)
 
             # Load function file as given.
@@ -175,7 +172,6 @@ class Config(RawConfigParser):
             self.functions = load_functions(functions_file)
 
     def level2number(self, level: str) -> int:
-
         levels = {
             "CRITICAL": 50,
             "DEBUG": 10,
@@ -254,7 +250,6 @@ class Config(RawConfigParser):
 
 
 def load_configuration(configfile: t.Optional[str] = None, name: str = "mqttwarn") -> Config:
-
     if configfile is None:
         configfile = str(os.getenv(name.upper() + "INI", name + ".ini"))
 

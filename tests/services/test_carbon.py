@@ -8,7 +8,6 @@ from mqttwarn.util import load_module_from_file
 
 
 def test_carbon_success_metric_value_timestamp(mocker, srv, caplog):
-
     item = Item(
         target="test",
         addrs=["localhost", 2003],
@@ -33,7 +32,6 @@ def test_carbon_success_metric_value_timestamp(mocker, srv, caplog):
 
 
 def test_carbon_success_metric_value(mocker, srv, caplog):
-
     item = Item(target="test", addrs=["localhost", 2003], message="foo 42.42", data={})
 
     module = load_module_from_file("mqttwarn/services/carbon.py")
@@ -53,7 +51,6 @@ def test_carbon_success_metric_value(mocker, srv, caplog):
 
 
 def test_carbon_success_value(mocker, srv, caplog):
-
     item = Item(target="test", addrs=["localhost", 2003], message="42.42", data={})
 
     module = load_module_from_file("mqttwarn/services/carbon.py")
@@ -73,7 +70,6 @@ def test_carbon_success_value(mocker, srv, caplog):
 
 
 def test_carbon_success_value_metric_from_topic(mocker, srv, caplog):
-
     item = Item(
         target="test",
         addrs=["localhost", 2003],
@@ -98,7 +94,6 @@ def test_carbon_success_value_metric_from_topic(mocker, srv, caplog):
 
 
 def test_carbon_success_value_metric_from_topic_with_leading_slash(mocker, srv, caplog):
-
     item = Item(
         target="test",
         addrs=["localhost", 2003],
@@ -123,7 +118,6 @@ def test_carbon_success_value_metric_from_topic_with_leading_slash(mocker, srv, 
 
 
 def test_carbon_failure_invalid_configuration(srv, caplog):
-
     item = Item(target="test", addrs=["172.16.153.110", "foobar"])
 
     module = load_module_from_file("mqttwarn/services/carbon.py")
@@ -135,7 +129,6 @@ def test_carbon_failure_invalid_configuration(srv, caplog):
 
 
 def test_carbon_failure_empty_message(srv, caplog):
-
     item = Item(target="test", addrs=["172.16.153.110", 2003])
 
     module = load_module_from_file("mqttwarn/services/carbon.py")
@@ -147,7 +140,6 @@ def test_carbon_failure_empty_message(srv, caplog):
 
 
 def test_carbon_failure_invalid_message_format(srv, caplog):
-
     item = Item(
         target="test",
         addrs=["172.16.153.110", 2003],
@@ -164,7 +156,6 @@ def test_carbon_failure_invalid_message_format(srv, caplog):
 
 
 def test_carbon_failure_connect(mocker, srv, caplog):
-
     item = Item(
         target="test",
         addrs=["localhost", 2003],

@@ -5,7 +5,6 @@ from mqttwarn.util import load_module_from_file
 
 
 def test_alexa_notify_me_success(srv, mocker, caplog):
-
     module = load_module_from_file("mqttwarn/services/alexa-notify-me.py")
 
     accessCode = "myToken"

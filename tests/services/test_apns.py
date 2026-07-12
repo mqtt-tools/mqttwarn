@@ -14,7 +14,6 @@ pytest.skip(reason="The `apns` package is not ready for Python3", allow_module_l
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_success(mock_apns_payload, mock_apns, srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/apns.py")
 
     cert_file, key_file = ["cert_file", "key_file"]
@@ -47,7 +46,6 @@ def test_apns_success(mock_apns_payload, mock_apns, srv, caplog):
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_success_no_payload(mock_apns_payload, mock_apns, srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/apns.py")
 
     cert_file, key_file = ["cert_file", "key_file"]
@@ -70,7 +68,6 @@ def test_apns_success_no_payload(mock_apns_payload, mock_apns, srv, caplog):
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_success_custom_payload(mock_apns_payload, mock_apns, srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/apns.py")
 
     cert_file, key_file = ["cert_file", "key_file"]
@@ -103,7 +100,6 @@ def test_apns_success_custom_payload(mock_apns_payload, mock_apns, srv, caplog):
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_failure_invalid_config(mock_apns_payload, mock_apns, srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/apns.py")
 
     item = Item(
@@ -122,7 +118,6 @@ def test_apns_failure_invalid_config(mock_apns_payload, mock_apns, srv, caplog):
 @mock.patch("apns.APNs", create=True)
 @mock.patch("apns.Payload", create=True)
 def test_apns_failure_apns_token_missing(mock_apns_payload, mock_apns, srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/apns.py")
 
     cert_file, key_file = ["cert_file", "key_file"]

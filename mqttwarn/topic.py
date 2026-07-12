@@ -19,7 +19,7 @@ class TopicTimeout(threading.Thread):
         timeout: t.Optional[int] = 1,
         section: t.Optional[str] = None,
         notify_only_on_timeout: t.Optional[bool] = False,
-        on_timeout: t.Optional[t.Callable] = None
+        on_timeout: t.Optional[t.Callable] = None,
     ):
         threading.Thread.__init__(self)
         self.topic = topic
@@ -28,7 +28,7 @@ class TopicTimeout(threading.Thread):
         self.notify_only_on_timeout = notify_only_on_timeout
         self._last_state_timeout = True
         self._on_timeout = on_timeout
-        self._restart_event = threading.Event();
+        self._restart_event = threading.Event()
         self._stop_event = threading.Event()
 
     def run(self):
@@ -54,7 +54,7 @@ class TopicTimeout(threading.Thread):
                         logger.debug("%s received message for topic %s before timeout" % (self.name, self.topic))
                         message = "Message received for topic %s within %i" % (self.topic, self.timeout)
                         self._last_state_timeout = False
-                        self._on_timeout(self.section, self.topic, message.encode('UTF-8'))
+                        self._on_timeout(self.section, self.topic, message.encode("UTF-8"))
                     self._restart_event = threading.Event()
                     break
                 logger.debug("%s waiting... %i" % (self.name, timeout))
@@ -64,7 +64,7 @@ class TopicTimeout(threading.Thread):
                     logger.debug("%s timeout for topic %s" % (self.name, self.topic))
                     message = "Timeout for topic %s after %i" % (self.topic, self.timeout)
                     self._last_state_timeout = True
-                    self._on_timeout(self.section, self.topic, message.encode('UTF-8'))
+                    self._on_timeout(self.section, self.topic, message.encode("UTF-8"))
                     break
 
     def restart(self):

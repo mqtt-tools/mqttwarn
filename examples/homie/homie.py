@@ -24,7 +24,7 @@ def decode_homie_topic(topic):
     """
     if type(topic) == str:
         try:
-            pattern = r'^(?P<realm>.+?)/(?P<device>.+?)/(?P<node>.+?)/(?P<property>.+?)$'
+            pattern = r"^(?P<realm>.+?)/(?P<device>.+?)/(?P<node>.+?)/(?P<property>.+?)$"
             p = re.compile(pattern)
             m = p.match(topic)
             topology = m.groupdict()
@@ -32,4 +32,3 @@ def decode_homie_topic(topic):
             topology = {}
         return topology
     return None
-

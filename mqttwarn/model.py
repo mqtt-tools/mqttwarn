@@ -45,7 +45,7 @@ class Struct:
 
     def enum(self):
         item = {}
-        for (k, v) in list(self.__dict__.items()):
+        for k, v in list(self.__dict__.items()):
             item[k] = v
         return item
 
@@ -103,7 +103,6 @@ class Service:
     """
 
     def __init__(self, mqttc, logger, mwcore, program):
-
         # Reference to MQTT client object.
         self.mqttc = mqttc
 

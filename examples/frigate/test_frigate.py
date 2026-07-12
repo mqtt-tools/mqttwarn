@@ -126,9 +126,9 @@ def test_frigate_with_attachment(mosquitto, ntfy_service, caplog, capmqtt):
         "message": "goat was in barn before",
         "click": "https://httpbin.org/anything?camera=cam-testdrive&label=goat&zone=lawn",
         "attachment": {
-           "name": "mqttwarn-frigate-cam-testdrive-goat.png",
-           "size": 283595,
-           "type": "image/png",
+            "name": "mqttwarn-frigate-cam-testdrive-goat.png",
+            "size": 283595,
+            "type": "image/png",
         },
     }
 

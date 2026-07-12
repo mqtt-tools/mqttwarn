@@ -31,7 +31,6 @@ def add_failed_mock_response():
 
 @responses.activate
 def test_pushover_success(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -63,7 +62,6 @@ def test_pushover_success(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_credentials_from_environment(srv, mocker, caplog):
-
     mocker.patch.dict(os.environ, {"PUSHOVER_USER": "userkey2", "PUSHOVER_TOKEN": "appkey2"})
 
     module = load_module_from_file("mqttwarn/services/pushover.py")
@@ -97,7 +95,6 @@ def test_pushover_success_with_credentials_from_environment(srv, mocker, caplog)
 
 @responses.activate
 def test_pushover_success_with_sound(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -126,7 +123,6 @@ def test_pushover_success_with_sound(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_html_and_url_and_url_title(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -161,7 +157,6 @@ def test_pushover_success_with_html_and_url_and_url_title(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_api_retry_expire_from_config(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -187,7 +182,6 @@ def test_pushover_success_with_api_retry_expire_from_config(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_api_retry_expire_from_environment(srv, mocker, caplog):
-
     mocker.patch.dict(os.environ, {"PUSHOVER_API_RETRY": "45", "PUSHOVER_API_EXPIRE": "1800"})
 
     module = load_module_from_file("mqttwarn/services/pushover.py")
@@ -215,7 +209,6 @@ def test_pushover_success_with_api_retry_expire_from_environment(srv, mocker, ca
 
 @responses.activate
 def test_pushover_success_with_api_retry_expire_from_config_with_data_override(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -241,7 +234,6 @@ def test_pushover_success_with_api_retry_expire_from_config_with_data_override(s
 
 @responses.activate
 def test_pushover_success_with_api_retry_expire_from_config_with_data_override_out_of_range_values(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -267,7 +259,6 @@ def test_pushover_success_with_api_retry_expire_from_config_with_data_override_o
 
 @responses.activate
 def test_pushover_success_with_devices(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -296,7 +287,6 @@ def test_pushover_success_with_devices(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_callback_and_title_and_priority_and_alternative_message(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -329,7 +319,6 @@ def test_pushover_success_with_callback_and_title_and_priority_and_alternative_m
 
 @responses.activate
 def test_pushover_success_with_imageurl(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -398,7 +387,6 @@ def test_pushover_success_with_imageurl(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_imageurl_and_basic_authentication(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -441,7 +429,6 @@ def test_pushover_success_with_imageurl_and_basic_authentication(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_imageurl_and_digest_authentication(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -488,7 +475,6 @@ def test_pushover_success_with_imageurl_and_digest_authentication(srv, caplog):
 
 @responses.activate
 def test_pushover_success_with_imagebase64(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     image = open("./assets/pushover.png", "rb").read()
@@ -547,7 +533,6 @@ def test_pushover_success_with_imagebase64(srv, caplog):
 
 
 def test_pushover_failure_invalid_configuration(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -563,7 +548,6 @@ def test_pushover_failure_invalid_configuration(srv, caplog):
 
 
 def test_pushover_failure_missing_credentials(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -581,7 +565,6 @@ def test_pushover_failure_missing_credentials(srv, caplog):
 
 @responses.activate
 def test_pushover_failure_module_error(srv, mocker, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(
@@ -604,7 +587,6 @@ def test_pushover_failure_module_error(srv, mocker, caplog):
 
 @responses.activate
 def test_pushover_failure_response_error(srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/pushover.py")
 
     item = Item(

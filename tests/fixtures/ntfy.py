@@ -34,7 +34,6 @@ images.settings["ntfy"] = {
 
 
 class Ntfy(BaseImage):
-
     name = "ntfy"
 
     def check(self):
@@ -67,7 +66,6 @@ def is_ntfy_running() -> bool:
 
 @pytest.fixture(scope="session")
 def ntfy_service():
-
     # Gracefully skip spinning up the Docker container if ntfy is already running.
     if is_ntfy_running():
         yield "localhost", 5555

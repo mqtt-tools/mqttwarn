@@ -20,7 +20,6 @@ def desktop_notifier_mock(mocker):
 
 
 def test_desktopnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
-
     module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     item = Item(
@@ -43,7 +42,6 @@ def test_desktopnotify_vanilla_success(desktop_notifier_mock, srv, caplog):
 
 
 def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv: Service, caplog):
-
     module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     processor_item = Item(
@@ -71,7 +69,6 @@ def test_desktopnotify_vanilla_failure(desktop_notifier_mock, mocker, srv: Servi
 
 
 def test_desktopnotify_json_success(desktop_notifier_mock, srv, caplog):
-
     module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     json_message = json.dumps(
@@ -100,7 +97,6 @@ def test_desktopnotify_json_success(desktop_notifier_mock, srv, caplog):
 
 
 def test_desktopnotify_no_sound_success(desktop_notifier_mock, srv, caplog):
-
     module = load_module_by_name("mqttwarn.services.desktopnotify")
 
     item = Item(

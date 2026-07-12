@@ -121,7 +121,6 @@ def test_load_module_by_name_bad():
 
 
 def test_load_functions():
-
     # Load valid functions file
     py_mod = load_functions(filepath=funcfile_good)
     assert py_mod is not None
@@ -160,7 +159,6 @@ def test_load_functions_pyc(tmp_path):
 
 
 def test_load_function():
-
     # Load valid functions file
     py_mod = load_functions(filepath=funcfile_good)
     assert py_mod is not None

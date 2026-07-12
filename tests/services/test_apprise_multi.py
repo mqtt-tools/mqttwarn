@@ -10,7 +10,6 @@ from mqttwarn.util import load_module_by_name
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
-
     module = load_module_by_name("mqttwarn.services.apprise_multi")
 
     item = Item(
@@ -45,7 +44,6 @@ def test_apprise_multi_basic_success(apprise_asset, apprise_mock, srv, caplog):
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_multi_mailto_success(apprise_asset, apprise_mock, srv, caplog):
-
     module = load_module_by_name("mqttwarn.services.apprise_multi")
 
     item = Item(
@@ -85,7 +83,6 @@ def test_apprise_multi_mailto_success(apprise_asset, apprise_mock, srv, caplog):
 
 
 def test_apprise_multi_failure_notify(srv, caplog):
-
     mock_connection = mock.MagicMock()
 
     # Make the call to `notify` signal failure.
@@ -122,7 +119,6 @@ def test_apprise_multi_failure_notify(srv, caplog):
 
 
 def test_apprise_multi_error(srv, caplog):
-
     mock_connection = mock.MagicMock()
 
     # Make the call to `notify` raise an exception.

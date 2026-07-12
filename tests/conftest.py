@@ -29,7 +29,6 @@ def fake_filesystem(fs):  # pylint:disable=invalid-name
 
 @pytest.fixture
 def without_jinja():
-
     # Emulate removal of `jinja2` package.
     # https://stackoverflow.com/a/65163627
     backup = sys.modules["jinja2"]
@@ -45,7 +44,6 @@ def without_jinja():
 
 @pytest.fixture
 def without_ssl():
-
     # Emulate removal of `ssl` package.
     # https://stackoverflow.com/a/65163627
     backup = sys.modules["ssl"]

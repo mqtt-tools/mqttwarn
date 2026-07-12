@@ -13,7 +13,6 @@ from mqttwarn.util import load_module_from_file
 
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="Incompatible with Python 3.7")
 def test_apprise_success(srv: Service, mocker, caplog):
-
     # Mock the SMTP library.
     mock_smtp: Mock = mocker.patch("smtplib.SMTP")
 
@@ -79,7 +78,6 @@ def test_apprise_success_no_addresses(apprise_asset, apprise_mock, srv, caplog):
 
 
 def test_apprise_failure_notify(srv, caplog):
-
     mock_connection = mock.MagicMock()
 
     # Make the call to `notify` signal failure.
@@ -120,7 +118,6 @@ def test_apprise_failure_notify(srv, caplog):
 
 
 def test_apprise_error(srv, caplog):
-
     mock_connection = mock.MagicMock()
 
     # Make the call to `notify` raise an exception.
@@ -163,7 +160,6 @@ def test_apprise_error(srv, caplog):
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_success_with_sender(apprise_asset, apprise_mock, srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/apprise_single.py")
 
     item = Item(
@@ -196,7 +192,6 @@ def test_apprise_success_with_sender(apprise_asset, apprise_mock, srv, caplog):
 @mock.patch("apprise.Apprise", create=True)
 @mock.patch("apprise.AppriseAsset", create=True)
 def test_apprise_success_backward_compat(apprise_asset, apprise_mock, srv, caplog):
-
     module = load_module_from_file("mqttwarn/services/apprise.py")
 
     item = Item(

@@ -87,7 +87,6 @@ def test_irccat_red_success(mocker, srv, caplog):
 
 
 def test_irccat_config_invalid(mocker, srv, caplog):
-
     item = Item(
         target="test",
         addrs=["localhost", 12345],

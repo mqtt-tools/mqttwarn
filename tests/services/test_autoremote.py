@@ -5,7 +5,6 @@ from mqttwarn.util import load_module_from_file
 
 
 def test_autoremote_success(srv, mocker, caplog):
-
     item = Item(
         target="test",
         addrs=["ApiKey", "Password", "Target", "Group", "TTL"],
@@ -37,7 +36,6 @@ def test_autoremote_success(srv, mocker, caplog):
 
 
 def test_autoremote_failure(srv, mocker, caplog):
-
     item = Item(
         target="test",
         addrs=["ApiKey", "Password", "Target", "Group", "TTL"],

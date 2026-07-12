@@ -217,7 +217,6 @@ def import_symbol(name: str, parent: t.Optional[types.ModuleType] = None) -> typ
 
 
 def load_functions(filepath: t.Optional[str] = None) -> t.Optional[types.ModuleType]:
-
     if not filepath:
         return None
 

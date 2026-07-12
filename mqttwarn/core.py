@@ -146,9 +146,13 @@ def on_connect(mosq: MqttClient, userdata: t.Dict[str, str], flags: t.Dict[str, 
             subscribed.append(topic)
             if topic_timeout > 0:
                 logger.debug("Setting up timeout thread for %s (timeout=%d)" % (topic, topic_timeout))
-                topic_timeout_list[topic] = TopicTimeout(timeout=topic_timeout, topic=topic, section=section,
-                                                         notify_only_on_timeout=notify_only_on_timeout,
-                                                         on_timeout=send_to_targets)
+                topic_timeout_list[topic] = TopicTimeout(
+                    timeout=topic_timeout,
+                    topic=topic,
+                    section=section,
+                    notify_only_on_timeout=notify_only_on_timeout,
+                    on_timeout=send_to_targets,
+                )
                 topic_timeout_list[topic].start()
 
         if cf.lwt is not None:
@@ -485,7 +489,6 @@ def process_job(job, worker_id=None):
     """
 
     if True:
-
         service = job.service
         section = job.section
         target = job.target
@@ -584,7 +587,6 @@ def process_job(job, worker_id=None):
 
 
 def load_services(services):
-
     if services is None:
         logger.warning("No services defined")
         return
@@ -746,7 +748,6 @@ def publish_status_information():
 
     """
     if cf.has_option("defaults", "status_publish") and cf.status_publish:
-
         status_topic = cf.g("defaults", "status_topic", "mqttwarn/$SYS")
         logger.info(f"Publishing status information to {status_topic}")
 
@@ -767,7 +768,6 @@ def publish_status_information():
 
 
 def start_workers():
-
     # Launch worker threads to operate on queue
     logger.info("Starting %s worker threads" % cf.num_workers)
     for i in range(cf.num_workers):

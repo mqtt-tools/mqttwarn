@@ -124,7 +124,6 @@ extras = {
 # Convenience extra to install *all* dependencies for building a `mqttwarn-full` distribution.
 extras_all = []
 for extra, packages in extras.items():
-
     # FIXME: Skip specific packages having build issues.
     # https://github.com/commx/python-rrdtool/issues/36
     if extra in ["mysql", "rrdtool"]:
@@ -171,7 +170,7 @@ extras["test"] = [
 
 # Packages needed for development and running CI.
 extras["develop"] = [
-    "black<23",
+    "black<24",
     "build<1",
     "mypy<1.10",
     "poethepoet<1",

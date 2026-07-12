@@ -38,7 +38,6 @@ def core_bootstrap(configfile=None):
 
 
 def send_message(topic=None, payload=None, retain=False):
-
     # Mock an instance of an Eclipse Paho MQTTMessage
     message = MQTTMessage(mid=42, topic=topic.encode("utf-8"))
     if payload is not None:

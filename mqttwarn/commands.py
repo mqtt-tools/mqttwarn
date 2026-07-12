@@ -74,7 +74,6 @@ def run():
         print(payload)
 
     elif options["--plugin"] and options["--options"]:
-
         # Decode arguments
         arg_plugin = options["--plugin"]
         arg_options = options["--options"] and json.loads(options["--options"]) or {}
@@ -100,7 +99,6 @@ def launch_plugin_standalone(
     configfile: t.Optional[str] = None,
     config_more: t.Optional[t.Dict] = None,
 ):
-
     # Optionally load configuration file
     does_not_exist = False
     scriptname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
@@ -132,7 +130,6 @@ def launch_plugin_standalone(
 
 
 def run_mqttwarn(configfile: t.Optional[str] = None):
-
     # Script name (without extension) used as last resort fallback for config/logfile names
     scriptname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 

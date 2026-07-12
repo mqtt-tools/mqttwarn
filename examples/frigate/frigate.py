@@ -123,7 +123,6 @@ def frigate_events_filter(topic: str, payload: str, section: str, srv: Service) 
 
     nonempty_fields = ["false_positive", "camera", "label", "current_zones", "entered_zones", "frame_time"]
     for field in nonempty_fields:
-
         # Validate field exists.
         if field not in after:
             srv.logging.warning(f"Frigate event skipped, missing field: {field}")
