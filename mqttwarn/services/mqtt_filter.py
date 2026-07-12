@@ -7,7 +7,7 @@ __license__   = """Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/
 
 import subprocess
 import json
-from pipes import quote
+from shlex import quote
 from six import string_types
 
 def plugin(srv, item):
@@ -26,7 +26,7 @@ def plugin(srv, item):
 
         if type(args) is list:
             args=tuple([ quote(v) for v  in args ]) #escape the shell args
-        elif type(args) is str or type(args) is unicode:
+        elif type(args) is str or isinstance(args, bytes):
             args=(quote(args),)
 
     # parse topic
@@ -40,7 +40,7 @@ def plugin(srv, item):
     retain         = item.addrs[2]
     addrs          = item.addrs[3:]
 
-    cmd = None
+    cmd = []
     if addrs is not None:
         cmd = [i.format(args=args, full_topic=quote(item.topic),topic=topic) for i in addrs]
 

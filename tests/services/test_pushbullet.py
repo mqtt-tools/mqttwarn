@@ -68,8 +68,8 @@ def test_pushbullet_modern_email_success(srv, caplog):
     assert response.request.headers["User-Agent"] == "mqttwarn"
     assert response.request.headers["Access-Token"] == "a6FJVAA0LVJKrT8k"
 
-    assert response.response.status_code == 200
-    assert response.response.json() == pushbullet_api_response
+    assert response.response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert response.response.json() == pushbullet_api_response  # ty: ignore[unresolved-attribute]
 
 
 @responses.activate
@@ -281,7 +281,7 @@ def test_pushbullet_tad_wrong_type_failure(srv, caplog):
     module = load_module_by_name("mqttwarn.services.pushbullet")
 
     item = Item(
-        addrs=42.42,
+        addrs=42.42,  # ty: ignore[invalid-argument-type]
         title="⚽ Message title ⚽",
         message="⚽ Notification message ⚽",
         target="foo",
@@ -320,7 +320,7 @@ def test_pushbullet_api_failure(srv, caplog, mocker):
     def raise_exception(*args, **kwargs):
         raise Exception("Something failed")
 
-    module.send_note = raise_exception
+    module.send_note = raise_exception  # ty: ignore[unresolved-attribute]
 
     outcome = module.plugin(srv, item)
     assert outcome is False

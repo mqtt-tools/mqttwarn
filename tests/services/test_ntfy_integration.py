@@ -9,7 +9,10 @@ from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_by_name
 
 if os.getenv("GITHUB_ACTIONS") == "true" and sys.platform != "linux":
-    raise pytest.skip(msg="On GHA, ntfy via Docker is only available on Linux", allow_module_level=True)
+    raise pytest.skip(
+        reason="On GHA, ntfy via Docker is only available on Linux",  # ty: ignore[unknown-argument, unused-ignore-comment, unused-ignore-comment]  # noqa: E501
+        allow_module_level=True,
+    )
 
 
 @pytest.fixture

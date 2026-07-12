@@ -19,7 +19,7 @@ class PeriodicThread:
     def __init__(
         self,
         callback: t.Optional[t.Callable] = None,
-        period: t.Optional[int] = 1,
+        period: float = 1.0,
         name: t.Optional[str] = None,
         srv: t.Optional[Service] = None,
         now: t.Optional[bool] = False,
@@ -92,4 +92,5 @@ class PeriodicThread:
         """
         Mimics Thread standard join method
         """
-        self.current_timer.join()
+        if self.current_timer is not None:
+            self.current_timer.join()

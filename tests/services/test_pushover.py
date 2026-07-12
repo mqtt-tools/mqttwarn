@@ -52,8 +52,8 @@ def test_pushover_success(srv, caplog):
     )
     assert responses.calls[0].request.headers["User-Agent"] == "mqttwarn"
 
-    assert responses.calls[0].response.status_code == 200
-    assert responses.calls[0].response.text == '{"status": 1}'
+    assert responses.calls[0].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -85,8 +85,8 @@ def test_pushover_success_with_credentials_from_environment(srv, mocker, caplog)
     )
     assert responses.calls[0].request.headers["User-Agent"] == "mqttwarn"
 
-    assert responses.calls[0].response.status_code == 200
-    assert responses.calls[0].response.text == '{"status": 1}'
+    assert responses.calls[0].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -113,8 +113,8 @@ def test_pushover_success_with_sound(srv, caplog):
         "sound=sound1&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
     )
 
-    assert responses.calls[0].response.status_code == 200
-    assert responses.calls[0].response.text == '{"status": 1}'
+    assert responses.calls[0].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -147,8 +147,8 @@ def test_pushover_success_with_html_and_url_and_url_title(srv, caplog):
         "&url_title=Notification+group+%27foo%27"
     )
 
-    assert responses.calls[0].response.status_code == 200
-    assert responses.calls[0].response.text == '{"status": 1}'
+    assert responses.calls[0].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -277,8 +277,8 @@ def test_pushover_success_with_devices(srv, caplog):
         "devices=cellphone1%2Ccellphone2&message=%E2%9A%BD+Notification+message+%E2%9A%BD"
     )
 
-    assert responses.calls[0].response.status_code == 200
-    assert responses.calls[0].response.text == '{"status": 1}'
+    assert responses.calls[0].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -309,8 +309,8 @@ def test_pushover_success_with_callback_and_title_and_priority_and_alternative_m
         "message=%E2%9A%BD+Alternative+notification+message+%E2%9A%BD"
     )
 
-    assert responses.calls[0].response.status_code == 200
-    assert responses.calls[0].response.text == '{"status": 1}'
+    assert responses.calls[0].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -343,8 +343,8 @@ def test_pushover_success_with_imageurl(srv, caplog):
     outcome = module.plugin(srv, item)
 
     # Check response status.
-    assert responses.calls[1].response.status_code == 200
-    assert responses.calls[1].response.text == '{"status": 1}'
+    assert responses.calls[1].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[1].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     # Decode multipart request.
     request = responses.calls[1].request
@@ -419,8 +419,8 @@ def test_pushover_success_with_imageurl_and_basic_authentication(srv, caplog):
     assert responses.calls[0].request.headers["Authorization"] == "Basic Zm9vOmJhcg=="
 
     # Check response status.
-    assert responses.calls[1].response.status_code == 200
-    assert responses.calls[1].response.text == '{"status": 1}'
+    assert responses.calls[1].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[1].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -465,8 +465,8 @@ def test_pushover_success_with_imageurl_and_digest_authentication(srv, caplog):
     # )
 
     # Check response status.
-    assert responses.calls[1].response.status_code == 200
-    assert responses.calls[1].response.text == '{"status": 1}'
+    assert responses.calls[1].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[1].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is True
     assert "Sending pushover notification to test" in caplog.text
@@ -490,8 +490,8 @@ def test_pushover_success_with_imagebase64(srv, caplog):
     outcome = module.plugin(srv, item)
 
     # Check response status.
-    assert responses.calls[0].response.status_code == 200
-    assert responses.calls[0].response.text == '{"status": 1}'
+    assert responses.calls[0].response.status_code == 200  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 1}'  # ty: ignore[unresolved-attribute]
 
     # Decode multipart request.
     request = responses.calls[0].request
@@ -609,8 +609,8 @@ def test_pushover_failure_response_error(srv, caplog):
     )
     assert responses.calls[0].request.headers["User-Agent"] == "mqttwarn"
 
-    assert responses.calls[0].response.status_code == 400
-    assert responses.calls[0].response.text == '{"status": 999}'
+    assert responses.calls[0].response.status_code == 400  # ty: ignore[unresolved-attribute]
+    assert responses.calls[0].response.text == '{"status": 999}'  # ty: ignore[unresolved-attribute]
 
     assert outcome is False
     assert "Sending pushover notification to test" in caplog.text

@@ -5,6 +5,8 @@ __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
+from typing import Optional, Any, IO, cast
+
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
@@ -52,8 +54,8 @@ def plugin(srv, item):
 
     # check if there is an image contained in a JSON payload
     # (support either an image URL or base64 encoded image)
+    image: Optional[bytes] = None
     try:
-        image = None
         if 'imageurl' in item.data:
             imageurl = item.data['imageurl']
             srv.logging.debug("Image url detected - %s" % imageurl)
@@ -64,11 +66,11 @@ def plugin(srv, item):
                 authuser = item.data['user']
                 authpass = item.data['password']
                 if authtype == 'digest':
-                    image = requests.get(imageurl, stream=True,auth=HTTPDigestAuth(authuser, authpass)).raw
+                    image = cast(bytes, requests.get(imageurl, stream=True,auth=HTTPDigestAuth(authuser, authpass)).raw)
                 else:
-                    image = requests.get(imageurl, stream=True,auth=HTTPBasicAuth(authuser, authpass)).raw
+                    image = cast(bytes, requests.get(imageurl, stream=True,auth=HTTPBasicAuth(authuser, authpass)).raw)
             else:
-                image = requests.get(imageurl, stream=True).raw
+                image = cast(bytes, requests.get(imageurl, stream=True).raw)
             
         elif 'imagebase64' in item.data:
             imagebase64 = item.data['imagebase64']

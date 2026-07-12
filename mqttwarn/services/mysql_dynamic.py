@@ -13,7 +13,7 @@ from builtins import str
 import re
 import time
 import traceback
-import MySQLdb
+import MySQLdb  # ty: ignore[unresolved-import, unused-ignore-comment, unused-ignore-comment]
 
 
 def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
@@ -60,7 +60,7 @@ def add_row(srv, cursor, index_table_name, table_name, rowdict, ignorekeys):
 
             columns += " " + keys[i]['clean']
             values_template += " %s"
-            values += (MySQLdb.escape_string(str(rowdict[keys[i]['ori']])),)
+            values += (MySQLdb._mysql.escape_string(str(rowdict[keys[i]['ori']])),)
 
         sql = "insert into %s (%s) values (%s)" % (table_name, columns, values_template)
 

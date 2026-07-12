@@ -8,7 +8,7 @@ __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-
 import os
 import json
 import paramiko
-from pipes import quote
+from shlex import quote
 
 
 def credentials(host, user=None, pwd=None, port=22):
@@ -23,7 +23,7 @@ def credentials(host, user=None, pwd=None, port=22):
         if type(ident) is list:
             ident = ident[0]
         if 'port' not in o:
-            o['port'] = port
+            o['port'] = str(port)
         c = {'hostname': o['hostname'], 'port': int(o['port']), 'username': o['user'], 'key_filename': ident}
     else:
         c = {'hostname': host, 'port': port, 'username': user, 'password': pwd}

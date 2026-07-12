@@ -45,10 +45,12 @@ def plugin(srv: Service, item: ProcessorItem):
        }
 
     srv.logging.debug("Sending desktop notification")
+    message = str(data.get('message', ''))
+    title = str(data.get('title', ''))
     try:
         # Synchronous Notification (allows no callbacks in OSX)
         # Asynchronous would require asyncio and require some changes to the plugin handler
-        notify.send_sync(message=data['message'], title=data['title'],sound=playSound)
+        notify.send_sync(message=message, title=title, sound=playSound)
 
     except Exception as e:
         srv.logging.warning("Invoking desktop notifier failed: %s" % e)

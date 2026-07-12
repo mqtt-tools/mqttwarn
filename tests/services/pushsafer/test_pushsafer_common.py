@@ -29,7 +29,7 @@ def test_pushsafer_configuration_invalid_failure(srv, caplog, mock_urlopen_succe
     """
 
     module = load_module_from_file("mqttwarn/services/pushsafer.py")
-    item = Item(addrs=42, message="⚽ Notification message ⚽")
+    item = Item(addrs=42, message="⚽ Notification message ⚽")  # ty: ignore[invalid-argument-type]
     with pytest.raises(ValueError) as ex:
         module.plugin(srv, item)
     assert ex.match("Pushsafer configuration layout empty or invalid. type=int")

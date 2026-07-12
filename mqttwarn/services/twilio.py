@@ -5,8 +5,7 @@ __author__    = 'Jan-Piet Mens <jpmens()gmail.com>'
 __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-from twilio.rest import TwilioRestClient
-
+from twilio.rest import Client
 
 def plugin(srv, item):
     """ expects (accountSID, authToken, from, to) in addrs"""
@@ -22,7 +21,7 @@ def plugin(srv, item):
     text = item.message
 
     try:
-        client = TwilioRestClient(account_sid, auth_token)
+        client = Client(account_sid, auth_token)
         message = client.messages.create(
                     body=text,
                     to=to_nr,

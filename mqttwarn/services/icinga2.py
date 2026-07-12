@@ -5,6 +5,8 @@ __author__ = 'Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2016 Ben Jones'
 __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
+from typing import Dict, Any
+
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -61,7 +63,7 @@ def plugin(srv, item):
         "Accept": "application/json"
     }
 
-    kwargs = {
+    kwargs: Dict[str, Any] = {
         "headers": headers,
         "auth": HTTPBasicAuth(username, password),
         "json": payload

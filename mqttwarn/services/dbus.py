@@ -5,7 +5,7 @@ __author__    = 'Fabian Affolter <fabian()affolter-engineering.ch>'
 __copyright__ = 'Copyright 2014 Fabian Affolter'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-import dbus
+import dbus  # ty: ignore[unresolved-import]
 
 
 def plugin(srv, item):

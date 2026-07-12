@@ -15,6 +15,7 @@ from mqttwarn.services.ntfy import (
     dict_with_titles,
     encode_rfc2047,
     obtain_ntfy_fields,
+    DataDict,
 )
 from mqttwarn.util import load_module_by_name
 
@@ -57,7 +58,7 @@ def test_ntfy_decode_jobitem_attachment_success(attachment_dummy):
     assert ntfy_request.options["url"] == "http://localhost:9999/testdrive"
     assert ntfy_request.options["file"] == attachment_dummy.name
     assert ntfy_request.fields["filename"] == Path(attachment_dummy.name).name
-    assert ntfy_request.attachment_data.read() == b"foo"
+    assert ntfy_request.attachment_data.read() == b"foo"  # ty: ignore[unresolved-attribute]
 
 
 def test_ntfy_decode_jobitem_attachment_not_found_failure(caplog):
@@ -119,7 +120,7 @@ def test_ntfy_decode_jobitem_attachment_with_filename_success(attachment_dummy):
     assert ntfy_request.options["url"] == "http://localhost:9999/testdrive"
     assert ntfy_request.options["file"] == attachment_dummy.name
     assert ntfy_request.fields["filename"] == "testdrive.txt"
-    assert ntfy_request.attachment_data.read() == b"foo"
+    assert ntfy_request.attachment_data.read() == b"foo"  # ty: ignore[unresolved-attribute]
 
 
 def test_ntfy_decode_jobitem_with_url_only_success():
@@ -145,7 +146,7 @@ def test_ntfy_decode_jobitem_with_invalid_target_address_descriptor():
         decode_jobitem(item)
     assert ex.match(re.escape("Unable to handle `targets` address descriptor data type `NoneType`: None"))
 
-    item = Item(addrs=42.42)
+    item = Item(addrs=42.42)  # ty: ignore[invalid-argument-type]
     with pytest.raises(TypeError) as ex:
         decode_jobitem(item)
     assert ex.match(re.escape("Unable to handle `targets` address descriptor data type `float`: 42.42"))
@@ -213,7 +214,7 @@ def test_ntfy_dict_ascii_clean():
     """
     Test the `dict_ascii_clean` helper function.
     """
-    indata = {"message": "⚽ Notification message ⚽", "foobar": "äöü"}
+    indata: DataDict = {"message": "⚽ Notification message ⚽", "foobar": "äöü"}
     outdata = dict_ascii_clean(indata)
     assert outdata["message"] == "? Notification message ?"
     assert outdata["foobar"] == "???"
@@ -242,7 +243,7 @@ def test_ntfy_ascii_clean_failure():
     Test the `ascii_clean` helper function.
     """
     with pytest.raises(TypeError) as ex:
-        ascii_clean(None)
+        ascii_clean(None)  # ty: ignore[invalid-argument-type]
     assert ex.match(re.escape("Unknown data type to compute ASCII-clean variant: NoneType"))
 
 
@@ -292,7 +293,7 @@ def test_ntfy_plugin_attachment(srv, caplog, attachment_dummy):
         == "view, Adjust temperature ?, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'"  # noqa: E501
     )
 
-    assert response.response.status_code == 200
+    assert response.response.status_code == 200  # ty: ignore[unresolved-attribute]
 
     assert "Successfully sent message using ntfy" in caplog.messages
 
@@ -345,7 +346,7 @@ def test_ntfy_plugin_newline(srv, caplog, attachment_dummy):
         == "view, Adjust temperature ?, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'"
     )
 
-    assert response.response.status_code == 200
+    assert response.response.status_code == 200  # ty: ignore[unresolved-attribute]
 
     assert "Successfully sent message using ntfy" in caplog.messages
 
@@ -399,7 +400,7 @@ def test_ntfy_plugin_attachment_and_newline(srv, caplog, attachment_dummy):
         == "view, Adjust temperature ?, https://example.org/home-automation/temperature, body='{\"temperature\": 18}'"  # noqa: E501
     )
 
-    assert response.response.status_code == 200
+    assert response.response.status_code == 200  # ty: ignore[unresolved-attribute]
 
     assert "Successfully sent message using ntfy" in caplog.messages
 

@@ -3,9 +3,9 @@ import functools
 import importlib.machinery
 
 try:
-    from importlib.resources import files as resource_files  # type: ignore[attr-defined]
+    from importlib.resources import files as resource_files
 except ImportError:
-    from importlib_resources import files as resource_files  # type: ignore[no-redef]
+    from importlib_resources import files as resource_files  # ty: ignore[unresolved-import]
 
 import importlib.util
 import json
@@ -33,7 +33,7 @@ class Formatter(string.Formatter):
     - https://docs.python.org/2/library/string.html#custom-string-formatting
     """
 
-    def convert_field(self, value: str, conversion: str) -> str:
+    def convert_field(self, value, conversion):
         """
         The conversion field causes a type coercion before formatting.
         By default, two conversion flags are supported: '!s' which calls
@@ -89,7 +89,7 @@ def parse_cron_options(argstring: str) -> t.Dict[str, t.Union[str, float]]:
 
 
 # http://code.activestate.com/recipes/473878-timeout-function-using-threading/
-def timeout(func: t.Callable, args=(), kwargs={}, timeout_secs: int = 10, default: bool = False) -> t.Any:
+def timeout(func: t.Callable, args=(), kwargs={}, timeout_secs: float = 10.0, default: bool = False) -> t.Any:
     import threading
 
     class InterruptableThread(threading.Thread):
@@ -120,14 +120,14 @@ def timeout(func: t.Callable, args=(), kwargs={}, timeout_secs: int = 10, defaul
         return it.result
 
 
-def sanitize_function_name(name: str) -> str:
+def sanitize_function_name(name: t.Optional[t.Union[str, int]]) -> str:
     if name is None:
         raise ValueError(f"Empty function name: {name}")
-
+    name = str(name)
     try:
         valid = re.match(r"^[\w]+\(\)", name)
         if valid is not None:
-            return re.sub("[()]", "", name)
+            return re.sub(r"[()]", "", name)
     except:
         pass
     raise ValueError(f"Invalid function name: {name}")
@@ -207,8 +207,10 @@ def import_symbol(name: str, parent: t.Optional[types.ModuleType] = None) -> typ
     module = importlib.util.module_from_spec(spec)
 
     # Actually load the module.
-    loader: FileLoader = module.__loader__
-    loader.exec_module(module)
+    loader: FileLoader = (  # ty: ignore[invalid-assignment, unused-ignore-comment, unused-ignore-comment]
+        module.__loader__
+    )
+    loader.exec_module(module)  # ty: ignore[unresolved-attribute, unused-ignore-comment, unused-ignore-comment]
 
     if remaining_names is None:
         return module

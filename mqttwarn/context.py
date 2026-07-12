@@ -21,7 +21,7 @@ class RuntimeContext:
     """
 
     config: Config = attr.ib()
-    invoker: "FunctionInvoker" = attr.ib()
+    invoker: t.Optional["FunctionInvoker"] = attr.ib()
 
     def get_sections(self) -> t.List[str]:
         sections = []
@@ -72,6 +72,7 @@ class RuntimeContext:
     def is_filtered(self, section: str, topic: str, payload: t.AnyStr) -> bool:
         if self.config.has_option(section, "filter"):
             try:
+                assert self.invoker
                 name = sanitize_function_name(self.config.get(section, "filter"))
                 return self.invoker.filter(name, topic, payload, section)
             except Exception as e:
@@ -81,6 +82,7 @@ class RuntimeContext:
     def get_topic_data(self, section: str, data: TdataType) -> t.Optional[TdataType]:
         if self.config.has_option(section, "datamap"):
             try:
+                assert self.invoker
                 name = sanitize_function_name(self.config.get(section, "datamap"))
                 return self.invoker.datamap(name, data)
             except Exception as e:
@@ -90,6 +92,7 @@ class RuntimeContext:
     def get_all_data(self, section: str, topic: str, data: TdataType) -> t.Optional[TdataType]:
         if self.config.has_option(section, "alldata"):
             try:
+                assert self.invoker
                 name = sanitize_function_name(self.config.get(section, "alldata"))
                 return self.invoker.alldata(name, topic, data)
             except Exception as e:
@@ -102,6 +105,7 @@ class RuntimeContext:
         """
         if self.config.has_option(section, "targets"):
             try:
+                assert self.invoker
                 name = sanitize_function_name(self.config.get(section, "targets"))
                 return self.invoker.topic_target_list(name, topic, data)
             except Exception as ex:
@@ -142,7 +146,7 @@ class FunctionInvoker:
     """
 
     config: Config = attr.ib()
-    srv: Service = attr.ib()
+    srv: t.Optional[Service] = attr.ib()
 
     def datamap(self, name: str, data: TdataType) -> TdataType:
         """
@@ -152,8 +156,6 @@ class FunctionInvoker:
         :param data:    Data to pass to the invoked function
         :return:        Return value of function invocation
         """
-
-        val = None
 
         try:
             func = load_function(name=name, py_mod=self.config.functions)

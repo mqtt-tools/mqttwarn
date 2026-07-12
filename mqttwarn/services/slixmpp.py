@@ -44,7 +44,7 @@ def plugin(srv, item):
         for target in xmpp_addresses:
             xmpp = send_msg_bot(sender, password, target, text, loop)
             xmpp.connect()
-            xmpp.process(forever=False)
+            xmpp.process(forever=False)  # ty: ignore[unresolved-attribute]
         srv.logging.debug("Successfully sent message")
     except Exception as e:
         srv.logging.error("Error sending message to %s: %s" % (item.target, e))

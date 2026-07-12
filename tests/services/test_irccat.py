@@ -118,7 +118,11 @@ def test_irccat_connect_fails(mocker, srv, caplog):
     module = load_module_from_file("mqttwarn/services/irccat.py")
 
     # Make the call to `socket.connect` raise an exception.
-    mock_connection = Mock(**{"connect.side_effect": Exception("something failed")})
+    mock_connection = Mock(
+        **{  # ty: ignore[invalid-argument-type, unused-ignore-comment, unused-ignore-comment]
+            "connect.side_effect": Exception("something failed")
+        }
+    )
     socket_mock = mocker.patch("socket.socket", side_effect=[mock_connection], create=True)
 
     outcome = module.plugin(srv, item)

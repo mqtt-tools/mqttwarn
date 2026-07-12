@@ -40,14 +40,14 @@ def plugin(srv, item):
 
     # Append newline if config option is set
     if type(config) == dict and 'append_newline' in config and config['append_newline']:
-        text = text + "\n"
+        text = text + b"\n"
 
     try:
         try:
             if callable(getattr(_serialport, "is_open", None)):
-                _serialport.is_open
+                _serialport.is_open  # ty: ignore[unresolved-attribute]
             else:
-                _serialport.isOpen
+                _serialport.isOpen  # ty: ignore[unresolved-attribute]
             srv.logging.debug("%s already open", comName)
         except:
             #Open port for first use
@@ -55,7 +55,8 @@ def plugin(srv, item):
             _serialport = serial.serial_for_url(comName)
             _serialport.baudrate = comBaudRate
 
-        _serialport.write(text.encode('utf-8'))
+        if _serialport is not None and text is not None:
+            _serialport.write(text)
 
     except serial.SerialException as e:
         srv.logging.warning("Cannot write to com port `%s': %s" % (comName, e))

@@ -32,7 +32,7 @@ def without_jinja():
     # Emulate removal of `jinja2` package.
     # https://stackoverflow.com/a/65163627
     backup = sys.modules["jinja2"]
-    sys.modules["jinja2"] = None
+    sys.modules["jinja2"] = None  # ty: ignore[invalid-assignment]
     importlib.reload(sys.modules["mqttwarn.core"])
 
     yield
@@ -47,7 +47,7 @@ def without_ssl():
     # Emulate removal of `ssl` package.
     # https://stackoverflow.com/a/65163627
     backup = sys.modules["ssl"]
-    sys.modules["ssl"] = None
+    sys.modules["ssl"] = None  # ty: ignore[invalid-assignment]
     importlib.reload(sys.modules["mqttwarn.configuration"])
 
     yield

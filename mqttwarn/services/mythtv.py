@@ -5,6 +5,8 @@ __author__    = 'Stefan Roellin <stefan()roellin-baumann.ch>'
 __copyright__ = 'Copyright 2015 Stefan Roellin'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
+from ssl import SSLError
+
 from future import standard_library
 standard_library.install_aliases()
 
@@ -30,7 +32,7 @@ def plugin(srv, item):
         http_handler.request("POST", 'Myth/SendNotification',
                              headers={'Content-type': "application/x-www-form-urlencoded", "Accept": "text/plain"},
                              body=urllib.parse.urlencode(data))
-    except (SSLError, HTTPException) as e:
+    except (SSLError, http.client.HTTPException) as e:
         srv.logging.warn("mythtv notification failed: %s" % e)
         return False            
 

@@ -32,8 +32,8 @@ def plugin(srv, item):
 
         # Disable the Apprise rate limiting subsystem.
         try:
-            from apprise.plugins.NotifyBase import NotifyBase
-            NotifyBase.request_rate_per_sec = 0
+            from apprise import NotifyBase
+            setattr(NotifyBase, "request_rate_per_sec", 0)
         except ImportError:
             pass
 

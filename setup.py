@@ -5,7 +5,7 @@ import platform
 import sys
 
 from setuptools import find_packages, setup
-from versioningit import get_cmdclasses
+from versioningit import get_cmdclasses  # ty: ignore[unresolved-import, unused-ignore-comment, unused-ignore-comment]
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, "README.rst")).read()
@@ -55,13 +55,13 @@ extras = {
         "oauth2client>=4.1.2",
     ],
     "mysql": [
-        "mysql",
-    ],
-    "mysql_dynamic": [
-        "mysqlclient",
+        "mysqlclient<2",
     ],
     "nsca": [
         "pynsca>=1.6",
+    ],
+    "nntp": [
+        "standard-nntplib<4",
     ],
     "desktopnotify": [
         "desktop-notifier<4",
@@ -98,7 +98,7 @@ extras = {
         "Mastodon.py>=1.2.2",
     ],
     "twilio": [
-        "twilio>=6.11.0",
+        "twilio>=6.11.0,<10",
     ],
     "twitter": [
         "python-twitter>=3.4.1",
@@ -131,7 +131,7 @@ for extra, packages in extras.items():
         continue
 
     # FIXME: `mysqlclient` needs MySQL or MariaDB client libraries.
-    if extra in ["mysql_dynamic"] and sys.platform in ["darwin", "win32"]:
+    if extra in ["mysql"] and sys.platform in ["darwin", "win32"]:
         continue
 
     # FIXME: Skip specific packages on specific platforms,
@@ -144,10 +144,6 @@ for extra, packages in extras.items():
     #        of time to build, so let's mask them to improve build times significantly.
     #        Examples: `cryptography`, `aiohttp`, `frozenlist`, `multidict`, `yarl`.
     if machine in ["armv7l"] and extra in ["apprise", "twilio"]:
-        continue
-
-    # FIXME: aiohttp (needed by twilio) is not available for Python 3.12 yet.
-    if sys.version_info >= (3, 12) and extra in ["twilio"]:
         continue
 
     for package in packages:
@@ -173,10 +169,10 @@ extras["test"] = [
 extras["develop"] = [
     "black<24",
     "build<1",
-    "mypy<1.10",
     "poethepoet<1",
     "ruff==0.0.254; python_version>='3.7'",
     "sphinx-autobuild",
+    "ty==0.0.58; python_version>='3.8'",
 ]
 
 

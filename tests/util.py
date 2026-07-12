@@ -5,10 +5,10 @@ import threading
 import time
 from unittest.mock import patch
 
-import paho
+import paho.mqtt.client
 from paho.mqtt.client import MQTTMessage
 
-import mqttwarn
+import mqttwarn.core
 from mqttwarn.commands import run as run_command
 from mqttwarn.configuration import load_configuration
 from mqttwarn.core import bootstrap, load_services, on_message, start_workers
@@ -38,15 +38,20 @@ def core_bootstrap(configfile=None):
 
 
 def send_message(topic=None, payload=None, retain=False):
+    if topic:
+        topic = topic.encode("utf-8")
+    if payload:
+        payload = payload.encode("utf-8")
+
     # Mock an instance of an Eclipse Paho MQTTMessage
-    message = MQTTMessage(mid=42, topic=topic.encode("utf-8"))
+    message = MQTTMessage(mid=42, topic=topic)
     if payload is not None:
-        message.payload = payload.encode("utf-8")
+        message.payload = payload
     if retain:
         message.retain = True
 
     # Signal the message to the machinery
-    on_message(None, None, message)
+    on_message(None, None, message)  # ty: ignore[invalid-argument-type]
 
     # Give the machinery some time to process the message
     delay()

@@ -19,7 +19,7 @@ def assert_request(request: urllib.request.Request, reference_data: t.Dict[str, 
     if isinstance(request.data, bytes):
         payload = request.data
     elif hasattr(request.data, "read"):
-        payload = request.data.read()  # type: ignore[union-attr]
+        payload = request.data.read()  # ty: ignore[call-non-callable]
     else:
         raise ValueError(f"Something went wrong. Could not decode `request.data`: {request.data}")
     actual_data = dict(parse_qsl(payload.decode("utf-8"), keep_blank_values=True))

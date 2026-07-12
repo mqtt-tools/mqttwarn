@@ -5,10 +5,11 @@ from builtins import object
 from builtins import str
 import re
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pprint import pformat
 from collections import deque, defaultdict
 
+from mqttwarn.util import load_module_from_file
 
 # ------------------------------------------
 #                  Synopsis
@@ -100,13 +101,15 @@ def hiveeyes_topic_to_topology(topic):
     enriching transformation data inside mqttwarn.
     """
     if type(topic) == str:
+        topology = {}
         try:
             pattern = r"^(?P<realm>.+?)/(?P<network>.+?)/(?P<gateway>.+?)/(?P<node>.+?)/(?P<field>.+?)$"
             p = re.compile(pattern)
             m = p.match(topic)
-            topology = m.groupdict()
+            if m:
+                topology = m.groupdict()
         except:
-            topology = {}
+            pass
         return topology
     return None
 
@@ -199,7 +202,7 @@ def hiveeyes_schwarmalarm_filter(topic, message):
     origin = "{realm}/{network}/{gateway}/{node}".format(**tdata)
 
     # Data-loss bookkeeping
-    hdata.moments[origin] = datetime.utcnow()
+    hdata.moments[origin] = datetime.now(timezone.utc)
 
     # Get most recent measurement from series
     try:
@@ -215,7 +218,7 @@ def hiveeyes_schwarmalarm_filter(topic, message):
 
         # Read current value and appropriate threshold
         current = tdata[field]
-        threshold = monitoring_rules[field]["threshold"]
+        threshold = float(monitoring_rules[field]["threshold"])
 
         # Compare current with former value and set
         # semaphore if delta is greater threshold
@@ -269,7 +272,7 @@ def hiveeyes_dataloss_monitor(srv):
     # Get hold of mqttwarn method to dispatch notification messages on data loss events
     send_to_targets = srv.mwcore["send_to_targets"]
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # List of all seen data origins (devices).
     # The identifiers are made of essential parts of the MQTT topic.
@@ -309,25 +312,6 @@ def hiveeyes_dataloss_monitor(srv):
     # srv.mqttc.publish('data-loss-topic'.format(**locals()), 'data-loss')
 
 
-# ------------------------------------------
-#                   Setup
-# ------------------------------------------
-# Duplicate of mqttwarn helper method for loading service plugins
-# http://code.davidjanes.com/blog/2008/11/27/how-to-dynamically-load-python-code/
-def load_module(path):
-    import imp
-    import hashlib
-
-    try:
-        fp = open(path, "rb")
-        return imp.load_source(hashlib.md5(path).hexdigest(), path, fp)
-    finally:
-        try:
-            fp.close()
-        except:
-            pass
-
-
 # Mitigate "AttributeError: '_ssl._SSLSocket' object has no attribute 'issuer'"
-service_xmpp = load_module("services/xmpp.py")
+service_xmpp = load_module_from_file("services/xmpp.py")
 service_xmpp.xmpppy_monkeypatch_ssl()

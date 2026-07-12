@@ -10,9 +10,9 @@ try:
     from urllib.request import urlopen, Request
     from urllib.error import HTTPError
 except ImportError:
-    from urlparse import urlparse  # type: ignore[no-redef]
-    from urllib import urlencode, urljoin  # type: ignore[no-redef,attr-defined]
-    from urllib2 import urlopen, Request, HTTPError  # type: ignore[no-redef]
+    from urlparse import urlparse  # ty: ignore[unresolved-import]
+    from urllib import urlencode, urljoin  # ty: ignore[unresolved-import]
+    from urllib2 import urlopen, Request, HTTPError  # ty: ignore[unresolved-import]
 
 import base64
 

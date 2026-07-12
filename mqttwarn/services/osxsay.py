@@ -24,6 +24,9 @@ def plugin(srv, item):
         srv.logging.warn("Cannot create osxsay pipe: %s" % e)
         return False
 
+    if proc.stdin is None:
+        raise ValueError("Cannot operate without stdin")
+
     try:
         proc.stdin.write(text)
     except IOError as e:

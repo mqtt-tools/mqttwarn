@@ -6,7 +6,7 @@ __copyright__ = 'Copyright 2015'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 import re
-import rrdtool
+import rrdtool  # ty: ignore[unresolved-import]
 
 
 def plugin(srv, item):

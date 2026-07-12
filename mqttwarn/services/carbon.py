@@ -60,7 +60,7 @@ def plugin(srv, item):
     try:
         sock = socket.socket()
         sock.connect((carbon_host, carbon_port))
-        sock.sendall(carbon_msg)
+        sock.sendall(carbon_msg.encode("utf-8"))
         sock.close()
     except Exception as e:
         srv.logging.warning("Cannot send to carbon service %s:%d: %s" % (carbon_host, carbon_port, e))

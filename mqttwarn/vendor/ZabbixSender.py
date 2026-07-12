@@ -4,6 +4,7 @@ from __future__ import print_function
 from builtins import str
 import socket
 import struct
+from typing import Dict, Any
 
 # Single file, imported from https://github.com/BlueSkyDetector/code-snippet/tree/master/ZabbixSender
 # Lincense: DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -22,8 +23,8 @@ class ZabbixSender:
     
     zbx_header = b'ZBXD'
     zbx_version = 1
-    zbx_sender_data = {'request': 'sender data', 'data': []}
-    send_data = ''
+    zbx_sender_data: Dict[str, Any] = {'request': 'sender data', 'data': []}
+    send_data = b''
     
     def __init__(self, server_host, server_port = 10051):
         self.server_ip = socket.gethostbyname(server_host)

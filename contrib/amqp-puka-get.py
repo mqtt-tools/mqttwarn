@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 import sys
-import puka
+import puka  # ty: ignore[unresolved-import, unused-ignore-comment, unused-ignore-comment]
 import json
 
 exchange = 'mqttwarn'
