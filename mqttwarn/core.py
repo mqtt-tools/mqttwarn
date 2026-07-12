@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2014-2023 The mqttwarn developers
+# (c) 2014-2026 The mqttwarn developers
 from pathlib import Path
 
 try:
@@ -398,13 +398,17 @@ def builtin_transform_data(topic: str, payload: t.Union[str, bytes]) -> TdataTyp
     return tdata
 
 
-def xform(function: str, orig_value: t.Any, transform_data: TdataType) -> t.Union[TdataType, str, None]:
+def xform(
+    function: t.Optional[str] = None, orig_value: t.Optional[t.Any] = None, transform_data: t.Optional[TdataType] = None
+) -> t.Union[TdataType, str, None]:
     """
     Attempt transformation on orig_value.
 
     - 1st. function()
     - 2nd. inline {xxxx}
     """
+
+    transform_data = transform_data or {}
 
     if orig_value is None:
         return None
@@ -489,6 +493,34 @@ def processor(worker_id=None):
     logger.debug("Worker thread exiting")
 
 
+def get_option_value(
+    section: str,
+    option: t.Optional[str] = None,
+    service: t.Optional[str] = None,
+    target: t.Optional[str] = None,
+    default: t.Optional[str] = None,
+) -> t.Union[str, None]:
+    opt = None
+    if service and target and option:
+        opt = context.get_config(
+            section, (t.cast(str, service) + ":" + t.cast(str, target) + "." + t.cast(str, option))
+        )
+
+    if opt is None and service and option:
+        opt = context.get_config(section, (t.cast(str, service) + "." + t.cast(str, option)))
+
+    if opt is None and target and option:
+        opt = context.get_config(section, (t.cast(str, target) + "." + t.cast(str, option)))
+
+    if opt is None and option:
+        opt = context.get_config(section, t.cast(str, option))
+
+    if opt is None:
+        opt = default
+
+    return opt
+
+
 def process_job(job, worker_id=None):
     """
     Process a single job item.
@@ -545,9 +577,12 @@ def process_job(job, worker_id=None):
         item["data"] = dict(list(transform_data.items()))
 
         origin_title = "{}: {}".format(SCRIPTNAME, topic)
-        item["title"] = xform(context.get_config(section, "title"), origin_title, transform_data)
-        item["image"] = xform(context.get_config(section, "image"), "", transform_data)
-        item["message"] = xform(context.get_config(section, "format"), job.payload, transform_data)
+
+        item["title"] = xform(
+            get_option_value(section, "title", service, target, default=origin_title), origin_title, transform_data
+        )
+        item["image"] = xform(get_option_value(section, "image", service, target), "", transform_data)
+        item["message"] = xform(get_option_value(section, "format", service, target), job.payload, transform_data)
 
         try:
             item["priority"] = int(
