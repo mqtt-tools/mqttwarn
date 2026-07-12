@@ -28,7 +28,7 @@ def test_apprise_success(srv: Service, mocker, caplog):
 
     assert mock_smtp.mock_calls == [
         call("mail.example.org", 587, None, timeout=15),
-        call().starttls(),
+        call().starttls(context=mock.ANY),
         call().login("smtp_username", "smtp_password"),
         call().sendmail("smtp_username@mail.example.org", ["foo@example.org"], mock.ANY),
         call().sendmail("smtp_username@mail.example.org", ["bar@example.org"], mock.ANY),

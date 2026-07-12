@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # (c) 2023 The mqttwarn developers
-import io
 import re
 from pathlib import Path
 
@@ -281,8 +280,8 @@ def test_ntfy_plugin_attachment(srv, caplog, attachment_dummy):
     assert len(responses.calls) == 1
     response = responses.calls[0]
     assert response.request.url == "http://localhost:9999/testdrive"
-    assert isinstance(response.request.body, io.BufferedReader)
-    assert response.request.body.read() == b"foo"
+    assert isinstance(response.request.body, bytes), f"Wrong type: {type(response.request.body)}"
+    assert response.request.body == b"foo"
     assert response.request.headers["User-Agent"] == "mqttwarn"
     assert response.request.headers["Message"] == "=?utf-8?q?=E2=9A=BD_Notification_message_=E2=9A=BD?="
     assert response.request.headers["Tags"] == "=?utf-8?q?foo=2Cbar=2C=C3=A4=C3=B6=C3=BC?="
@@ -384,8 +383,8 @@ def test_ntfy_plugin_attachment_and_newline(srv, caplog, attachment_dummy):
     assert len(responses.calls) == 1
     response = responses.calls[0]
     assert response.request.url == "http://localhost:9999/testdrive"
-    assert isinstance(response.request.body, io.BufferedReader)
-    assert response.request.body.read() == b"foo"
+    assert isinstance(response.request.body, bytes)
+    assert response.request.body == b"foo"
     assert response.request.headers["User-Agent"] == "mqttwarn"
     assert (
         response.request.headers["Message"]
