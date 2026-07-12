@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) 2023 The mqttwarn developers
 import re
+import sys
 from pathlib import Path
 
 import pytest
@@ -245,6 +246,7 @@ def test_ntfy_ascii_clean_failure():
     assert ex.match(re.escape("Unknown data type to compute ASCII-clean variant: NoneType"))
 
 
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Incompatible with Python 3.7")
 @responses.activate
 def test_ntfy_plugin_attachment(srv, caplog, attachment_dummy):
     """
@@ -348,6 +350,7 @@ def test_ntfy_plugin_newline(srv, caplog, attachment_dummy):
     assert "Successfully sent message using ntfy" in caplog.messages
 
 
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Incompatible with Python 3.7")
 @responses.activate
 def test_ntfy_plugin_attachment_and_newline(srv, caplog, attachment_dummy):
     """
