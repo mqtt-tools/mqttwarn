@@ -17,7 +17,10 @@ from mqttwarn.core import bootstrap, connect
 from tests.util import mqtt_process
 
 if os.getenv("GITHUB_ACTIONS") == "true" and sys.platform != "linux":
-    raise pytest.skip(msg="On GHA, Mosquitto via Docker is only available on Linux", allow_module_level=True)
+    raise pytest.skip(
+        reason="On GHA, Mosquitto via Docker is only available on Linux",  # ty: ignore[unknown-argument, unused-ignore-comment, unused-ignore-comment]  # noqa: E501
+        allow_module_level=True,
+    )
 
 
 # Mark all test case functions within this module with `e2e`.

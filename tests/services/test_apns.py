@@ -9,7 +9,8 @@ from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.util import load_module_from_file
 
 pytest.skip(
-    reason="The `apns` package is not ready for Python3", allow_module_level=True  # ty: ignore[unknown-argument]
+    reason="The `apns` package is not ready for Python3",  # ty: ignore[unknown-argument, unused-ignore-comment, unused-ignore-comment]  # noqa: E501
+    allow_module_level=True,
 )
 
 
