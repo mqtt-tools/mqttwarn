@@ -16,7 +16,7 @@ requires = [
     "funcy<3",
     "future>=0.18.0,<1",
     "importlib-metadata; python_version<'3.8'",
-    "importlib-resources; python_version<'3.8'",
+    "importlib-resources; python_version<'3.9'",
     "jinja2<4",
     "paho-mqtt<2",
     "requests<3",
@@ -110,7 +110,8 @@ extras = {
         "dnspython>=1.16.0",
     ],
     "slixmpp": [
-        "slixmpp>=1.5.2",
+        "slixmpp>=1.5.2,<1.12; python_version<'3.10'",
+        "slixmpp>=1.5.2,<1.18; python_version>='3.10'",
     ],
     # More notification plugins from the community.
     # https://github.com/daq-tools/mqttwarn-contrib
