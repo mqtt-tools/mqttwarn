@@ -29,9 +29,10 @@ jobs:
           - "3.11"
           - "3.12"
           - "3.13"
+          - "3.14"
         include:
           - os: "macos-latest"
-            python-version: "3.13"
+            python-version: "3.14"
           - os: "windows-latest"
             python-version: "3.11"
     env:

@@ -173,7 +173,7 @@ extras["test"] = [
 extras["develop"] = [
     "black<23",
     "build<1",
-    "mypy<1.3",
+    "mypy<1.10",
     "poethepoet<1",
     "ruff==0.0.254; python_version>='3.7'",
     "sphinx-autobuild",
@@ -210,6 +210,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Topic :: Communications",
         "Topic :: Education",
         "Topic :: Internet",
