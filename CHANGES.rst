@@ -8,6 +8,10 @@ in progress
 
 - CI: Validated on Python 3.14
 - OCI: Updated to Python 3.14
+- Added list shorthand definition for params dict of quoted fields
+  in http_urllib. Thanks, @otdftr.
+- Introduced a warning timeout for MQTT topics. Thanks, @gbeine.
+- Migrated to new Slack upload method. Thanks, @mcdamo.
 
 2023-10-15 0.35.0
 =================
