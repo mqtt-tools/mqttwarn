@@ -14,7 +14,6 @@ requires = [
     "attrs<23",
     "docopt<1",
     "funcy<3",
-    "future>=0.18.0,<1",
     "importlib-metadata; python_version<'3.8'",
     "importlib-resources; python_version<'3.9'",
     "jinja2<4",
