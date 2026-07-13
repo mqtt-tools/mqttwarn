@@ -7,9 +7,6 @@ __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/ep
 
 from ssl import SSLError
 
-from future import standard_library
-standard_library.install_aliases()
-
 import http.client, urllib.request, urllib.parse, urllib.error
 
 

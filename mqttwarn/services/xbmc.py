@@ -5,9 +5,6 @@ __author__    = 'Ben Jones <ben.jones12()gmail.com>'
 __copyright__ = 'Copyright 2014 Ben Jones'
 __license__   = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-from future import standard_library
-standard_library.install_aliases()
-
 import urllib.request, urllib.parse, urllib.error
 import base64
 try:

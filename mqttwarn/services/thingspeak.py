@@ -6,9 +6,6 @@ __author__ = 'Marcel Verpaalen'
 __copyright__ = 'Copyright 2015 Marcel Verpaalen'
 __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
-from future import standard_library
-standard_library.install_aliases()
-
 from builtins import str
 from urllib.parse import urlencode
 from http.client import HTTPSConnection, HTTPException

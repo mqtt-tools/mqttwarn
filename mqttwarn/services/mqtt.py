@@ -6,8 +6,6 @@ __copyright__ = 'Copyright 2014 Jan-Piet Mens'
 __license__ = 'Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)'
 
 from six import string_types
-from future import standard_library
-standard_library.install_aliases()
 
 import configparser
 import paho.mqtt.publish as mqtt
