@@ -487,6 +487,12 @@ process the message.
 The filter function should return `True` if the message should be suppressed, 
 or `False` if the message should be processed. This is a basic but working
 example for such a filter function.
+
+| Callback result | Outcome |
+| --- | --- |
+| `True` | Message is filtered out; notification is skipped |
+| `False` | Message proceeds to the configured targets |
+
 ```python
 from mqttwarn.model import Service
 
