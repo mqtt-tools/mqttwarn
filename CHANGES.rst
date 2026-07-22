@@ -5,6 +5,7 @@ mqttwarn changelog
 
 in progress
 ===========
+- [udf] Unlock JavaScript for user-defined functions. Thanks, @extremeheat.
 
 2026-07-13 0.36.1
 =================
