@@ -132,3 +132,10 @@ def test_runtime_context_get_service_targets(runtime_ini_file):
     context = RuntimeContext(config=config, invoker=None)
     assert context.get_service_targets("foo") == {"abc": "def"}
     assert context.get_service_targets("unknown") == [None]
+
+
+def test_filter_docstring_describes_suppression_contract():
+    """Verify the filter callback's inverted suppression semantics are explicit."""
+    docstring = FunctionInvoker.filter.__doc__ or ""
+    assert "``True`` suppresses" in docstring
+    assert "``False`` continues" in docstring

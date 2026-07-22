@@ -211,12 +211,15 @@ class FunctionInvoker:
     def filter(self, name: str, topic: str, payload: t.AnyStr, section: t.Optional[str] = None) -> bool:  # noqa:A003
         """
         Invoke function "name" loaded from the "functions" Python module.
-        Return that function's True/False.
+        Return whether the outbound notification should be suppressed.
+
+        ``True`` suppresses the notification; ``False`` continues normal
+        notification processing.
 
         :param name:    Function name to invoke
         :param topic:   Topic to pass to the invoked function
         :param payload: Payload to pass to the invoked function
-        :return:        Return value of function invocation
+        :return:        Whether to suppress the outbound notification
         """
 
         # Filtering currently only works on text.
