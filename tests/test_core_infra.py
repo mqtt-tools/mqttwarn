@@ -619,7 +619,7 @@ def test_xform():
     """
     Evaluates certain behaviors of `test_xform`.
     """
-    assert xform(None, None, None) is None  # ty: ignore[invalid-argument-type]
+    assert xform(None, None, None) is None
 
 
 def test_publish_status_information_success(mocker, caplog):
