@@ -6,6 +6,8 @@ mqttwarn changelog
 in progress
 ===========
 
+- Verified on Python 3.15
+
 2026-07-13 0.36.1
 =================
 
