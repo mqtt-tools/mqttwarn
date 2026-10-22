@@ -34,7 +34,7 @@ jobs:
         with:
           activate-environment: 'true'
           enable-cache: true
-          python-version: '3.14'
+          python-version: '3.15'
 
       - name: Build package
         run: |
