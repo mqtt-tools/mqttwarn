@@ -10,7 +10,7 @@ import json
 import typing as t
 import asyncio
 
-from desktop_notifier import DesktopNotifier, Urgency, Button, ReplyField
+from desktop_notifier import DesktopNotifier, Urgency, Button, ReplyField  # ty: ignore[unresolved-import,unused-ignore-comment,unused-ignore-comment]
 
 from mqttwarn.model import Service, ProcessorItem, Struct
 

@@ -63,7 +63,8 @@ extras = {
         "standard-nntplib<4",
     ],
     "desktopnotify": [
-        "desktop-notifier<4",
+        "desktop-notifier<4; sys_platform != 'linux'",
+        "desktop-notifier<4; sys_platform == 'linux' and python_version<'3.15'",
     ],
     "pastebinpub": [
         "Pastebin>=1.1.2",

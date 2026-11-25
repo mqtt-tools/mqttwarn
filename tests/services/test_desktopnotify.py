@@ -11,6 +11,8 @@ from mqttwarn.model import ProcessorItem as Item
 from mqttwarn.model import Service, Struct
 from mqttwarn.util import load_module_by_name
 
+pytest.importorskip("desktop_notifier")
+
 
 @pytest.fixture
 def desktop_notifier_mock(mocker):
