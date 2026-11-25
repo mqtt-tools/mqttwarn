@@ -7,6 +7,9 @@ in progress
 ===========
 
 - Verified on Python 3.15
+- Added ``get_option_value`` function for config options.
+  It is used in ``process_job``. The function allows overriding
+  transform options on a per-source/per-target basis.
 
 2026-07-13 0.36.1
 =================
