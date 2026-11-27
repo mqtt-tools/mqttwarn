@@ -449,3 +449,34 @@ def test_ntfy_long_message(srv, caplog):
     assert outcome is True
     assert "Successfully sent message using ntfy" in caplog.messages
     assert "requests.exceptions.InvalidHeader" not in caplog.text
+
+
+@responses.activate
+def test_ntfy_plugin_authorization(srv, caplog):
+    """
+    Run a notification with authorization.
+    """
+
+    responses.add(
+        responses.POST,
+        "http://localhost:9999/testdrive",
+        json={},
+        status=200,
+    )
+
+    module = load_module_by_name("mqttwarn.services.ntfy")
+
+    item = Item(
+        addrs={"url": "http://localhost:9999/testdrive", "authorization": "Bearer tk_123456789"},
+        title="Message title",
+        message="Notification message",
+    )
+
+    outcome = module.plugin(srv, item)
+
+    assert "Successfully sent message using ntfy" in caplog.messages
+    assert outcome is True
+
+    assert len(responses.calls) == 1
+    response = responses.calls[0]
+    assert response.request.headers["Authorization"] == "Bearer tk_123456789"
