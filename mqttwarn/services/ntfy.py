@@ -46,6 +46,7 @@ NTFY_FIELD_NAMES: t.List[str] = [
     "cache",
     "firebase",
     "unifiedpush",
+    "authorization",
 ]
 
 NTFY_RFC2047_FIELDS: t.List[str] = [
